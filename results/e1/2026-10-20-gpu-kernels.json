@@ -1,0 +1,504 @@
+{
+  "experiment": "E1-SM121-GPU-kernels",
+  "status": "MINIMAL_GPU_GATE_PASS_NATIVE_DEEPGEMM_BLOCKED",
+  "overall_e1_full_compatibility_verified": false,
+  "observed_interval_utc": {
+    "start": "2026-10-20T13:29:20.871341+00:00",
+    "end": "2026-10-20T13:39:36.484422+00:00"
+  },
+  "source_revisions": {
+    "DeepInfer": "774ce244b87cc0eb8d4b94ab9f5de2ab22049f01",
+    "/vendor/DeepGEMM": "1fc9c66975ee322d628b3288534ca0e9ce12a64d",
+    "/vendor/DeepSelect": "bfa4507d935f17ebfc3d0f00ff7d3c9a4d0e5c18",
+    "/vendor/FlashMLA": "2e5429fc5653bab6e081f09477126f731882a6a9",
+    "/vendor/DeepGEMM/third-party/deep_jit": "2efdab421e1cfb17fe8bc20e11ca72aa6d0e6c43",
+    "/vendor/DeepGEMM/third-party/cutlass": "f3fde58372d33e9a5650ba7b80fc48b3b49d40c8"
+  },
+  "toolchain": {
+    "torch": "2.13.0+cu132",
+    "torch_cuda_build": "13.2",
+    "cuda_compiler": "13.3",
+    "tilelang": "0.1.15",
+    "tile_kernels": "2.1.0",
+    "deep_gemm_distribution": "2.8.2+1fc9c66",
+    "device": "NVIDIA GB10",
+    "capability": [
+      12,
+      1
+    ],
+    "pip_check": "No broken requirements found."
+  },
+  "isolation": {
+    "separate_container": true,
+    "cpu_limit": 2.0,
+    "memory_limit_bytes": 6442450944,
+    "memory_swap_limit_bytes": 6442450944,
+    "gpu_device_requests": [
+      {
+        "Driver": "",
+        "Count": -1,
+        "DeviceIDs": null,
+        "Capabilities": [
+          [
+            "gpu"
+          ]
+        ],
+        "Options": {}
+      }
+    ],
+    "mount_destinations": [
+      "/workspace/e1"
+    ],
+    "full_checkpoint_mounted": false,
+    "weight_slice_bytes": 4612,
+    "torch_allocator_limit_bytes": 536870912,
+    "allocator_limit_excludes": "CUDA contexts, non-PyTorch allocations, driver/library memory; not a hardware GPU partition",
+    "container_cgroup_snapshot": "4263796736\nlow 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\n",
+    "experiment_stopped": true
+  },
+  "tilelang": {
+    "upstream_sha": "774ce244b87cc0eb8d4b94ab9f5de2ab22049f01",
+    "component": "tilelang",
+    "started_at_utc": "2026-10-20T13:30:58.222909+00:00",
+    "weights_loaded": false,
+    "performance_measured": false,
+    "cases": [
+      {
+        "name": "torch_bf16_matmul_control_32x64x128",
+        "status": "PASS",
+        "max_abs_error": 0.12431716918945312,
+        "rmse": 0.01855769194662571,
+        "relative_l2_error": 0.0016539121279492974,
+        "atol": 0.125,
+        "rtol": 0.01
+      },
+      {
+        "name": "norm_torch.float32_1x128_residualFalse",
+        "status": "PASS",
+        "max_abs_error": 0.0,
+        "rmse": 0.0,
+        "relative_l2_error": 0.0,
+        "atol": 2e-05,
+        "rtol": 2e-05
+      },
+      {
+        "name": "norm_torch.float32_1x128_residualTrue",
+        "status": "PASS",
+        "max_abs_error": 2.384185791015625e-07,
+        "rmse": 8.492099112800133e-08,
+        "relative_l2_error": 8.408022722505848e-08,
+        "atol": 2e-05,
+        "rtol": 2e-05
+      },
+      {
+        "name": "norm_torch.float32_17x2560_residualFalse",
+        "status": "PASS",
+        "max_abs_error": 9.5367431640625e-07,
+        "rmse": 6.376205163860504e-08,
+        "relative_l2_error": 6.522664364183584e-08,
+        "atol": 2e-05,
+        "rtol": 2e-05
+      },
+      {
+        "name": "norm_torch.float32_17x2560_residualTrue",
+        "status": "PASS",
+        "max_abs_error": 9.5367431640625e-07,
+        "rmse": 6.226686366517242e-08,
+        "relative_l2_error": 6.209305070115079e-08,
+        "atol": 2e-05,
+        "rtol": 2e-05
+      },
+      {
+        "name": "norm_torch.float32_2x17x2560_residualFalse",
+        "status": "PASS",
+        "max_abs_error": 1.9073486328125e-06,
+        "rmse": 7.564143800209422e-08,
+        "relative_l2_error": 7.54606332975527e-08,
+        "atol": 2e-05,
+        "rtol": 2e-05
+      },
+      {
+        "name": "norm_torch.float32_2x17x2560_residualTrue",
+        "status": "PASS",
+        "max_abs_error": 9.5367431640625e-07,
+        "rmse": 5.8589623819216285e-08,
+        "relative_l2_error": 5.8975526684434953e-08,
+        "atol": 2e-05,
+        "rtol": 2e-05
+      },
+      {
+        "name": "norm_torch.bfloat16_1x128_residualFalse",
+        "status": "PASS",
+        "max_abs_error": 0.0,
+        "rmse": 0.0,
+        "relative_l2_error": 0.0,
+        "atol": 0.03125,
+        "rtol": 0.008
+      },
+      {
+        "name": "norm_torch.bfloat16_1x128_residualTrue",
+        "status": "PASS",
+        "max_abs_error": 0.0,
+        "rmse": 0.0,
+        "relative_l2_error": 0.0,
+        "atol": 0.03125,
+        "rtol": 0.008
+      },
+      {
+        "name": "norm_torch.bfloat16_17x2560_residualFalse",
+        "status": "PASS",
+        "max_abs_error": 0.0,
+        "rmse": 0.0,
+        "relative_l2_error": 0.0,
+        "atol": 0.03125,
+        "rtol": 0.008
+      },
+      {
+        "name": "norm_torch.bfloat16_17x2560_residualTrue",
+        "status": "PASS",
+        "max_abs_error": 0.0,
+        "rmse": 0.0,
+        "relative_l2_error": 0.0,
+        "atol": 0.03125,
+        "rtol": 0.008
+      },
+      {
+        "name": "norm_torch.bfloat16_2x17x2560_residualFalse",
+        "status": "PASS",
+        "max_abs_error": 0.0009765625,
+        "rmse": 3.3100961900345283e-06,
+        "relative_l2_error": 3.28497844748199e-06,
+        "atol": 0.03125,
+        "rtol": 0.008
+      },
+      {
+        "name": "norm_torch.bfloat16_2x17x2560_residualTrue",
+        "status": "PASS",
+        "max_abs_error": 0.0,
+        "rmse": 0.0,
+        "relative_l2_error": 0.0,
+        "atol": 0.03125,
+        "rtol": 0.008
+      },
+      {
+        "name": "norm_cuda_graph_capture_changed_input_replay",
+        "status": "PASS",
+        "max_abs_error": 0.0,
+        "rmse": 0.0,
+        "relative_l2_error": 0.0,
+        "atol": 0.03125,
+        "rtol": 0.008
+      }
+    ],
+    "torch": "2.13.0+cu132",
+    "cuda_build": "13.2",
+    "device": "NVIDIA GB10",
+    "capability": [
+      12,
+      1
+    ],
+    "torch_allocator_limit_bytes": 536870912,
+    "tilelang": "0.1.15",
+    "tile_kernels": "2.1.0",
+    "core_extension_import": true,
+    "torch_peak_allocated_bytes": 34957312,
+    "torch_peak_reserved_bytes": 35651584,
+    "base_global_torch_libraries_loaded": false,
+    "status": "PASS",
+    "finished_at_utc": "2026-10-20T13:31:33.638878+00:00",
+    "runner_sha256": "c4d9437ca1a8a2ca6506e6b3cdffa7f66501c1c29eb759992410acf0e4e166ec"
+  },
+  "deepgemm": {
+    "upstream_sha": "774ce244b87cc0eb8d4b94ab9f5de2ab22049f01",
+    "component": "deepgemm",
+    "started_at_utc": "2026-10-20T13:34:06.579188+00:00",
+    "weights_loaded": false,
+    "performance_measured": false,
+    "cases": [
+      {
+        "name": "torch_bf16_matmul_control_32x64x128",
+        "status": "PASS",
+        "max_abs_error": 0.12431716918945312,
+        "rmse": 0.01855769194662571,
+        "relative_l2_error": 0.0016539121279492974,
+        "atol": 0.125,
+        "rtol": 0.01
+      },
+      {
+        "name": "deepgemm_cublaslt_bf16",
+        "status": "PASS",
+        "max_abs_error": 0.07440185546875,
+        "rmse": 0.019292976707220078,
+        "relative_l2_error": 0.0016410015523433685,
+        "atol": 0.125,
+        "rtol": 0.01
+      },
+      {
+        "name": "deepgemm_native_bf16",
+        "status": "KERNEL_FAIL",
+        "error": "RuntimeError: Assertion error (csrc/apis/gemm.hpp:533): Unsupported architecture"
+      }
+    ],
+    "torch": "2.13.0+cu132",
+    "cuda_build": "13.2",
+    "device": "NVIDIA GB10",
+    "capability": [
+      12,
+      1
+    ],
+    "torch_allocator_limit_bytes": 536870912,
+    "deepgemm_import": true,
+    "deepgemm_version": "2.8.2",
+    "torch_peak_allocated_bytes": 50360320,
+    "torch_peak_reserved_bytes": 52428800,
+    "base_global_torch_libraries_loaded": false,
+    "status": "PARTIAL_OR_FAIL",
+    "finished_at_utc": "2026-10-20T13:34:08.073870+00:00",
+    "runner_sha256": "c4d9437ca1a8a2ca6506e6b3cdffa7f66501c1c29eb759992410acf0e4e166ec"
+  },
+  "nvfp4": {
+    "started_at_utc": "2026-10-20T13:37:48.892298+00:00",
+    "component": "DeepGEMM cuBLASLt NVFP4",
+    "performance_measured": false,
+    "cases": [
+      {
+        "seed": 11,
+        "actual_qwen_slice": false,
+        "status": "PASS",
+        "shape_mnk": [
+          32,
+          64,
+          128
+        ],
+        "max_abs_error_before_global_scale": 2.0,
+        "relative_l2_error": 0.0016410931712016463,
+        "max_abs_error_after_global_scale": 2.0,
+        "global_scale_applied_outside_gemm": 1.0,
+        "atol": 0.0625,
+        "rtol": 0.008
+      },
+      {
+        "seed": 23,
+        "actual_qwen_slice": true,
+        "status": "PASS",
+        "shape_mnk": [
+          32,
+          64,
+          128
+        ],
+        "max_abs_error_before_global_scale": 82.0,
+        "relative_l2_error": 0.001683825976215303,
+        "max_abs_error_after_global_scale": 0.005451747216284275,
+        "global_scale_applied_outside_gemm": 6.648472481174394e-05,
+        "atol": 0.0625,
+        "rtol": 0.008
+      },
+      {
+        "seed": 47,
+        "actual_qwen_slice": true,
+        "status": "PASS",
+        "shape_mnk": [
+          32,
+          64,
+          128
+        ],
+        "max_abs_error_before_global_scale": 114.0,
+        "relative_l2_error": 0.001715665915980935,
+        "max_abs_error_after_global_scale": 0.007579258643090725,
+        "global_scale_applied_outside_gemm": 6.648472481174394e-05,
+        "atol": 0.0625,
+        "rtol": 0.008
+      }
+    ],
+    "torch": "2.13.0+cu132",
+    "cuda_build": "13.2",
+    "deepgemm_version": "2.8.2",
+    "capability": [
+      12,
+      1
+    ],
+    "weight_slice": {
+      "model_revision": "b9ce18a6887e18c089fdea8509a33e63429a3300",
+      "config_sha256": "b50dbc52a0c83b0cd2a44a372c1fb6b5e0e6827d22f2611c97d4d030f92f6b28",
+      "index_sha256": "5fa166bbb1cf25adda455117563efa72a2072272001f459eedece131ffc913e1",
+      "projection": "model.language_model.layers.0.mlp.experts.0.gate_proj",
+      "original_shape": [
+        640,
+        2560
+      ],
+      "slice_shape": [
+        64,
+        128
+      ],
+      "row_start": 0,
+      "col_start": 0,
+      "encoding": "packed E2M1, low nibble first; CSF-decoded per-16 E4M3 scales; FP32 global scale",
+      "csf_plain_full_sha256": "425623551a68b087cc6a8827d42e43006ceaca909b874220491ec4f55db74c96",
+      "codec_reference_sha256": "2f3d9ca89c7e14c726d61493d9335bd4d0c3a829dfa551683130164d1a503d35",
+      "source_tensor_payload_bytes_read": 60120,
+      "metadata_bytes_read": 48422038,
+      "header_sha256": {
+        "tensors/model-00001-of-00021.safetensors": "d647390cad3e648a9add84761604d070a48d51ce959d961111756aafe48989d5"
+      },
+      "global_scale": 6.648472481174394e-05,
+      "artifacts": {
+        "weight.bin": {
+          "bytes": 4096,
+          "sha256": "87f4cde28bcbc89215cc8d6fd369e876a27a1caf7ee99663a33a783c395488c4"
+        },
+        "scales.bin": {
+          "bytes": 512,
+          "sha256": "9b70aeec5b94335db27e2b067465be8caebe49a33df776cd67b017aae1092c5f"
+        },
+        "global-scale.bin": {
+          "bytes": 4,
+          "sha256": "c8dca783c72a18610f5d3e8c5bea76467b2041167c33b7a7e3998ef5b63f7273"
+        }
+      },
+      "full_weight_hash_verified": false,
+      "decoder_cross_checked_against_runtime": false
+    },
+    "torch_peak_allocated_bytes": 16789504,
+    "torch_peak_reserved_bytes": 18874368,
+    "base_global_torch_libraries_loaded": false,
+    "status": "PASS",
+    "finished_at_utc": "2026-10-20T13:37:50.613010+00:00",
+    "runner_sha256": "f2869da8925931f80f965cb45478b84a5b56c036ea0895e8b8a9e017419be541"
+  },
+  "source_only_findings": {
+    "DeepSelect": {
+      "status": "NOT_RUN",
+      "revision": "bfa4507d935f17ebfc3d0f00ff7d3c9a4d0e5c18",
+      "finding": "setup.py hardcodes compute_100a/sm_100a and compute_103a/sm_103a; no SM121 target; TORCH_CUDA_ARCH_LIST alone does not replace these flags. Not built or launched."
+    },
+    "FlashMLA": {
+      "status": "NOT_RUN",
+      "revision": "2e5429fc5653bab6e081f09477126f731882a6a9",
+      "finding": "setup.py CUDA_ARCHS contains sm_100a and sm_103a only. V4.1 MLA is not a Qwen QSA/GDN adapter; no SM121 build/launch tested."
+    },
+    "DeepEP": {
+      "status": "NOT_RUN",
+      "finding": "Multi-GPU communication kernels deferred for this single-GPU probe; full-engine import/bypass behavior not established."
+    },
+    "DeepGEMM_FP8_FP4_native": {
+      "status": "NOT_RUN",
+      "finding": "Source guards restrict relevant packed-FP4/layout paths to arch major 10. Only native BF16 dispatch rejection was executed; do not label all quantized kernels as experimentally failed."
+    }
+  },
+  "resolved_environment_issue": {
+    "initial_deepgemm_build_status": "BUILD_FAIL",
+    "reason": "Missing elfutils/libdwfl.h",
+    "resolution": "Installed libdw-dev and dependency headers only in experiment container, rebuilt unmodified source successfully. No host/live-container packages changed."
+  },
+  "service_continuity": {
+    "checks": {
+      "container_id_unchanged": true,
+      "image_id_unchanged": true,
+      "pid_unchanged": true,
+      "started_at_unchanged": true,
+      "restart_count_unchanged": true,
+      "arguments_unchanged": true,
+      "environment_unchanged": true,
+      "mounts_unchanged": true,
+      "health_ok_before": true,
+      "health_ok_after": true,
+      "service_running": true,
+      "service_not_oom_killed": true,
+      "experiment_stopped": true,
+      "experiment_not_oom_killed": true,
+      "sources_unchanged": true
+    },
+    "all_checks_passed": true,
+    "health_http_final": 200,
+    "restart_count_before": 0,
+    "restart_count_after": 0,
+    "limitation": "Health and process snapshots do not measure transient latency impact or prove continuous availability. No generation request or throughput benchmark was sent."
+  },
+  "artifact_inventory": {
+    "observed_at_utc": "2026-10-20T13:39:01.615047+00:00",
+    "artifacts": {
+      "artifacts/bootstrap-_C.cpython-312-aarch64-linux-gnu.so": {
+        "bytes": 14745480,
+        "sha256": "cf1abda2b27ca1eaf2aec7ea187f2c52ad75e1af7335b59610ca31406fdcc39e"
+      },
+      "DeepInfer/deepinfer/_C.cpython-312-aarch64-linux-gnu.so": {
+        "bytes": 14746608,
+        "sha256": "f6aa14b790eb7bc729251eea152fd9c83cf215bc5ab912e25ee19c57d8fc1768"
+      },
+      "artifacts/vendor-wheels/deep_gemm-2.8.2+1fc9c66-cp312-cp312-linux_aarch64.whl": {
+        "bytes": 12485468,
+        "sha256": "7671036c2400fc10f7821d52fe3885f6d173e094692fa1aa8748bb098b4a4bb0"
+      },
+      "logs/deepgemm-gpu-smoke.log": {
+        "bytes": 1050,
+        "sha256": "97f8bbc63e6d6ab33967280b9badee2aa3adbfa1ce2aff73cbe6c8968cafc7b3"
+      },
+      "logs/nvfp4-gpu-smoke.log": {
+        "bytes": 930,
+        "sha256": "c4dd9a0d34dfd909f3cd18da1541d1a1fd3feb2f3c823cac0cd024934b28acd5"
+      },
+      "logs/tilelang-gpu-smoke.log": {
+        "bytes": 5698,
+        "sha256": "315b3029f8bb276e6ee9879a6e6ae87402b256b0a2ffee559e21170733b83c09"
+      },
+      "logs/deepgemm-build-initial.log": {
+        "bytes": 13695,
+        "sha256": "12b79ad59dabf8b4f40ef16fa9e9174d1e96f46452b3b9803967838220d9f73b"
+      },
+      "logs/deepgemm-submodules.log": {
+        "bytes": 611,
+        "sha256": "967c1bae07c8049246d2d1767b4db99ac7e3fb278ec5ad31d9d32508519771b9"
+      },
+      "logs/deepgemm-build.log": {
+        "bytes": 255807,
+        "sha256": "149e2e2ad025e06662a2e2dfcf0918f857008fc0b4bc30fdbea7334bc68889ad"
+      },
+      "logs/deepgemm-install.log": {
+        "bytes": 182,
+        "sha256": "0f85d909b22d1a58bdbdb80895bd9dada149cabaed2a255233e9915bfe9d269e"
+      },
+      "logs/tilelang-install.log": {
+        "bytes": 9684,
+        "sha256": "32abaa6642dda773545bdd169f7d0d674f40797ef22607cf14339fc7c835cc85"
+      },
+      "logs/apt-libdw.log": {
+        "bytes": 4408,
+        "sha256": "67d0043bd2248da609a16c6408f732ef14417f2fb20de80ef87efe7be99ace17"
+      },
+      "gpu-smoke.py": {
+        "bytes": 8658,
+        "sha256": "c4d9437ca1a8a2ca6506e6b3cdffa7f66501c1c29eb759992410acf0e4e166ec"
+      },
+      "run-gpu-smoke.sh": {
+        "bytes": 830,
+        "sha256": "57c013a18dd5e2b2ae8a3061a08c842bb496397bb4dd53930991444ec6a9f7b1"
+      },
+      "e1_extract_nvfp4_slice.py": {
+        "bytes": 5071,
+        "sha256": "c577736ec17ff1561c0d88bb6ca6774a291f963ebd86b083626af275c615b9b8"
+      },
+      "e1_nvfp4_smoke.py": {
+        "bytes": 5838,
+        "sha256": "f2869da8925931f80f965cb45478b84a5b56c036ea0895e8b8a9e017419be541"
+      }
+    }
+  },
+  "scripts_sha256": {
+    "scripts/e1_gpu_smoke.py": "c4d9437ca1a8a2ca6506e6b3cdffa7f66501c1c29eb759992410acf0e4e166ec",
+    "scripts/e1_run_gpu_smoke.sh": "57c013a18dd5e2b2ae8a3061a08c842bb496397bb4dd53930991444ec6a9f7b1",
+    "scripts/e1_extract_nvfp4_slice.py": "c577736ec17ff1561c0d88bb6ca6774a291f963ebd86b083626af275c615b9b8",
+    "scripts/e1_nvfp4_smoke.py": "f2869da8925931f80f965cb45478b84a5b56c036ea0895e8b8a9e017419be541"
+  },
+  "interpretation": [
+    "Upstream core extension imports, twelve upstream RMSNorm cases and one norm CUDA Graph replay passed on physical SM121.",
+    "DeepGEMM cuBLASLt routes passed selected BF16 and NVFP4 numeric probes; native BF16 dispatch rejects architecture 12 before kernel launch.",
+    "NVFP4 actual checkpoint coverage is one 64x128 gate-projection slice from layer 0 expert 0 with two synthetic quantized inputs. This tests partial dot products, not the complete 640x2560 projection, real model activations or a MoE layer.",
+    "CPU reference dequantizes the stored quantized values, not unavailable full-precision source weights. It does not measure model quantization loss or output quality.",
+    "CSF decoding follows observed TensorFold codec source; it was not independently compared to live TensorFold decoder output. Global scalar is accounted for outside the GEMM when expressing errors.",
+    "No Qwen model adapter, end-to-end logits, MTP/GDN/QSA state correctness, full weight hashes or speedup were validated."
+  ],
+  "performance_measured": false,
+  "speedup": null,
+  "test_coverage_note": "The identical PyTorch matmul control ran in two processes; do not count it as two distinct tests. These GPU probes are separate from the previous fourteen upstream CPU sequence tests.",
+  "evidence_privacy": "Logs, host/service identities and raw source snapshots are private under .git/e1-gpu-evidence. Weight payload remains only in the private remote experiment workspace; tracked results contain metadata and digests only."
+}

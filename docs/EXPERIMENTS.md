@@ -2,14 +2,47 @@
 
 **Rule: run smallest and cheapest tests first.** Do not download the full DeepSeek V4.1 checkpoint to test compatibility. Do not overwrite a working local inference environment.
 
+## Current priorities
+
+Evaluate and port useful DeepInfer components for Qwen on a single DGX Spark. MTP is an important workstream alongside the engine, scheduling, memory/cache management, GPU operators and Qwen executor. Its importance does not make the other components mere dependencies of MTP, and it does not require choosing a complete port over selective reuse before evidence is available. Keep the E0–E4 identifiers and prioritize work by dependencies, correctness evidence, likely benefit and porting cost.
+
+| Workstream | Next evidence needed |
+| --- | --- |
+| SM121 operators and quantization | CSF and native BF16-input packed expert checks passed; next encapsulate the backend, validate routing/aggregation, and cover MXFP8/remaining formats |
+| Qwen model and state adapter | Validate layer execution, GDN recurrent state, QSA/KV layouts and prefill/decode transitions with MTP disabled first |
+| Engine, scheduling and memory | Test core scheduling/sequence lifecycle beyond the existing CPU sequence tests; assess async scheduling, graph integration and allocation/cache contracts independently of MTP |
+| MTP and verification budgets | Specify proposal/verification/state interfaces, build independent reference tests, then connect native Qwen MTP and evaluate adaptive budgets |
+| Performance and integration choice | Attribute each component's effect using controlled comparisons against the existing TensorFold baseline; assess combinations after individual correctness gates pass |
+
+The initial complete expert check found 14.6%–15.4% output L2 differences from FP4 activation quantization on synthetic inputs. Subsequent [native packed-weight/BF16-input expert tests](E2_NATIVE_REPORT.md) passed 11 cases on SM121 without GPU weight expansion. The next operator milestone is a reusable backend and routing/aggregation validation; total runtime memory remains to be budgeted beyond the 63.28 GiB metadata estimate for main routed expert packs. Continue the engine/cache and MTP contracts in the [interface map](ADAPTER_INTERFACES.md); neither requires declaring MTP the sole objective. Real-model MTP validation depends on correct target-only execution. Candidate optimizations should also be measured with MTP disabled to distinguish their standalone value from interactions with speculation.
+
+### MTP track — planned sequence
+
+1. **Trace and specify the mechanism.** At pinned DeepInfer revision `774ce244b87cc0eb8d4b94ab9f5de2ab22049f01`, map proposal token IDs/distributions, target verification, accepted-prefix length, corrective/bonus token, and committed target/draft state. Treat DFlash proposal generation, confidence scheduling, sampling and state management as separate interfaces.
+2. **Build a model-independent reference controller.** Use controlled logits and a tiny stateful executor to exercise K=0, all accepted, first/middle/last rejection, EOS, cancellation and request remapping. Check that rejected drafts never enter committed GDN/QSA state and that accepted-prefix state matches sequential execution. This can progress without porting native SM100 GEMMs; toy-state success is not proof of real Qwen state semantics.
+3. **Connect native Qwen MTP at fixed K.** Independently validate the actual proposal generator and target-only logits/state. Start from small supported draft lengths. The observed single MTP layer and configured draft depth six are different quantities; neither proves DFlash's block-generation behavior is available. Reuse the Qwen executor and quantization adapters validated by the broader model-porting work.
+4. **Add confidence-based verification budgets.** DeepInfer's DFlash has learned confidence-head weights. Do not assume Qwen supplies an equivalent head, or treat a draft token's maximum softmax probability as a calibrated acceptance probability. First use fixed K; then evaluate position/context-specific acceptance estimates, calibrate on separate data, and consider a learned head only if justified. Re-measure Spark's costs rather than reuse SM100 performance curves.
+5. **Compare target-only, existing TensorFold MTP, fixed-K candidate and adaptive candidate.** Hold weights, workload and sampling policy constant. Measure actual emitted tokens, total latency, draft/verification/restore overhead, acceptance and state memory. Acceptance rate alone is not evidence of speedup.
+
+Important transfer limits from source:
+
+- `csrc/engine/mtp_varlen.hpp` selects a total verification budget using estimated expected output divided by measured/estimated step time; the TileLang allocator distributes the budget across sequences using cumulative confidence. Selecting the budget and distributing it are distinct decisions. The CPU scheduler deliberately uses lagged confidence to avoid later draft positions influencing earlier verification eligibility; preserve or independently prove the relevant sampling invariant.
+- `models/mtp/dflash.py` implements a DFlash-specific proposer and learned confidence head. Transfer the scheduling/verification ideas through an adapter; a native Qwen MTP layer is not a drop-in replacement for those weights or forward semantics.
+- V4.1 decoder SWA bounded replay is a separate cache optimization. A finite suffix must not be assumed to reconstruct Qwen's GDN recurrent state. Establish exact snapshots/accepted-prefix commit or exact replay from a valid checkpoint first.
+- The upstream sampler's `DRAFT_PROB_PENALTY=5e-5` perturbs residual sampling weights. Keep an exact reference and explicitly identify/test this approximation if retained; passing upstream tests does not establish mathematically unbiased sampling.
+
+For SM121, evaluate operator ports across all workstreams, including matrix operations, routing/TopK, attention, state/cache movement, sampling and MTP budget allocation. Reuse verified TileLang/cuBLASLt routes and evaluate existing TensorFold operators where appropriate. Do not exclude a component solely because it is unrelated to MTP; classify its Qwen/single-GPU applicability and validate its value before committing to a substantial port.
+
 ## E0 — Environment fingerprint and source constraints
 
-1. Run `python3 scripts/probe_environment.py` on the DGX Spark. Keep logs local.
+1. Run `python3 scripts/probe_environment.py --static-only` on the DGX Spark and, separately, in the existing inference container. This mode does not import PyTorch or call `torch.cuda`. Query compute capability with `nvidia-smi`/NVML, which does not create a CUDA context. Keep raw logs local.
 2. Run `python3 scripts/inspect_hf_config.py /path/to/config.json` on an existing local Qwen checkpoint.
 3. Record the precise DeepInfer commit, Qwen config/weight revision, Python/CUDA/PyTorch versions and observed GB10 capability.
 4. Classify source constraints in [PORTING_MATRIX.md](PORTING_MATRIX.md).
 
 **Pass:** reproducible hardware and model identity. **Fail:** missing or contradictory environment information. **No speed measurements yet.**
+
+Completed as `PASS_STATIC` on 2026-10-20; see [E0_REPORT.md](E0_REPORT.md). Static success does not establish CUDA/kernel execution compatibility. Raw reports remain outside tracked files; only sanitized observations are published in the local working tree.
 
 ## E1 — Core build and kernel compatibility
 
@@ -26,6 +59,10 @@ For each component log one outcome:
 
 **Pass:** at least a minimal independent kernel and extension can execute correctly. **Fail:** mark and investigate the failing component, not the whole architecture.
 
+2026-10-20 progress: core extension build/import and the same 14 upstream CPU sequence tests passed in two environments. Subsequent SM121 probes passed 12 RMSNorm cases, one CUDA Graph replay, cuBLASLt BF16, and NVFP4 synthetic/actual-weight-slice comparisons. Native DeepGEMM BF16 dispatch rejects architecture 12. The minimal GPU gate is satisfied; full backend compatibility remains incomplete. See [core results](E1_BUILD_REPORT.md) and [GPU results](E1_GPU_REPORT.md).
+
+The subsequent [complete expert experiment](E2_EXPERT_REPORT.md) independently matched CSF decoding and FP32 weight dequantization to executed TensorFold reference source, then separately measured arithmetic agreement and activation quantization differences. Agreement with the same stored quantized representation does not establish model quantization quality.
+
 ## E2 — Model executor and cache adapter
 
 1. Introduce new architecture registration and a Qwen-specific config adapter; do not change DeepSeek V4.1 behavior.
@@ -34,6 +71,10 @@ For each component log one outcome:
 4. Compare logits to a known-correct implementation at matched precision and input.
 
 **Pass:** numerically justified agreement on supported paths, no invalid memory accesses.
+
+2026-10-20 partial result: three full real expert projections plus SwiGLU passed selected SM121 arithmetic checks at batch 1/8/32; an FP32-dequantized-weight control preserving BF16 activations also passed. FP4 activation fidelity is unresolved, and no model adapter, routed MoE, full layer, prefill/decode state or logits have been validated. See [E2_EXPERT_REPORT.md](E2_EXPERT_REPORT.md).
+
+Subsequent native result: the original TensorFold expert CUDA source compiled for SM121 and passed 11 cases using compressed GPU weights and BF16 activations, including batch 17/tails/strides, BF16 and FP32 down output, skip and graph replay. The maximum selected complete-output relative L2 error was about 0.0378%. A metadata scan budgeted one native pack of main routed expert weights/scales at 63.2815 GiB, excluding all other model/runtime components; full-model capacity is not confirmed. See [E2_NATIVE_REPORT.md](E2_NATIVE_REPORT.md).
 
 ## E3 — Speculative decode and recurrent state
 
@@ -48,7 +89,7 @@ Test `K=0` before enabling speculative decoding. Then test each supported native
 
 ## E4 — Performance, cost and selection
 
-Compare DeepInfer-adapted, vLLM and SGLang under controlled conditions:
+Compare DeepInfer-adapted, the existing TensorFold service, vLLM and SGLang under controlled conditions (first verify each candidate is available and correct):
 - same model revision, weights/quantization, context, generated-token cap and sampling settings;
 - concurrency 1, 4, 8; cold and warm runs;
 - 512 / 4k / 16k input lengths where the hardware permits;
