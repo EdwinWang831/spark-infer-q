@@ -1,0 +1,45 @@
+# Environments / Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+*.egg-info/
+build/
+dist/
+
+# Local measurements and profiling
+logs/
+results/raw/
+profiles/
+traces/
+*.prof
+*.nsys-rep
+*.qdrep
+
+# Models / checkpoints / large artifacts
+models/
+checkpoints/
+weights/
+*.safetensors
+*.gguf
+*.ggml
+*.pt
+*.pth
+*.ckpt
+*.bin
+*.onnx
+
+# Secrets and local overrides
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Editors
+.DS_Store
+.idea/
+.vscode/
