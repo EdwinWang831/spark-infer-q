@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""CPU FP32 decoder-block reference with explicit BF16 boundaries.
+"""PyTorch FP32 decoder-block reference with explicit BF16 boundaries.
 
-No CUDA kernels are called. This reference shares checkpoint representation and
-the previously validated original CPU NVFP4 weight decoder, not forward kernels.
+Runs on CPU by default or CUDA for an independent GPU reference. It shares
+checkpoint representation and the validated CPU NVFP4 decoder, and uses PyTorch
+operations rather than TensorFold forward kernels. CUDA callers must disable TF32.
 """
 import math
 import torch
@@ -11,23 +12,25 @@ from e2_block_support import decoded_mx8
 
 
 class Reference:
-    def __init__(self, cpu, moe_reader, cfg, index, around_one):
-        self.raw, self.moe_reader, self.c, self.index = cpu, moe_reader, cfg, index
+    def __init__(self, cpu, moe_reader, cfg, index, around_one, device="cpu"):
+        self.device = torch.device(device)
+        self.raw = {name: value.to(self.device) for name, value in cpu.items()}
+        self.moe_reader, self.c, self.index = moe_reader, cfg, index
         self.around_one = around_one
         self.dense = {}
         for name in list(cpu):
             if name.endswith('.weight_scale'):
                 weight = name.removesuffix('_scale')
-                self.dense[weight] = decoded_mx8(cpu[weight], cpu[name])
+                self.dense[weight] = decoded_mx8(self.raw[weight], self.raw[name])
         self.reset()
 
     def reset(self):
         self.pos = 0
-        self.conv = torch.zeros(3, 10240, dtype=torch.bfloat16)
-        self.rec = torch.zeros(48, 128, 128)
-        self.k = torch.empty(0, 2, 256, dtype=torch.bfloat16)
+        self.conv = torch.zeros(3, 10240, dtype=torch.bfloat16, device=self.device)
+        self.rec = torch.zeros(48, 128, 128, device=self.device)
+        self.k = torch.empty(0, 2, 256, dtype=torch.bfloat16, device=self.device)
         self.v = torch.empty_like(self.k)
-        self.ik = torch.empty(0, 128, dtype=torch.bfloat16)
+        self.ik = torch.empty(0, 128, dtype=torch.bfloat16, device=self.device)
         self.last = {}
 
     def norm_weight(self, name):
@@ -67,7 +70,7 @@ class Reference:
         w = self.raw['linear_attn.conv1d.weight'].reshape(10240, 4).float()
         out = []
         for r in range(x.shape[0]):
-            accum = torch.zeros(10240)
+            accum = torch.zeros(10240, device=self.device)
             for tap in range(4):
                 accum = accum + raw_conv[r + tap].float() * w[:, tap]
             cv = F.silu(accum).bfloat16().float()
@@ -94,8 +97,8 @@ class Reference:
 
     def rope(self, x, positions):
         half = 32
-        inv = torch.pow(torch.tensor(self.c.rope_theta, dtype=torch.float64),
-                        -torch.arange(half, dtype=torch.float64) * 2 / 64).float()
+        inv = torch.pow(torch.tensor(self.c.rope_theta, dtype=torch.float64, device=self.device),
+                        -torch.arange(half, dtype=torch.float64, device=self.device) * 2 / 64).float()
         angles = positions.float()[:, None] * inv
         cos, sin = angles.cos(), angles.sin()
         while cos.dim() < x.dim():
@@ -113,17 +116,17 @@ class Reference:
     def pools(self):
         count = self.ik.shape[0] // 4
         if not count:
-            return torch.empty(0, 128, dtype=torch.bfloat16)
+            return torch.empty(0, 128, dtype=torch.bfloat16, device=self.device)
         keys = self.ik[:count * 4].float().reshape(count, 4, 128)
         summed = keys[:, 0].clone()
         for i in range(1, 4):
             summed += keys[:, i]
         mean = (summed / 4).bfloat16()
-        return self.rope(self.rms(mean, 'self_attn.indexer.k_layernorm.weight'), torch.arange(count) * 4)
+        return self.rope(self.rms(mean, 'self_attn.indexer.k_layernorm.weight'), torch.arange(count, device=self.device) * 4)
 
     def attention(self, x):
         n, pos = x.shape[0], self.pos
-        positions = torch.arange(pos, pos + n)
+        positions = torch.arange(pos, pos + n, device=self.device)
         qg = self.mm(x, 'self_attn.q_proj').reshape(n, 24, 2, 256)
         q, gate = qg[:, :, 0], qg[:, :, 1]
         k = self.mm(x, 'self_attn.k_proj').reshape(n, 2, 256)
@@ -139,15 +142,15 @@ class Reference:
             end = pos + r + 1
             complete, top = end // 4, self.c.index_budget // 4
             if complete > top:
-                scores = torch.zeros(complete)
+                scores = torch.zeros(complete, device=self.device)
                 for h in range(4):
                     scores += (pools[:complete].float() * iq[r, h].float()).sum(-1).relu()
                 scores /= math.sqrt(128)
                 chosen = torch.argsort(scores, descending=True, stable=True)[:top].sort().values
-                ids = torch.cat([(chosen[:, None] * 4 + torch.arange(4)).reshape(-1),
-                                 torch.arange(complete * 4, end)])
+                ids = torch.cat([(chosen[:, None] * 4 + torch.arange(4, device=self.device)).reshape(-1),
+                                 torch.arange(complete * 4, end, device=self.device)])
             else:
-                ids = torch.arange(end)
+                ids = torch.arange(end, device=self.device)
             selections.append(ids)
             kk, vv = self.k[ids].float().repeat_interleave(12, 1), self.v[ids].float().repeat_interleave(12, 1)
             logits = torch.einsum('hd,thd->ht', q[r].float(), kk) / 16
@@ -162,10 +165,10 @@ class Reference:
         logits = x.float() @ router.float().T
         picks = torch.argsort(logits[:, :512], descending=True, stable=True)[:, :10]
         weights = logits[:, :512].gather(1, picks).softmax(-1).bfloat16().float()
-        ys = torch.empty(x.shape[0], 11, 2560, dtype=torch.bfloat16 if prefill else torch.float32)
+        ys = torch.empty(x.shape[0], 11, 2560, dtype=torch.bfloat16 if prefill else torch.float32, device=self.device)
         for e in picks.unique().tolist():
             rr, ss = torch.where(picks == e)
-            dense = {name: nvfp4.dequantize(*parts) for name, parts in self.moe_reader.expert(e).items()}
+            dense = {name: nvfp4.dequantize(*parts).to(self.device) for name, parts in self.moe_reader.expert(e).items()}
             g = (x[rr].float() @ dense['gate_proj'].T).bfloat16()
             u = (x[rr].float() @ dense['up_proj'].T).bfloat16()
             act = (F.silu(g.float()).bfloat16().float() * u.float()).bfloat16()
@@ -174,13 +177,14 @@ class Reference:
         act = (F.silu(g.float()).bfloat16().float() * u.float()).bfloat16()
         ys[:, 10] = self.mm(act, 'mlp.shared_expert.down_proj').to(ys.dtype)
         weights = torch.cat([weights, torch.sigmoid(logits[:, 512:].bfloat16().float()).bfloat16().float()], dim=1)
-        total = torch.zeros(x.shape[0], 2560)
+        total = torch.zeros(x.shape[0], 2560, device=self.device)
         for s in range(11):
             total = torch.addcmul(total, ys[:, s].float(), weights[:, s:s+1])
         self.last.update(picks=picks, moe_in=x, moe_output=total.bfloat16())
         return total.bfloat16()
 
     def block(self, h, prefill):
+        h = h.to(self.device)
         x, inj = self.hc(h, 'attn_hyper_connection')
         branch = self.gdn(x) if self.index == 0 else self.attention(x)
         self.last.update(attention_input=x, attention_branch=branch)

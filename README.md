@@ -2,7 +2,7 @@
 
 **Experimental inference acceleration for Qwen models on NVIDIA DGX Spark (GB10 / SM121), inspired by [DeepInfer](https://github.com/deepseek-ai/DeepInfer).**
 
-> **Research status:** E0/E1, complete MoE and selected GDN/QSA decoder-block/state probes ran on SM121. The 16 block cases met declared numerical/state gates, with one GDN row changing its Top-10 expert set versus the full CPU reference; exact model equivalence remains unproven. Packed weights and BF16 activations work on the selected paths. Native DeepGEMM BF16 still rejects SM121. Full-model logits, runtime capacity and speedups remain unverified. See [decoder/state results](docs/E2_BLOCK_REPORT.md), [MoE results](docs/E2_MOE_REPORT.md) and the [quantization comparison](docs/E2_EXPERT_REPORT.md).
+> **Research status:** E0/E1, complete MoE, selected GDN/QSA blocks and a minimal target-only request executor ran on SM121. The latest 20 GPU records cover lifecycle/state checks, independent GPU numerical diagnostics and local timing. The selected graph paths match eager outputs exactly and reduced one-block median wall time by about 25%/28%; this is not a full-model speedup. Independent references still differ numerically; full-model logits, quality, runtime capacity and DeepInfer scheduler integration remain unverified. See [executor results](docs/E2_EXECUTOR_REPORT.md), [decoder/state results](docs/E2_BLOCK_REPORT.md) and [MoE results](docs/E2_MOE_REPORT.md).
 
 ## Research question
 
@@ -16,7 +16,7 @@ Can we retain DeepInfer's engine, scheduling, speculative verification and memor
 | --- | --- | --- |
 | E0 | Hardware/software fingerprint + upstream compatibility audit | PASS_STATIC; no CUDA execution tests |
 | E1 | Build DeepInfer core and probe SM121 kernel compatibility independently | Minimal GPU gate passed; native DeepGEMM BF16 blocked; full backend compatibility incomplete |
-| E2 | Minimal model adapter, forward pass, prefill and decode | Partial: selected real GDN/QSA blocks and state checks met gates; CPU-reference route divergence recorded; DeepInfer executor/full-memory integration incomplete |
+| E2 | Minimal model adapter, forward pass, prefill and decode | Partial: minimal host executor + real block backend verified; independent GPU differences and local timings recorded; DeepInfer scheduler/full model incomplete |
 | E3 | Native MTP, speculative verification, GDN/QSA state correctness | Not executed |
 | E4 | Apples-to-apples comparison against vLLM / SGLang | Not executed |
 
@@ -56,6 +56,6 @@ python3 -m unittest discover -s tests -v
 - [vLLM](https://github.com/vllm-project/vllm)
 - [SGLang](https://github.com/sgl-project/sglang)
 
-**Do not vendor upstream source or weights without reviewing the respective licenses and notices.** This repo contains independent planning notes, diagnostic/build/test harnesses and sanitized E0/E1 evidence; it does not contain a Qwen inference implementation or model weights.
+**Do not vendor upstream source or weights without reviewing the respective licenses and notices.** This repo contains planning notes, diagnostic/build/test harnesses, a bounded experimental request executor and an adapter to externally supplied TensorFold blocks, plus sanitized evidence. It does not contain a complete Qwen model implementation, third-party kernels or model weights.
 
 License: [Apache 2.0](LICENSE).
