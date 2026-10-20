@@ -4,8 +4,8 @@
 
 ## E0 — Environment fingerprint and source constraints
 
-1. Run `python3 scripts/probe_environment.py` on the DGX Spark. Keep logs local.
-2. Run `python3 scripts/inspect_hf_config.py /path/to/config.json` on an existing local Qwen checkpoint.
+1. Run `python3 scripts/probe_environment.py` on the DGX Spark. Keep logs local. Check that `torch.devices[].same_major_build_archs` is non-empty (the installed torch build has SM12x targets), and that `nvcc_gpu_archs` lists the device architecture.
+2. Run `python3 scripts/inspect_hf_config.py /path/to/config.json` on an existing local Qwen checkpoint. Record `architecture_fields` (hybrid attention, MoE, MTP) and review `text_model_keys` for fields the fragment match missed.
 3. Record the precise DeepInfer commit, Qwen config/weight revision, Python/CUDA/PyTorch versions and observed GB10 capability.
 4. Classify source constraints in [PORTING_MATRIX.md](PORTING_MATRIX.md).
 
@@ -15,8 +15,11 @@
 
 Use a **separate** Python environment, matching DeepInfer's documented toolchain where possible.
 
+Before building, confirm that aarch64 wheels or source builds exist for DeepInfer's pinned `torch==2.13.0+cu132` and `flash-attn-4`.
+
 Build/test independently:
 - DeepInfer C++ extension and imports (without weights).
+- Python-level hardware gating: `deep_cluster.hardware.get_bf16_tflops_limit()` raises on compute capability 12.x and is called by `LLMEngine.__init__`; log it as its own component so a gating failure is not mistaken for a kernel failure. Audit `is_sm_major_10()` call sites the same way.
 - DeepGEMM: isolated matrix operation + reference comparison.
 - FlashMLA, DeepEP, DeepSelect, TileLang: test only code paths relevant to Qwen and single-GPU operation.
 - SM121-specific execution, memory usage, optional CUDA Graph capture.
@@ -55,6 +58,8 @@ Compare DeepInfer-adapted, vLLM and SGLang under controlled conditions:
 - tasks: ordinary conversation, code completion, reasoning.
 
 Collect `TTFT_ms`, `TPOT_ms`, `output_tokens_per_second`, `total_output_tokens_per_second`, `draft_acceptance_rate`, `peak_memory_bytes`, power/thermal notes and failure count. Report token accounting explicitly and never use theoretical full-acceptance output as measured throughput.
+
+GB10 uses unified CPU/GPU memory, and `nvidia-smi` may not report GPU memory usage. Define `peak_memory_bytes` by method: record both the framework allocator peak (e.g. `torch.cuda.max_memory_allocated`) and the system-level drop in `MemAvailable` from `/proc/meminfo`, and state which one each comparison uses.
 
 **Pass:** reproducible improvement on at least one target workload without an unacceptable correctness/memory regression. Document negative results.
 

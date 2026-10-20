@@ -19,7 +19,7 @@ Client / API
 
 **Hypothesis:** retaining the original scheduler/verification structure reduces integration overhead for confidence-based adaptive verification.
 
-**Risk:** DeepInfer currently has hard DeepSeek V4.1 config/model assumptions. Its speculative DFlash path and cache metadata are coupled to V4.1; reusing the entire engine may require substantial replacement.
+**Risk:** DeepInfer currently has hard DeepSeek V4.1 config/model assumptions, including a single shared KV head (MLA) and hardware detection that only recognizes compute capability 10.x. Its speculative DFlash path and cache metadata are coupled to V4.1; reusing the entire engine may require substantial replacement.
 
 ## Candidate B: vLLM-first
 
