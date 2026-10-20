@@ -23,6 +23,8 @@
 
 后续[完整加载实验](E2_LOAD_REPORT.md) 已独立加载全部 target 权重并运行选定 token→48 层→logits 路径。该 smoke 直接组合外部原生 forward，不代表上述最小请求执行器已集成完整模型，更不代表 DeepInfer C++ scheduler 已接入。prefill/serial 整模数值差异仍需复核；MTP/视觉目前只是原格式权重存储。
 
+后续 [DFlash2 桥接实验](E3_DFLASH2_REPORT.md) 已把真实草稿、完整 target 的 accepted-prefix commit 和 DeepInfer 原生 `MTPVarlen` 接通，限定单请求/短上下文/greedy。6 个受控状态边界及 3 个短 prompt 的固定/动态对照通过。这里 target 状态仍由外部 TensorFold 管理，greedy 验证控制器为自有实现；没有把完整 C++ scheduler、GPU sampler 或 MTPInfoPool 标为接入。
+
 ## MTP 数据流
 
 固定源码中的实际契约：

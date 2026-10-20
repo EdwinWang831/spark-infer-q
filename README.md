@@ -2,7 +2,7 @@
 
 **Experimental inference acceleration for Qwen models on NVIDIA DGX Spark (GB10 / SM121), inspired by [DeepInfer](https://github.com/deepseek-ai/DeepInfer).**
 
-> **Research status:** The complete 48-layer target has loaded on SM121: 24,576 routed experts plus projections, embedding/head and PLE. Target CUDA weight storage is 69.8511 GiB; the 26.8222 GiB n-gram table stays host-mapped. MTP/vision weights are retained in their original representation without executing those models. A selected complete-target token/logit smoke ran, but prefill versus serial logits differ by about 10.68%, so full-model correctness remains under review. Earlier block/executor graph gains are local measurements. DeepInfer scheduler integration, model quality, long-context capacity and end-to-end speedups remain unverified. See [complete loading results](docs/E2_LOAD_REPORT.md) and [executor results](docs/E2_EXECUTOR_REPORT.md).
+> **Research status:** Real DFlash2 weights now run with the complete 48-layer SM121 Qwen target and the original DeepInfer `MTPVarlen` budgeter. Six forced state cases and three short greedy prompts matched serial outputs/logits/committed state exactly. Exploratory fixed/dynamic timing ratios were 1.90×/2.03× in aggregate, but each prompt generated only 16 tokens (thinking prefixes), once per mode: this is not a stable performance or task-quality result. Target prefill/serial numerical review, independent draft/model parity, long-context capacity, random sampling and full DeepInfer scheduler integration remain open. See [DFlash2 results](docs/E3_DFLASH2_REPORT.md) and [complete loading results](docs/E2_LOAD_REPORT.md).
 
 ## Research question
 
@@ -17,7 +17,7 @@ Can we retain DeepInfer's engine, scheduling, speculative verification and memor
 | E0 | Hardware/software fingerprint + upstream compatibility audit | PASS_STATIC; no CUDA execution tests |
 | E1 | Build DeepInfer core and probe SM121 kernel compatibility independently | Minimal GPU gate passed; native DeepGEMM BF16 blocked; full backend compatibility incomplete |
 | E2 | Minimal model adapter, forward pass, prefill and decode | Partial: full target weights loaded and selected token/logit execution ran; prefill/serial numerical review, independent full-model reference and DeepInfer scheduler integration remain open |
-| E3 | Native MTP, speculative verification, GDN/QSA state correctness | Not executed |
+| E3 | Draft adapters, speculative verification, GDN/QSA state correctness | Bounded greedy DFlash2 integration passed with native DeepInfer variable budget; random sampling, full scheduler and native Qwen MTP remain open |
 | E4 | Apples-to-apples comparison against vLLM / SGLang | Not executed |
 
 For precise pass criteria and failure classification, see [docs/EXPERIMENTS.md](docs/EXPERIMENTS.md).
@@ -56,6 +56,6 @@ python3 -m unittest discover -s tests -v
 - [vLLM](https://github.com/vllm-project/vllm)
 - [SGLang](https://github.com/sgl-project/sglang)
 
-**Do not vendor upstream source or weights without reviewing the respective licenses and notices.** This repo contains planning notes, diagnostic/build/test harnesses, a bounded experimental request executor and an adapter to externally supplied TensorFold blocks, plus sanitized evidence. It does not vendor a complete Qwen model implementation, third-party kernels or model weights; the full loading/smoke harness uses externally supplied TensorFold source and checkpoint files.
+**Do not vendor upstream source or weights without reviewing the respective licenses and notices.** This repo contains planning notes, diagnostic/build/test harnesses, a bounded experimental request executor and adapters to externally supplied TensorFold blocks/full target and a bounded eager DFlash2 bridge, plus sanitized evidence. It does not vendor a complete Qwen model implementation, third-party kernels or model weights; the full loading/smoke harness uses externally supplied TensorFold source and checkpoint files.
 
 License: [Apache 2.0](LICENSE).
