@@ -21,6 +21,8 @@
 
 最终 GPU 记录含 16 项状态/生命周期检查、2 项数值诊断和 2 项局部计时。此原型串行执行、默认 2 请求/context 64，每次 dispatch 复制完整前缀；没有 token IDs、embedding、lm_head、采样或 DeepInfer metadata 桥接。它为上表的接口提供已测实现材料，不能把上表整体标为完成。详见[实现及证据](E2_EXECUTOR_REPORT.md)。
 
+后续[完整加载实验](E2_LOAD_REPORT.md) 已独立加载全部 target 权重并运行选定 token→48 层→logits 路径。该 smoke 直接组合外部原生 forward，不代表上述最小请求执行器已集成完整模型，更不代表 DeepInfer C++ scheduler 已接入。prefill/serial 整模数值差异仍需复核；MTP/视觉目前只是原格式权重存储。
+
 ## MTP 数据流
 
 固定源码中的实际契约：
@@ -34,6 +36,12 @@
 适配时须区分 **已输出长度** 和 **已由 target forward 处理的长度**。验证后采样出的纠正/额外 token，可能尚未作为输入经过 target；不能将“接受 k 个草稿并输出一个新 token”直接解释为 target state 已推进 k+1。对每个阶段记录 anchor/base position、accepted prefix、pending token 和实际 processed length，并与逐 token 执行对照。
 
 Qwen GDN 状态不能仅靠删去拒绝 token 的 KV 恢复。需要目标状态和草稿状态分别保存有效 checkpoint，提交接受前缀或从有效 checkpoint 精确重放。V4.1 的 bounded SWA replay 不自动具备 Qwen GDN 的等价语义。Qwen 原生 MTP 也不能直接使用 DFlash 的 forward/已训练 confidence 权重。
+
+### 原生 Qwen MTP 的动态预算方向
+
+可在原生 proposer 外增加动态控制器，分别决定草稿生成长度、target 验证长度和跨请求的总预算；这些是不同的决策。先完成固定 K 的真实状态/采样验收，再在已验证的 K 档位间动态选择，收益不足时允许 K=0。一个 MTP 层可以重复调用产生多步草稿，层数与草稿深度分开记录。
+
+第一版使用过去轮次的按深度接受率及 Spark 实测 draft/verify/restore 总耗时估算收益，保留 DeepInfer 使用滞后估计的采样约束。无需为此重训 target；若未来要使用 DFlash 风格 learned confidence head，则需要 Qwen 对应的训练与校准。不能把最大 softmax 概率直接当成接受概率，也不能仅凭接受率声称加速。权重可读取或驻留只代表存储链路，不能标为 MTP 适配通过。
 
 ## 后续验证门槛
 

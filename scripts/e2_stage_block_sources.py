@@ -11,9 +11,13 @@ def main():
     p = argparse.ArgumentParser()
     p.add_argument('--source', type=Path, required=True, help="TensorFold's src/tensorfold directory")
     p.add_argument('--root', type=Path, required=True)
+    p.add_argument('--include-loader', action='store_true', help='Include optional EXL3 imports required by the original weights loader')
     a = p.parse_args()
     files = []
-    for folder in ['families/qwen4_exp/cuda', 'cuda/kernels', 'cuda/nvfp4']:
+    folders = ['families/qwen4_exp/cuda', 'cuda/kernels', 'cuda/nvfp4']
+    if a.include_loader:
+        folders.append('cuda/exl3')
+    for folder in folders:
         files.extend(p for p in (a.source / folder).rglob('*')
                      if p.is_file() and p.suffix in ('.py', '.cpp', '.cu', '.cuh') and p.name != '__init__.py')
     files.extend(a.source / p for p in [
