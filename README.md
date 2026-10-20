@@ -2,7 +2,7 @@
 
 **Experimental inference acceleration for Qwen models on NVIDIA DGX Spark (GB10 / SM121), inspired by [DeepInfer](https://github.com/deepseek-ai/DeepInfer).**
 
-> **Research status:** E0/E1, native expert probes and a complete layer-0 MoE probe passed. The 512-expert/top-10 MoE plus MXFP8 shared expert passed 8 joint SM121 cases, including routing and changed-input/route graph replay; maximum selected output L2 error was 0.02821%. GPU weights remain compressed. Extra FP4 activation quantization remains a separate fidelity tradeoff. DeepGEMM native BF16 still rejects SM121. Full Qwen inference, total runtime capacity and speedups remain unverified. See [complete MoE results](docs/E2_MOE_REPORT.md), [native expert results](docs/E2_NATIVE_REPORT.md) and [earlier quantization comparison](docs/E2_EXPERT_REPORT.md).
+> **Research status:** E0/E1, complete MoE and selected GDN/QSA decoder-block/state probes ran on SM121. The 16 block cases met declared numerical/state gates, with one GDN row changing its Top-10 expert set versus the full CPU reference; exact model equivalence remains unproven. Packed weights and BF16 activations work on the selected paths. Native DeepGEMM BF16 still rejects SM121. Full-model logits, runtime capacity and speedups remain unverified. See [decoder/state results](docs/E2_BLOCK_REPORT.md), [MoE results](docs/E2_MOE_REPORT.md) and the [quantization comparison](docs/E2_EXPERT_REPORT.md).
 
 ## Research question
 
@@ -16,7 +16,7 @@ Can we retain DeepInfer's engine, scheduling, speculative verification and memor
 | --- | --- | --- |
 | E0 | Hardware/software fingerprint + upstream compatibility audit | PASS_STATIC; no CUDA execution tests |
 | E1 | Build DeepInfer core and probe SM121 kernel compatibility independently | Minimal GPU gate passed; native DeepGEMM BF16 blocked; full backend compatibility incomplete |
-| E2 | Minimal model adapter, forward pass, prefill and decode | Partial: complete layer-0 MoE with real routing/MXFP8 shared expert passed; decoder blocks/model-state/full-memory integration incomplete |
+| E2 | Minimal model adapter, forward pass, prefill and decode | Partial: selected real GDN/QSA blocks and state checks met gates; CPU-reference route divergence recorded; DeepInfer executor/full-memory integration incomplete |
 | E3 | Native MTP, speculative verification, GDN/QSA state correctness | Not executed |
 | E4 | Apples-to-apples comparison against vLLM / SGLang | Not executed |
 

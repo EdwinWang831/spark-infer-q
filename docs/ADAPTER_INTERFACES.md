@@ -1,6 +1,6 @@
 # Qwen / DeepInfer 接口清单
 
-此清单来自固定 DeepInfer `774ce244b87cc0eb8d4b94ab9f5de2ab22049f01` 的源码检查，**是适配设计与待测契约，不是已经实现或验证的 Qwen 接口**。完整专家实验仅验证局部计算，不能证明调度、缓存或 MTP 正确。
+此清单来自固定 DeepInfer `774ce244b87cc0eb8d4b94ab9f5de2ab22049f01` 的源码检查，**是适配设计与待测契约，不是已经实现或验证的 Qwen 接口**。后续已完成[两类原版 TensorFold block 的选定状态检查](E2_BLOCK_REPORT.md)，DeepInfer 接口接入和调度/MTP 正确性仍未证明。
 
 ## 引擎与模型边界
 
@@ -37,6 +37,6 @@ Qwen GDN 状态不能仅靠删去拒绝 token 的 KV 恢复。需要目标状态
 - 采样：greedy 一致性；随机采样使用分布检验，单独标明上游 `DRAFT_PROB_PENALTY` 等近似。
 - 调度：固定 K 后再验证自适应预算的正确性、校准与实际总耗时收益。
 
-本轮完成了源码映射，以上行为测试均尚未执行；此前通过的 14 项 CPU sequence 测试不能替代它们。
+DeepInfer 适配器的以上行为测试仍未执行。后续原版 TensorFold 的选定 GDN/QSA block 测试已覆盖 prefill/decode、snapshot/restore、reset/growth 和两请求布局；图测试只覆盖固定前缀的单步 forward。CPU 全路径出现一行 GDN 专家集合差异，且未验证整模 logits。既有 14 项 CPU sequence 测试和这些局部测试都不能替代引擎接入验收。
 
 源码入口：[sampling inputs](https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/model_executor/sampling_inputs.py)、[MTP pool](https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/model_executor/layers/mtp_info_pool.py)、[sampler](https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/model_executor/layers/sampler.py)、[cache engine](https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/worker/cache_engine.py)、[scheduler](https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/csrc/engine/scheduler.hpp)。

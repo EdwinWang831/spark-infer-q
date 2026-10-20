@@ -22,6 +22,7 @@ def main():
     p.add_argument('--checkpoint', required=True, type=Path)
     p.add_argument('--reference-lib', required=True, type=Path)
     p.add_argument('--output', required=True, type=Path)
+    p.add_argument('--layer', type=int, default=0)
     a = p.parse_args()
     index_raw = (a.checkpoint / 'model.safetensors.index.json').read_bytes()
     assert sha(index_raw) == '5fa166bbb1cf25adda455117563efa72a2072272001f459eedece131ffc913e1'
@@ -54,9 +55,10 @@ def main():
     lib.csf_decode.restype = ctypes.c_int
     a.output.mkdir(parents=True, exist_ok=False)
     report = {'model_revision': a.checkpoint.name, 'index_sha256': sha(index_raw),
-              'layer': 0, 'routed_experts': 512, 'top_k': 10, 'experts': [], 'other': {},
+              'layer': a.layer, 'routed_experts': 512, 'top_k': 10, 'experts': [], 'other': {},
               'full_weight_hash_verified': False, 'csf_checked_matrices': 0}
-    prefix = 'model.language_model.layers.0.mlp.'
+    assert 0 <= a.layer < 48
+    prefix = f'model.language_model.layers.{a.layer}.mlp.'
     for expert in range(512):
         projections = {}
         with (a.output / f'expert-{expert:03}.bin').open('wb') as out:

@@ -68,4 +68,4 @@ CPU 数值参考独立计算 router、稳定 Top‑10、softmax/共享 sigmoid�
 
 复现入口：[源码准备](../scripts/e2_stage_moe_sources.py)、[流式权重提取](../scripts/e2_extract_moe.py)、[构建](../scripts/e2_build_moe.py)、[薄绑定](../scripts/e2_moe_plan_bindings.cpp)、[联合用例](../scripts/e2_moe_smoke.py)、[舍入诊断](../scripts/e2_moe_router_probe.py)、[运行脚本](../scripts/e2_run_moe.sh)。需要已有隔离工具链、记录摘要对应的外部源码和独立 Zig CSF decoder；不含第三方源码、权重或二进制。
 
-E2 整体仍未完成；没有整模 logits、质量、MTP、总运行容量或加速比结论。
+后续[decoder block 与状态联合验证](E2_BLOCK_REPORT.md)已运行两类真实层的选定检查，并保留 CPU 全路径路由差异。E2 整体仍未完成；没有整模 logits、质量、MTP、总运行容量或加速比结论。

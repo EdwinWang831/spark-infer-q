@@ -1,0 +1,998 @@
+{
+  "experiment": "E2-Qwen-GDN-QSA-decoder-blocks-and-target-only-state",
+  "status": "SELECTED_BLOCK_EXECUTION_STATE_PASS_WITH_CPU_ROUTING_DIVERGENCE",
+  "overall_e2_complete": false,
+  "exact_model_equivalence_proven": false,
+  "deepinfer_sha": "774ce244b87cc0eb8d4b94ab9f5de2ab22049f01",
+  "tensorfold_base_sha": "db281878ddb836fd0df510d8771ecb7e0fe47d26",
+  "runtime_under_test": "selected unchanged TensorFold Python/CUDA modules, thin extension-provider overrides; no DeepInfer engine execution",
+  "build": {
+    "source_patched": false,
+    "cuda_arch_target": "12.1",
+    "modules": {
+      "spark_q_block_gdn": {
+        "sha256": "48d9db2a9f2d9ebd7929b32b2a1d390fe01a8b1306b3054d82f9ec280aff3913"
+      },
+      "spark_q_block_gdn_io": {
+        "sha256": "d71673e5a1e36a157d02eb116da5f208cd4055213e1373ed9aab36af70e0b830"
+      },
+      "spark_q_block_gdn_shared": {
+        "sha256": "89a960e17a4e5f723f9329469aeb4ec8fb7f2383f58daa8e9651fa7e23313fc9"
+      }
+    },
+    "status": "PASS",
+    "cuda_initialized": false
+  },
+  "block_probe": {
+    "started_at_utc": "2026-10-20T15:45:50.140928+00:00",
+    "scope": "independent real decoder layers 0/GDN and 3/QSA, full four-stream HC + mixer + MoE",
+    "inputs": "seeded synthetic four-stream BF16 layer inputs",
+    "mtp_enabled": false,
+    "full_model_tested": false,
+    "performance_measured": false,
+    "layers": [
+      {
+        "index": 0,
+        "kind": "GDN",
+        "cases": [
+          {
+            "name": "full_block_cpu_reference_prefill17",
+            "rows": 17,
+            "output_error": {
+              "relative_l2_error": 0.0011931787012144923,
+              "max_abs_error": 0.03125,
+              "exact": false
+            },
+            "attention_branch_error": {
+              "relative_l2_error": 0.0015986911021173,
+              "max_abs_error": 0.001953125,
+              "exact": false
+            },
+            "moe_input_error": {
+              "relative_l2_error": 0.002003940986469388,
+              "max_abs_error": 0.015625,
+              "exact": false
+            },
+            "cpu_vs_gpu_route_pick_slots_different": 3,
+            "cpu_vs_gpu_route_expert_sets_equal": false,
+            "cpu_vs_gpu_route_rows_with_set_difference": 1,
+            "routing_topk_given_same_gpu_logits_exact": true,
+            "cpu_router_given_gpu_moe_input_expert_sets_equal": true,
+            "router_error_given_gpu_moe_input": {
+              "relative_l2_error": 2.9358211577346083e-06,
+              "max_abs_error": 8.58306884765625e-06,
+              "exact": false
+            },
+            "routing_boundary_diagnostics": [
+              {
+                "row": 6,
+                "cpu_top10_experts": [
+                  201,
+                  147,
+                  211,
+                  39,
+                  139,
+                  159,
+                  417,
+                  143,
+                  140,
+                  114
+                ],
+                "gpu_top10_experts": [
+                  201,
+                  147,
+                  211,
+                  39,
+                  139,
+                  159,
+                  417,
+                  143,
+                  140,
+                  296
+                ],
+                "cpu_10th_minus_11th_logit": 7.736682891845703e-05,
+                "max_logit_change_from_upstream_moe_input": 0.002957582473754883
+              }
+            ],
+            "recurrent_state_error": {
+              "relative_l2_error": 0.00027386980946175754,
+              "max_abs_error": 0.0001111440360546112,
+              "exact": false
+            },
+            "conv_state_error": {
+              "relative_l2_error": 0.0006303701084107161,
+              "max_abs_error": 0.015625,
+              "exact": false
+            },
+            "status": "PASS"
+          },
+          {
+            "name": "chunked_prefill_then_single_decode",
+            "whole_rows": 17,
+            "chunks": [
+              5,
+              7,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "output_error": {
+              "relative_l2_error": 0.00017611359362490475,
+              "max_abs_error": 0.015625,
+              "exact": false
+            },
+            "state_errors": {
+              "conv": {
+                "relative_l2_error": 3.8733665860490873e-05,
+                "max_abs_error": 0.001953125,
+                "exact": false
+              },
+              "rec": {
+                "relative_l2_error": 9.339730695501203e-07,
+                "max_abs_error": 4.1601015254855156e-07,
+                "exact": false
+              }
+            },
+            "route_picks_bit_exact": true,
+            "route_expert_sets_exact": true,
+            "status": "PASS"
+          },
+          {
+            "name": "decode_window_vs_serial",
+            "output_error": {
+              "relative_l2_error": 0.0,
+              "max_abs_error": 0.0,
+              "exact": true
+            },
+            "state_errors": {
+              "conv": {
+                "relative_l2_error": 0.0,
+                "max_abs_error": 0.0,
+                "exact": true
+              },
+              "rec": {
+                "relative_l2_error": 0.0,
+                "max_abs_error": 0.0,
+                "exact": true
+              }
+            },
+            "status": "PASS"
+          },
+          {
+            "name": "snapshot_restore_and_replay",
+            "replayed_output_bit_exact": true,
+            "state_errors": {
+              "conv": {
+                "relative_l2_error": 0.0,
+                "max_abs_error": 0.0,
+                "exact": true
+              },
+              "rec": {
+                "relative_l2_error": 0.0,
+                "max_abs_error": 0.0,
+                "exact": true
+              }
+            },
+            "snapshot_position": 5,
+            "status": "PASS"
+          },
+          {
+            "name": "cache_growth_and_state_reset",
+            "capacity_after_growth": 24,
+            "reported_cache_growth_bytes": 0,
+            "output_error": {
+              "relative_l2_error": 0.0,
+              "max_abs_error": 0.0,
+              "exact": true
+            },
+            "state_errors": {
+              "conv": {
+                "relative_l2_error": 0.0,
+                "max_abs_error": 0.0,
+                "exact": true
+              },
+              "rec": {
+                "relative_l2_error": 0.0,
+                "max_abs_error": 0.0,
+                "exact": true
+              }
+            },
+            "reset_output_error": {
+              "relative_l2_error": 0.0,
+              "max_abs_error": 0.0,
+              "exact": true
+            },
+            "reset_recurrent_addresses_stable": true,
+            "status": "PASS"
+          },
+          {
+            "name": "two_requests_distinct_positions_and_row_ranges",
+            "request_prefix_lengths": [
+              3,
+              5
+            ],
+            "request_window_lengths": [
+              2,
+              4
+            ],
+            "output_error": {
+              "relative_l2_error": 0.0,
+              "max_abs_error": 0.0,
+              "exact": true
+            },
+            "request_a_state_errors": {
+              "conv": {
+                "relative_l2_error": 0.0,
+                "max_abs_error": 0.0,
+                "exact": true
+              },
+              "rec": {
+                "relative_l2_error": 0.0,
+                "max_abs_error": 0.0,
+                "exact": true
+              }
+            },
+            "request_b_state_errors": {
+              "conv": {
+                "relative_l2_error": 0.0,
+                "max_abs_error": 0.0,
+                "exact": true
+              },
+              "rec": {
+                "relative_l2_error": 0.0,
+                "max_abs_error": 0.0,
+                "exact": true
+              }
+            },
+            "status": "PASS"
+          },
+          {
+            "name": "decoder_forward_graph_changed_inputs_fixed_prefix",
+            "base_committed_position": 5,
+            "changed_inputs": 3,
+            "commit_inside_graph_tested": false,
+            "output_errors": [
+              {
+                "relative_l2_error": 0.0,
+                "max_abs_error": 0.0,
+                "exact": true
+              },
+              {
+                "relative_l2_error": 0.0,
+                "max_abs_error": 0.0,
+                "exact": true
+              },
+              {
+                "relative_l2_error": 0.0,
+                "max_abs_error": 0.0,
+                "exact": true
+              }
+            ],
+            "proposed_recurrent_state_exact": true,
+            "status": "PASS"
+          }
+        ],
+        "seed": 20261040,
+        "selected_linear_and_expert_weight_bytes": 1506842624,
+        "torch_peak_allocated_bytes": 1551916032,
+        "torch_peak_reserved_bytes": 1568669696,
+        "status": "PASS"
+      },
+      {
+        "index": 3,
+        "kind": "QSA",
+        "cases": [
+          {
+            "name": "full_block_cpu_reference_prefill17",
+            "rows": 17,
+            "output_error": {
+              "relative_l2_error": 0.0012926195049658418,
+              "max_abs_error": 0.015625,
+              "exact": false
+            },
+            "attention_branch_error": {
+              "relative_l2_error": 0.0019039491889998317,
+              "max_abs_error": 0.001953125,
+              "exact": false
+            },
+            "moe_input_error": {
+              "relative_l2_error": 0.0030906645115464926,
+              "max_abs_error": 0.015625,
+              "exact": false
+            },
+            "cpu_vs_gpu_route_pick_slots_different": 8,
+            "cpu_vs_gpu_route_expert_sets_equal": true,
+            "cpu_vs_gpu_route_rows_with_set_difference": 0,
+            "routing_topk_given_same_gpu_logits_exact": true,
+            "cpu_router_given_gpu_moe_input_expert_sets_equal": true,
+            "router_error_given_gpu_moe_input": {
+              "relative_l2_error": 2.7940943709836574e-06,
+              "max_abs_error": 7.3909759521484375e-06,
+              "exact": false
+            },
+            "routing_boundary_diagnostics": [],
+            "key_cache_error": {
+              "relative_l2_error": 0.00011248081864323467,
+              "max_abs_error": 0.0078125,
+              "exact": false
+            },
+            "value_cache_error": {
+              "relative_l2_error": 0.0001029365521389991,
+              "max_abs_error": 0.001953125,
+              "exact": false
+            },
+            "index_key_error": {
+              "relative_l2_error": 6.038346327841282e-05,
+              "max_abs_error": 0.0009765625,
+              "exact": false
+            },
+            "status": "PASS"
+          },
+          {
+            "name": "chunked_prefill_then_single_decode",
+            "whole_rows": 17,
+            "chunks": [
+              5,
+              7,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "output_error": {
+              "relative_l2_error": 0.00020655515254475176,
+              "max_abs_error": 0.015625,
+              "exact": false
+            },
+            "state_errors": {
+              "k": {
+                "relative_l2_error": 4.069113401783397e-06,
+                "max_abs_error": 0.00048828125,
+                "exact": false
+              },
+              "v": {
+                "relative_l2_error": 0.0,
+                "max_abs_error": 0.0,
+                "exact": true
+              },
+              "ik": {
+                "relative_l2_error": 7.363294116657926e-06,
+                "max_abs_error": 0.0001220703125,
+                "exact": false
+              },
+              "pool": {
+                "relative_l2_error": 0.0,
+                "max_abs_error": 0.0,
+                "exact": true
+              }
+            },
+            "route_picks_bit_exact": false,
+            "route_expert_sets_exact": true,
+            "status": "PASS"
+          },
+          {
+            "name": "decode_window_vs_serial",
+            "output_error": {
+              "relative_l2_error": 0.0,
+              "max_abs_error": 0.0,
+              "exact": true
+            },
+            "state_errors": {
+              "k": {
+                "relative_l2_error": 0.0,
+                "max_abs_error": 0.0,
+                "exact": true
+              },
+              "v": {
+                "relative_l2_error": 0.0,
+                "max_abs_error": 0.0,
+                "exact": true
+              },
+              "ik": {
+                "relative_l2_error": 0.0,
+                "max_abs_error": 0.0,
+                "exact": true
+              },
+              "pool": {
+                "relative_l2_error": 0.0,
+                "max_abs_error": 0.0,
+                "exact": true
+              }
+            },
+            "status": "PASS"
+          },
+          {
+            "name": "snapshot_restore_and_replay",
+            "replayed_output_bit_exact": true,
+            "state_errors": {
+              "k": {
+                "relative_l2_error": 0.0,
+                "max_abs_error": 0.0,
+                "exact": true
+              },
+              "v": {
+                "relative_l2_error": 0.0,
+                "max_abs_error": 0.0,
+                "exact": true
+              },
+              "ik": {
+                "relative_l2_error": 0.0,
+                "max_abs_error": 0.0,
+                "exact": true
+              },
+              "pool": {
+                "relative_l2_error": 0.0,
+                "max_abs_error": 0.0,
+                "exact": true
+              }
+            },
+            "snapshot_position": 5,
+            "status": "PASS"
+          },
+          {
+            "name": "cache_growth_and_state_reset",
+            "capacity_after_growth": 24,
+            "reported_cache_growth_bytes": 37888,
+            "output_error": {
+              "relative_l2_error": 0.0,
+              "max_abs_error": 0.0,
+              "exact": true
+            },
+            "state_errors": {
+              "k": {
+                "relative_l2_error": 0.0,
+                "max_abs_error": 0.0,
+                "exact": true
+              },
+              "v": {
+                "relative_l2_error": 0.0,
+                "max_abs_error": 0.0,
+                "exact": true
+              },
+              "ik": {
+                "relative_l2_error": 0.0,
+                "max_abs_error": 0.0,
+                "exact": true
+              },
+              "pool": {
+                "relative_l2_error": 0.0,
+                "max_abs_error": 0.0,
+                "exact": true
+              }
+            },
+            "reset_output_error": {
+              "relative_l2_error": 0.0,
+              "max_abs_error": 0.0,
+              "exact": true
+            },
+            "reset_recurrent_addresses_stable": true,
+            "status": "PASS"
+          },
+          {
+            "name": "two_requests_distinct_positions_and_row_ranges",
+            "request_prefix_lengths": [
+              3,
+              5
+            ],
+            "request_window_lengths": [
+              2,
+              4
+            ],
+            "output_error": {
+              "relative_l2_error": 0.0,
+              "max_abs_error": 0.0,
+              "exact": true
+            },
+            "request_a_state_errors": {
+              "k": {
+                "relative_l2_error": 0.0,
+                "max_abs_error": 0.0,
+                "exact": true
+              },
+              "v": {
+                "relative_l2_error": 0.0,
+                "max_abs_error": 0.0,
+                "exact": true
+              },
+              "ik": {
+                "relative_l2_error": 0.0,
+                "max_abs_error": 0.0,
+                "exact": true
+              },
+              "pool": {
+                "relative_l2_error": 0.0,
+                "max_abs_error": 0.0,
+                "exact": true
+              }
+            },
+            "request_b_state_errors": {
+              "k": {
+                "relative_l2_error": 0.0,
+                "max_abs_error": 0.0,
+                "exact": true
+              },
+              "v": {
+                "relative_l2_error": 0.0,
+                "max_abs_error": 0.0,
+                "exact": true
+              },
+              "ik": {
+                "relative_l2_error": 0.0,
+                "max_abs_error": 0.0,
+                "exact": true
+              },
+              "pool": {
+                "relative_l2_error": 0.0,
+                "max_abs_error": 0.0,
+                "exact": true
+              }
+            },
+            "status": "PASS"
+          },
+          {
+            "name": "decoder_forward_graph_changed_inputs_fixed_prefix",
+            "base_committed_position": 5,
+            "changed_inputs": 3,
+            "commit_inside_graph_tested": false,
+            "output_errors": [
+              {
+                "relative_l2_error": 0.0,
+                "max_abs_error": 0.0,
+                "exact": true
+              },
+              {
+                "relative_l2_error": 0.0,
+                "max_abs_error": 0.0,
+                "exact": true
+              },
+              {
+                "relative_l2_error": 0.0,
+                "max_abs_error": 0.0,
+                "exact": true
+              }
+            ],
+            "proposed_recurrent_state_exact": false,
+            "status": "PASS"
+          },
+          {
+            "name": "sparse_qsa_real_2048_budget_primed_cache",
+            "primed_cache_synthetic": true,
+            "prefix_rows": 2051,
+            "budget": 2048,
+            "selected_key_counts": [
+              2048,
+              2049
+            ],
+            "sparse_path_executed": true,
+            "native_pool_cpu_error": {
+              "relative_l2_error": 3.027972664271239e-11,
+              "max_abs_error": 7.450580596923828e-09,
+              "exact": false
+            },
+            "exact_key_selection_given_gpu_query_and_pools": true,
+            "cpu_independent_selected_ids_equal": [
+              true,
+              true
+            ],
+            "output_error": {
+              "relative_l2_error": 0.0010189376771450043,
+              "max_abs_error": 0.015625,
+              "exact": false
+            },
+            "status": "PASS"
+          },
+          {
+            "name": "fp8_kv_prefill_decode_partition",
+            "kv_dtype": "fp8",
+            "cpu_full_block_reference_tested": false,
+            "output_error": {
+              "relative_l2_error": 0.0001817054726416245,
+              "max_abs_error": 0.015625,
+              "exact": false
+            },
+            "state_errors": {
+              "k": {
+                "relative_l2_error": 0.0,
+                "max_abs_error": 0.0,
+                "exact": true
+              },
+              "v": {
+                "relative_l2_error": 0.0,
+                "max_abs_error": 0.0,
+                "exact": true
+              },
+              "ik": {
+                "relative_l2_error": 7.363294116657926e-06,
+                "max_abs_error": 0.0001220703125,
+                "exact": false
+              },
+              "pool": {
+                "relative_l2_error": 0.0,
+                "max_abs_error": 0.0,
+                "exact": true
+              }
+            },
+            "status": "PASS"
+          }
+        ],
+        "seed": 20261043,
+        "selected_linear_and_expert_weight_bytes": 1500084224,
+        "torch_peak_allocated_bytes": 1525444608,
+        "torch_peak_reserved_bytes": 1547698176,
+        "status": "PASS"
+      }
+    ],
+    "numerical_gates": {
+      "cpu_block_output_relative_l2": 0.01,
+      "cpu_state_relative_l2": 0.005,
+      "native_partition_output_relative_l2": 0.003,
+      "native_partition_state_relative_l2": 0.001
+    },
+    "torch": "2.13.0+cu132",
+    "cuda_build": "13.2",
+    "capability": [
+      12,
+      1
+    ],
+    "checkpoint_revision": "b9ce18a6887e18c089fdea8509a33e63429a3300",
+    "config_sha256": "b50dbc52a0c83b0cd2a44a372c1fb6b5e0e6827d22f2611c97d4d030f92f6b28",
+    "torch_allocator_cap_bytes": 3221225472,
+    "selected_hc_norm_means": [
+      -0.06354127079248428,
+      -0.2637979984283447
+    ],
+    "norms_stored_around_one": false,
+    "source_files_unchanged": true,
+    "modules_sha256": {
+      "spark_q_moe_linear": "556ec68bfd476385bde2f142422c77893fa6a02da11b7eb23ff43862dd512985",
+      "spark_q_moe_plan": "f64a75592241f3424139c1ad8a757325df4d5f9cadd13686c1cccc9a96804f31",
+      "spark_q_moe_prompt": "49ac7f98c89ba4582d9b34df082a7fc6934a30d9da71677ed4f699f6d18ce7e3",
+      "spark_q_block_gdn": "48d9db2a9f2d9ebd7929b32b2a1d390fe01a8b1306b3054d82f9ec280aff3913",
+      "spark_q_block_gdn_io": "d71673e5a1e36a157d02eb116da5f208cd4055213e1373ed9aab36af70e0b830",
+      "spark_q_block_gdn_shared": "89a960e17a4e5f723f9329469aeb4ec8fb7f2383f58daa8e9651fa7e23313fc9"
+    },
+    "base_global_torch_libraries_loaded": false,
+    "status": "PASS",
+    "finished_at_utc": "2026-10-20T15:46:23.823124+00:00",
+    "runner_sha256": "8a74986b471bea46b9d2e3350acffcc1336c951fe2191e6c2daa6cb1f9cc4045",
+    "helper_sha256": {
+      "e2_block_reference.py": "74cf6a05a96e57f944c755a8164e40b7f7e05cc7eedbaa8f2d6d96b23fc99b77",
+      "e2_block_support.py": "409d3bedd4c3f49bbdcf602626c7bb5b815e31950b363b748e486a0282f73bff"
+    }
+  },
+  "source_manifest": {
+    "families/qwen4_exp/cuda/weights.py": {
+      "sha256": "b2f630f035406ffd800d3b6d69a471c72c485dc0c3ad5ef04eeb327b97a7f6a3"
+    },
+    "families/qwen4_exp/cuda/hc_check.py": {
+      "sha256": "e5241860067d233fb438ca1c71d736f1932e355caf92a81198f5af7077c6fbcd"
+    },
+    "families/qwen4_exp/cuda/gdn_multi.py": {
+      "sha256": "8f9721bf2510b312c475d107637e0ee3fba427205d305947a6031700367e90d4"
+    },
+    "families/qwen4_exp/cuda/gdn.cpp": {
+      "sha256": "2c84d93bdd38ddb254e1d2dd1c979e5486ad0fa0f09dae58c6c326fc70f39937"
+    },
+    "families/qwen4_exp/cuda/hc_upmix.py": {
+      "sha256": "e2d0a75c4b080e511fdb14f67786b7b90a18c762b4644b45feefc8f1f7afb577"
+    },
+    "families/qwen4_exp/cuda/engine.py": {
+      "sha256": "de8b9df4882ff3d32c5749d4e253408b278b8ddaed9a71683eb3f0f133df0782"
+    },
+    "families/qwen4_exp/cuda/state.py": {
+      "sha256": "e92b98d62849c4f023fe68219a89889b21f161a2bd5f99a4fe1cd27cb7e39f19"
+    },
+    "families/qwen4_exp/cuda/yarn.py": {
+      "sha256": "29076c0c9f32651c61f9159e7f152221d9edb9e6d6e33b08cd1e8e184c38bad2"
+    },
+    "families/qwen4_exp/cuda/ngram.py": {
+      "sha256": "cf3c061978f1dc33ea2d714807763524c6498e30a2373123829af41fcf790736"
+    },
+    "families/qwen4_exp/cuda/exl3_pack.py": {
+      "sha256": "f22fb38c7ca893c5b39eccf4502f0ac0056e7eeaf33fef4be90e48de40bf59ce"
+    },
+    "families/qwen4_exp/cuda/attn_multi.py": {
+      "sha256": "c075cf5e9c3dbf80a7ae2eaf3a6af4105d4efb23d78dc58721bb73636406cac7"
+    },
+    "families/qwen4_exp/cuda/qmm.py": {
+      "sha256": "772123811351485844054504ecd27c3398cef8d043420c000b16b26d3a986e11"
+    },
+    "families/qwen4_exp/cuda/prefixes.py": {
+      "sha256": "b6b0208a44b6ad22b947a6b428dba6d01eaf59cfcb46201c8827cbec0a781e2e"
+    },
+    "families/qwen4_exp/cuda/multi_fill.py": {
+      "sha256": "f2996562162e91a2faeb391bc0cefec6266b4aa3637aa05010bd0b24b7d97456"
+    },
+    "families/qwen4_exp/cuda/gdn_io.cpp": {
+      "sha256": "28c777bd85454cb47730545105d5c837f303c242550400496a66d9f7ba78af20"
+    },
+    "families/qwen4_exp/cuda/forward.py": {
+      "sha256": "1ec9344c85cac5f8954a4b45188ae468e2834899996e10c083b1a81ac3096424"
+    },
+    "families/qwen4_exp/cuda/bf16.py": {
+      "sha256": "f82e49e29e5d5f2c1430c48f00878af0715303debf023c401a1f840a727fa45d"
+    },
+    "families/qwen4_exp/cuda/gdn_io.cu": {
+      "sha256": "fd834e01a4cb181290312bdc02c753518044ce8cf419ac603beb5b13d1e2f63c"
+    },
+    "families/qwen4_exp/cuda/kvcache.py": {
+      "sha256": "709a022c0aba2bb3070b30badb6b912a93ed2e83f1d8e5b6cbc72d512e9eec6e"
+    },
+    "families/qwen4_exp/cuda/image_rows.py": {
+      "sha256": "43122f4b5b9a309a7625b3a3f2cdcf7622374b3ddedc7db186bf44b5b8536422"
+    },
+    "families/qwen4_exp/cuda/mtp.py": {
+      "sha256": "49700f7aacbf74d78f34efd9a66ac5851c2bfc1472c111a19858ad4273b2eb01"
+    },
+    "families/qwen4_exp/cuda/multi_tp.py": {
+      "sha256": "00e47d2ae5c25f4f5630460e818ca8aac36ccc448b1ae09f3e84b14400c52f77"
+    },
+    "families/qwen4_exp/cuda/gdn.cu": {
+      "sha256": "f7f36249bfe146b96094e9f1e968a15a3dcf9c58184f4437495110ae1e35fe9e"
+    },
+    "families/qwen4_exp/cuda/hc_fused.py": {
+      "sha256": "0cedb247eb4269e218dc61eb7edabe56e19a54fb98120bd39c1c961bd8b95994"
+    },
+    "families/qwen4_exp/cuda/nvfp4_moe.py": {
+      "sha256": "46ca1c6de3a682af5aeac7861be10e8b66700dbdb1be383ef3233c6c9e70563d"
+    },
+    "families/qwen4_exp/cuda/kv8_multi.py": {
+      "sha256": "1a8c1a126d797560f59611f706b64f54f87cfc87a726eda75160f3e056681932"
+    },
+    "families/qwen4_exp/cuda/gdn_io.py": {
+      "sha256": "8516b19320df5044e8eea1c5a896aaf14f46b3f7ef294a163661f212b8d384e0"
+    },
+    "families/qwen4_exp/cuda/prompt_mm.py": {
+      "sha256": "be78e330af84579e34a4327cfb07e320f961286ff407a0f31187d5652f32a3ff"
+    },
+    "families/qwen4_exp/cuda/attention.py": {
+      "sha256": "ab41744715725efb604a95be94c02ed5699e3dcb0148e5c1909ec8db1fa84692"
+    },
+    "families/qwen4_exp/cuda/multi_plan.py": {
+      "sha256": "18171ff12c0459910991ae64e533b3965a38ed6a6fa28dc68d106d08291e577d"
+    },
+    "families/qwen4_exp/cuda/nvfp4.py": {
+      "sha256": "d92b93a48a5980111e36636c1c762879347091f3c58c081141df52315a34248b"
+    },
+    "families/qwen4_exp/cuda/kvquant.py": {
+      "sha256": "b893b9841117629f3e6f37eb9e3c3994242bf8d3476657f7cc6885d3bb6c8123"
+    },
+    "families/qwen4_exp/cuda/prompt_plan.py": {
+      "sha256": "6cee04112f28aaaaaa389ce74915c6a91da22223e59a96d810b2813191812257"
+    },
+    "families/qwen4_exp/cuda/exl3.py": {
+      "sha256": "1cd791ce7c43aa74de1902946e7fca5e8b0e373244a818f73b27989969c08c6e"
+    },
+    "families/qwen4_exp/cuda/weight_types.py": {
+      "sha256": "f01db1863226aa91be71a7aedcfe73212a4b729990c5239d07c3da94004cec0a"
+    },
+    "families/qwen4_exp/cuda/reader.py": {
+      "sha256": "c06b340443e5aa862d6ffafedffe5282587e1f9d9ae08f5387ab34022af7e437"
+    },
+    "families/qwen4_exp/cuda/glue.py": {
+      "sha256": "6934d5de5919ee222b347d5841036c2c4ea28784d7f5419f93128f9ff099e5ff"
+    },
+    "families/qwen4_exp/cuda/decode.py": {
+      "sha256": "3fc7854572886d05c36498ed0a6b263295b4e2bfa9844b33b3bde424598029f6"
+    },
+    "families/qwen4_exp/cuda/multi_solo.py": {
+      "sha256": "0eae985c88f310cd1070440ef7c0ea640e92006f1a8a25556cb603bbdcc33831"
+    },
+    "families/qwen4_exp/cuda/gdn.py": {
+      "sha256": "7f4f7deed17e0d0e764828a543be29b140476714f0f85992507a8b2dfd31f0a6"
+    },
+    "families/qwen4_exp/cuda/kv8.py": {
+      "sha256": "f91aff3852ce74f486d7044aceba76379de18717a4462f4b2fc28e2b3be58b13"
+    },
+    "families/qwen4_exp/cuda/graphs.py": {
+      "sha256": "dc8b583b55e8c9bbc21b0100c0a24c68747027551ce52dc60e2db69508be647f"
+    },
+    "families/qwen4_exp/cuda/multi.py": {
+      "sha256": "f56cbec323b6593be77efe0e9fa2c3c6af9c8bfeb17ed2859f1f31074359ef5d"
+    },
+    "families/qwen4_exp/cuda/exl3_mm.py": {
+      "sha256": "0c1f4b024b5e3750fa8b8eadda0addd30216dc9702b98712fe03f346b46e590d"
+    },
+    "cuda/kernels/qmm_tiles.py": {
+      "sha256": "2768f581909a9b0df95a1405d9db9f2e1a3214156c683a339ffefd55f67d022c"
+    },
+    "cuda/kernels/gdn.cpp": {
+      "sha256": "1203b16dc8a81b3fb297b8b78159692c648498b211da0ed5a9cd4267873df885"
+    },
+    "cuda/kernels/prefill_attention.cu": {
+      "sha256": "e5511f4b29b2a9ec2fa0c272bd7efc83c219ca1fb2f2aed2906edb263cbbbf84"
+    },
+    "cuda/kernels/gdn_prefill.cu": {
+      "sha256": "d0f75d39d5436305d4433f5d825d818432918950aa5a234422eece7485d1bb57"
+    },
+    "cuda/kernels/qmm.py": {
+      "sha256": "0f86c9abcfd1922d82b6481fa5001f415bbb2a9fe15415e0e4d5d2e24191eaf2"
+    },
+    "cuda/kernels/qmm_frag.cuh": {
+      "sha256": "476da5f919b1593375faab72c4c6c75f7620b78ae0a85f60856c80102e715833"
+    },
+    "cuda/kernels/qmm_prefill.cu": {
+      "sha256": "be112df7a73c47530f998caaf44fd75a8490e59ec1152f89d170d72f10c13f9b"
+    },
+    "cuda/kernels/prefill_attention.cpp": {
+      "sha256": "989130131471e0f6dc6594849468c4175a99b9ab9f30d8d418a0cc69527d97aa"
+    },
+    "cuda/kernels/gdn.cu": {
+      "sha256": "bb07c9e160f88cb7a90153b7101f0f78c4f9040159f17b75b4f145abb7431cad"
+    },
+    "cuda/kernels/affine_kernels.py": {
+      "sha256": "9165d92bf0a3908ce525b69802f14b4534bf9615bc8e470f539e72f0902fa1a5"
+    },
+    "cuda/kernels/qmm.cpp": {
+      "sha256": "7a54ca9926adb3a0afcc0b42c82b5fd148b7c1c948dd38a729568172668c81ab"
+    },
+    "cuda/kernels/attention.py": {
+      "sha256": "785a62d36033cca82446fd847cf8f3b5d7d1c306e2261fdefab9000a2a565a5d"
+    },
+    "cuda/kernels/qmm.cu": {
+      "sha256": "8aa8a7c554959e9fa1ae812f3597f1480d5c47f607593a19332341437130b45e"
+    },
+    "cuda/kernels/affine.py": {
+      "sha256": "74967b517a5a0f253f6cfaacc85ce8fc31d0eaddb5367e97985d2469140ac19d"
+    },
+    "cuda/kernels/qmm_group.cu": {
+      "sha256": "9950e54b0901ec3950b0145fa3f4357ce4904ed70d303708d64db8c94a6c4668"
+    },
+    "cuda/kernels/prefill_attention.py": {
+      "sha256": "5f80885d328de29850df286541a05da584215055debddebb1566cd3999e1e994"
+    },
+    "cuda/kernels/qmm_prefill8.cu": {
+      "sha256": "b6fa59c8325f8d711937473fbb5bf03ed2000bd11f18022a485d971f35e42172"
+    },
+    "cuda/kernels/gdn.py": {
+      "sha256": "84c8cebbadd11fc676ab15757d345ec7db150033e958a37ca2e3db62457264bf"
+    },
+    "cuda/nvfp4/gemm_ws.cu": {
+      "sha256": "54a81d2d32bf706ac2f01ae752b9bb48fdcc5de3feca442c7fd78b8747b63e37"
+    },
+    "cuda/nvfp4/nvfp4q.cuh": {
+      "sha256": "6b823ddf0f4bfc42f4687d57c9fe46a1a7f7cbc33074a6f51c857e745cf4601d"
+    },
+    "cuda/nvfp4/swiglu4.cuh": {
+      "sha256": "0f9e566a688f162b55b78013f8d3d58f8ee44fc900a8fe96c2e6d4bdc75c40dc"
+    },
+    "cuda/nvfp4/checkpoint.cpp": {
+      "sha256": "b37f9f63aeaf821671414ff5acf139bbee3d6196d1c09fa669ffc7b3162138e1"
+    },
+    "cuda/nvfp4/mma4.cuh": {
+      "sha256": "257ed3bdc913d6aacc8b387c25a70e27cf9a1fcaab82109f783b6717917b556a"
+    },
+    "cuda/nvfp4/gemm_ck.cu": {
+      "sha256": "0c7cc5a19b438db7f1fddcbe2d824d7e383f3129384fc9ee6c1f47785ec0ef8d"
+    },
+    "cuda/nvfp4/act.cu": {
+      "sha256": "943efa80549bea1cf31984be2639faeb9327cbbced7876c48acb92c433267546"
+    },
+    "cuda/nvfp4/linear.py": {
+      "sha256": "04136cbf4fa5f8b9c3a9cb655e4643929ead09d29367f1b7c135f662d0fe6f25"
+    },
+    "cuda/nvfp4/qmmf.cpp": {
+      "sha256": "13364659eef86b75ba875e384a9373913671c120c3ae7dd6bc73873e05f16be4"
+    },
+    "cuda/nvfp4/prompt.cpp": {
+      "sha256": "605f4bb6e3baac5b00bf9e679d1ae7503f42b6a212c2b80f8c8122f250aa763d"
+    },
+    "cuda/nvfp4/qmmf.cu": {
+      "sha256": "52477baf67e0babac2c612ab6a1d20f6683bde0ab2b961a4771843b62cb05e3a"
+    },
+    "cuda/nvfp4/checkpoint.py": {
+      "sha256": "0f77f74d5567a8d25fd527f7219b87a4a30a85e25d0cb15fc7febf5f46433ae6"
+    },
+    "cuda/nvfp4/format.py": {
+      "sha256": "8b5d85790d47da354a6ca4796cf123d94b10a333370d1b46d307aae772f15320"
+    },
+    "cuda/nvfp4/lane4.cu": {
+      "sha256": "7dfdd956cc45970459ebf8dfd81dd1571d8f5d95e86a884c0c71a368e4e7529d"
+    },
+    "cuda/nvfp4/experts.py": {
+      "sha256": "e0e8c9397c9a587a86f74c6ff937c34c6dbb410a2f7d3a495b61b3a8d71ddd5d"
+    },
+    "cuda/nvfp4/prompt.cu": {
+      "sha256": "89275c250aec25c6fe2abe02ca596c96b0e797d3191e0d4aef176c3b22dc0155"
+    },
+    "cuda/nvfp4/experts.cu": {
+      "sha256": "5d42a8d9e60e98b0b9b3325a20b5543f7c37c9dde1f72ce282b023a562136630"
+    },
+    "cuda/build.py": {
+      "sha256": "d82402b726267ef08093a9a006d4dd85db4172da603a28a4823930f3e2d933ee"
+    },
+    "cuda/direct_read.py": {
+      "sha256": "7cb34b2ca6be6a1467a0645291988f869467272cfcdc5e27867df5aa4450fd26"
+    },
+    "cuda/moe.py": {
+      "sha256": "32c16689dad01b7e10ba8b6a80bec24ad856406c3ee2c13da9f3600f89319e7e"
+    },
+    "cuda/experts.py": {
+      "sha256": "71534ff9a82c33109d81264d72c30ca50e8c0d36d81810b53fba54eabb37da3e"
+    },
+    "cuda/prompt_precision.py": {
+      "sha256": "2d190812ad9034fc2c0188a06f9fe814be0eab655cca08257c383160de323251"
+    },
+    "cuda/geometry.py": {
+      "sha256": "dc320f5ee06bed2134b12f394b9605bf9b471b1ba64dbdb6d89a0468b94dd962"
+    },
+    "families/qwen4_exp/host_table.py": {
+      "sha256": "52dc3148f276fdf8814df83eabf7cddf7866185157dabce400241b33e0434a3d"
+    },
+    "families/qwen4_exp/ssd_table.py": {
+      "sha256": "b3fabaee9cdfbb6ce5d69bf216f63afe98ae54abc88b222a0c8f1312dd6af45e"
+    }
+  },
+  "reference_audit": {
+    "initial_cases_passed": 16,
+    "initial_cases_total": 16,
+    "correction": "Own CPU QSA output-gate reference initially rounded sigmoid to BF16 too early; corrected to FP32 sigmoid multiplication then BF16 output as original glue.attn_gate specifies.",
+    "native_source_changed": false,
+    "numerical_gates_relaxed": false,
+    "all_cases_rerun_after_correction": true,
+    "initial_runner_sha256": "4e51075b3178f4cf3abb857e6816b23c7446852245f7ab87f0dfa413d0e8dd9d"
+  },
+  "routing_finding": {
+    "gdn_cpu_full_path_rows_with_different_selected_expert_set": 1,
+    "gdn_cpu_full_path_rows_tested": 17,
+    "qsa_cpu_full_path_selected_expert_sets_equal": true,
+    "topk_exact_given_same_gpu_logits": true,
+    "cpu_router_selected_sets_equal_given_gpu_moe_input": true,
+    "native_prefill_decode_partition_selected_sets_equal_for_both_layers": true,
+    "scope": "Selected synthetic hidden states only. Upstream numerical perturbations can cross Top-10 boundaries; no task-quality claim."
+  },
+  "memory_budget_reference": "2026-10-20-model-budget.json",
+  "service_checks": {
+    "comparison_baseline_utc": "2026-10-20T15:13:51.120810+00:00",
+    "after_utc": "2026-10-20T15:47:11.124886+00:00",
+    "health_status": "ok",
+    "running": true,
+    "pid_and_start_unchanged": true,
+    "restart_count_before": 0,
+    "restart_count_after": 0,
+    "identity_fields_unchanged": {
+      "Config": true,
+      "HostConfig": true,
+      "Mounts": true,
+      "Args": true,
+      "Image": true,
+      "Path": true
+    },
+    "mount_array_order_normalized": true,
+    "captured_mount_hash_matches_reversed_original_array": true,
+    "experiment_containers_stopped": true,
+    "continuous_availability_or_latency_measured": false
+  },
+  "experiment_limits_and_cgroup": {
+    "memory_limit_bytes": 6442450944,
+    "cpu_limit_nanos": 2000000000,
+    "cgroup_memory_peak_bytes": 1382957056,
+    "cgroup_memory_events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\n"
+  },
+  "harness_sha256": {
+    "e2_block_smoke.py": "8a74986b471bea46b9d2e3350acffcc1336c951fe2191e6c2daa6cb1f9cc4045",
+    "e2_block_reference.py": "74cf6a05a96e57f944c755a8164e40b7f7e05cc7eedbaa8f2d6d96b23fc99b77",
+    "e2_block_support.py": "409d3bedd4c3f49bbdcf602626c7bb5b815e31950b363b748e486a0282f73bff",
+    "e2_build_blocks.py": "e8f229ee4de7396e43b20517acab7ab8bfb7b2c25646f0ce0e5c1483207d3dcc",
+    "e2_extract_blocks.py": "5d2595729afc47f2dbfcbb6728f4bd4e5021e83b95067bcbd06757ea9cabe79c",
+    "e2_extract_moe.py": "92695e786dd130236e25082b57d7e174e4fbe85c382135c729b71065a388ed07",
+    "e2_extract_expert.py": "9c3b796cb5716a3cf335792f7ae4b09c905bd6f7ddc335ce7cd2bde574acaf73",
+    "e2_model_budget.py": "0a721e3563c236737d1eba9e143032f0c88bd19fb9afec79a7f101ab0d6e1628",
+    "e2_run_blocks.sh": "c0e40fbd7202310b2dbb5adedae48110ba203460c9acef630ed8dc4a2474f2e0",
+    "e2_stage_block_sources.py": "1f3569d4773301202feaf148b0bfbfeee8e2601672058f2e914aecd63600c094"
+  },
+  "limitations": [
+    "Independent layers 0 and 3; not adjacent execution or all 48 layers.",
+    "Synthetic four-stream BF16 inputs; no captured model activations or live Zig intermediate-tensor comparison.",
+    "No embedding/head execution, n-gram branch execution, full-model logits, request scheduler, cancellation or padding validation.",
+    "Graph test keeps the committed prefix fixed and changes current inputs; state commit inside graph is not tested.",
+    "Snapshot/restore requires the saved KV prefix to remain intact; tests satisfy this condition.",
+    "Sparse QSA uses 2051 primed synthetic cache rows, not an executed 2051-token model prompt.",
+    "FP8 KV checks partition consistency, not an independent full CPU oracle or quality equivalence to BF16 KV.",
+    "Torch counters exclude CUDA context/driver/external allocations; full-model loading peak and capacity remain unmeasured.",
+    "MTP proposals, rejection/accepted-prefix handling and performance have not been tested."
+  ]
+}
