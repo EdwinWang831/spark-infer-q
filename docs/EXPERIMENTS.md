@@ -1,6 +1,6 @@
 # Experiment plan
 
-**Rule: run smallest and cheapest tests first.** Do not download the full DeepSeek V4.1 checkpoint to test compatibility. Do not overwrite a working local inference environment.
+**Rule: use small probes to isolate initial blockers, then combine verified components into meaningful integration milestones.** Keep internal diagnostics, but do not stop after every small substep once the foundational gates pass. Do not download the full DeepSeek V4.1 checkpoint to test compatibility. Do not overwrite a working local inference environment.
 
 ## Current priorities
 
@@ -8,13 +8,13 @@ Evaluate and port useful DeepInfer components for Qwen on a single DGX Spark. MT
 
 | Workstream | Next evidence needed |
 | --- | --- |
-| SM121 operators and quantization | CSF and native BF16-input packed expert checks passed; next encapsulate the backend, validate routing/aggregation, and cover MXFP8/remaining formats |
+| SM121 operators and quantization | Complete layer-0 MoE passed with real routing/aggregation, BF16-input compressed experts and MXFP8 shared expert; next integrate decoder blocks and remaining formats |
 | Qwen model and state adapter | Validate layer execution, GDN recurrent state, QSA/KV layouts and prefill/decode transitions with MTP disabled first |
 | Engine, scheduling and memory | Test core scheduling/sequence lifecycle beyond the existing CPU sequence tests; assess async scheduling, graph integration and allocation/cache contracts independently of MTP |
 | MTP and verification budgets | Specify proposal/verification/state interfaces, build independent reference tests, then connect native Qwen MTP and evaluate adaptive budgets |
 | Performance and integration choice | Attribute each component's effect using controlled comparisons against the existing TensorFold baseline; assess combinations after individual correctness gates pass |
 
-The initial complete expert check found 14.6%–15.4% output L2 differences from FP4 activation quantization on synthetic inputs. Subsequent [native packed-weight/BF16-input expert tests](E2_NATIVE_REPORT.md) passed 11 cases on SM121 without GPU weight expansion. The next operator milestone is a reusable backend and routing/aggregation validation; total runtime memory remains to be budgeted beyond the 63.28 GiB metadata estimate for main routed expert packs. Continue the engine/cache and MTP contracts in the [interface map](ADAPTER_INTERFACES.md); neither requires declaring MTP the sole objective. Real-model MTP validation depends on correct target-only execution. Candidate optimizations should also be measured with MTP disabled to distinguish their standalone value from interactions with speculation.
+The initial complete expert check found 14.6%–15.4% output L2 differences from FP4 activation quantization on synthetic inputs. Subsequent [native packed-weight/BF16-input expert tests](E2_NATIVE_REPORT.md) passed 11 cases on SM121 without GPU weight expansion. The subsequent [complete MoE milestone](E2_MOE_REPORT.md) passed 8 joint tests including routing, all 512 expert execution coverage, MXFP8 shared expert and graph replay. Next combine representative GDN/QSA decoder blocks with prefill/decode state checks; total runtime memory remains to be budgeted beyond the 63.28 GiB metadata estimate for main routed expert packs. Continue the engine/cache and MTP contracts in the [interface map](ADAPTER_INTERFACES.md); neither requires declaring MTP the sole objective. Real-model MTP validation depends on correct target-only execution. Candidate optimizations should also be measured with MTP disabled to distinguish their standalone value from interactions with speculation.
 
 ### MTP track — planned sequence
 
@@ -72,9 +72,11 @@ The subsequent [complete expert experiment](E2_EXPERT_REPORT.md) independently m
 
 **Pass:** numerically justified agreement on supported paths, no invalid memory accesses.
 
-2026-10-20 partial result: three full real expert projections plus SwiGLU passed selected SM121 arithmetic checks at batch 1/8/32; an FP32-dequantized-weight control preserving BF16 activations also passed. FP4 activation fidelity is unresolved, and no model adapter, routed MoE, full layer, prefill/decode state or logits have been validated. See [E2_EXPERT_REPORT.md](E2_EXPERT_REPORT.md).
+2026-10-20 partial result: three full real expert projections plus SwiGLU passed selected SM121 arithmetic checks at batch 1/8/32; an FP32-dequantized-weight control preserving BF16 activations also passed. FP4 activation fidelity is unresolved, and that initial experiment did not validate a model adapter, routed MoE, full layer, prefill/decode state or logits. Later MoE evidence is recorded below. See [E2_EXPERT_REPORT.md](E2_EXPERT_REPORT.md).
 
 Subsequent native result: the original TensorFold expert CUDA source compiled for SM121 and passed 11 cases using compressed GPU weights and BF16 activations, including batch 17/tails/strides, BF16 and FP32 down output, skip and graph replay. The maximum selected complete-output relative L2 error was about 0.0378%. A metadata scan budgeted one native pack of main routed expert weights/scales at 63.2815 GiB, excluding all other model/runtime components; full-model capacity is not confirmed. See [E2_NATIVE_REPORT.md](E2_NATIVE_REPORT.md).
+
+Subsequent integrated result: complete layer-0 MoE passed 8 joint SM121 checks with synthetic BF16 hidden states, actual router/top-10, device plans, compressed expert weights, MXFP8 shared expert and weighted combine. The maximum selected output L2 error was 0.02821%; all 512 experts were covered using an explicitly injected-logit stress case. The initial 7/8 result and CPU/GPU router BF16-boundary diagnosis are retained. No decoder block, model state, logits or performance validation is implied. See [E2_MOE_REPORT.md](E2_MOE_REPORT.md).
 
 ## E3 — Speculative decode and recurrent state
 

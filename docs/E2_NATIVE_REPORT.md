@@ -73,6 +73,6 @@ Torch 统计不包含 CUDA context、驱动和外部库内存；不能把 3.32 M
 
 **下一步：** 将已验证调用封装为可复用的 SM121 专家后端，验证真实路由、top-10 加权汇总、共享专家和混合请求布局，再接入 Qwen 层/状态接口。继续核算其他权重及 KV/GDN/MTP/图缓存的内存预算。引擎和 MTP 按 [接口清单](ADAPTER_INTERFACES.md) 推进。
 
-本次没有完整 MoE、全模型加载/logits、真实模型激活、MTP 正确性、吞吐或加速比结果。E2 整体仍未完成。
+本次单专家实验没有完整 MoE、全模型加载/logits、真实模型激活、MTP 正确性、吞吐或加速比结果。后续[完整 MoE 联合验证](E2_MOE_REPORT.md)已完成路由、共享专家和汇总检查；E2 整体仍未完成。
 
 复现入口：[薄绑定](../scripts/e2_native_bindings.cpp)、[构建器](../scripts/e2_build_native.py)、[原生用例](../scripts/e2_native_expert_smoke.py)、[专家存储预算](../scripts/e2_native_storage.py)、[运行脚本](../scripts/e2_run_native.sh)。需先准备记录摘要一致的外部源码和前轮已核对的专家数据；第三方源码、权重和二进制没有加入本仓库。

@@ -1,6 +1,6 @@
 # Experimental results
 
-E0 observations are recorded in [E0_REPORT.md](E0_REPORT.md). E1 covers [core build/CPU interfaces](E1_BUILD_REPORT.md) and [selected GPU probes](E1_GPU_REPORT.md). E2 covers [quantized-activation comparisons](E2_EXPERT_REPORT.md) and [native BF16-input expert validation](E2_NATIVE_REPORT.md), with [native machine-readable evidence](../results/e2/2026-10-20-native-expert.json). There are **no end-to-end model correctness, full-runtime capacity or performance measurements**.
+E0 observations are recorded in [E0_REPORT.md](E0_REPORT.md). E1 covers [core build/CPU interfaces](E1_BUILD_REPORT.md) and [selected GPU probes](E1_GPU_REPORT.md). E2 covers [quantized-activation comparisons](E2_EXPERT_REPORT.md) and [native BF16-input expert validation](E2_NATIVE_REPORT.md), and [complete MoE validation](E2_MOE_REPORT.md), with [MoE machine-readable evidence](../results/e2/2026-10-20-moe-layer.json). There are **no end-to-end model correctness, full-runtime capacity or performance measurements**.
 
 | ID | Host | Status | Baseline tok/s | Candidate tok/s | Correctness | Notes |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -9,6 +9,7 @@ E0 observations are recorded in [E0_REPORT.md](E0_REPORT.md). E1 covers [core bu
 | E1 GPU | DGX Spark | Minimal GPU gate PASS; native backend blocked | — | — | 12 RMSNorm cases + one CUDA Graph replay passed; cuBLASLt BF16 and NVFP4 passed, including two actual-weight-slice inputs | Native DeepGEMM BF16 rejects SM121; other vendor/full-model paths incomplete |
 | E2 | DGX Spark | PARTIAL: expert arithmetic PASS; activation fidelity unresolved | — | — | Independent CSF/weight decode and batch 1/8/32 expert checks passed | FP4 activation causes 14.6%–15.4% output L2 differences on synthetic inputs; full Qwen adapter/state untested |
 | E2 native expert | DGX Spark | PASS for selected component scope | — | — | 11 BF16-input/packed-weight cases passed; selected complete-output L2 error at most about 0.0378% | No GPU weight expansion; main routed expert pack budget 63.2815 GiB, full capacity/integration untested |
+| E2 complete MoE | DGX Spark | PASS for selected layer-0 scope | — | — | 8 joint cases passed: real top-10 routing, grouping, compressed experts, MXFP8 shared expert, combine and graph replay; max output L2 0.02821% | One initial strict weight check failed at two BF16 rounding boundaries; diagnostic and revised staged checks retained; no decoder/model/state/quality claim |
 | E3 | DGX Spark | NOT_RUN | — | — | — | MTP/GDN/QSA invariants |
 | E4 | DGX Spark | NOT_RUN | — | — | — | Engine comparison |
 

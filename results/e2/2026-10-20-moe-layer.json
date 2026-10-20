@@ -1,0 +1,1015 @@
+{
+  "experiment": "E2-complete-layer0-MoE-SM121",
+  "status": "MOE_SELECTED_CASES_PASS",
+  "overall_e2_complete": false,
+  "deepinfer_sha": "774ce244b87cc0eb8d4b94ab9f5de2ab22049f01",
+  "tensorfold_base_sha": "db281878ddb836fd0df510d8771ecb7e0fe47d26",
+  "reference_identity": "selected unchanged files from the existing patched TensorFold recipe; not proven identical to deployed Zig binary",
+  "build": {
+    "source_patched": false,
+    "cuda_arch_target": "12.1",
+    "modules": {
+      "spark_q_moe_linear": {
+        "sha256": "556ec68bfd476385bde2f142422c77893fa6a02da11b7eb23ff43862dd512985"
+      },
+      "spark_q_moe_plan": {
+        "sha256": "f64a75592241f3424139c1ad8a757325df4d5f9cadd13686c1cccc9a96804f31"
+      },
+      "spark_q_moe_prompt": {
+        "sha256": "49ac7f98c89ba4582d9b34df082a7fc6934a30d9da71677ed4f699f6d18ce7e3"
+      }
+    },
+    "status": "PASS",
+    "cuda_initialized": false
+  },
+  "source_manifest": {
+    "cuda/moe.py": {
+      "sha256": "32c16689dad01b7e10ba8b6a80bec24ad856406c3ee2c13da9f3600f89319e7e"
+    },
+    "cuda/experts.py": {
+      "sha256": "71534ff9a82c33109d81264d72c30ca50e8c0d36d81810b53fba54eabb37da3e"
+    },
+    "cuda/experts.cu": {
+      "sha256": "d59f7a410794a8a58ef9c7ebb4ba392dac2d4dffaed5d2ece83f872793f8530c"
+    },
+    "cuda/experts.cuh": {
+      "sha256": "8de734885943e6f547feae4796aa1d7bdacf119494c99c776e4d0cc165d1fec0"
+    },
+    "cuda/prompt_precision.py": {
+      "sha256": "2d190812ad9034fc2c0188a06f9fe814be0eab655cca08257c383160de323251"
+    },
+    "cuda/kernels/qmm_frag.cuh": {
+      "sha256": "476da5f919b1593375faab72c4c6c75f7620b78ae0a85f60856c80102e715833"
+    },
+    "families/qwen4_exp/cuda/nvfp4.py": {
+      "sha256": "d92b93a48a5980111e36636c1c762879347091f3c58c081141df52315a34248b"
+    },
+    "families/qwen4_exp/cuda/nvfp4_moe.py": {
+      "sha256": "46ca1c6de3a682af5aeac7861be10e8b66700dbdb1be383ef3233c6c9e70563d"
+    },
+    "cuda/nvfp4/linear.py": {
+      "sha256": "04136cbf4fa5f8b9c3a9cb655e4643929ead09d29367f1b7c135f662d0fe6f25"
+    },
+    "cuda/nvfp4/experts.py": {
+      "sha256": "e0e8c9397c9a587a86f74c6ff937c34c6dbb410a2f7d3a495b61b3a8d71ddd5d"
+    },
+    "cuda/nvfp4/experts.cu": {
+      "sha256": "5d42a8d9e60e98b0b9b3325a20b5543f7c37c9dde1f72ce282b023a562136630"
+    },
+    "cuda/nvfp4/qmmf.cpp": {
+      "sha256": "13364659eef86b75ba875e384a9373913671c120c3ae7dd6bc73873e05f16be4"
+    },
+    "cuda/nvfp4/qmmf.cu": {
+      "sha256": "52477baf67e0babac2c612ab6a1d20f6683bde0ab2b961a4771843b62cb05e3a"
+    },
+    "cuda/nvfp4/prompt.cpp": {
+      "sha256": "605f4bb6e3baac5b00bf9e679d1ae7503f42b6a212c2b80f8c8122f250aa763d"
+    },
+    "cuda/nvfp4/prompt.cu": {
+      "sha256": "89275c250aec25c6fe2abe02ca596c96b0e797d3191e0d4aef176c3b22dc0155"
+    },
+    "cuda/kernels/qmm.py": {
+      "sha256": "0f86c9abcfd1922d82b6481fa5001f415bbb2a9fe15415e0e4d5d2e24191eaf2"
+    },
+    "cuda/kernels/qmm_tiles.py": {
+      "sha256": "2768f581909a9b0df95a1405d9db9f2e1a3214156c683a339ffefd55f67d022c"
+    }
+  },
+  "initial_attempt": {
+    "started_at_utc": "2026-10-20T15:09:45.972265+00:00",
+    "scope": "checkpoint layer-0 complete MoE, 512 routed experts/top-10 plus MXFP8 shared expert",
+    "full_model_tested": false,
+    "performance_measured": false,
+    "inputs": "seeded synthetic BF16 hidden states, not captured model activations",
+    "cases": [
+      {
+        "name": "real_router_b1_decode",
+        "batch": 1,
+        "seed": 20261030,
+        "prefill": false,
+        "repeated_input": false,
+        "injected_routed_logits_stress_only": false,
+        "input_row_stride": 2560,
+        "router_error": {
+          "relative_l2_error": 3.0480778150376864e-06,
+          "max_abs_error": 1.5735626220703125e-05,
+          "rmse": 3.870775344694266e-06
+        },
+        "exact_picks": true,
+        "exact_weights": true,
+        "plan_membership_exact": true,
+        "distinct_routed_experts": 10,
+        "plan_items": 11,
+        "plan_pairs": 11,
+        "hidden_error": {
+          "relative_l2_error": 2.3799518658051966e-06,
+          "max_abs_error": 6.103515625e-05,
+          "rmse": 7.288605274879956e-07
+        },
+        "routed_slots_error": {
+          "relative_l2_error": 2.3183740722743096e-06,
+          "max_abs_error": 2.7604401111602783e-06,
+          "rmse": 2.4679994226062263e-07
+        },
+        "shared_slot_error": {
+          "relative_l2_error": 0.0,
+          "max_abs_error": 0.0,
+          "rmse": 0.0
+        },
+        "complete_output_error": {
+          "relative_l2_error": 0.00010961572115775198,
+          "max_abs_error": 0.000244140625,
+          "rmse": 4.8276083361997735e-06
+        },
+        "combine_actual_slots_error": {
+          "relative_l2_error": 0.0,
+          "max_abs_error": 0.0,
+          "rmse": 0.0
+        },
+        "tail_guards_unchanged": true,
+        "status": "PASS"
+      },
+      {
+        "name": "real_router_b17_strided_decode",
+        "batch": 17,
+        "seed": 20261031,
+        "prefill": false,
+        "repeated_input": false,
+        "injected_routed_logits_stress_only": false,
+        "input_row_stride": 2576,
+        "router_error": {
+          "relative_l2_error": 2.9428861125779804e-06,
+          "max_abs_error": 2.8133392333984375e-05,
+          "rmse": 3.4785355182975763e-06
+        },
+        "exact_picks": true,
+        "exact_weights": true,
+        "plan_membership_exact": true,
+        "distinct_routed_experts": 117,
+        "plan_items": 119,
+        "plan_pairs": 187,
+        "hidden_error": {
+          "relative_l2_error": 5.603203680948354e-05,
+          "max_abs_error": 0.00390625,
+          "rmse": 1.634026011743117e-05
+        },
+        "routed_slots_error": {
+          "relative_l2_error": 5.404785770224407e-05,
+          "max_abs_error": 0.00022803479805588722,
+          "rmse": 5.391759714257205e-06
+        },
+        "shared_slot_error": {
+          "relative_l2_error": 6.266134005272761e-05,
+          "max_abs_error": 0.00048828125,
+          "rmse": 2.418271833448671e-06
+        },
+        "complete_output_error": {
+          "relative_l2_error": 0.00024929639766924083,
+          "max_abs_error": 0.0009765625,
+          "rmse": 1.2979488928976934e-05
+        },
+        "combine_actual_slots_error": {
+          "relative_l2_error": 0.0,
+          "max_abs_error": 0.0,
+          "rmse": 0.0
+        },
+        "tail_guards_unchanged": true,
+        "status": "PASS"
+      },
+      {
+        "name": "real_router_b97_wide_plan_decode",
+        "status": "FAIL",
+        "error": "AssertionError: BF16-rounded routing weight mismatch"
+      },
+      {
+        "name": "real_router_b17_prefill",
+        "batch": 17,
+        "seed": 20261033,
+        "prefill": true,
+        "repeated_input": false,
+        "injected_routed_logits_stress_only": false,
+        "input_row_stride": 2560,
+        "router_error": {
+          "relative_l2_error": 2.7756082090490963e-06,
+          "max_abs_error": 3.3855438232421875e-05,
+          "rmse": 3.752782504307106e-06
+        },
+        "exact_picks": true,
+        "exact_weights": true,
+        "plan_membership_exact": true,
+        "distinct_routed_experts": 105,
+        "plan_items": 107,
+        "plan_pairs": 187,
+        "hidden_error": {
+          "relative_l2_error": 8.703310595592484e-05,
+          "max_abs_error": 0.0078125,
+          "rmse": 2.5183428078889847e-05
+        },
+        "routed_slots_error": {
+          "relative_l2_error": 0.000254089361988008,
+          "max_abs_error": 0.001953125,
+          "rmse": 2.511664933990687e-05
+        },
+        "shared_slot_error": {
+          "relative_l2_error": 0.0001682514848653227,
+          "max_abs_error": 0.000244140625,
+          "rmse": 7.091373390721856e-06
+        },
+        "complete_output_error": {
+          "relative_l2_error": 0.00028205764829181135,
+          "max_abs_error": 0.0009765625,
+          "rmse": 1.6341446098522283e-05
+        },
+        "combine_actual_slots_error": {
+          "relative_l2_error": 0.0,
+          "max_abs_error": 0.0,
+          "rmse": 0.0
+        },
+        "tail_guards_unchanged": true,
+        "status": "PASS"
+      },
+      {
+        "name": "real_router_b33_concentrated_decode",
+        "batch": 33,
+        "seed": 20261034,
+        "prefill": false,
+        "repeated_input": true,
+        "injected_routed_logits_stress_only": false,
+        "input_row_stride": 2560,
+        "router_error": {
+          "relative_l2_error": 3.4460217648302205e-06,
+          "max_abs_error": 1.621246337890625e-05,
+          "rmse": 3.3993694614764536e-06
+        },
+        "exact_picks": true,
+        "exact_weights": true,
+        "plan_membership_exact": true,
+        "distinct_routed_experts": 10,
+        "plan_items": 33,
+        "plan_pairs": 363,
+        "hidden_error": {
+          "relative_l2_error": 2.754002821347967e-07,
+          "max_abs_error": 7.62939453125e-06,
+          "rmse": 9.097567499338766e-08
+        },
+        "routed_slots_error": {
+          "relative_l2_error": 4.755029294756241e-07,
+          "max_abs_error": 5.364418029785156e-07,
+          "rmse": 5.308849182483755e-08
+        },
+        "shared_slot_error": {
+          "relative_l2_error": 0.0,
+          "max_abs_error": 0.0,
+          "rmse": 0.0
+        },
+        "complete_output_error": {
+          "relative_l2_error": 0.0,
+          "max_abs_error": 0.0,
+          "rmse": 0.0
+        },
+        "combine_actual_slots_error": {
+          "relative_l2_error": 0.0,
+          "max_abs_error": 0.0,
+          "rmse": 0.0
+        },
+        "tail_guards_unchanged": true,
+        "status": "PASS"
+      },
+      {
+        "name": "zero_input_tie_policy_prefill",
+        "batch": 17,
+        "seed": 20261035,
+        "prefill": true,
+        "repeated_input": false,
+        "injected_routed_logits_stress_only": false,
+        "input_row_stride": 2560,
+        "router_error": {
+          "relative_l2_error": 0.0,
+          "max_abs_error": 0.0,
+          "rmse": 0.0
+        },
+        "exact_picks": true,
+        "exact_weights": true,
+        "plan_membership_exact": true,
+        "distinct_routed_experts": 10,
+        "plan_items": 22,
+        "plan_pairs": 187,
+        "hidden_error": {
+          "relative_l2_error": 0.0,
+          "max_abs_error": 0.0,
+          "rmse": 0.0
+        },
+        "routed_slots_error": {
+          "relative_l2_error": 0.0,
+          "max_abs_error": 0.0,
+          "rmse": 0.0
+        },
+        "shared_slot_error": {
+          "relative_l2_error": 0.0,
+          "max_abs_error": 0.0,
+          "rmse": 0.0
+        },
+        "complete_output_error": {
+          "relative_l2_error": 0.0,
+          "max_abs_error": 0.0,
+          "rmse": 0.0
+        },
+        "combine_actual_slots_error": {
+          "relative_l2_error": 0.0,
+          "max_abs_error": 0.0,
+          "rmse": 0.0
+        },
+        "tail_guards_unchanged": true,
+        "status": "PASS"
+      },
+      {
+        "name": "all512_experts_injected_router_stress",
+        "batch": 64,
+        "seed": 20261036,
+        "prefill": false,
+        "repeated_input": false,
+        "injected_routed_logits_stress_only": true,
+        "input_row_stride": 2560,
+        "router_error": {
+          "relative_l2_error": 3.47718964732735e-10,
+          "max_abs_error": 1.9073486328125e-06,
+          "rmse": 3.439837925611755e-08
+        },
+        "exact_picks": true,
+        "exact_weights": true,
+        "plan_membership_exact": true,
+        "distinct_routed_experts": 512,
+        "plan_items": 516,
+        "plan_pairs": 704,
+        "hidden_error": {
+          "relative_l2_error": 0.0001125856870203279,
+          "max_abs_error": 0.015625,
+          "rmse": 3.2387393730459735e-05
+        },
+        "routed_slots_error": {
+          "relative_l2_error": 0.00011100465781055391,
+          "max_abs_error": 0.0008392855525016785,
+          "rmse": 1.0801503776747268e-05
+        },
+        "shared_slot_error": {
+          "relative_l2_error": 5.2397968829609454e-05,
+          "max_abs_error": 0.000244140625,
+          "rmse": 2.2944241209188476e-06
+        },
+        "complete_output_error": {
+          "relative_l2_error": 0.00027581414906308055,
+          "max_abs_error": 0.0009765625,
+          "rmse": 1.977483589143958e-05
+        },
+        "combine_actual_slots_error": {
+          "relative_l2_error": 5.174641826144466e-10,
+          "max_abs_error": 1.4901161193847656e-08,
+          "rmse": 3.7100249955512865e-11
+        },
+        "tail_guards_unchanged": true,
+        "status": "PASS"
+      },
+      {
+        "name": "full_moe_cuda_graph_changed_input_and_routes",
+        "batch": 8,
+        "changed_pick_slots": 79,
+        "changed_input_replay": true,
+        "router_error": {
+          "relative_l2_error": 2.7591706839302788e-06,
+          "max_abs_error": 2.574920654296875e-05,
+          "rmse": 3.582419367376133e-06
+        },
+        "exact_picks": true,
+        "exact_weights": true,
+        "plan_membership_exact": true,
+        "distinct_routed_experts": 62,
+        "plan_items": 63,
+        "plan_pairs": 88,
+        "hidden_error": {
+          "relative_l2_error": 4.2759162170113996e-05,
+          "max_abs_error": 0.001953125,
+          "rmse": 1.2122693988203537e-05
+        },
+        "routed_slots_error": {
+          "relative_l2_error": 4.257516047800891e-05,
+          "max_abs_error": 0.0001141577959060669,
+          "rmse": 4.1429429984418675e-06
+        },
+        "shared_slot_error": {
+          "relative_l2_error": 0.00020868958381470293,
+          "max_abs_error": 0.00048828125,
+          "rmse": 8.075382538663689e-06
+        },
+        "complete_output_error": {
+          "relative_l2_error": 0.0002561363216955215,
+          "max_abs_error": 0.00048828125,
+          "rmse": 1.3259190382086672e-05
+        },
+        "combine_actual_slots_error": {
+          "relative_l2_error": 1.005723615499221e-09,
+          "max_abs_error": 7.450580596923828e-09,
+          "rmse": 5.206251402212203e-11
+        },
+        "tail_guards_unchanged": true,
+        "status": "PASS"
+      }
+    ],
+    "numerical_gates": {
+      "hidden_relative_l2": 0.003,
+      "slots_relative_l2": 0.004,
+      "final_relative_l2": 0.005,
+      "combine_actual_slots_relative_l2": 0.0005,
+      "router_relative_l2": 2e-05,
+      "picks": "exact CPU stable top-k match",
+      "weights": "exact BF16-rounded CPU match"
+    },
+    "torch": "2.13.0+cu132",
+    "cuda_build": "13.2",
+    "capability": [
+      12,
+      1
+    ],
+    "torch_allocator_cap_bytes": 3221225472,
+    "checkpoint_revision": "b9ce18a6887e18c089fdea8509a33e63429a3300",
+    "index_sha256": "5fa166bbb1cf25adda455117563efa72a2072272001f459eedece131ffc913e1",
+    "csf_checked_matrices": 1536,
+    "source_files_unchanged": true,
+    "module_sha256": {
+      "spark_q_moe_linear": "556ec68bfd476385bde2f142422c77893fa6a02da11b7eb23ff43862dd512985",
+      "spark_q_moe_plan": "f64a75592241f3424139c1ad8a757325df4d5f9cadd13686c1cccc9a96804f31",
+      "spark_q_moe_prompt": "49ac7f98c89ba4582d9b34df082a7fc6934a30d9da71677ed4f699f6d18ce7e3"
+    },
+    "gpu_persistent_routed_weight_bytes": 1415583744,
+    "gpu_persistent_shared_weight_bytes": 5068800,
+    "gpu_router_weight_bytes": 2626560,
+    "gpu_fp32_dequantized_weights_present": false,
+    "tested_routed_experts": 512,
+    "torch_peak_allocated_bytes": 1439141376,
+    "torch_peak_reserved_bytes": 1463812096,
+    "base_global_torch_libraries_loaded": false,
+    "status": "PARTIAL_OR_FAIL",
+    "finished_at_utc": "2026-10-20T15:10:23.213004+00:00",
+    "runner_sha256": "350bf37fc97342791cd92dd175c099c252a35d15f985a98f98978c10ad8f6314"
+  },
+  "routing_rounding_diagnostic": {
+    "batch": 97,
+    "seed": 20261032,
+    "exact_picks_vs_fp64_router": true,
+    "weight_mismatches_vs_cpu_fp32_router": 2,
+    "weight_mismatches_given_same_gpu_logits": 0,
+    "weight_mismatches_vs_cpu_fp64_router": 2,
+    "mismatches": [
+      {
+        "row": 0,
+        "slot": 7,
+        "expert": 175,
+        "gpu_weight": 0.05224609375,
+        "cpu_fp32_weight": 0.052001953125,
+        "cpu_fp64_weight": 0.052001953125,
+        "cpu_from_gpu_logits_weight": 0.05224609375,
+        "gpu_logit": 2.844815969467163,
+        "cpu_fp32_logit": 2.844820499420166,
+        "cpu_fp64_logit": 2.844819761463441,
+        "bf16_positive_encoding_distance": 1
+      },
+      {
+        "row": 96,
+        "slot": 2,
+        "expert": 365,
+        "gpu_weight": 0.09423828125,
+        "cpu_fp32_weight": 0.0947265625,
+        "cpu_fp64_weight": 0.0947265625,
+        "cpu_from_gpu_logits_weight": 0.09423828125,
+        "gpu_logit": 2.928182601928711,
+        "cpu_fp32_logit": 2.9281973838806152,
+        "cpu_fp64_logit": 2.928193528932752,
+        "bf16_positive_encoding_distance": 1
+      }
+    ],
+    "runner_sha256": "3506af505542ce6debdc9c3502634f131dd6faabdb8d17fe8a9b0e130e174c04"
+  },
+  "moe_probe": {
+    "started_at_utc": "2026-10-20T15:12:29.004939+00:00",
+    "scope": "checkpoint layer-0 complete MoE, 512 routed experts/top-10 plus MXFP8 shared expert",
+    "full_model_tested": false,
+    "performance_measured": false,
+    "inputs": "seeded synthetic BF16 hidden states, not captured model activations",
+    "cases": [
+      {
+        "name": "real_router_b1_decode",
+        "batch": 1,
+        "seed": 20261030,
+        "prefill": false,
+        "repeated_input": false,
+        "injected_routed_logits_stress_only": false,
+        "input_row_stride": 2560,
+        "router_error": {
+          "relative_l2_error": 3.0480778150376864e-06,
+          "max_abs_error": 1.5735626220703125e-05,
+          "rmse": 3.870775344694266e-06
+        },
+        "exact_picks": true,
+        "exact_weights_given_same_gpu_logits": true,
+        "cpu_router_weight_error": {
+          "relative_l2_error": 0.0,
+          "max_abs_error": 0.0,
+          "rmse": 0.0
+        },
+        "cpu_router_weight_mismatches": 0,
+        "cpu_router_weight_max_bf16_steps": 0,
+        "plan_membership_exact": true,
+        "distinct_routed_experts": 10,
+        "plan_items": 11,
+        "plan_pairs": 11,
+        "hidden_error": {
+          "relative_l2_error": 2.3799518658051966e-06,
+          "max_abs_error": 6.103515625e-05,
+          "rmse": 7.288605274879956e-07
+        },
+        "routed_slots_error": {
+          "relative_l2_error": 2.3183740722743096e-06,
+          "max_abs_error": 2.7604401111602783e-06,
+          "rmse": 2.4679994226062263e-07
+        },
+        "shared_slot_error": {
+          "relative_l2_error": 0.0,
+          "max_abs_error": 0.0,
+          "rmse": 0.0
+        },
+        "complete_output_error": {
+          "relative_l2_error": 0.00010961572115775198,
+          "max_abs_error": 0.000244140625,
+          "rmse": 4.8276083361997735e-06
+        },
+        "combine_actual_slots_error": {
+          "relative_l2_error": 0.0,
+          "max_abs_error": 0.0,
+          "rmse": 0.0
+        },
+        "tail_guards_unchanged": true,
+        "status": "PASS"
+      },
+      {
+        "name": "real_router_b17_strided_decode",
+        "batch": 17,
+        "seed": 20261031,
+        "prefill": false,
+        "repeated_input": false,
+        "injected_routed_logits_stress_only": false,
+        "input_row_stride": 2576,
+        "router_error": {
+          "relative_l2_error": 2.9428861125779804e-06,
+          "max_abs_error": 2.8133392333984375e-05,
+          "rmse": 3.4785355182975763e-06
+        },
+        "exact_picks": true,
+        "exact_weights_given_same_gpu_logits": true,
+        "cpu_router_weight_error": {
+          "relative_l2_error": 0.0,
+          "max_abs_error": 0.0,
+          "rmse": 0.0
+        },
+        "cpu_router_weight_mismatches": 0,
+        "cpu_router_weight_max_bf16_steps": 0,
+        "plan_membership_exact": true,
+        "distinct_routed_experts": 117,
+        "plan_items": 119,
+        "plan_pairs": 187,
+        "hidden_error": {
+          "relative_l2_error": 5.603203680948354e-05,
+          "max_abs_error": 0.00390625,
+          "rmse": 1.634026011743117e-05
+        },
+        "routed_slots_error": {
+          "relative_l2_error": 5.404785770224407e-05,
+          "max_abs_error": 0.00022803479805588722,
+          "rmse": 5.391759714257205e-06
+        },
+        "shared_slot_error": {
+          "relative_l2_error": 6.266134005272761e-05,
+          "max_abs_error": 0.00048828125,
+          "rmse": 2.418271833448671e-06
+        },
+        "complete_output_error": {
+          "relative_l2_error": 0.00024929639766924083,
+          "max_abs_error": 0.0009765625,
+          "rmse": 1.2979488928976934e-05
+        },
+        "combine_actual_slots_error": {
+          "relative_l2_error": 0.0,
+          "max_abs_error": 0.0,
+          "rmse": 0.0
+        },
+        "tail_guards_unchanged": true,
+        "status": "PASS"
+      },
+      {
+        "name": "real_router_b97_wide_plan_decode",
+        "batch": 97,
+        "seed": 20261032,
+        "prefill": false,
+        "repeated_input": false,
+        "injected_routed_logits_stress_only": false,
+        "input_row_stride": 2560,
+        "router_error": {
+          "relative_l2_error": 2.8405386274243938e-06,
+          "max_abs_error": 4.482269287109375e-05,
+          "rmse": 3.6207754874340026e-06
+        },
+        "exact_picks": true,
+        "exact_weights_given_same_gpu_logits": true,
+        "cpu_router_weight_error": {
+          "relative_l2_error": 7.943722448544577e-05,
+          "max_abs_error": 0.00048828125,
+          "rmse": 1.6712554497644305e-05
+        },
+        "cpu_router_weight_mismatches": 2,
+        "cpu_router_weight_max_bf16_steps": 1,
+        "plan_membership_exact": true,
+        "distinct_routed_experts": 269,
+        "plan_items": 283,
+        "plan_pairs": 1067,
+        "hidden_error": {
+          "relative_l2_error": 6.3458523072768e-05,
+          "max_abs_error": 0.0078125,
+          "rmse": 1.8324288248550147e-05
+        },
+        "routed_slots_error": {
+          "relative_l2_error": 6.089453381719068e-05,
+          "max_abs_error": 0.0005531162023544312,
+          "rmse": 6.025135007803328e-06
+        },
+        "shared_slot_error": {
+          "relative_l2_error": 0.00010423015191918239,
+          "max_abs_error": 0.0009765625,
+          "rmse": 4.369852831587195e-06
+        },
+        "complete_output_error": {
+          "relative_l2_error": 0.0002625926863402128,
+          "max_abs_error": 0.0009765625,
+          "rmse": 1.4460404599958565e-05
+        },
+        "combine_actual_slots_error": {
+          "relative_l2_error": 3.4838166129702586e-08,
+          "max_abs_error": 9.5367431640625e-07,
+          "rmse": 1.9184600574817523e-09
+        },
+        "tail_guards_unchanged": true,
+        "status": "PASS"
+      },
+      {
+        "name": "real_router_b17_prefill",
+        "batch": 17,
+        "seed": 20261033,
+        "prefill": true,
+        "repeated_input": false,
+        "injected_routed_logits_stress_only": false,
+        "input_row_stride": 2560,
+        "router_error": {
+          "relative_l2_error": 2.7756082090490963e-06,
+          "max_abs_error": 3.3855438232421875e-05,
+          "rmse": 3.752782504307106e-06
+        },
+        "exact_picks": true,
+        "exact_weights_given_same_gpu_logits": true,
+        "cpu_router_weight_error": {
+          "relative_l2_error": 0.0,
+          "max_abs_error": 0.0,
+          "rmse": 0.0
+        },
+        "cpu_router_weight_mismatches": 0,
+        "cpu_router_weight_max_bf16_steps": 0,
+        "plan_membership_exact": true,
+        "distinct_routed_experts": 105,
+        "plan_items": 107,
+        "plan_pairs": 187,
+        "hidden_error": {
+          "relative_l2_error": 8.703310595592484e-05,
+          "max_abs_error": 0.0078125,
+          "rmse": 2.5183428078889847e-05
+        },
+        "routed_slots_error": {
+          "relative_l2_error": 0.000254089361988008,
+          "max_abs_error": 0.001953125,
+          "rmse": 2.511664933990687e-05
+        },
+        "shared_slot_error": {
+          "relative_l2_error": 0.0001682514848653227,
+          "max_abs_error": 0.000244140625,
+          "rmse": 7.091373390721856e-06
+        },
+        "complete_output_error": {
+          "relative_l2_error": 0.00028205764829181135,
+          "max_abs_error": 0.0009765625,
+          "rmse": 1.6341446098522283e-05
+        },
+        "combine_actual_slots_error": {
+          "relative_l2_error": 0.0,
+          "max_abs_error": 0.0,
+          "rmse": 0.0
+        },
+        "tail_guards_unchanged": true,
+        "status": "PASS"
+      },
+      {
+        "name": "real_router_b33_concentrated_decode",
+        "batch": 33,
+        "seed": 20261034,
+        "prefill": false,
+        "repeated_input": true,
+        "injected_routed_logits_stress_only": false,
+        "input_row_stride": 2560,
+        "router_error": {
+          "relative_l2_error": 3.4460217648302205e-06,
+          "max_abs_error": 1.621246337890625e-05,
+          "rmse": 3.3993694614764536e-06
+        },
+        "exact_picks": true,
+        "exact_weights_given_same_gpu_logits": true,
+        "cpu_router_weight_error": {
+          "relative_l2_error": 0.0,
+          "max_abs_error": 0.0,
+          "rmse": 0.0
+        },
+        "cpu_router_weight_mismatches": 0,
+        "cpu_router_weight_max_bf16_steps": 0,
+        "plan_membership_exact": true,
+        "distinct_routed_experts": 10,
+        "plan_items": 33,
+        "plan_pairs": 363,
+        "hidden_error": {
+          "relative_l2_error": 2.754002821347967e-07,
+          "max_abs_error": 7.62939453125e-06,
+          "rmse": 9.097567499338766e-08
+        },
+        "routed_slots_error": {
+          "relative_l2_error": 4.755029294756241e-07,
+          "max_abs_error": 5.364418029785156e-07,
+          "rmse": 5.308849182483755e-08
+        },
+        "shared_slot_error": {
+          "relative_l2_error": 0.0,
+          "max_abs_error": 0.0,
+          "rmse": 0.0
+        },
+        "complete_output_error": {
+          "relative_l2_error": 0.0,
+          "max_abs_error": 0.0,
+          "rmse": 0.0
+        },
+        "combine_actual_slots_error": {
+          "relative_l2_error": 0.0,
+          "max_abs_error": 0.0,
+          "rmse": 0.0
+        },
+        "tail_guards_unchanged": true,
+        "status": "PASS"
+      },
+      {
+        "name": "zero_input_tie_policy_prefill",
+        "batch": 17,
+        "seed": 20261035,
+        "prefill": true,
+        "repeated_input": false,
+        "injected_routed_logits_stress_only": false,
+        "input_row_stride": 2560,
+        "router_error": {
+          "relative_l2_error": 0.0,
+          "max_abs_error": 0.0,
+          "rmse": 0.0
+        },
+        "exact_picks": true,
+        "exact_weights_given_same_gpu_logits": true,
+        "cpu_router_weight_error": {
+          "relative_l2_error": 0.0,
+          "max_abs_error": 0.0,
+          "rmse": 0.0
+        },
+        "cpu_router_weight_mismatches": 0,
+        "cpu_router_weight_max_bf16_steps": 0,
+        "plan_membership_exact": true,
+        "distinct_routed_experts": 10,
+        "plan_items": 22,
+        "plan_pairs": 187,
+        "hidden_error": {
+          "relative_l2_error": 0.0,
+          "max_abs_error": 0.0,
+          "rmse": 0.0
+        },
+        "routed_slots_error": {
+          "relative_l2_error": 0.0,
+          "max_abs_error": 0.0,
+          "rmse": 0.0
+        },
+        "shared_slot_error": {
+          "relative_l2_error": 0.0,
+          "max_abs_error": 0.0,
+          "rmse": 0.0
+        },
+        "complete_output_error": {
+          "relative_l2_error": 0.0,
+          "max_abs_error": 0.0,
+          "rmse": 0.0
+        },
+        "combine_actual_slots_error": {
+          "relative_l2_error": 0.0,
+          "max_abs_error": 0.0,
+          "rmse": 0.0
+        },
+        "tail_guards_unchanged": true,
+        "status": "PASS"
+      },
+      {
+        "name": "all512_experts_injected_router_stress",
+        "batch": 64,
+        "seed": 20261036,
+        "prefill": false,
+        "repeated_input": false,
+        "injected_routed_logits_stress_only": true,
+        "input_row_stride": 2560,
+        "router_error": {
+          "relative_l2_error": 3.47718964732735e-10,
+          "max_abs_error": 1.9073486328125e-06,
+          "rmse": 3.439837925611755e-08
+        },
+        "exact_picks": true,
+        "exact_weights_given_same_gpu_logits": true,
+        "cpu_router_weight_error": {
+          "relative_l2_error": 0.0,
+          "max_abs_error": 0.0,
+          "rmse": 0.0
+        },
+        "cpu_router_weight_mismatches": 0,
+        "cpu_router_weight_max_bf16_steps": 0,
+        "plan_membership_exact": true,
+        "distinct_routed_experts": 512,
+        "plan_items": 516,
+        "plan_pairs": 704,
+        "hidden_error": {
+          "relative_l2_error": 0.0001125856870203279,
+          "max_abs_error": 0.015625,
+          "rmse": 3.2387393730459735e-05
+        },
+        "routed_slots_error": {
+          "relative_l2_error": 0.00011100465781055391,
+          "max_abs_error": 0.0008392855525016785,
+          "rmse": 1.0801503776747268e-05
+        },
+        "shared_slot_error": {
+          "relative_l2_error": 5.2397968829609454e-05,
+          "max_abs_error": 0.000244140625,
+          "rmse": 2.2944241209188476e-06
+        },
+        "complete_output_error": {
+          "relative_l2_error": 0.00027581414906308055,
+          "max_abs_error": 0.0009765625,
+          "rmse": 1.977483589143958e-05
+        },
+        "combine_actual_slots_error": {
+          "relative_l2_error": 5.174641826144466e-10,
+          "max_abs_error": 1.4901161193847656e-08,
+          "rmse": 3.7100249955512865e-11
+        },
+        "tail_guards_unchanged": true,
+        "status": "PASS"
+      },
+      {
+        "name": "full_moe_cuda_graph_changed_input_and_routes",
+        "batch": 8,
+        "changed_pick_slots": 79,
+        "changed_input_replay": true,
+        "router_error": {
+          "relative_l2_error": 2.7591706839302788e-06,
+          "max_abs_error": 2.574920654296875e-05,
+          "rmse": 3.582419367376133e-06
+        },
+        "exact_picks": true,
+        "exact_weights_given_same_gpu_logits": true,
+        "cpu_router_weight_error": {
+          "relative_l2_error": 0.0,
+          "max_abs_error": 0.0,
+          "rmse": 0.0
+        },
+        "cpu_router_weight_mismatches": 0,
+        "cpu_router_weight_max_bf16_steps": 0,
+        "plan_membership_exact": true,
+        "distinct_routed_experts": 62,
+        "plan_items": 63,
+        "plan_pairs": 88,
+        "hidden_error": {
+          "relative_l2_error": 4.2759162170113996e-05,
+          "max_abs_error": 0.001953125,
+          "rmse": 1.2122693988203537e-05
+        },
+        "routed_slots_error": {
+          "relative_l2_error": 4.257516047800891e-05,
+          "max_abs_error": 0.0001141577959060669,
+          "rmse": 4.1429429984418675e-06
+        },
+        "shared_slot_error": {
+          "relative_l2_error": 0.00020868958381470293,
+          "max_abs_error": 0.00048828125,
+          "rmse": 8.075382538663689e-06
+        },
+        "complete_output_error": {
+          "relative_l2_error": 0.0002561363216955215,
+          "max_abs_error": 0.00048828125,
+          "rmse": 1.3259190382086672e-05
+        },
+        "combine_actual_slots_error": {
+          "relative_l2_error": 1.005723615499221e-09,
+          "max_abs_error": 7.450580596923828e-09,
+          "rmse": 5.206251402212203e-11
+        },
+        "tail_guards_unchanged": true,
+        "status": "PASS"
+      }
+    ],
+    "numerical_gates": {
+      "hidden_relative_l2": 0.003,
+      "slots_relative_l2": 0.004,
+      "final_relative_l2": 0.005,
+      "combine_actual_slots_relative_l2": 0.0005,
+      "router_relative_l2": 2e-05,
+      "picks": "exact CPU stable top-k match",
+      "weights_given_same_gpu_logits": "exact BF16-rounded CPU match",
+      "weights_from_cpu_router": "at most one positive BF16 encoding step; relative L2 <= .001"
+    },
+    "torch": "2.13.0+cu132",
+    "cuda_build": "13.2",
+    "capability": [
+      12,
+      1
+    ],
+    "torch_allocator_cap_bytes": 3221225472,
+    "checkpoint_revision": "b9ce18a6887e18c089fdea8509a33e63429a3300",
+    "index_sha256": "5fa166bbb1cf25adda455117563efa72a2072272001f459eedece131ffc913e1",
+    "csf_checked_matrices": 1536,
+    "source_files_unchanged": true,
+    "module_sha256": {
+      "spark_q_moe_linear": "556ec68bfd476385bde2f142422c77893fa6a02da11b7eb23ff43862dd512985",
+      "spark_q_moe_plan": "f64a75592241f3424139c1ad8a757325df4d5f9cadd13686c1cccc9a96804f31",
+      "spark_q_moe_prompt": "49ac7f98c89ba4582d9b34df082a7fc6934a30d9da71677ed4f699f6d18ce7e3"
+    },
+    "gpu_persistent_routed_weight_bytes": 1415583744,
+    "gpu_persistent_shared_weight_bytes": 5068800,
+    "gpu_router_weight_bytes": 2626560,
+    "gpu_fp32_dequantized_weights_present": false,
+    "tested_routed_experts": 512,
+    "torch_peak_allocated_bytes": 1447868928,
+    "torch_peak_reserved_bytes": 1463812096,
+    "base_global_torch_libraries_loaded": false,
+    "status": "PASS",
+    "finished_at_utc": "2026-10-20T15:13:12.508275+00:00",
+    "runner_sha256": "53bca77970afacee02895fc1c5faeefc2c9d7361fe8ff7289eb5597147ca2624"
+  },
+  "gate_revision": {
+    "kernel_code_changed": false,
+    "reason": "CPU/GPU router accumulation crosses BF16 rounding boundaries in two weights; given identical GPU logits the weight stage matches CPU bit-for-bit",
+    "original_requirement": "bit-exact weights even with different CPU/GPU FP32 router logits",
+    "replacement_requirement": "bit-exact weights given identical logits; CPU-router weights differ by at most one positive BF16 encoding step and L2 <= .001",
+    "complete_output_gate_changed": false
+  },
+  "service_checks": {
+    "comparison_baseline_utc": "2026-10-20T14:31:05.975670+00:00",
+    "after_utc": "2026-10-20T15:13:51.120810+00:00",
+    "running": true,
+    "health_status": "ok",
+    "pid_and_start_unchanged": true,
+    "restart_count_before": 0,
+    "restart_count_after": 0,
+    "identity_fields_unchanged": {
+      "Config": true,
+      "HostConfig": true,
+      "Mounts": true,
+      "Args": true,
+      "Image": true,
+      "Path": true
+    },
+    "experiment_containers_stopped": true,
+    "continuous_availability_or_latency_measured": false
+  },
+  "experiment_limits_and_cgroup": {
+    "memory_limit_bytes": 6442450944,
+    "cpu_limit_nanos": 2000000000,
+    "cgroup_memory_peak_bytes": 2549284864,
+    "cgroup_memory_events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\n"
+  },
+  "limitations": [
+    "Synthetic BF16 hidden states; no captured model activations.",
+    "All 512 expert execution coverage uses an explicitly injected router-logit stress case; real router b97 selects 269 distinct experts.",
+    "CPU FP32 references use the same compressed checkpoint representation and specified BF16 boundaries.",
+    "No comparison with live service intermediate tensors or binary equivalence proof.",
+    "No complete decoder block, attention, GDN/QSA state, full-model logits, capacity, task quality, MTP or performance test.",
+    "Torch allocator counters exclude CUDA context, driver and external allocations; container cgroup peak spans initial/final/router processes."
+  ],
+  "harness_sha256": {
+    "e2_extract_moe.py": "db8cdc533b9d7ac487f8217b33e8d8c1c1ab6cfac8df9d0dd376faf1659624d7",
+    "e2_moe_smoke.py": "53bca77970afacee02895fc1c5faeefc2c9d7361fe8ff7289eb5597147ca2624",
+    "e2_run_moe.sh": "cce329834649509656809f0cd187f2b19ff52e8aaef7e87ca6a655ef751faa31",
+    "e2_moe_router_probe.py": "3506af505542ce6debdc9c3502634f131dd6faabdb8d17fe8a9b0e130e174c04",
+    "e2_build_moe.py": "60c0889bee0ae979085f705624c8e43b1fcf0a1f352220208d414a9e686ca547",
+    "e2_stage_moe_sources.py": "7e7b68fc67afe502d1e664852eda641ed72e7e1a310106acd5c2efe1f629f072",
+    "e2_moe_plan_bindings.cpp": "201f09ca909b15de46d921a90c04f8fe05e587e7957a6088afa5421d90837730"
+  }
+}
