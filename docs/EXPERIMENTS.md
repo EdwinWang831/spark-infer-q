@@ -97,6 +97,8 @@ Test `K=0` before enabling speculative decoding. Then test each supported native
 
 Subsequent [DFlash2 integration](E3_DFLASH2_REPORT.md): real 603M BF16 drafter weights and the complete target passed six forced state cases and three 16-token greedy prompts in fixed/dynamic modes. A thin binding calls original DeepInfer MTPVarlen, with lagged empirical rates and Spark costs. Outputs/logits/live state matched same-path serial execution. Aggregate exploratory timing ratios were 1.90×/2.03×, one sample favored fixed; only thinking prefixes and one run per case were measured. This is a bounded greedy milestone, not the full stochastic/engine E3 acceptance. Independent draft/model forward parity, target prefill review, full answers, stable performance, long context and full scheduler integration remain open.
 
+Followup [official draft/complete-generation study](E3_FOLLOWUP_REPORT.md): eight requests completed to EOS, with 72 balanced timing runs. Tokens/live state matched serial, with separate exact-logit checks. Fixed/dynamic aggregate ratios were 1.781×/1.789×; all dynamic decisions chose width4 and one short task slowed down. FP32 draft mathematical controls passed; BF16 draft outputs differ, and a target MoE precision control did not fix prefill. These are bounded decode observations, not E4 service comparisons or general quality/long-context proof.
+
 ## E4 — Performance, cost and selection
 
 Compare DeepInfer-adapted, the existing TensorFold service, vLLM and SGLang under controlled conditions (first verify each candidate is available and correct):

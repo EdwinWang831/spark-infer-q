@@ -13,7 +13,7 @@ def load_target(root, checkpoint, progress):
     e1 = root.parent
     load_root = e1/'e2-load'
     sys.path.insert(0,str(load_root/'reference'))
-    sys.path.insert(0,str(load_root))
+    sys.path.append(str(load_root))  # helpers must not shadow this run's spark_infer_q package
     torch.set_num_threads(4)
     torch.backends.cuda.matmul.allow_tf32=False
     torch.set_float32_matmul_precision('highest')
@@ -64,15 +64,18 @@ def load_target(root, checkpoint, progress):
 
 
 class Target:
-    def __init__(self,w):
+    def __init__(self,w,capacity=256):
         import torch
         from tensorfold.families.qwen4_exp.cuda import forward
         from tensorfold.families.qwen4_exp.cuda.state import Buffers,State
         self.torch,self.w,self.forward,self.State=torch,w,forward,State
-        self.buffers={r:Buffers(w,r,256,prefill=False) for r in range(1,5)}
+        if not 8 <= capacity <= 2048:
+            raise ValueError('bounded target capacity must be 8..2048')
+        self.capacity=capacity
+        self.buffers={r:Buffers(w,r,capacity,prefill=False) for r in range(1,5)}
 
     def state(self):
-        return self.State(self.w,256,4,'bf16',limit=256)
+        return self.State(self.w,self.capacity,4,'bf16',limit=self.capacity)
 
     def run(self,st,ids,capture=True):
         torch,w,f=self.torch,self.w,self.forward

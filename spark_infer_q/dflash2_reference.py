@@ -1,7 +1,7 @@
 """Bounded eager DFlash2 bridge to external weights and pinned SGLang helpers.
 
 This is an integration probe, not a production SGLang replacement. Attention is
-explicit FP32 math with BF16 boundaries. Only one short (<256-token) request,
+explicit FP32 math with BF16 boundaries. Only one bounded (<2048-token) request,
 TP1, greedy decoding and a four-row block are supported.
 """
 import ast
@@ -29,7 +29,7 @@ def upstream_helpers(path, expected_sha256):
 
 
 class Draft:
-    def __init__(self, checkpoint, embed, head, helpers):
+    def __init__(self, checkpoint, embed, head, helpers, *, dtype=None, max_context=256):
         import torch
         from safetensors.torch import load_file
         self.torch = torch
@@ -41,6 +41,13 @@ class Draft:
         assert c['rope_parameters'] == {'rope_theta': 10000, 'rope_type': 'default'}
         self.weights = load_file(str(Path(checkpoint) / 'model.safetensors'), device='cuda')
         assert all(t.dtype == torch.bfloat16 and torch.isfinite(t).all() for t in self.weights.values())
+        if dtype is not None:
+            if dtype not in (torch.bfloat16, torch.float32):
+                raise ValueError('only BF16 execution or FP32 diagnostic is supported')
+            self.weights = {k: v.to(dtype) for k, v in self.weights.items()}
+        if not 8 <= max_context <= 2048:
+            raise ValueError('capacity must keep every key within the trained sliding window')
+        self.max_context = max_context
         self.parameters = sum(t.numel() for t in self.weights.values())
         self.used = set()
         self.embed, self.head, self.helpers = embed, head, helpers
@@ -80,11 +87,11 @@ class Draft:
     def convolve(self, x, delta, prefix, side):
         return self.helpers['_grouped_conv'](x, delta, self.get(prefix+'.base_kernel')[side], 4, 160, 16, 2)
 
-    def propose(self, features, anchor):
+    def forward_hidden(self, features, anchor, *, trace=False):
         torch = self.torch
         n = len(features)
-        if not 0 < n <= 252:
-            raise ValueError('reference bridge limited to 1..252 committed prefix rows')
+        if not 0 < n <= self.max_context - 4:
+            raise ValueError('prefix and four-row block exceed bounded context capacity')
         assert features.shape == (n, 12800)
         ctx = self.norm(self.linear(features, 'fc.weight'), 'hidden_norm.weight')
         ids = torch.tensor([anchor] + [248077]*3, device='cuda')
@@ -92,6 +99,7 @@ class Draft:
         pos = torch.arange(n, n+4, device='cuda')
         ctx_pos = torch.arange(n, device='cuda')
         residual = None
+        observations = [ctx] if trace else None
         for i in range(5):
             p = f'layers.{i}.'
             if residual is None:
@@ -118,7 +126,14 @@ class Draft:
             x = (torch.nn.functional.silu(gate.float()) * up.float()).to(x.dtype)
             x = self.linear(x, p+'mlp.down_proj.weight')
             x = self.convolve(x, coeff, p+'mlp_conv', 1)
+            if trace:
+                observations.append((x.float() + residual.float()).to(x.dtype))
         hidden, _ = self.norm(x, 'norm.weight', residual)
+        return hidden, observations
+
+    def propose(self, features, anchor):
+        torch = self.torch
+        hidden, _ = self.forward_hidden(features, anchor)
         hidden = hidden[1:]  # same-position denoising: row0 is anchor, not proposal1
         logits = torch.nn.functional.linear(hidden, self.head)
         vals, candidates = torch.topk(logits, 16, dim=-1)
@@ -127,7 +142,7 @@ class Draft:
             predecessor_table=self.get('candidate_selector.predecessor_codebook'),
             successor_table=self.get('candidate_selector.successor_codebook'),
             candidate_ids=candidates[None], unary_logits=vals.float()[None],
-            hidden=hidden_projection[None], anchor_token_ids=ids[:1], top_k=16)
+            hidden=hidden_projection[None], anchor_token_ids=torch.tensor([anchor],device=hidden.device), top_k=16)
         first = scores[:,0,0].argmax(-1)
         path = self.helpers['_follow_maps'](scores[:,1:].argmax(-1), first, 2)
         result = candidates.gather(-1,path[0,:,None])[:,0]

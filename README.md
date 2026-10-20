@@ -2,7 +2,7 @@
 
 **Experimental inference acceleration for Qwen models on NVIDIA DGX Spark (GB10 / SM121), inspired by [DeepInfer](https://github.com/deepseek-ai/DeepInfer).**
 
-> **Research status:** Real DFlash2 weights now run with the complete 48-layer SM121 Qwen target and the original DeepInfer `MTPVarlen` budgeter. Six forced state cases and three short greedy prompts matched serial outputs/logits/committed state exactly. Exploratory fixed/dynamic timing ratios were 1.90×/2.03× in aggregate, but each prompt generated only 16 tokens (thinking prefixes), once per mode: this is not a stable performance or task-quality result. Target prefill/serial numerical review, independent draft/model parity, long-context capacity, random sampling and full DeepInfer scheduler integration remain open. See [DFlash2 results](docs/E3_DFLASH2_REPORT.md) and [complete loading results](docs/E2_LOAD_REPORT.md).
+> **Research status:** Real DFlash2 runs with the complete SM121 Qwen target and original DeepInfer MTPVarlen. Eight requests completed to EOS; 72 balanced measurements matched serial outputs/live state, with separate exact-logit checks. Aggregate decode ratios were 1.781× fixed and 1.789× dynamic; all dynamic decisions chose the same full block, so no extra scheduling benefit is established. One short translation was slower. Full official draft FP32 controls passed, while BF16 parity and target prefill numerical differences remain open. No full-engine, long-context, task-quality or service-level claim. See [complete-generation followup](docs/E3_FOLLOWUP_REPORT.md), [initial DFlash2 results](docs/E3_DFLASH2_REPORT.md) and [loading results](docs/E2_LOAD_REPORT.md).
 
 ## Research question
 
