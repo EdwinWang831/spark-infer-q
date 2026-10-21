@@ -32,6 +32,11 @@ CREATE TABLE CUPTI_ACTIVITY_KIND_KERNEL(start INTEGER,end INTEGER,shortName INTE
 INSERT INTO CUPTI_ACTIVITY_KIND_KERNEL VALUES(120,200,4,1),(180,230,5,2);
 ''');c.commit();c.close()
             r=analyze(path)
+            c=sqlite3.connect(path)
+            c.execute("insert into NVTX_EVENTS values(400,500,'e9.decode.other',99,NULL)")
+            c.commit();c.close()
+            with self.assertRaises(AssertionError):analyze(path)
+            self.assertEqual(analyze(path,task='fixture')['gpu']['kernel_calls'],2)
         self.assertEqual(r['gpu']['kernel_busy_percent'],55)
         self.assertAlmostEqual(r['gpu']['kernel_duration_sum_ms'],130/1e6)
         self.assertAlmostEqual(r['cpu_cuda']['main_thread_api_union_ms'],100/1e6)

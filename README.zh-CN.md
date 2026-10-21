@@ -4,6 +4,8 @@
 
 **面向 NVIDIA DGX Spark（GB10 / SM121）的 Qwen 模型推理加速实验，借鉴 [DeepInfer](https://github.com/deepseek-ai/DeepInfer)。**
 
+> **Decode时间分布（E9）：** 未采样E8请求中，target验证占 **83.81%**，草稿占 **14.39%**。三个Nsight样本的GPU活动覆盖decode区间 **91.76%**；专家核、qmmf及BF16矩阵乘占累计内核时间 **78.6%**。优化应优先研究GPU算子和有效验证量，当前数据不支持Python空转占主导。保留采集失败、扰动及控制口径限制；此轮没有新增提速。[报告](docs/E9_DECODE_PROFILE_REPORT.md) · [数据](results/e9/2026-10-21-decode-profile.json)。
+
 > **完整生成接入（E8）：** 新Q4 SSE执行器已默认8行prompt。80次配对计时中，wire首token延迟之和 **19.69→4.23秒（4.66倍）**，完整请求 **37.92→22.67秒（1.67倍，耗时减少40.22%）**。40次完整生成logits/状态对照、80次请求后状态检查全部通过，完整IDs回归E7。Decode为 **45.91→45.39 token/s（-1.14%）**，收益来自prompt。十条已见输入、一次加载，未重测原生TensorFold。[报告](docs/E8_INTEGRATION_REPORT.md) · [用法](docs/PROMPT_USAGE.md) · [数据](results/e8/2026-10-21-integrated-prompt.json)。
 
 > **最新同机对照（E7）：** 十条已见任务、200次充分预热的均衡计时，完整Q4动态整体为 **45.62 decode token/s**，原生TensorFold MTP为 **49.18**；自然任务为 **45.57 / 43.58**。完整请求耗时中位数之和为 **38.14 / 18.79秒**，wire首token延迟之和为 **19.77 / 1.65秒**。逐token prompt仍是优先瓶颈，E7当时尚无分块prefill GPU验证，后续prompt本体结果见上方E8。跨引擎8/10任务摘要一致，不能宣称整体反超。详见[报告](docs/E7_TENSORFOLD_MATCH_REPORT.md)与[数据](results/e7/2026-10-21-tensorfold-match.json)。
@@ -41,6 +43,7 @@
 | E6 | 可选草稿头压缩 | 256 次有界计时 / 64 次 oracle 通过；完整 Q4 动态相对同任务 BF16-full +9.23%；保留固定子词表覆盖与跨设备限制 |
 | E7 | 充分预热的原生同机对照 | 200次计时 / 40次候选非串行oracle通过；整体动态45.62、原生49.18 tok/s；优先优化prompt |
 | E8 | prompt分块及完整Q4生成接入 | prompt：81组精确对照/160次计时，4.66倍；完整生成：40次oracle/80次计时，首token 4.66倍、完整请求1.67倍；decode -1.14% |
+| E9 | decode CPU/GPU时间分布 | 3份有效时间线、12次生成oracle、15次输出/状态检查；GPU活动91.76%；诊断完成，未宣称新增提速 |
 
 详细通过标准和失败分类见 [docs/EXPERIMENTS.md](docs/EXPERIMENTS.md)。另见[候选架构](docs/ARCHITECTURE.md)和[初始源码审计](docs/PORTING_MATRIX.md)。[适配接口清单](docs/ADAPTER_INTERFACES.md)区分引擎/缓存与 MTP 需求，以及已经完成的算子实验。
 

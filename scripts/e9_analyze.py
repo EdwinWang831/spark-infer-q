@@ -54,6 +54,8 @@ def analyze(path,task=None):
         if name.startswith('e9.') and r.get('end') is not None:nvtx.append(dict(start=r['start'],end=r['end'],name=name,tid=r['globalTid']))
     roots=[r for r in nvtx if r['name'].startswith('e9.decode.') and (task is None or r['name']=='e9.decode.'+task)];assert len(roots)==1
     root=roots[0];lo,hi=root['start'],root['end'];wall=hi-lo;assert wall>0
+    def window_rows(name):
+        return [dict(r) for r in c.execute('select * from '+name+' where end>? and start<?',(lo,hi))] if name in tables else []
     nvtx=[r for r in nvtx if r['tid']==root['tid'] and lo<=r['start']<r['end']<=hi]
     groups={prefix:RangeIndex([r for r in nvtx if r['name'].startswith('e9.'+prefix+'.')]) for prefix in ('phase','target','draft','selector')}
     def host_group(prefix):
@@ -65,28 +67,32 @@ def analyze(path,task=None):
         return out
     apis=[]
     for table in ('CUPTI_ACTIVITY_KIND_RUNTIME','CUPTI_ACTIVITY_KIND_DRIVER'):
-        for r in rows(table):
+        for r in window_rows(table):
             if lo<=r['start']<r['end']<=hi:
                 r['name']=strings[r['nameId']];apis.append(r)
     main=[r for r in apis if r['globalTid']==root['tid']]
     by_cid=defaultdict(list)
     for r in apis:by_cid[r['correlationId']].append(r)
-    kernels=[r for r in rows('CUPTI_ACTIVITY_KIND_KERNEL') if r['end']>lo and r['start']<hi]
+    kernels=[r for r in window_rows('CUPTI_ACTIVITY_KIND_KERNEL') if r['end']>lo and r['start']<hi]
     assert kernels and main,'missing CUDA activity'
     kernel_intervals=[(r['start'],r['end']) for r in kernels]
     kernel_groups=defaultdict(lambda:{'calls':0,'sum_ns':0,'intervals':[]})
     launched_by={p:defaultdict(list) for p in groups};correlated=0
     for r in kernels:
-        name=strings.get(r['shortName'],str(r['shortName']))
-        group=kernel_groups[name];group['calls']+=1;group['sum_ns']+=r['end']-r['start'];group['intervals'].append((r['start'],r['end']))
+        family=strings.get(r['shortName'],str(r['shortName']))
+        name=strings.get(r.get('demangledName'),family)
+        group=kernel_groups[(name,family)];group['calls']+=1;group['sum_ns']+=r['end']-r['start'];group['intervals'].append((r['start'],r['end']))
         candidates=by_cid.get(r['correlationId'],[])
         if candidates:
             correlated+=1;api=min(candidates,key=lambda r:r['end']-r['start'])
             for prefix,index in groups.items():launched_by[prefix][index.find(api['start'],api['end'])].append((r['start'],r['end']))
         else:
             for prefix in groups:launched_by[prefix]['unclassified'].append((r['start'],r['end']))
-    copies=[r for r in rows('CUPTI_ACTIVITY_KIND_MEMCPY') if r['end']>lo and r['start']<hi]
-    memsets=[r for r in rows('CUPTI_ACTIVITY_KIND_MEMSET') if r['end']>lo and r['start']<hi]
+    families=defaultdict(lambda:{'calls':0,'sum_ns':0})
+    for (name,family),stats in kernel_groups.items():
+        families[family]['calls']+=stats['calls'];families[family]['sum_ns']+=stats['sum_ns']
+    copies=[r for r in window_rows('CUPTI_ACTIVITY_KIND_MEMCPY') if r['end']>lo and r['start']<hi]
+    memsets=[r for r in window_rows('CUPTI_ACTIVITY_KIND_MEMSET') if r['end']>lo and r['start']<hi]
     activity=kernel_intervals+[(r['start'],r['end']) for r in copies+memsets]
     busy=duration(activity,lo,hi);kernel_busy=duration(kernel_intervals,lo,hi)
     api_groups=defaultdict(list)
@@ -118,7 +124,8 @@ def analyze(path,task=None):
             'kernel_copy_memset_busy_union_ms':busy/1e6,'kernel_copy_memset_busy_percent':busy*100/wall,
             'no_recorded_gpu_activity_ms':(wall-busy)/1e6,'correlated_kernel_calls':correlated,
             'kernel_by_launch_phase':{p:{k:duration(v,lo,hi)/1e6 for k,v in values.items()} for p,values in launched_by.items()},
-            'top_kernels':sorted([{'name':k,'calls':v['calls'],'duration_sum_ms':v['sum_ns']/1e6,
+            'top_kernel_families':sorted([{'name':name,'calls':v['calls'],'duration_sum_ms':v['sum_ns']/1e6} for name,v in families.items()],key=lambda r:r['duration_sum_ms'],reverse=True)[:25],
+            'top_kernels':sorted([{'name':k[0],'short_name':k[1],'calls':v['calls'],'duration_sum_ms':v['sum_ns']/1e6,
                 'busy_union_ms':duration(v['intervals'],lo,hi)/1e6} for k,v in kernel_groups.items()],key=lambda r:r['duration_sum_ms'],reverse=True)[:25],
             'memcpy':{enum.get(k,k):{**v,'sum_ms':v['sum_ns']/1e6} for k,v in copy_counts.items()},'memset_calls':len(memsets)},
         'cpu_cuda':{'main_thread_api_calls':len(main),'main_thread_api_union_ms':duration([(r['start'],r['end']) for r in main])/1e6,
