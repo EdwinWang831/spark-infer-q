@@ -163,3 +163,7 @@ Never commit raw user prompts, API keys, identifying machine reports, model weig
 ## E9 — Decode time distribution
 
 2026-10-21: [plan](E9_PROFILE_PLAN.md), [report](E9_DECODE_PROFILE_REPORT.md), [data](../results/e9/2026-10-21-decode-profile.json). E8 untraced target83.81% / draft14.39%. Three valid Nsight decode ranges cover202,995 kernels; GPU activity91.76%, not SM utilization. Expert/qmmf/BF16 families78.6% cumulative kernel time. Twelve independent generation oracles and15 post-request output/state checks pass. Initial repeated collection failed (one valid trace retained separately); single recording succeeds. Four controls are genuinely CUDA-untraced, eight intermediate controls CUDA-recorded/NVTX-inactive; correction retained. Next measure target kernels/verification effectiveness and draft backbone; no new speedup or native ranking.
+
+## E12 — Expert-aware verification
+
+2026-10-21: [plan](E12_EXPERT_VERIFICATION_PLAN.md). Reuses PR #1's host accounting helpers. The opt-in observer replays widths1–8 at fixed committed prefixes, records layer-local Top-10 unions separately from original-path timings, and compares width/context/true-union/history-only models on six held-out prompts. No neural predictor training, target routing change or default policy change. Online decode benefit remains untested until the observation and cost-model gates pass.
