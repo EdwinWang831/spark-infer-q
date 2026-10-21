@@ -4,7 +4,9 @@
 
 **面向 NVIDIA DGX Spark（GB10 / SM121）的 Qwen 模型推理加速实验，借鉴 [DeepInfer](https://github.com/deepseek-ai/DeepInfer)。**
 
-> **研究进展：** 完整 SM121 Qwen target、真实 DFlash2 草稿模型和原生 DeepInfer MTPVarlen 已支持八行验证、最多七个草稿。在八个复用回归提示上的 200 次主实验计时中，固定三草稿、固定七草稿和动态预算分别达到 38.10 / 41.50 / 43.10 decode token/s。动态实际选择了多种长度，比固定七草稿快 3.86%；但另一组 72 次匹配对照发现，它与独立校准选定的固定六草稿基本持平（42.21 对 42.20 token/s）。更长草稿对这批任务有益，动态预算相对合适固定长度的优势尚未建立。全部计时的输出和有效状态均与串行一致，另有 56 次独立 logits 检查和 44 个窗口/前缀组合检查。这些结果仅覆盖有界 greedy 实验，不代表完整引擎、统计显著性、长上下文、通用质量或服务性能结论。官方草稿模型的 FP32 数学对照通过；BF16 数值一致性和 target prefill 差异仍待解决。详见[八行实验](docs/E3_WIDE_BLOCK_REPORT.md)、[局部策略](docs/E3_LOCAL_POLICY_REPORT.md)、[草稿快路径](docs/E3_DRAFT_FASTPATH_REPORT.md)和[数值复核](docs/E3_FOLLOWUP_REPORT.md)。不同实验的收益不能直接相乘。
+> **研究进展：** 同机原生 TensorFold MTP / DFlash2 对照已完成 336 次计时，覆盖八个新英文提示文本、十四种设置。我们路径内部，冻结的 DeepInfer 动态预算达到 47.37 decode token/s，固定六/七草稿为 46.39 / 46.30，提升 2.12% / 2.31%。跨引擎六种设置的输出不同，且原生原始计时存在首轮效应、双方预热不对称；另行逐用例预热控制中，原生达到 **55.99 token/s**，与原始数据并列保留。该控制为事后顺序 session，仍有跨引擎输出差异；目前没有相对原生 TensorFold 的速度优势证据。当前冷 prompt 路径仍是端到端主要瓶颈；动态 decode 中 target 验证约占 80%，整个 drafter 约占 18%。详见[同机报告](docs/E4_MATCHED_REPORT.md)、[方法](docs/E4_MATCHED_PLAN.md)和[完整数据](results/e4/2026-10-20-matched.json)。
+>
+> 候选全部计时输出 IDs 与本路径串行 oracle 一致，另有 84 次独立非串行运行核对已提交 logits 和最终有效状态；主实验 240 次可客观判定的答案检查均通过。散文没有语义质量评分，截断代码仅作前缀观测。官方草稿 BF16 fidelity、target prefill 数值差异、长上下文和完整引擎验证仍待解决。此前[八行](docs/E3_WIDE_BLOCK_REPORT.md)、[局部策略](docs/E3_LOCAL_POLICY_REPORT.md)和[草稿快路径](docs/E3_DRAFT_FASTPATH_REPORT.md)是独立实验，收益不能相乘。
 
 ## 研究问题
 
@@ -26,7 +28,7 @@
 | E1 | 构建 DeepInfer 核心，独立检查 SM121 内核兼容性 | 最小 GPU 检查通过；原生 DeepGEMM BF16 路径受阻；完整后端兼容性尚未完成 |
 | E2 | 最小模型适配器、前向执行、prefill 与 decode | 部分完成：完整 target 权重已加载，选定 token/logits 路径已运行；prefill/串行数值复核、独立整模参考及 DeepInfer 调度器集成仍待完成 |
 | E3 | 草稿适配、投机验证、GDN/QSA 状态正确性 | 有界 greedy DFlash2 集成与原生 DeepInfer 动态预算检查通过；随机采样、完整调度器及原生 Qwen MTP 仍待完成 |
-| E4 | 同条件对照 TensorFold / vLLM / SGLang 等引擎 | 尚未执行同机性能对照；已完成 [TensorFold 源码与证据对比](docs/E4_TENSORFOLD_COMPARISON.md) |
+| E4 | 同条件对照 TensorFold / vLLM / SGLang 等引擎 | 部分完成：[短上下文 TensorFold / DFlash2 同机实测](docs/E4_MATCHED_REPORT.md)已完成，保留预热/数值限制；vLLM / SGLang、长上下文和并发未测 |
 
 详细通过标准和失败分类见 [docs/EXPERIMENTS.md](docs/EXPERIMENTS.md)。另见[候选架构](docs/ARCHITECTURE.md)和[初始源码审计](docs/PORTING_MATRIX.md)。[适配接口清单](docs/ADAPTER_INTERFACES.md)区分引擎/缓存与 MTP 需求，以及已经完成的算子实验。
 

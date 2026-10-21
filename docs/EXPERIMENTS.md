@@ -117,6 +117,8 @@ Collect `TTFT_ms`, `TPOT_ms`, `output_tokens_per_second`, `total_output_tokens_p
 
 **Pass:** reproducible improvement on at least one target workload without an unacceptable correctness/memory regression. Document negative results.
 
+2026-10-20 bounded E4 result: [matched plan](E4_MATCHED_PLAN.md), [report](E4_MATCHED_REPORT.md), [public main data](../results/e4/2026-10-20-matched.json). Four ABBA loading sessions produced 336 timed runs over eight new English texts / fourteen settings. Dynamic measured 47.37 versus fixed6/fixed7 46.39/46.30 decode tok/s (+2.12%/+2.31%) within the candidate path. Candidate timed output IDs match own serial; 84 separate nonserial oracles check committed logits/final live state. All 240 objective main answer checks pass; prose/capped prefixes have no full quality claim. Cross-engine hashes differ on six settings, and native original first repetitions are slower under asymmetric per-case warmup; a separate post-hoc native warmup control is preserved alongside the main data. Original native MTP 48.82 tok/s is not a fair warmed leaderboard comparison; post-hoc per-case warmup measured 55.99 tok/s over 112 timings (28 additional warmups), with native hashes/counts/text unchanged. Cold prompt latency and target verification dominate engineering priorities. This completes bounded TensorFold measurements, not the broad E4 multi-engine/concurrency/long-context gate.
+
 ## Experiment record template
 
 ```yaml
