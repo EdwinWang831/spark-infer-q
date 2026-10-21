@@ -2,24 +2,19 @@ import importlib.util
 import random
 import unittest
 from spark_infer_q.confidence_head import (
-    choose_rows, cumulative_labels, emitted_by_width, fit_heads, headroom_capture, prompt_split)
+    choose_rows, cumulative_labels, fit_heads, headroom_capture, prompt_split)
+from spark_infer_q.draft_fidelity import emitted_by_width
 from spark_infer_q.local_policy import ProgressModel
 
 EOS = 9
 
 
 class ConfidenceHeadTests(unittest.TestCase):
-    def test_emitted_by_width_and_labels(self):
-        emitted = emitted_by_width([5, 6, 0, 8], [5, 6, 7, EOS], (EOS,))
-        self.assertEqual(emitted, [1, 2, 3, 3, 3])
-        self.assertEqual(cumulative_labels(emitted), [1, 1, 0, 0])
-        eos = emitted_by_width([5, EOS, 4], [5, EOS], (EOS,))
-        self.assertEqual(eos, [1, 2, 2, 2])
-        self.assertEqual(cumulative_labels(eos), [1, 0, 0])
-        capped = emitted_by_width([5, 6, 7], [5, 6], ())
-        self.assertEqual(capped, [1, 2, 2, 2])
-        self.assertEqual(emitted_by_width([5, 6, 7], [5, 6, 7, 8], (), max_new=2), [1, 2, 2, 2])
-        with self.assertRaises(ValueError): emitted_by_width([5], [], ())
+    def test_labels_from_the_shared_width_contract(self):
+        # emitted_by_width itself is covered in test_draft_fidelity.
+        self.assertEqual(cumulative_labels(emitted_by_width([5, 6, 0, 8], [5, 6, 7, EOS], (EOS,))), [1, 1, 0, 0])
+        self.assertEqual(cumulative_labels(emitted_by_width([5, EOS, 4], [5, EOS], (EOS,))), [1, 0, 0])
+        self.assertEqual(cumulative_labels([1, 2, 2, 2]), [1, 0, 0])
         with self.assertRaises(ValueError): cumulative_labels([1])
 
     def test_prompt_split_is_deterministic_and_by_prompt(self):

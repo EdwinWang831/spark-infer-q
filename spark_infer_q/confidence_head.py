@@ -8,31 +8,16 @@ depths and returns the same ProgressModel metadata. Greedy decoding only.
 import hashlib
 import math
 from spark_infer_q.local_policy import ProgressModel
-from spark_infer_q.speculative import greedy_result
 
-_UNREACHABLE = -1
 SPLITS = ('train', 'calibration', 'test')
 
 
-def emitted_by_width(proposals, continuation, eos_ids=(), max_new=None):
-    """Tokens one step emits when verifying w rows (anchor plus w-1 drafts), w = 1..N+1.
-
-    continuation holds the serial target tokens after the anchor, ending at
-    EOS or the output cap; emission never passes either.
-    """
-    if not continuation:
-        raise ValueError('serial continuation required')
-    cap = len(continuation) if max_new is None else min(max_new, len(continuation))
-    emitted = []
-    for width in range(1, len(proposals)+2):
-        target_next = list(continuation[:width])
-        target_next += [_UNREACHABLE]*(width-len(target_next))
-        emitted.append(len(greedy_result(None, list(proposals[:width-1]), target_next, eos_ids, cap)[0]))
-    return emitted
-
-
 def cumulative_labels(emitted):
-    """y[j] = 1 when verifying every draft emits more than j+1 tokens."""
+    """y[j] = 1 when verifying every draft emits more than j+1 tokens.
+
+    emitted comes from draft_fidelity.emitted_by_width, which drafter
+    comparisons use as well.
+    """
     if len(emitted) < 2:
         raise ValueError('at least one draft required')
     return [int(emitted[-1] > j+1) for j in range(len(emitted)-1)]
@@ -81,7 +66,8 @@ def choose_rows(rates, costs_ms, max_rows=None):
 def headroom_capture(positions, costs_ms, fixed_rows):
     """Aggregate tokens/ms for a fixed width, the predicted policy and the lossless oracle.
 
-    Each position has 'emitted' from emitted_by_width and the model's 'rates'.
+    Each position has 'emitted' from draft_fidelity.emitted_by_width and the
+    model's 'rates'.
     The oracle verifies the fewest rows that still emit the most tokens. The
     replay visits serial positions uniformly, not the on-policy distribution.
     """

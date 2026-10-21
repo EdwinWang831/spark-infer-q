@@ -48,7 +48,7 @@
 ## 训练数据
 
 - 每条 prompt 先完整运行一次 serial target，记录每个位置捕获的特征和 serial 续写。然后在**每个** serial 位置运行 8 行 DFlash2，得到 7 个 proposal、分数和 hidden。
-- 标签由 [`emitted_by_width`](../spark_infer_q/confidence_head.py) 和 `cumulative_labels` 生成，遵循 `speculative.greedy_result` 的契约：输出不越过 EOS 和输出上限，EOS 被接受后不再计算后续进展。
+- 标签由 [`draft_fidelity.emitted_by_width`](../spark_infer_q/draft_fidelity.py) 和 `cumulative_labels` 生成，遵循 `speculative.greedy_result` 的契约：输出不越过 EOS 和输出上限，EOS 被接受后不再计算后续进展。[草稿保真诊断](DRAFT_FIDELITY_ACCEPTANCE_PLAN.md)用的是同一个函数，两边的结果口径一致。
 - 规模目标约 2,000 条 prompt，覆盖中英文、散文、代码、JSON、数学和 thinking，量级为 10⁵ 个位置。粗估 serial 生成约 3–4 小时，草稿约 1 小时。E3/E6/E7/E8 的测试提示不进入训练，只作回归。不使用用户私有 prompt，外部数据集需核对许可。
 - 按 prompt 划分训练 / 校准 / 测试 = 70/10/20（[`prompt_split`](../spark_infer_q/confidence_head.py)，哈希确定）。另外整体留出一个任务族，检验泛化。绝不按位置随机拆分。
 - 草稿算术若因 [PR #4](https://github.com/EdwinWang831/spark-infer-q/pull/4) 的结论而改变，标签必须重新生成，模型必须重训。因此先完成 PR #4 的保真诊断。
@@ -73,6 +73,7 @@ E8 执行器、rows8 prompt、完整 Q4 草稿头。四组：serial、校准选�
 
 ## 参考实现
 
-- [`spark_infer_q/confidence_head.py`](../spark_infer_q/confidence_head.py)：`emitted_by_width`、`cumulative_labels`、`prompt_split`、`choose_rows`、`headroom_capture`、`fit_heads`（torch，CPU float64 LBFGS，输出与 `ProgressModel` 兼容的元数据）。
+- [`spark_infer_q/confidence_head.py`](../spark_infer_q/confidence_head.py)：`cumulative_labels`、`prompt_split`、`choose_rows`、`headroom_capture`、`fit_heads`（torch，CPU float64 LBFGS，输出与 `ProgressModel` 兼容的元数据）。
+- 逐宽度输出数 `emitted_by_width` 在 [`spark_infer_q/draft_fidelity.py`](../spark_infer_q/draft_fidelity.py) 中，和 `step_outcome` 共用同一个 greedy 实现。
 - [`scripts/oracle_headroom.py`](../scripts/oracle_headroom.py)：复现上文的上限表。
 - 单元测试覆盖标签契约（拒绝位置、EOS、输出上限）、按 prompt 划分、宽度选择与 E3 规则一致、完美概率拿到全部 oracle 空间、恒定概率拿到 0，以及在可分信号上训练（无 torch 时跳过）。均不在 GPU 上运行。
