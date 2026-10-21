@@ -24,6 +24,8 @@
 
 **E13 实验分支（可选路径）：** 三个1,024/1,536/1,920-token合成输入中，DFlash历史投影增量缓存让加权decode从 **39.73→42.22 tok/s（+6.27%）**，包含首轮构建和追加。24次计时的输出/live state及另外6次committed-logit oracle通过；12个较短任务则为 **−0.31%**，因此全局默认不变。这是最多生成96 token的同执行器decode对照，没有新增原生TensorFold排名或4K以上结论。独立接受率筛选的held-out Brier误差下降18.64%，尚非在线策略提速。研究worker在实验间保留现有权重常驻。[报告](docs/E13_DRAFT_CACHE_CONFIDENCE_REPORT.md) · [缓存用法](docs/DRAFT_CONTEXT_CACHE_USAGE.md)。
 
+**E14 在线置信度预算（未确认提速）：** 9个新任务（含1K–1.8K输入）的108次计时及27次committed-logit/live-state oracle全部通过。margin策略为 **37.790 / 后置深度基线37.765 tok/s（+0.065%）**，耗时下降区间跨零；两组验证宽度序列完全相同。冻结曲线下32种分桶组合全选anchor+5草稿，更新实测成本后仍有30–32/32组合选同一宽度；新任务深层接受率也被高估。因此保留实验状态，下一步先补深度校准、检查信号能否改变动作，再作在线速度结论。沿用同一次常驻加载，没有新的原生TensorFold排名。[报告](docs/E14_CONFIDENCE_BUDGET_REPORT.md) · [数据](results/e14/2026-10-21-online-budget.json)。
+
 ## 研究问题
 
 能否将 DeepInfer 的引擎、调度、投机验证和内存管理优势用于 **单台 DGX Spark**，同时将模型执行器与 GPU 内核适配到 Qwen3.8-Flash-Next？或者，基于 vLLM / SGLang 的实现能否在已验证的速度与工程投入之间取得更好的平衡？
