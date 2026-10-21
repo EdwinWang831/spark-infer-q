@@ -13,6 +13,7 @@ def main():
     p = argparse.ArgumentParser()
     p.add_argument('--root', type=Path, required=True)
     p.add_argument('--profile', action='store_true')
+    p.add_argument('--holdout', action='store_true', help='independent seeds, frozen shortlisted geometry')
     a = p.parse_args(); root = a.root; e1 = root.parent
     import torch
     torch.set_num_threads(4)
@@ -48,7 +49,7 @@ def main():
             getattr(packed, field)[expert:expert+1].copy_(getattr(one, field))
     del one, triples, arrays, data, raw
     torch.cuda.synchronize()
-    variants = [(w, d) for w in (1, 2, 4, 8) for d in (1, 2)]
+    variants = [(2, 1), (4, 2)] if a.holdout else [(w, d) for w in (1, 2, 4, 8) for d in (1, 2)]
     names = ['original'] + [f'w{w}d{d}' for w, d in variants]
     configs = dict(zip(names[1:], variants))
     flush = torch.zeros(128*1024**2//4, dtype=torch.int32, device='cuda')
@@ -59,7 +60,9 @@ def main():
         baseline_binary_sha256=hashlib.sha256(Path(baseline.__file__).read_bytes()).hexdigest(),
         runner_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
         device=dict(name=torch.cuda.get_device_name(), sms=torch.cuda.get_device_properties(0).multi_processor_count))
-    path = root/'artifacts/expert-probe.json'
+    filename = 'profile-setup.json' if a.profile else ('expert-holdout.json' if a.holdout else 'expert-probe.json')
+    path = root/'artifacts'/filename
+    report['holdout'] = a.holdout
     def save(): path.write_text(json.dumps(report, indent=2, allow_nan=False)+'\n')
     save()
 
@@ -107,9 +110,9 @@ def main():
         torch.cuda.cudart().cudaProfilerStop()
         check(); return
     try:
-        for rows in (1, 3, 4, 6, 8, 17):
+        for rows in ((3, 4, 6, 8) if a.holdout else (1, 3, 4, 6, 8, 17)):
             for ri, routing in enumerate(('distinct', 'shared', 'mixed')):
-                seed = 1100+rows*10+ri
+                seed = 1100+rows*10+ri+(100000 if a.holdout else 0)
                 dtype = torch.bfloat16 if rows == 17 else torch.float32
                 call, h, y, check, items, distinct = setup(rows, routing, seed, dtype, rows in (3, 17))
                 call('original'); torch.cuda.synchronize(); check()
