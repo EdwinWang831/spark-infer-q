@@ -1,5 +1,7 @@
 # SparkInfer-Q
 
+**English** | [简体中文](README.zh-CN.md)
+
 **Experimental inference acceleration for Qwen models on NVIDIA DGX Spark (GB10 / SM121), inspired by [DeepInfer](https://github.com/deepseek-ai/DeepInfer).**
 
 > **Research status:** Real DFlash2 runs with the complete SM121 Qwen target and original DeepInfer MTPVarlen now support eight-row verification / seven drafts. Across eight reused regression prompts, the 200-run main study measured fixed3/fixed7/dynamic at 38.10/41.50/43.10 decode tok/s. Dynamic chose multiple widths and beat fixed7 by 3.86%; a separate 72-run matched control found it effectively tied with a calibration-selected fixed six drafts (42.21 vs 42.20 tok/s). Wider drafting helps this workload; an adaptive advantage over a suitable fixed length is not established. All timed outputs/live states matched serial, with 56 separate exact-logit runs and 44 window/prefix checks. These are bounded greedy observations, not full-engine, statistical-significance, long-context, quality or service-level claims. Official draft FP32 controls pass; BF16 fidelity and target prefill differences remain open. See [wide-block results](docs/E3_WIDE_BLOCK_REPORT.md), [local policy](docs/E3_LOCAL_POLICY_REPORT.md), [draft fastpath](docs/E3_DRAFT_FASTPATH_REPORT.md) and [numerical followup](docs/E3_FOLLOWUP_REPORT.md). Independent studies' gains must not be multiplied.
@@ -9,6 +11,12 @@
 Can we retain DeepInfer's engine, scheduling, speculative verification and memory-management advantages while adapting its model executor and GPU kernels to Qwen3.8-Flash-Next on **a single DGX Spark**? Or does a vLLM / SGLang-based implementation provide a better verified speed-versus-effort tradeoff?
 
 **We will let experiments choose the inference foundation**, rather than assume one from the beginning.
+
+## Current implementation
+
+The current prototype combines **TensorFold model execution**, an adapted **DFlash2 proposer**, and **DeepInfer's original MTPVarlen verification budget**. Our Python execution loop connects target features, draft proposals, accepted-prefix state commits and experimental local policies. The target CUDA kernels and GDN/QSA commit/replay operations come from TensorFold.
+
+The complete DeepInfer engine and C++ multi-request scheduler are not integrated. Reported speeds describe this bounded mixed implementation; they are not full DeepInfer engine benchmarks.
 
 ## Investigation stages
 
@@ -48,11 +56,13 @@ python3 -m unittest discover -s tests -v
 
 - **In scope:** verified SM121 compatibility, Qwen model adapters, GPU-side speculative verification, accurate GDN/QSA state rollback/commit, latency/throughput profiling.
 - **Out of scope (initially):** retraining Qwen, building a production web service, assuming DeepInfer already supports GB10, claims of speedups without measurements.
-- **Baselines:** retain the observed TensorFold deployment as the existing-service baseline. Separately establish vLLM and SGLang baselines on the same Spark, input set, sampling settings and checkpoint format; their availability/performance must be verified rather than assumed.
+- **Baselines:** compare against TensorFold, vLLM and SGLang on the same Spark, input set, sampling settings and checkpoint format. Published results provide context; matched performance and runtime availability must be verified rather than assumed.
 
 ## Upstreams and attribution
 
 - [DeepSeek DeepInfer](https://github.com/deepseek-ai/DeepInfer) (Apache-2.0)
+- [TensorFold](https://github.com/ashhart/TensorFold) (model execution and CUDA kernels; retain the applicable upstream licenses and notices)
+- [Qwen3.8-Flash-Next-DFlash2](https://huggingface.co/incoai/Qwen3.8-Flash-Next-DFlash2) (externally supplied draft checkpoint and reference implementation)
 - [vLLM](https://github.com/vllm-project/vllm)
 - [SGLang](https://github.com/sgl-project/sglang)
 
