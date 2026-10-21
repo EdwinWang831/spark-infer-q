@@ -1,6 +1,7 @@
 # Kaifra — 自适应本地推理引擎愿景（Vision RFC v0.1）
 
 > **状态：PROPOSED / 长期愿景与研究假设，不是已完成的引擎，也不是性能发布。**  
+> **技术定位：Kaifra 是基于 [DeepInfer](https://github.com/deepseek-ai/DeepInfer) 发展和深度改造的自适应推理引擎（DeepInfer-derived），不是从零重写 Scheduler。** DeepInfer 的 C++ Scheduler 与 MTPVarlen 是我们的控制面和投机预算基础；TensorFold 的 Qwen 执行/SM121 CUDA 组件是当前计算后端来源；DFlash2 是草稿架构来源。上游归属和许可证必须保持明确。  
 > **项目关系：** Kaifra 为提议中的引擎/产品名称；SparkInfer-Q 继续作为已有研究仓库和实验代号。**本 PR 不重命名仓库、不修改推理运行时、不宣称实现了 Kaifra。**  
 > **目标设备：** 第一阶段聚焦单台 NVIDIA DGX Spark（GB10/SM121），未来再研究跨平台后端。  
 > **评估基线：** TensorFold、SGLang、vLLM，以及同一 Kaifra 执行器里的 target-only、native MTP、Q4 DFlash2。  
@@ -10,7 +11,7 @@
 
 **Kaifra = Adaptive Inference Engine：把“算哪些 token、用哪种草稿、什么时候验证、如何使用缓存、怎样共享 GPU”变成一个受正确性约束且可被实测成本驱动的统一决策。**
 
-我们的愿望不是做一个仅在某条固定 benchmark 上跑得更快的 Qwen fork，而是构建一个能够长期稳定运行、可替换模型与推测器、重视完整请求与多 Agent 效率的**自主推理运行时**。
+我们的愿望不是做一个仅在某条固定 benchmark 上跑得更快的 Qwen fork，而是**以 DeepInfer 为内核延伸**，在它的 Scheduler/预算之上完成 Qwen 执行、DraftProvider、多请求状态与资源策略的专门适配，逐步构建能够稳定服务本地 AI 与多 Agent 工作流的 **Kaifra 自主维护运行时**。它是深度改造的独立产品/系统，不是原创于零的全新推理框架。
 
 > 不只优化每秒输出多少 token，而是优化在实际资源和延迟约束下，一台机器能完成多少**有用的 AI 工作**。
 
@@ -22,7 +23,11 @@
 - 哪种工作负载值得使用更长草稿、完整 Q4 词表头或增量 DFlash context cache？
 - 在性能增益低于噪声或正确性不确定时，是否应回退到更简单的已验证实现？
 
-## 2. 为什么要有一个真正自己的引擎
+## 2. 基于 DeepInfer，怎样做出真正自己的引擎
+
+**当前已经明确的依赖谱系：** E3 使用 DeepInfer 原生 `MTPVarlen` 进行动态验证预算；E5 的 C++ `Scheduler.schedule` / `process_outputs` 已驱动 Qwen target-only 的有界请求生命周期。我们现在有真实的 DeepInfer 组件接线，并非只模仿其调度思想。不过 E5 尚未接入完整 DeepInfer Worker、真实 GPU batch 或 DFlash2 多请求执行。
+
+**架构选择：继续基于/改造 DeepInfer 原生 C++ Scheduler 与动态验证机制，而不是另起炉灶重复写一个同类 Scheduler。** Kaifra 负责修复其 DeepSeek 专用假设、适配 Qwen GDN/QSA 状态和 TensorFold kernel、补齐服务/执行能力；如确需替换部分原生组件，应说明原因、量化收益和兼容边界。
 
 “自己的引擎”**不要求从零重写所有 CUDA kernel**。现代引擎可以合法复用上游算子，只要自己真正拥有并维护运行时关键机制。
 
@@ -31,10 +36,10 @@
 | 层次 | 定义 | 现在的位置 / 目标 |
 | --- | --- | --- |
 | R0：实验组合 | Python 实验循环 + 外部 Target kernel + 已有推测算法 | SparkInfer-Q 的 E3/E4/E6/E7 属于受控研究原型；尚非完整引擎 |
-| R1：可独立服务的运行时 | **自己掌握**请求生命周期、Batch Plan、Prefill/Decode/Verify、状态提交、API、指标与回退；kernel 允许模块化复用 | **Kaifra MVP 的合理定义** |
+| R1：基于 DeepInfer 的可独立服务运行时 | **复用/改造 DeepInfer C++ Scheduler 和预算器**，由 Kaifra 维护 Qwen 请求/状态适配、Batch Plan、Prefill/Decode/Verify、提交、API、指标与回退；kernel 允许模块化复用 | **Kaifra MVP 的合理定义** |
 | R2：独立可优化的系统 | R1 加上自己的执行计划成本反馈、多请求联合调度、增量 draft cache、跨后端模型/草稿适配与版本化性能证据 | 长期技术壁垒；不承诺必然实现或领先 |
 
-**R1 即可合理地称为自主推理引擎**。把外部 TensorFold Python/Zig 运行时整个嵌进产品、自己只包装 API，则独立性不足。把合法授权的 CUDA 算子做成清晰的 KernelAdapter，并由我们自己的请求/状态/执行逻辑驱动，是更有意义的路线。
+**R1 即可合理地称为 DeepInfer-based 自主推理引擎**：既如实声明来自 DeepInfer，也由我们独立维护和发布 Qwen/SM121 运行时。独立性不等于“与所有上游毫无代码关系”，而是运行时能力、设计边界和维护责任。把外部 TensorFold Python/Zig 运行时整个嵌进产品、自己只包装 API，则独立性不足；把合法授权的 CUDA 算子做成 KernelAdapter，并由 DeepInfer-derived Scheduler 驱动我们自己的 Qwen 执行/状态/验证代码，才是更有意义的路线。
 
 不必为了“原创”重复实现已经成熟的矩阵乘法。真正需要由我们承担的是：**请求如何变成 GPU 工作、哪些状态有效、何时将验证结果变成可见输出、为什么选择这种计算模式**。
 
@@ -164,13 +169,13 @@ Kaifra 的长期资产应当是**可复现的正确执行、经过版本化的�
 
 ### Horizon B：自主引擎 MVP（最值得正式叫 Kaifra 的节点）
 
-- 从 E5 最小 DeepInfer C++ Scheduler 桥接发展出自己的独立请求/状态管理；
+- **从 E5 已接通的原生 DeepInfer C++ Scheduler 出发**，保留可用的 Scheduler/BlockManager/MTPVarlen，扩展 Qwen 请求状态、执行计划与服务接口；不是再写一个同质 Scheduler；
 - 通过清晰的 `ExecutorBackend` 接口管理外部 CUDA 算子，不依赖它们原来的 serving loop；
 - 实现双请求 **一次真正的 batched GPU target forward**，而非仅交错两个串行请求；
 - 接入可回退的固定长度与 DFlash2 动态预算，封装代码为自己的执行计划 / 生命周期；
 - 经正确性和 API 实测后，发布 `Kaifra 0.x experimental`，仍可借用 TensorFold 算子。
 
-**完成这层就已经是我们自己的系统级推理引擎**，无需虚构自己的 GPU 矩阵乘算法。
+**完成这层就可以称为我们独立维护的 DeepInfer-derived 系统级推理引擎**，但需明确上游贡献，无需虚构自己发明了 Scheduler 或 GPU 矩阵乘算法。
 
 ### Horizon C：证明为什么需要 Kaifra
 
