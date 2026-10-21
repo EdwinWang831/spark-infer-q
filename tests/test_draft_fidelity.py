@@ -1,5 +1,5 @@
 import unittest
-from spark_infer_q.draft_fidelity import paired_ratio, step_outcome
+from spark_infer_q.draft_fidelity import emitted_by_width, paired_ratio, step_outcome
 from spark_infer_q.wide_budget import conditional_prior
 
 EOS = 9
@@ -24,6 +24,17 @@ class DraftFidelityTests(unittest.TestCase):
         self.assertEqual((capped['emitted'], capped['stopped']), (2, False))
         self.assertEqual(step_outcome([5, 6, 7], [5, 6, 7, 8], (), max_new=2)['emitted'], 2)
         with self.assertRaises(ValueError): step_outcome([5], [], ())
+
+    def test_emitted_by_width_shares_the_step_contract(self):
+        cases = [([5, 6, 0, 8], [5, 6, 7, EOS], (EOS,), None, [1, 2, 3, 3, 3]),
+                 ([5, EOS, 4], [5, EOS], (EOS,), None, [1, 2, 2, 2]),
+                 ([5, 6, 7], [5, 6], (), None, [1, 2, 2, 2]),
+                 ([5, 6, 7], [5, 6, 7, 8], (), 2, [1, 2, 2, 2])]
+        for proposals, continuation, eos, cap, expected in cases:
+            emitted = emitted_by_width(proposals, continuation, eos, cap)
+            self.assertEqual(emitted, expected)
+            self.assertEqual(emitted[-1], step_outcome(proposals, continuation, eos, cap)['emitted'])
+        with self.assertRaises(ValueError): emitted_by_width([5], [], ())
 
     def test_leading_matches_feed_the_existing_depth_prior(self):
         steps = [step_outcome(p, [5, 6, 7, 8], ()) for p in ([5, 6, 0], [0, 6, 7], [5, 6, 7])]
