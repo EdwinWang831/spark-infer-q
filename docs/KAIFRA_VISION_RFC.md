@@ -40,11 +40,11 @@
 
 ## 3. 我们已有的事实：亮点与缺口都要保留
 
-以下是**独立开发分支中的已提交实验报告**，未合并到此 PR 的基底 \`main\`；它们不因写入愿景而自动成为生产功能。
+以下是**独立开发分支中的已提交实验报告**，未合并到此 PR 的基底 `main`；它们不因写入愿景而自动成为生产功能。
 
 | 里程碑 | 已记录结果 | 必须保留的边界 |
 | --- | --- | --- |
-| E3 | DFlash2 + DeepInfer 原生 \`MTPVarlen\`；八行/七草稿在单请求 greedy 上通过状态检查 | 尚非完整多请求 Scheduler |
+| E3 | DFlash2 + DeepInfer 原生 `MTPVarlen`；八行/七草稿在单请求 greedy 上通过状态检查 | 尚非完整多请求 Scheduler |
 | E5 | 真正的 DeepInfer C++ Scheduler 与 Qwen target-only 生命周期桥接；限定两请求交错场景通过 | GPU 仍逐个请求执行，不是联合批处理或完整 Worker |
 | E6 | Q4 完整词表草稿头 + 原生动态预算，在同轮 8 任务中 45.54 vs BF16 41.70 decode tok/s，约 +9.23% | Q4 只是**草稿输出头额外副本**；backbone/selector 保留 BF16；整体内存不因此缩小 |
 | E7 | 同机充分预热：8 个自然任务 Q4 DFlash2 45.57 vs 原生 MTP 43.58 tok/s；全部 10 任务 45.62 vs 49.18 tok/s | **整体 Decode 未超过原生**；完整请求中位耗时之和 38.141 vs 18.791 秒；跨引擎输出 8/10 摘要相同 |
@@ -125,7 +125,7 @@ Kaifra 的长期资产应当是**可复现的正确执行、经过版本化的�
 
 ### 一个值得研究的新问题：资源约束下的联合优化
 
-令 \`m_i\` 为第 i 个请求选择的草稿模式，\`k_i\` 为验证深度，\`b\` 为图 bucket，\`a_i\` 为请求准入/服务决定；探索：
+令 `m_i` 为第 i 个请求选择的草稿模式，`k_i` 为验证深度，`b` 为图 bucket，`a_i` 为请求准入/服务决定；探索：
 
 \[
 \max_{\mathbf a,\mathbf m,\mathbf k,b}
@@ -165,10 +165,10 @@ Kaifra 的长期资产应当是**可复现的正确执行、经过版本化的�
 ### Horizon B：自主引擎 MVP（最值得正式叫 Kaifra 的节点）
 
 - 从 E5 最小 DeepInfer C++ Scheduler 桥接发展出自己的独立请求/状态管理；
-- 通过清晰的 \`ExecutorBackend\` 接口管理外部 CUDA 算子，不依赖它们原来的 serving loop；
+- 通过清晰的 `ExecutorBackend` 接口管理外部 CUDA 算子，不依赖它们原来的 serving loop；
 - 实现双请求 **一次真正的 batched GPU target forward**，而非仅交错两个串行请求；
 - 接入可回退的固定长度与 DFlash2 动态预算，封装代码为自己的执行计划 / 生命周期；
-- 经正确性和 API 实测后，发布 \`Kaifra 0.x experimental\`，仍可借用 TensorFold 算子。
+- 经正确性和 API 实测后，发布 `Kaifra 0.x experimental`，仍可借用 TensorFold 算子。
 
 **完成这层就已经是我们自己的系统级推理引擎**，无需虚构自己的 GPU 矩阵乘算法。
 
