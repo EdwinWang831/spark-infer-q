@@ -4,7 +4,9 @@
 
 **Experimental inference acceleration for Qwen models on NVIDIA DGX Spark (GB10 / SM121), inspired by [DeepInfer](https://github.com/deepseek-ai/DeepInfer).**
 
-> **Latest matched comparison (E7):** 200 balanced warmed timings on ten reused tasks measured full-Q4 dynamic **45.62** versus native TensorFold MTP **49.18 decode tok/s** overall; natural-task decode was **45.57 vs 43.58**. Complete-request median sums were **38.14 vs 18.79 s**. Our serial prompt path remains the priority bottleneck: summed wire TTFT **19.77 vs 1.65 s**. Cross-engine output hashes agree on 8/10 tasks; no overall speed lead over native TensorFold is established. See the [report](docs/E7_TENSORFOLD_MATCH_REPORT.md) and [data](results/e7/2026-10-21-tensorfold-match.json). Chunked prefill is not yet GPU validated.
+> **Prompt experiment (E8):** Eight-row chunks through unchanged decode arithmetic measured **4.66×** faster target prompt processing (ten-task median sum **19.68→4.22 s**, 461 input tokens). All 81 logits/features/live-state and eight-step continuation comparisons passed; 160 warmed timings completed. This is prompt-only, with no draft model resident; serving defaults, wire TTFT and full speculative-generation performance are not yet updated. [Report](docs/E8_PREFILL_REPORT.md) · [data](results/e8/2026-10-21-chunked-prompt.json).
+
+> **Latest matched comparison (E7):** 200 balanced warmed timings on ten reused tasks measured full-Q4 dynamic **45.62** versus native TensorFold MTP **49.18 decode tok/s** overall; natural-task decode was **45.57 vs 43.58**. Complete-request median sums were **38.14 vs 18.79 s**. Our serial prompt path remains the priority bottleneck: summed wire TTFT **19.77 vs 1.65 s**. Cross-engine output hashes agree on 8/10 tasks; no overall speed lead over native TensorFold is established. See the [report](docs/E7_TENSORFOLD_MATCH_REPORT.md) and [data](results/e7/2026-10-21-tensorfold-match.json). At E7 time, chunked prefill was not GPU validated; see E8 above for the subsequent prompt-only result.
 
 > **Latest draft-head result:** On eight new mixed Chinese/English tasks, full-vocabulary Q4 drafting measured **45.54 decode tok/s versus BF16-full 41.70 (+9.23%)** under the same dynamic policy. All 256 timed outputs/live states and 64 independent committed-logit/state oracles passed. A fixed reduced vocabulary harmed Chinese coverage; full Q4 is the preferred next candidate. Proposal agreement was 27/28 in four calibration contexts, not a general BF16-fidelity claim. The target remains NVFP4, the selector/backbone BF16; results are from one Spark. See the [E6 report](docs/E6_DRAFT_HEAD_REPORT.md), [data](results/e6/2026-10-21-draft-head.json) and [optional projection API / usage](docs/DRAFT_HEAD_USAGE.md).
 
@@ -38,6 +40,7 @@ A separate [bounded native-scheduler bridge](docs/E5_ENGINE_BRIDGE_REPORT.md) no
 | E5 | Minimal native engine bridge | Bounded target-only C++ Scheduler / full-Qwen lifecycle checks passed; full Worker/cache/async and GPU batching remain open |
 | E6 | Optional draft-head compression | 256 bounded timings / 64 oracle runs passed; full Q4 dynamic +9.23% versus same-task BF16-full; fixed subset coverage and cross-device limits retained |
 | E7 | Warmed matched native comparison | 200 timings / 40 candidate nonserial oracles passed; overall dynamic 45.62 vs native 49.18 tok/s; prompt optimization pending |
+| E8 | Decode-arithmetic prompt chunking | 81 exact comparisons and 160 timings passed; eight-row prompt 4.66× faster; full speculative serving integration pending |
 
 For precise pass criteria and failure classification, see [docs/EXPERIMENTS.md](docs/EXPERIMENTS.md).
 See also [architecture candidates](docs/ARCHITECTURE.md) and the [initial source audit](docs/PORTING_MATRIX.md).

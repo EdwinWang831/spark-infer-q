@@ -151,3 +151,7 @@ Never commit raw user prompts, API keys, identifying machine reports, model weig
 ## E7 — Warmed full-Q4 / native matched comparison
 
 2026-10-21: [plan](E7_TENSORFOLD_MATCH_PLAN.md), [report](E7_TENSORFOLD_MATCH_REPORT.md), [data](../results/e7/2026-10-21-tensorfold-match.json). All 200 formal timings, 100 full warmups (including 40 candidate nonserial oracles) completed across native/ours/ours/native loads. Full Q4 dynamic 45.62 versus native MTP 49.18 aggregate decode tok/s; natural tasks 45.57 versus 43.58. Complete-request sums 38.14 versus 18.79 s, summed TTFT 19.77 versus 1.65 s. Native and candidate outputs differ on two tasks; no overall speed lead. Next validate full-prompt chunking through unchanged decode arithmetic before timing; do not mix INT8 or budget recalibration.
+
+## E8 — Decode-arithmetic prompt chunking
+
+2026-10-21: [plan](E8_PREFILL_PLAN.md), [report](E8_PREFILL_REPORT.md), [data](../results/e8/2026-10-21-chunked-prompt.json). 81 full prompt/tail comparisons (every-row logits/features, boundary live state and eight-step continuation) passed; 160 warmed timings. Eight-row chunks: 109.23 versus serial 23.43 prompt tok/s, 4.66×. Includes state init/capture/concat, excludes tokenization/network. No drafter resident or full speculative generation; serving default unchanged. Next integrate rows8 into complete Q4 dynamic requests and measure actual wire TTFT/complete wall/decode.
