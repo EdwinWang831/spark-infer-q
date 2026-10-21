@@ -4,6 +4,8 @@
 
 **面向 NVIDIA DGX Spark（GB10 / SM121）的 Qwen 模型推理加速实验，借鉴 [DeepInfer](https://github.com/deepseek-ai/DeepInfer)。**
 
+> **最新同机对照（E7）：** 十条已见任务、200次充分预热的均衡计时，完整Q4动态整体为 **45.62 decode token/s**，原生TensorFold MTP为 **49.18**；自然任务为 **45.57 / 43.58**。完整请求耗时中位数之和为 **38.14 / 18.79秒**，wire首token延迟之和为 **19.77 / 1.65秒**。逐token prompt仍是优先瓶颈，尚无分块prefill GPU验证。跨引擎8/10任务摘要一致，不能宣称整体反超。详见[报告](docs/E7_TENSORFOLD_MATCH_REPORT.md)与[数据](results/e7/2026-10-21-tensorfold-match.json)。
+
 > **最新草稿头结果：** 八条新中英任务上，完整词表 Q4 在相同动态策略下达到 **45.54 decode token/s，BF16-full 为 41.70（+9.23%）**。256 次计时输出/有效状态及 64 次独立已提交 logits/状态对照全部通过。固定子词表损害中文覆盖，下一候选优先保留完整词表 Q4。四个校准上下文的提案一致率为 27/28，不代表通用 BF16 fidelity；主模型仍为 NVFP4，selector/backbone 保留 BF16。实测仅覆盖一台 Spark。详见 [E6 报告](docs/E6_DRAFT_HEAD_REPORT.md)、[数据](results/e6/2026-10-21-draft-head.json)和[可选投影接口/使用说明](docs/DRAFT_HEAD_USAGE.md)。
 
 > **研究进展：** 同机原生 TensorFold MTP / DFlash2 对照已完成 336 次计时，覆盖八个新英文提示文本、十四种设置。我们路径内部，冻结的 DeepInfer 动态预算达到 47.37 decode token/s，固定六/七草稿为 46.39 / 46.30，提升 2.12% / 2.31%。跨引擎六种设置的输出不同，且原生原始计时存在首轮效应、双方预热不对称；另行逐用例预热控制中，原生达到 **55.99 token/s**，与原始数据并列保留。该控制为事后顺序 session，仍有跨引擎输出差异；目前没有相对原生 TensorFold 的速度优势证据。当前冷 prompt 路径仍是端到端主要瓶颈；动态 decode 中 target 验证约占 80%，整个 drafter 约占 18%。详见[同机报告](docs/E4_MATCHED_REPORT.md)、[方法](docs/E4_MATCHED_PLAN.md)和[完整数据](results/e4/2026-10-20-matched.json)。
@@ -35,6 +37,7 @@
 | E4 | 同条件对照 TensorFold / vLLM / SGLang 等引擎 | 部分完成：[短上下文 TensorFold / DFlash2 同机实测](docs/E4_MATCHED_REPORT.md)已完成，保留预热/数值限制；vLLM / SGLang、长上下文和并发未测 |
 | E5 | 最小原生引擎桥接 | C++ Scheduler 驱动完整 Qwen 的有界 target-only 生命周期检查通过；完整 Worker/cache/异步与 GPU batch 未完成 |
 | E6 | 可选草稿头压缩 | 256 次有界计时 / 64 次 oracle 通过；完整 Q4 动态相对同任务 BF16-full +9.23%；保留固定子词表覆盖与跨设备限制 |
+| E7 | 充分预热的原生同机对照 | 200次计时 / 40次候选非串行oracle通过；整体动态45.62、原生49.18 tok/s；优先优化prompt |
 
 详细通过标准和失败分类见 [docs/EXPERIMENTS.md](docs/EXPERIMENTS.md)。另见[候选架构](docs/ARCHITECTURE.md)和[初始源码审计](docs/PORTING_MATRIX.md)。[适配接口清单](docs/ADAPTER_INTERFACES.md)区分引擎/缓存与 MTP 需求，以及已经完成的算子实验。
 

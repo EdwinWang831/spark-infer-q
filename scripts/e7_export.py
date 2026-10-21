@@ -21,6 +21,8 @@ def summarize(study, sessions, identity, servers):
         assert server['harness_sha256']==study['harness_sha256']
         assert server['e6_source_sha256']==study['preflight']['e6_report_sha256']
     assert identity['binary_sha256']=='cb2eb4e21e2031cad267ad646c80170df894f76b426ebddcba0895628682185d'
+    assert identity['aot_sha256']=='f87c8e05dd76a68c843cc9f3c823217eeee93f59f49732233b106ab271459189'
+    assert identity['kernel_count']==320
     index={(s['engine'],s['session']):s for s in sessions}
     assert len(index)==4
     tasks=[];histogram=Counter()
@@ -118,6 +120,19 @@ def summarize(study, sessions, identity, servers):
             item['modes'][mode]={'decode_tokens_per_s':tok*1000/ms,'sum_decode_ms':ms,'decode_tokens':tok}
         item['candidate_dynamic_vs_native_mtp_tps_ratio']=item['modes']['ours_dynamic7']['decode_tokens_per_s']/item['modes']['native_native_mtp']['decode_tokens_per_s']
         paired.append(item)
+    accounting={}
+    for engine in ('native','ours'):
+        deltas=[]
+        for task in tasks:
+            for name,m in task['modes'].items():
+                if not name.startswith(engine+'_'):continue
+                for row in m['timings']:
+                    rt=row['runtime']
+                    if 'decode_seconds' in rt:alternate=rt['decode_seconds']*1000
+                    elif 'seconds' in rt and 'prefill_seconds' in rt:alternate=(rt['seconds']-rt['prefill_seconds'])*1000
+                    else:continue
+                    deltas.append(abs(row['decode_ms']-alternate))
+        accounting[engine]={'cases':len(deltas),'max_abs_delta_ms':max(deltas) if deltas else None}
     phase_costs={}
 
     for mode in ('fixed7','dynamic7'):
@@ -133,7 +148,7 @@ def summarize(study, sessions, identity, servers):
             'cross_engine_hash_agreement_cases':sum(t['native_vs_candidate_hash_equal'] for t in tasks),
             'native_spec_vs_serial_hash_agreement_cases':sum(t['native_draft_vs_serial_hash_equal'] for t in tasks),
             'all_prompt_ids_equal':True,'dynamic_width_counts':dict(sorted(histogram.items())),
-            'aggregates':aggregates,'candidate_phase_costs':phase_costs,'repeat_diagnostics':paired},
+            'aggregates':aggregates,'candidate_phase_costs':phase_costs,'repeat_diagnostics':paired,'runtime_decode_accounting':accounting},
         'limits':['native API exposes truncated token SHA, not complete output IDs or logits/state',
             'both engines use full per-task per-mode warmups before measured repetitions; ABBA still only two sessions per engine',
             'cross-engine output and quality differences must accompany speed comparisons',

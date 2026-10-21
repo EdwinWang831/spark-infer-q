@@ -147,3 +147,7 @@ notes: null
 ```
 
 Never commit raw user prompts, API keys, identifying machine reports, model weights or binary traces.
+
+## E7 — Warmed full-Q4 / native matched comparison
+
+2026-10-21: [plan](E7_TENSORFOLD_MATCH_PLAN.md), [report](E7_TENSORFOLD_MATCH_REPORT.md), [data](../results/e7/2026-10-21-tensorfold-match.json). All 200 formal timings, 100 full warmups (including 40 candidate nonserial oracles) completed across native/ours/ours/native loads. Full Q4 dynamic 45.62 versus native MTP 49.18 aggregate decode tok/s; natural tasks 45.57 versus 43.58. Complete-request sums 38.14 versus 18.79 s, summed TTFT 19.77 versus 1.65 s. Native and candidate outputs differ on two tasks; no overall speed lead. Next validate full-prompt chunking through unchanged decode arithmetic before timing; do not mix INT8 or budget recalibration.

@@ -27,7 +27,7 @@ class E7Tests(unittest.TestCase):
                 if engine=='native':p['warmup']=[copy.deepcopy(next(r for r in selected if r['mode']==mode)) for mode in modes]
                 else:
                     p['warmup']={'completed':True};p['correctness']['modes']=['fixed7','dynamic7']
-        identity={'binary_sha256':'cb2eb4e21e2031cad267ad646c80170df894f76b426ebddcba0895628682185d'}
+        identity={'aot_sha256':'f87c8e05dd76a68c843cc9f3c823217eeee93f59f49732233b106ab271459189','kernel_count':320,'binary_sha256':'cb2eb4e21e2031cad267ad646c80170df894f76b426ebddcba0895628682185d'}
         server=dict(head={'precision':'q4','rows':248320,'incremental_payload_bytes':397312000},harness_sha256={},e6_source_sha256='reference')
         return tasks,study,sessions,identity,[copy.deepcopy(server),copy.deepcopy(server)]
 
@@ -45,12 +45,13 @@ class E7Tests(unittest.TestCase):
         self.assertAlmostEqual(r['summary']['aggregates']['all']['ours_dynamic7']['decode_tokens_per_s'],4000/33)
 
     def test_no_claim_without_warmup_matching_input_or_correct_head(self):
-        for error in ('warmup','head','template','ordering','oracle'):
+        for error in ('warmup','head','template','ordering','oracle','identity'):
             tasks,study,sessions,identity,servers=self.fixture()
             if error=='warmup':sessions[0]['tasks'][0]['warmup'].pop()
             elif error=='head':servers[0]['head']['precision']='bf16'
             elif error=='template':sessions[0]['tasks'][0]['prompt_ids']=[999]
             elif error=='ordering':sessions[2]['tasks'][0]['timings'][0]['mode']='native_mtp'
+            elif error=='identity':identity['kernel_count']=319
             else:sessions[2]['tasks'][0]['correctness']['live_state_exact']=False
             with patch.object(e7_export,'TASKS',tasks),self.assertRaises(AssertionError,msg=error):
                 e7_export.summarize(study,sessions,identity,servers)
