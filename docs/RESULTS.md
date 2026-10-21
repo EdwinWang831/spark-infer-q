@@ -22,3 +22,5 @@ E0 observations are recorded in [E0_REPORT.md](E0_REPORT.md). E1 covers [core bu
 | E4 | DGX Spark | NOT_RUN | — | — | — | Engine comparison |
 
 Only replace placeholders with **observed** values, including precise revisions, configuration, dataset, and measurement method. Failed experiments are first-class results.
+
+The [TensorFold comparison](E4_TENSORFOLD_COMPARISON.md) audits the pinned MiaAI-Lab recipe's published numbers, adaptive MTP implementation and contribution boundaries. It is source/evidence analysis, not a completed E4 same-machine benchmark; no speed lead over TensorFold is established.

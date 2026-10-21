@@ -18,7 +18,7 @@ Can we retain DeepInfer's engine, scheduling, speculative verification and memor
 | E1 | Build DeepInfer core and probe SM121 kernel compatibility independently | Minimal GPU gate passed; native DeepGEMM BF16 blocked; full backend compatibility incomplete |
 | E2 | Minimal model adapter, forward pass, prefill and decode | Partial: full target weights loaded and selected token/logit execution ran; prefill/serial numerical review, independent full-model reference and DeepInfer scheduler integration remain open |
 | E3 | Draft adapters, speculative verification, GDN/QSA state correctness | Bounded greedy DFlash2 integration passed with native DeepInfer variable budget; random sampling, full scheduler and native Qwen MTP remain open |
-| E4 | Apples-to-apples comparison against vLLM / SGLang | Not executed |
+| E4 | Apples-to-apples engine comparison, including TensorFold / vLLM / SGLang | Same-machine benchmark not executed; [TensorFold source/evidence comparison](docs/E4_TENSORFOLD_COMPARISON.md) completed |
 
 For precise pass criteria and failure classification, see [docs/EXPERIMENTS.md](docs/EXPERIMENTS.md).
 See also [architecture candidates](docs/ARCHITECTURE.md) and the [initial source audit](docs/PORTING_MATRIX.md).
