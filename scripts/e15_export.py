@@ -39,13 +39,17 @@ def online_summary(raw):
     for base in ('fixed','native_cached'):
         def reduction(tasks):return 1-sum(t['median_decode_ms']['predictor'] for t in tasks)/sum(t['median_decode_ms'][base] for t in tasks)
         rng=random.Random(20261021);draws=sorted(reduction(rng.choices(per_task,k=len(per_task))) for _ in range(4000))
+        repeat_factors=[]
+        for rep in range(repetitions):
+            costs={m:sum(r['decode_ms'] for t in raw['tasks'] for r in t['timings'] if r['mode']==m and r['repetition']==rep) for m in modes}
+            repeat_factors.append(costs[base]/costs['predictor'])
         comparisons[base]=dict(factor=summary[base]['sum_task_median_decode_ms']/summary['predictor']['sum_task_median_decode_ms'],
-                               time_reduction=reduction(per_task),task_bootstrap_95=[draws[99],draws[3899]])
+                               time_reduction=reduction(per_task),task_bootstrap_95=[draws[99],draws[3899]],repeat_factors=repeat_factors)
     return dict(status='PASS_E15_ONLINE_ANALYSIS',summary=summary,comparisons=comparisons,per_task=per_task,
                 contract=raw['contract'],feature_group=raw['feature_group'],fixed_rows=raw['fixed_rows'],
                 formal_runs=len(per_task)*len(modes)*repetitions,oracle_runs=sum(len(t['checks']) for t in raw['tasks']),
                 committed_logit_rows=sum(c['logit_rows'] for t in raw['tasks'] for c in t['checks']),
-                source_sha256=raw['source_sha256'],model_sha256=raw['model_sha256'])
+                source_sha256=raw['source_sha256'],model_sha256=raw['model_sha256'],evidence_tasks=raw['tasks'])
 
 
 def main():

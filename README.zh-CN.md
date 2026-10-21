@@ -26,6 +26,8 @@
 
 **E14 在线置信度预算（未确认提速）：** 9个新任务（含1K–1.8K输入）的108次计时及27次committed-logit/live-state oracle全部通过。margin策略为 **37.790 / 后置深度基线37.765 tok/s（+0.065%）**，耗时下降区间跨零；两组验证宽度序列完全相同。冻结曲线下32种分桶组合全选anchor+5草稿，更新实测成本后仍有30–32/32组合选同一宽度；新任务深层接受率也被高估。因此保留实验状态，下一步先补深度校准、检查信号能否改变动作，再作在线速度结论。沿用同一次常驻加载，没有新的原生TensorFold排名。[报告](docs/E14_CONFIDENCE_BUDGET_REPORT.md) · [数据](results/e14/2026-10-21-online-budget.json)。
 
+**E15 七深度预测器（实验路径）：** 已用104条新合成提示、8,344个serial位置训练轻量预测器，按语义组隔离训练/校准/测试，另将SQL整族留出。六条另行冻结的新在线任务中，F1路径为 **44.30 decode tok/s / 现有缓存滞后预算40.28（+10.00%）**；校准固定七草稿为39.96（预测器+10.88%）。六任务中位数及五轮汇总均正向；90次正式输出/状态检查、18次独立oracle（2,286行committed logits）全部通过。特征、CPU传输和预测计入耗时，主模型与草稿权重冻结且常驻。这是128-token cap的greedy decode，含1K/1.5K合成输入；自然EOS、更广任务及F0/F1在线消融仍待验证，没有新增原生TensorFold排名或默认切换。[报告](docs/E15_CONFIDENCE_TRAINING_REPORT.md) · [证据](results/e15/2026-10-21-confidence-training.json) · [实验预测器](results/e15/2026-10-21-selected-model.json)。
+
 ## 研究问题
 
 能否将 DeepInfer 的引擎、调度、投机验证和内存管理优势用于 **单台 DGX Spark**，同时将模型执行器与 GPU 内核适配到 Qwen3.8-Flash-Next？或者，基于 vLLM / SGLang 的实现能否在已验证的速度与工程投入之间取得更好的平衡？
