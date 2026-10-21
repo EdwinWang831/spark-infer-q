@@ -99,6 +99,8 @@ Subsequent [DFlash2 integration](E3_DFLASH2_REPORT.md): real 603M BF16 drafter w
 
 Followup [official draft/complete-generation study](E3_FOLLOWUP_REPORT.md): eight requests completed to EOS, with 72 balanced timing runs. Tokens/live state matched serial, with separate exact-logit checks. Fixed/dynamic aggregate ratios were 1.781×/1.789×; all dynamic decisions chose width4 and one short task slowed down. FP32 draft mathematical controls passed; BF16 draft outputs differ, and a target MoE precision control did not fix prefill. These are bounded decode observations, not E4 service comparisons or general quality/long-context proof.
 
+Subsequent [five-mode budget audit](E3_BUDGET_AUDIT_REPORT.md): 200 balanced timings on the eight reused regression tasks and six separate calibration prompts. Fixed1/2/3 aggregate decode ratios were 1.278×/1.597×/1.794×; dynamic was 1.799× and chose width4 at all 475 decisions. Three tasks were replayed at all 166 serial positions (1992 timed actions, 664 live-state checks). A future-aware path reduces modeled cost by 20.3% on the mixed-acceptance task, versus 3.5% on the high-acceptance code task. This exposes local prediction headroom, not an online speedup. Next evaluate independently calibrated pre-draft gating and verification choices on new inputs; full-engine/multi-request and numerical reference work remain separate.
+
 ## E4 — Performance, cost and selection
 
 Compare DeepInfer-adapted, the existing TensorFold service, vLLM and SGLang under controlled conditions (first verify each candidate is available and correct):
