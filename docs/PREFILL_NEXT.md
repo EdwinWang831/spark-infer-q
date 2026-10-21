@@ -9,3 +9,5 @@ E7 对照期间只准备方案，不修改正在计时的执行器。用户明�
 性能同时报告prompt处理、首token/完整请求与decode，核对计时排除加载和oracle但包含真实状态初始化。先完成分块路径正确性/收益，再评估CUDA Graph、缓冲区复用、独立原生prefill内核；不要一次混入多项数值变化。INT8 backbone+BF16 selector可另做受控实验。
 
 更新：后续[E8 prompt本体实验](E8_PREFILL_REPORT.md)已完成81组精确对照和160次计时，8行分块提速4.66倍。此文前述“尚未”是E7期间状态；完整Q4动态服务集成及wire TTFT仍待验证。
+
+后续更新：[完整Q4动态生成集成](E8_INTEGRATION_REPORT.md)亦已通过，80次配对计时、40次生成oracle、80次请求后状态检查全部通过；新执行器默认8行prompt。真实TTFT加速4.66倍、完整请求1.67倍，decode退化1.14%保留。

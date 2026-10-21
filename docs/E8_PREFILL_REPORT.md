@@ -1,5 +1,7 @@
 # E8：保留decode算术的分块prompt结果
 
+后续更新：[完整Q4生成接入](E8_INTEGRATION_REPORT.md)已通过，真实TTFT加速4.66倍、完整请求1.67倍；下文保留先前prompt本体实验及其当时边界。
+
 2026-10-21。[预定方法](E8_PREFILL_PLAN.md)、[完整数据](../results/e8/2026-10-21-chunked-prompt.json)。状态 **PASS_PROMPT_ONLY**；现有默认路径未改。
 
 ## 结果

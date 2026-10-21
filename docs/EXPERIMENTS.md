@@ -155,3 +155,7 @@ Never commit raw user prompts, API keys, identifying machine reports, model weig
 ## E8 — Decode-arithmetic prompt chunking
 
 2026-10-21: [plan](E8_PREFILL_PLAN.md), [report](E8_PREFILL_REPORT.md), [data](../results/e8/2026-10-21-chunked-prompt.json). 81 full prompt/tail comparisons (every-row logits/features, boundary live state and eight-step continuation) passed; 160 warmed timings. Eight-row chunks: 109.23 versus serial 23.43 prompt tok/s, 4.66×. Includes state init/capture/concat, excludes tokenization/network. No drafter resident or full speculative generation; serving default unchanged. Next integrate rows8 into complete Q4 dynamic requests and measure actual wire TTFT/complete wall/decode.
+
+### E8 complete-generation integration
+
+2026-10-21: [plan](E8_INTEGRATION_PLAN.md), [report](E8_INTEGRATION_REPORT.md), [usage](PROMPT_USAGE.md), [data](../results/e8/2026-10-21-integrated-prompt.json). New Q4 SSE executor defaults to rows8. All 40 full-generation oracle comparisons (3,348 committed logit rows) and 80 timed outputs/separate post-request live-state checks passed against serial rows1 and E7 IDs. Paired TTFT 19.69→4.23 s; complete-request sums 37.92→22.67 s (1.67×). Decode 45.91→45.39 tok/s, a retained 1.14% regression. One load / reused ten tasks; native was not rerun, so no new native ranking. Next remaining prompt costs, target verification/decode and budget feedback; INT8 remains a separate comparison.

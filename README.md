@@ -4,7 +4,7 @@
 
 **Experimental inference acceleration for Qwen models on NVIDIA DGX Spark (GB10 / SM121), inspired by [DeepInfer](https://github.com/deepseek-ai/DeepInfer).**
 
-> **Prompt experiment (E8):** Eight-row chunks through unchanged decode arithmetic measured **4.66×** faster target prompt processing (ten-task median sum **19.68→4.22 s**, 461 input tokens). All 81 logits/features/live-state and eight-step continuation comparisons passed; 160 warmed timings completed. This is prompt-only, with no draft model resident; serving defaults, wire TTFT and full speculative-generation performance are not yet updated. [Report](docs/E8_PREFILL_REPORT.md) · [data](results/e8/2026-10-21-chunked-prompt.json).
+> **Complete-generation prompt integration (E8):** Eight-row prompt chunks are now the default in the new Q4 SSE executor. In 80 paired timings, summed wire TTFT fell **19.69→4.23 s (4.66×)** and complete-request time **37.92→22.67 s (1.67×; 40.22% less time)**. All 40 full-generation logit/state comparisons and 80 post-request state checks passed, with complete IDs matching E7. Decode was **45.91→45.39 tok/s (-1.14%)**; this gain comes from prompt processing. Ten reused tasks, one load; native TensorFold was not rerun. [Report](docs/E8_INTEGRATION_REPORT.md) · [usage](docs/PROMPT_USAGE.md) · [data](results/e8/2026-10-21-integrated-prompt.json).
 
 > **Latest matched comparison (E7):** 200 balanced warmed timings on ten reused tasks measured full-Q4 dynamic **45.62** versus native TensorFold MTP **49.18 decode tok/s** overall; natural-task decode was **45.57 vs 43.58**. Complete-request median sums were **38.14 vs 18.79 s**. Our serial prompt path remains the priority bottleneck: summed wire TTFT **19.77 vs 1.65 s**. Cross-engine output hashes agree on 8/10 tasks; no overall speed lead over native TensorFold is established. See the [report](docs/E7_TENSORFOLD_MATCH_REPORT.md) and [data](results/e7/2026-10-21-tensorfold-match.json). At E7 time, chunked prefill was not GPU validated; see E8 above for the subsequent prompt-only result.
 
@@ -40,7 +40,7 @@ A separate [bounded native-scheduler bridge](docs/E5_ENGINE_BRIDGE_REPORT.md) no
 | E5 | Minimal native engine bridge | Bounded target-only C++ Scheduler / full-Qwen lifecycle checks passed; full Worker/cache/async and GPU batching remain open |
 | E6 | Optional draft-head compression | 256 bounded timings / 64 oracle runs passed; full Q4 dynamic +9.23% versus same-task BF16-full; fixed subset coverage and cross-device limits retained |
 | E7 | Warmed matched native comparison | 200 timings / 40 candidate nonserial oracles passed; overall dynamic 45.62 vs native 49.18 tok/s; prompt optimization pending |
-| E8 | Decode-arithmetic prompt chunking | 81 exact comparisons and 160 timings passed; eight-row prompt 4.66× faster; full speculative serving integration pending |
+| E8 | Prompt chunking and complete Q4 generation | Prompt: 81 exact comparisons / 160 timings, 4.66×; integrated: 40 full-generation oracles / 80 timings, TTFT 4.66× and complete requests 1.67×; decode -1.14% |
 
 For precise pass criteria and failure classification, see [docs/EXPERIMENTS.md](docs/EXPERIMENTS.md).
 See also [architecture candidates](docs/ARCHITECTURE.md) and the [initial source audit](docs/PORTING_MATRIX.md).

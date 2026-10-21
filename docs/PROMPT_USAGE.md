@@ -25,4 +25,4 @@ Use `--prefill-rows 1` for the original prompt path. The research request extens
 
 The study additionally exposes `/e8/check` and `/e8/last-check` for bounded correctness checks. The latter runs after the SSE response has completed, keeping state comparison outside wire latency measurements. These diagnostics are not required for normal generation. Source/dependency manifests are verified at startup; this command expects an already prepared research environment and does not download weights or install third-party sources.
 
-See the [integration plan](E8_INTEGRATION_PLAN.md) and [earlier prompt-only report](E8_PREFILL_REPORT.md). Complete-generation measurements are reported separately from prompt-only throughput.
+See the [integration plan](E8_INTEGRATION_PLAN.md) and [earlier prompt-only report](E8_PREFILL_REPORT.md). The [complete-generation report](E8_INTEGRATION_REPORT.md) records 40 full-generation oracle passes and 80 paired timings: TTFT 4.66×, complete requests 1.67×, decode -1.14%. These are separate from prompt-only throughput.
