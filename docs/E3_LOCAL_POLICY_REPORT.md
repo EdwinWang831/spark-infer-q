@@ -78,3 +78,5 @@
 该[独立工程对照已完成](E3_DRAFT_FASTPATH_REPORT.md)：128 次计时中，缓存加 EOS 相对其同轮原始 fixed3 快约 1.26%，缓存单独未建立稳定净收益。没有运行学习策略与两项优化的组合。
 
 另行核对固定 checkpoint 的 [config](https://huggingface.co/incoai/Qwen3.8-Flash-Next-DFlash2/blob/a22a1744e85c17364dcc54a6a420af7135d4c7f6/config.json)，`dflash_config.block_size` 为 8；[上游 README](https://huggingface.co/incoai/Qwen3.8-Flash-Next-DFlash2/blob/a22a1744e85c17364dcc54a6a420af7135d4c7f6/README.md)说明其 SGLang 评测只用 4 行，受当时 QSA 实现限制。我们的 target buffers/state 和 drafter 探针也仅验证至四行，不能把这个范围当成权重训练上限。更大的草稿/验证范围值得单独核对官方语义、GDN/QSA 状态和 SM121 算子后实测；当前没有八行兼容性或收益结果。
+
+后续[独立八行实验已完成](E3_WIDE_BLOCK_REPORT.md)：主实验动态零到七草稿较同轮 fixed3 快 13.14%，但附加对照中与独立校准选定的固定六草稿基本持平。更长草稿的收益得到支持，在线适应胜过合适固定长度仍未建立；没有与本报告局部预测器组合。
