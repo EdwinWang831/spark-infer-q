@@ -150,7 +150,12 @@ def analyze(raw):
     result = dict(status='PASS_OFFLINE_ANALYSIS', contract=CONTRACT, models=models,
         positions=len(raw['samples']), actions=len(rows), timed_verify_calls=len(rows)*CONTRACT['repetitions'],
         train_actions=len(train), test_actions=len(test), excluded_first_step_actions=len(rows)-len(eligible),
-        evaluations={}, comparisons={}, observations=rows, measurements=dict(
+        evaluations={}, comparisons={}, observations=rows,
+        model_contract=dict(M0='one median per width', M1='per-width intercept plus context',
+            M2='M1 plus current true expert union, offline only',
+            M3='M1 plus previous executed width4 union',
+            coefficient_mapping='within each width, inherited per_row_ms is the context slope, not a verification-width slope'),
+        measurements=dict(
             repeated_cost_relative_span=summary([r['cost_relative_span'] for r in rows]),
             observation_over_original_verify=summary([r['observation_ms']/r['verify_ms'] for r in rows])),
         limits=['same-prefix costs and fixed width4 behavior, not online decode speedup',
