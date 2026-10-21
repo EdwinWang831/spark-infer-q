@@ -18,7 +18,9 @@
 
 当前原型结合了 **TensorFold 模型执行路径**、我们适配的 **DFlash2 草稿模型**和 **DeepInfer 原生 MTPVarlen 验证预算机制**。我们编写的 Python 执行循环连接 target 特征、草稿候选、接受前缀的状态提交和实验性局部策略。主模型 CUDA 内核及 GDN/QSA 提交、重放操作来自 TensorFold。
 
-目前尚未接入完整 DeepInfer 引擎和 C++ 多请求调度器。已报告速度对应这条有界混合实现，不是完整 DeepInfer 引擎的基准成绩。
+目前尚未接入完整 DeepInfer 引擎。E3/E4 已报告速度对应 DFlash2 实验执行循环，不是下方独立调度桥接器或完整 DeepInfer 引擎的基准成绩。
+
+另有[最小真实调度桥接](docs/E5_ENGINE_BRIDGE_REPORT.md)：DeepInfer 原版 C++ Scheduler 已实际驱动完整 Qwen target-only 路径，七组 GPU 场景通过，核对 364 行完整 logits 和 79 次有效状态。真实状态仍由 Qwen 后端管理，原生 block 仅作逻辑配额；GPU 请求仍逐个执行，尚未接入完整 Worker/异步流水，也不是吞吐结果。下一项为 DFlash2 草稿头成本拆测与压缩。
 
 ## 实验阶段
 
@@ -26,9 +28,10 @@
 | --- | --- | --- |
 | E0 | 硬件/软件环境指纹与上游兼容性审计 | PASS_STATIC；本阶段未执行 CUDA 测试 |
 | E1 | 构建 DeepInfer 核心，独立检查 SM121 内核兼容性 | 最小 GPU 检查通过；原生 DeepGEMM BF16 路径受阻；完整后端兼容性尚未完成 |
-| E2 | 最小模型适配器、前向执行、prefill 与 decode | 部分完成：完整 target 权重已加载，选定 token/logits 路径已运行；prefill/串行数值复核、独立整模参考及 DeepInfer 调度器集成仍待完成 |
+| E2 | 最小模型适配器、前向执行、prefill 与 decode | 部分完成：完整 target 权重已加载，选定 token/logits 路径已运行；prefill/串行数值复核、独立整模参考及完整 DeepInfer 引擎集成仍待完成 |
 | E3 | 草稿适配、投机验证、GDN/QSA 状态正确性 | 有界 greedy DFlash2 集成与原生 DeepInfer 动态预算检查通过；随机采样、完整调度器及原生 Qwen MTP 仍待完成 |
 | E4 | 同条件对照 TensorFold / vLLM / SGLang 等引擎 | 部分完成：[短上下文 TensorFold / DFlash2 同机实测](docs/E4_MATCHED_REPORT.md)已完成，保留预热/数值限制；vLLM / SGLang、长上下文和并发未测 |
+| E5 | 最小原生引擎桥接 | C++ Scheduler 驱动完整 Qwen 的有界 target-only 生命周期检查通过；完整 Worker/cache/异步与 GPU batch 未完成 |
 
 详细通过标准和失败分类见 [docs/EXPERIMENTS.md](docs/EXPERIMENTS.md)。另见[候选架构](docs/ARCHITECTURE.md)和[初始源码审计](docs/PORTING_MATRIX.md)。[适配接口清单](docs/ADAPTER_INTERFACES.md)区分引擎/缓存与 MTP 需求，以及已经完成的算子实验。
 

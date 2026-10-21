@@ -18,7 +18,9 @@ Can we retain DeepInfer's engine, scheduling, speculative verification and memor
 
 The current prototype combines **TensorFold model execution**, an adapted **DFlash2 proposer**, and **DeepInfer's original MTPVarlen verification budget**. Our Python execution loop connects target features, draft proposals, accepted-prefix state commits and experimental local policies. The target CUDA kernels and GDN/QSA commit/replay operations come from TensorFold.
 
-The complete DeepInfer engine and C++ multi-request scheduler are not integrated. Reported speeds describe this bounded mixed implementation; they are not full DeepInfer engine benchmarks.
+The complete DeepInfer engine is not integrated. E3/E4 speeds describe the DFlash2 experimental execution loop; they are not benchmarks of the separate scheduler bridge below or of a full DeepInfer engine.
+
+A separate [bounded native-scheduler bridge](docs/E5_ENGINE_BRIDGE_REPORT.md) now lets the real DeepInfer C++ Scheduler drive the complete Qwen target-only path. Seven GPU scenario groups passed, with 364 full-logit rows and 79 live-state checks. Device state remains owned by the Qwen backend; native blocks are logical accounting. GPU requests execute serially, and this is not the full Worker/async pipeline or a throughput result. The next scoped experiment is DFlash2 draft-head profiling and compression.
 
 ## Investigation stages
 
@@ -26,9 +28,10 @@ The complete DeepInfer engine and C++ multi-request scheduler are not integrated
 | --- | --- | --- |
 | E0 | Hardware/software fingerprint + upstream compatibility audit | PASS_STATIC; no CUDA execution tests |
 | E1 | Build DeepInfer core and probe SM121 kernel compatibility independently | Minimal GPU gate passed; native DeepGEMM BF16 blocked; full backend compatibility incomplete |
-| E2 | Minimal model adapter, forward pass, prefill and decode | Partial: full target weights loaded and selected token/logit execution ran; prefill/serial numerical review, independent full-model reference and DeepInfer scheduler integration remain open |
+| E2 | Minimal model adapter, forward pass, prefill and decode | Partial: full target weights loaded and selected token/logit execution ran; prefill/serial numerical review, independent full-model reference and complete DeepInfer engine integration remain open |
 | E3 | Draft adapters, speculative verification, GDN/QSA state correctness | Bounded greedy DFlash2 integration passed with native DeepInfer variable budget; random sampling, full scheduler and native Qwen MTP remain open |
 | E4 | Apples-to-apples engine comparison, including TensorFold / vLLM / SGLang | Partial: [short-context TensorFold / DFlash2 measurements](docs/E4_MATCHED_REPORT.md) completed; warmup/numerical limits retained; vLLM / SGLang, long context and concurrency not measured |
+| E5 | Minimal native engine bridge | Bounded target-only C++ Scheduler / full-Qwen lifecycle checks passed; full Worker/cache/async and GPU batching remain open |
 
 For precise pass criteria and failure classification, see [docs/EXPERIMENTS.md](docs/EXPERIMENTS.md).
 See also [architecture candidates](docs/ARCHITECTURE.md) and the [initial source audit](docs/PORTING_MATRIX.md).
