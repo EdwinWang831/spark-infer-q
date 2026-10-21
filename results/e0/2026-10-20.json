@@ -1,0 +1,333 @@
+{
+  "experiment": "E0",
+  "status": "PASS_STATIC",
+  "observed_interval_utc": {
+    "start": "2026-10-20T12:30:51.956594+00:00",
+    "end": "2026-10-20T12:39:20.151251+00:00"
+  },
+  "definition": "Hardware/model identity and static upstream constraints established; no inference/kernel/build/performance validation.",
+  "repo_base_sha": "bb5c010c29285bcf6a5f44c719abe84dfdbf1b08",
+  "upstream_sha": "774ce244b87cc0eb8d4b94ab9f5de2ab22049f01",
+  "hardware": {
+    "gpu_count": 1,
+    "gpu_name": "NVIDIA GB10",
+    "compute_capability": [
+      12,
+      1
+    ],
+    "capability_method": "NVML nvmlDeviceGetCudaComputeCapability, cross-checked by nvidia-smi; no CUDA context",
+    "architecture": "aarch64",
+    "memory_total_gib": 121.627,
+    "memory_available_start_gib": 23.085,
+    "memory_available_end_gib": 22.674,
+    "gpu_memory_note": "nvidia-smi memory.total/memory.used returned N/A on this unified-memory host; OS memory is reported separately, not as GPU allocatable memory."
+  },
+  "software": {
+    "os": "Ubuntu 24.04.4 LTS",
+    "kernel": "6.17.0-1031-nvidia",
+    "driver": "580.173.02",
+    "host_python": "3.12.3",
+    "host_gcc": "13.3.0",
+    "host_cuda_toolkit": "13.0.88",
+    "host_nvcc_location": "/usr/local/cuda/bin/nvcc; not originally on SSH PATH",
+    "host_system_python_packages": {
+      "torch": null,
+      "triton": null,
+      "vllm": null,
+      "sglang": null,
+      "transformers": null,
+      "flash-attn": null,
+      "tilelang": null,
+      "deep-gemm": null,
+      "flash-mla": null,
+      "deep-ep": null,
+      "deepinfer": null,
+      "nvidia-modelopt": null
+    },
+    "runtime_environment": {
+      "timestamp_utc": "2026-10-20T12:33:23.628888+00:00",
+      "mode": "static-only",
+      "platform": {
+        "system": "Linux",
+        "release": "6.17.0-1031-nvidia",
+        "machine": "aarch64",
+        "python": "3.12.3"
+      },
+      "nvidia_smi": {
+        "available": true,
+        "returncode": 0,
+        "stdout": "NVIDIA GB10, [N/A], 580.173.02",
+        "stderr": ""
+      },
+      "nvcc": {
+        "available": true,
+        "returncode": 0,
+        "stdout": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2026 NVIDIA Corporation\nBuilt on Tue_Jun_09_02:45:27_PM_PDT_2026\nCuda compilation tools, release 13.3, V13.3.73\nBuild cuda_13.3.r13.3/compiler.38244171_0",
+        "stderr": ""
+      },
+      "gcc": {
+        "available": true,
+        "returncode": 0,
+        "stdout": "13.3.0",
+        "stderr": ""
+      },
+      "torch": {
+        "installed": true,
+        "version": "2.13.0a0+9186a08b2c.nv26.7.59513937",
+        "torch_imported": false,
+        "cuda_probe": "SKIPPED",
+        "cuda_build": "13.3",
+        "git_version": "Unknown"
+      }
+    },
+    "runtime_package_metadata": {
+      "torch": "2.13.0a0+9186a08b2c.nv26.7.59513937",
+      "triton": "3.7.1+gitf797708c.nv26.7",
+      "vllm": null,
+      "sglang": null,
+      "transformers": "5.17.0",
+      "flash-attn": "2.7.4.post1+git5231d95fe1.54157505",
+      "tilelang": null,
+      "deep-gemm": null,
+      "flash-mla": null,
+      "deep-ep": null,
+      "deepinfer": null,
+      "nvidia-modelopt": "0.44.0"
+    },
+    "torch_imported_during_runtime_probe": false,
+    "upstream_nvidia_requirements": {
+      "torch": "2.13.0+cu132",
+      "flash-attn-4": "4.0.0b34"
+    },
+    "scope_note": "Package absence applies only to inspected Python environments, not every venv or stopped container on the host. PyTorch CUDA execution was deliberately skipped."
+  },
+  "model": {
+    "id": "nvidia/Qwen3.8-Flash-Next-FP4-Local",
+    "revision": "b9ce18a6887e18c089fdea8509a33e63429a3300",
+    "revision_evidence": "Snapshot revision in live service argv; local config/index SHA256 recorded. Independent HF API lookup timed out; full weight contents were not rehashed.",
+    "config_sha256": "b50dbc52a0c83b0cd2a44a372c1fb6b5e0e6827d22f2611c97d4d030f92f6b28",
+    "summary": {
+      "architectures": [
+        "Qwen4ExpForConditionalGeneration"
+      ],
+      "model_type": "qwen4_exp",
+      "dtype": null,
+      "text_dtype": "bfloat16",
+      "num_hidden_layers": 48,
+      "layer_type_counts": {
+        "linear_attention": 36,
+        "full_attention": 12
+      },
+      "num_experts": 512,
+      "num_experts_per_tok": 10,
+      "max_position_embeddings": 262144,
+      "num_key_value_heads": 2,
+      "num_nextn_predict_layers": null,
+      "mtp": {
+        "layer_fields": {
+          "num_nextn_predict_layers": null,
+          "mtp_num_hidden_layers": 1,
+          "mtp.num_hidden_layers": 1
+        },
+        "resolved_num_layers": 1,
+        "conflicting_layer_counts": false,
+        "layer_types": [
+          "full_attention"
+        ],
+        "note": "Configuration only; native MTP execution is not tested."
+      },
+      "quantization": {
+        "quant_method": "modelopt",
+        "quant_algo": "MIXED_PRECISION",
+        "expert_dtype": null,
+        "weight_block_size": null,
+        "quantized_module_counts_by_algorithm": {
+          "NVFP4": 49,
+          "MXFP8": 438,
+          "W4A16_NVFP4": 58
+        }
+      },
+      "upstream_source_guards": [
+        "DeepInfer upstream model registry does not register this architecture.",
+        "DeepInfer upstream HF parser accepts only model_type=deepseek_v41.",
+        "DeepInfer upstream parser requires top-level dtype=bfloat16.",
+        "DeepInfer upstream quantization parser expects fp8 / fp4 expert format."
+      ],
+      "note": "Source-level checks only; clearing them is not proof of runtime compatibility."
+    },
+    "weights_index": {
+      "name": "model.safetensors.index.json",
+      "sha256": "5fa166bbb1cf25adda455117563efa72a2072272001f459eedece131ffc913e1",
+      "metadata": {
+        "total_size": 102138950916
+      },
+      "tensor_count": 375487,
+      "shard_count": 21,
+      "all_shards_present": true,
+      "observed_shard_bytes": 102192011716,
+      "verification": "Index and shard existence/size only; no full weight hashes read"
+    },
+    "weight_files_gib": 95.174
+  },
+  "baseline_runtime": {
+    "engine": "TensorFold native Zig/CUDA",
+    "image": "tensorfold-qwen38:zig-db28187",
+    "image_id": "sha256:49a4adb03c4acdff4e4c54b6e8b491b01203cc9e00070ef0e47cea27ce249694",
+    "recipe_sha": "656879fd752749bbd11a6e1a065a326c00940911",
+    "tensorfold_base_sha": "db281878ddb836fd0df510d8771ecb7e0fe47d26",
+    "tensorfold_checkout_has_tracked_patches": true,
+    "model_optimizer_sha": "d7cbff3486a3ffb1a357e32d9810da0bfc649709",
+    "patch_count": 15,
+    "patch_hashes_match_installation_manifest": true,
+    "patch_sha256": {
+      "0001-build-registry-server.patch": "e01aa6e9e1c9559f35a1d72cb71e5839087970a5a0bc2c861775be3f15f9bc64",
+      "0002-kernels.patch": "7f07a7b49068364b4240cb3690a82d41d2b790556556737eb4d8882858b51338",
+      "0003-config-weights.patch": "95d6ff7c2ba4509c6e79c2bc917730a70e9cc74cab8e6ac5731062fe8944de9a",
+      "0004-triton-replay-torch-ops.patch": "632cb045ef5271121b1ca79fb7d6fb0bafa99658b9575a8ab2b4ce8db391d7e0",
+      "0005-engine.patch": "b93fbf94934fd3a39a211524195636bea752b27879eea6293d153d3d9a3e3935",
+      "0006-two-ranks.patch": "451583d27497802d2d3a97d6ea296bec38f9aa6c5884487d15cf9449a7372711",
+      "0007-serving.patch": "e8fc353e73659014428ea9d86fc79f4ffc68369d3bd61a34f6de87c2a916ceb4",
+      "0008-kernel-spec-tools.patch": "0d4438216b974e0c7129781de273b78f018095e31872faaec3b97dc21fd02b1f",
+      "0009-vision-python.patch": "4153294f3888fc09708430a975888bb9b2ed76d2b24d26e887822c140fffa084",
+      "0010-system-memory-cache.patch": "105b853ae718a8c25f930cc2c230283365622073b75234e0d34bc14e19eed40d",
+      "0011-vision-nvidia-fp4.patch": "f9b8d8225ebd9cfc07c048f14bf5698a67d7c7bac1c372a644b69851fe2305d9",
+      "0012-engine-nvidia-fp4.patch": "adca4cf00ff403e20486628128d291e2cd99c756ab03c2a91a516ac46a2b8f42",
+      "0013-engine-tune.patch": "a8d20a9e9617413ee2a9d5378709642e9c7ae3411a67049c92ea044606b37f7b",
+      "0014-engine-prompt-expert-tile.patch": "011365d6022b97de8f7f62ce47c587829fb5b2ca833b6138de4b496b67330a70",
+      "0015-engine-fair-prefill.patch": "41e4a8d96ed28b8258f9524bc6a270aba84541e114d09d5927a0126ac3423ab4"
+    },
+    "provenance_limit": "Source checkout and installation metadata inspected; image was not rebuilt to prove binary/source equivalence.",
+    "context_limit": 262144,
+    "parallel_limit": 5,
+    "max_output_tokens": 32768,
+    "kv_dtype": "fp8",
+    "vision_enabled": true,
+    "yarn_factor": 0,
+    "mtp_configured_draft_depth": 6,
+    "mtp_product_streams": 5,
+    "mtp_note": "Checkpoint MTP layer count is 1; configured draft depth is 6. These are different quantities. No acceptance-rate or generation validation was performed."
+  },
+  "source_findings": [
+    {
+      "boundary": "architecture",
+      "status": "SOURCE_BLOCKER",
+      "actual": [
+        "Qwen4ExpForConditionalGeneration"
+      ],
+      "expected": [
+        "DeepseekV41ForCausalLM"
+      ],
+      "url": "https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/model_executor/models/__init__.py"
+    },
+    {
+      "boundary": "config_schema",
+      "status": "SOURCE_BLOCKER",
+      "actual": {
+        "model_type": "qwen4_exp",
+        "top_level_dtype": null,
+        "text_dtype": "bfloat16",
+        "num_key_value_heads": 2
+      },
+      "expected": {
+        "model_type": "deepseek_v41",
+        "top_level_dtype": "bfloat16",
+        "num_key_value_heads": 1
+      },
+      "note": "Missing top-level dtype is a schema mismatch, not evidence that Qwen text weights are not BF16.",
+      "url": "https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/hugging_face/config.py"
+    },
+    {
+      "boundary": "quantization_layout",
+      "status": "SOURCE_BLOCKER",
+      "actual": "ModelOpt MIXED_PRECISION; NVFP4 experts group16/csf; MXFP8 and W4A16_NVFP4 elsewhere",
+      "expected": "quant_method fp8; expert_dtype fp4; dynamic; weight_block_size [32,32]; scale_fmt ue8m0",
+      "note": "Expert FP4 representation/scales differ; renaming fields is insufficient.",
+      "url": "https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/hugging_face/config.py"
+    },
+    {
+      "boundary": "native_mtp",
+      "status": "REQUIRES_ADAPTER",
+      "actual": "Qwen native MTP, one configured layer",
+      "expected": "DFlashNextPredictHeadHC-only speculative path",
+      "url": "https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/deepinfer/model_executor/models/mtp/dflash.py"
+    },
+    {
+      "boundary": "sm121",
+      "status": "NOT_TESTED",
+      "actual": "GB10 capability 12.1",
+      "upstream_declared_support": "NVIDIA SM100; Ascend 950",
+      "note": "Outside declared support; does not prove that porting kernels is impossible.",
+      "url": "https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/README.md"
+    },
+    {
+      "boundary": "toolchain",
+      "status": "VERSION_MISMATCH_NOT_EXECUTED",
+      "actual": "Active container CUDA 13.3/PyTorch NVIDIA prerelease/FlashAttention 2.7.4",
+      "expected": "Pinned upstream PyTorch 2.13.0+cu132 and FlashAttention 4.0.0b34",
+      "note": "Requires an isolated E1 environment; this is not a tested build failure.",
+      "url": "https://github.com/deepseek-ai/DeepInfer/blob/774ce244b87cc0eb8d4b94ab9f5de2ab22049f01/requirements-nvidia.txt"
+    }
+  ],
+  "service_continuity": {
+    "before_utc": "2026-10-20T12:32:45.168050+00:00",
+    "after_utc": "2026-10-20T12:39:20.151251+00:00",
+    "checks": {
+      "id": true,
+      "image_id": true,
+      "created": true,
+      "started_at": true,
+      "running": true,
+      "restart_count": true,
+      "pid": true,
+      "args": true,
+      "env": true,
+      "mounts": true,
+      "network_mode": true,
+      "config_sha256_unchanged": true,
+      "health_ok_before": true,
+      "health_ok_after": true,
+      "gpu_process_ids_unchanged": true
+    },
+    "all_checks_passed": true,
+    "restart_count_before": 0,
+    "restart_count_after": 0,
+    "health_http_before": 200,
+    "health_http_after": 200,
+    "limitation": "Snapshots establish service continuity/configuration stability, not zero latency impact or continuous availability between samples."
+  },
+  "inspection_policy": {
+    "torch_imports": false,
+    "new_cuda_contexts_intended": false,
+    "model_loads": false,
+    "generation_requests": false,
+    "dependency_installs": false,
+    "service_restarts": false,
+    "remote_file_writes": false,
+    "large_weight_reads": false,
+    "health_and_model_listing_gets": true,
+    "note": "Small metadata/index reads and transient CPU-only Python processes were used; service snapshots do not quantify transient latency impact."
+  },
+  "untested": [
+    "DeepInfer C++ build/import on Spark",
+    "SM121 kernels and numerical correctness",
+    "Qwen forward/prefill/decode under DeepInfer",
+    "GDN/QSA speculative state commit/rollback",
+    "native MTP acceptance and unbiased sampling",
+    "PyTorch CUDA launch/graph compatibility",
+    "new throughput/latency/quality comparisons",
+    "all checkpoint weight hashes",
+    "vLLM/SGLang availability outside inspected environments"
+  ],
+  "performance": {
+    "measured": false,
+    "baseline_tokens_per_second": null,
+    "candidate_tokens_per_second": null,
+    "speedup": null
+  },
+  "raw_evidence_handling": "Private raw snapshots and exact paths remain under local .git/e0-evidence; this JSON uses sanitized identities and no user prompts, keys, network addresses or hostnames.",
+  "reproduction_scripts_sha256": {
+    "scripts/probe_environment.py": "0e01396c1c79f0e18870ed46fe7c6a849a304226d07dfc639795215f4f6ea564",
+    "scripts/inspect_hf_config.py": "b606abd3d5b595549f6ede802cfd7c47fa5755147cabcfd658f2c3ec6b79df61"
+  },
+  "reproduction_note": "Hashes identify the final local scripts for re-running the audit. Raw observation timestamps and probe modes are preserved separately."
+}

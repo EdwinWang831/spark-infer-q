@@ -1,25 +1,55 @@
 # Experiment plan
 
-**Rule: run smallest and cheapest tests first.** Do not download the full DeepSeek V4.1 checkpoint to test compatibility. Do not overwrite a working local inference environment.
+**Rule: use small probes to isolate initial blockers, then combine verified components into meaningful integration milestones.** Keep internal diagnostics, but do not stop after every small substep once the foundational gates pass. Do not download the full DeepSeek V4.1 checkpoint to test compatibility. Do not overwrite a working local inference environment.
+
+## Current priorities
+
+Evaluate and port useful DeepInfer components for Qwen on a single DGX Spark. MTP is an important workstream alongside the engine, scheduling, memory/cache management, GPU operators and Qwen executor. Its importance does not make the other components mere dependencies of MTP, and it does not require choosing a complete port over selective reuse before evidence is available. Keep the E0–E4 identifiers and prioritize work by dependencies, correctness evidence, likely benefit and porting cost.
+
+| Workstream | Next evidence needed |
+| --- | --- |
+| SM121 operators and quantization | Complete layer-0 MoE passed with real routing/aggregation, BF16-input compressed experts and MXFP8 shared expert; selected GDN/QSA blocks and state checks subsequently met gates, with CPU full-path route divergence recorded; minimal executor lifecycle and matched GPU reference subsequently tested; next remaining formats and full-model integration |
+| Qwen model and state adapter | Selected real GDN/QSA block, BF16 state and FP8 KV partition checks ran with MTP off; minimal request metadata and independent GPU reference subsequently tested; next full-model logits and loading |
+| Engine, scheduling and memory | Test core scheduling/sequence lifecycle beyond the existing CPU sequence tests; assess async scheduling, graph integration and allocation/cache contracts independently of MTP |
+| Drafts and verification budgets | Real Qwen DFlash2 plus original DeepInfer MTPVarlen passed bounded greedy/state integration; next full draft-forward reference, complete-answer/repeated comparisons and independent calibration; native Qwen MTP remains separate |
+| Performance and integration choice | Attribute each component's effect using controlled comparisons against the existing TensorFold baseline; assess combinations after individual correctness gates pass |
+
+The initial complete expert check found 14.6%–15.4% output L2 differences from FP4 activation quantization on synthetic inputs. Subsequent [native packed-weight/BF16-input expert tests](E2_NATIVE_REPORT.md) passed 11 cases on SM121 without GPU weight expansion. The subsequent [complete MoE milestone](E2_MOE_REPORT.md) passed 8 joint tests including routing, all 512 expert execution coverage, MXFP8 shared expert and graph replay. The subsequent [GDN/QSA decoder/state milestone](E2_BLOCK_REPORT.md) met 16 selected gates; one GDN Top-10 set divergence versus CPU full path remains recorded, and exact model equivalence is unproven; total runtime memory remains to be budgeted beyond the 63.28 GiB metadata estimate for main routed expert packs. Continue the engine/cache and MTP contracts in the [interface map](ADAPTER_INTERFACES.md); neither requires declaring MTP the sole objective. Real-model MTP validation depends on correct target-only execution. Candidate optimizations should also be measured with MTP disabled to distinguish their standalone value from interactions with speculation.
+
+### MTP track — planned sequence
+
+1. **Trace and specify the mechanism.** At pinned DeepInfer revision `774ce244b87cc0eb8d4b94ab9f5de2ab22049f01`, map proposal token IDs/distributions, target verification, accepted-prefix length, corrective/bonus token, and committed target/draft state. Treat DFlash proposal generation, confidence scheduling, sampling and state management as separate interfaces.
+2. **Build a model-independent reference controller.** Use controlled logits and a tiny stateful executor to exercise K=0, all accepted, first/middle/last rejection, EOS, cancellation and request remapping. Check that rejected drafts never enter committed GDN/QSA state and that accepted-prefix state matches sequential execution. This can progress without porting native SM100 GEMMs; toy-state success is not proof of real Qwen state semantics.
+3. **Connect native Qwen MTP at fixed K.** Independently validate the actual proposal generator and target-only logits/state. Start from small supported draft lengths. The observed single MTP layer and configured draft depth six are different quantities; neither proves DFlash's block-generation behavior is available. Reuse the Qwen executor and quantization adapters validated by the broader model-porting work.
+4. **Add confidence-based verification budgets.** DeepInfer's DFlash has learned confidence-head weights. Do not assume Qwen supplies an equivalent head, or treat a draft token's maximum softmax probability as a calibrated acceptance probability. First use fixed K; then evaluate position/context-specific acceptance estimates, calibrate on separate data, and consider a learned head only if justified. Re-measure Spark's costs rather than reuse SM100 performance curves.
+5. **Compare target-only, existing TensorFold MTP, fixed-K candidate and adaptive candidate.** Hold weights, workload and sampling policy constant. Measure actual emitted tokens, total latency, draft/verification/restore overhead, acceptance and state memory. Acceptance rate alone is not evidence of speedup.
+
+Important transfer limits from source:
+
+- `csrc/engine/mtp_varlen.hpp` selects a total verification budget using estimated expected output divided by measured/estimated step time; the TileLang allocator distributes the budget across sequences using cumulative confidence. Selecting the budget and distributing it are distinct decisions. The CPU scheduler deliberately uses lagged confidence to avoid later draft positions influencing earlier verification eligibility; preserve or independently prove the relevant sampling invariant.
+- `models/mtp/dflash.py` implements a DFlash-specific proposer and learned confidence head. Transfer the scheduling/verification ideas through an adapter; a native Qwen MTP layer is not a drop-in replacement for those weights or forward semantics.
+- V4.1 decoder SWA bounded replay is a separate cache optimization. A finite suffix must not be assumed to reconstruct Qwen's GDN recurrent state. Establish exact snapshots/accepted-prefix commit or exact replay from a valid checkpoint first.
+- The upstream sampler's `DRAFT_PROB_PENALTY=5e-5` perturbs residual sampling weights. Keep an exact reference and explicitly identify/test this approximation if retained; passing upstream tests does not establish mathematically unbiased sampling.
+
+For SM121, evaluate operator ports across all workstreams, including matrix operations, routing/TopK, attention, state/cache movement, sampling and MTP budget allocation. Reuse verified TileLang/cuBLASLt routes and evaluate existing TensorFold operators where appropriate. Do not exclude a component solely because it is unrelated to MTP; classify its Qwen/single-GPU applicability and validate its value before committing to a substantial port.
 
 ## E0 — Environment fingerprint and source constraints
 
-1. Run `python3 scripts/probe_environment.py` on the DGX Spark. Keep logs local. Check that `torch.devices[].same_major_build_archs` is non-empty (the installed torch build has SM12x targets), and that `nvcc_gpu_archs` lists the device architecture.
-2. Run `python3 scripts/inspect_hf_config.py /path/to/config.json` on an existing local Qwen checkpoint. Record `architecture_fields` (hybrid attention, MoE, MTP) and review `text_model_keys` for fields the fragment match missed.
+1. Run `python3 scripts/probe_environment.py --static-only` on the DGX Spark and, separately, in the existing inference container. This mode does not import PyTorch or call `torch.cuda`. Query compute capability with `nvidia-smi`/NVML, which does not create a CUDA context. Keep raw logs local.
+2. Run `python3 scripts/inspect_hf_config.py /path/to/config.json` on an existing local Qwen checkpoint.
 3. Record the precise DeepInfer commit, Qwen config/weight revision, Python/CUDA/PyTorch versions and observed GB10 capability.
 4. Classify source constraints in [PORTING_MATRIX.md](PORTING_MATRIX.md).
 
 **Pass:** reproducible hardware and model identity. **Fail:** missing or contradictory environment information. **No speed measurements yet.**
 
+Completed as `PASS_STATIC` on 2026-10-20; see [E0_REPORT.md](E0_REPORT.md). Static success does not establish CUDA/kernel execution compatibility. Raw reports remain outside tracked files; only sanitized observations are published in the local working tree.
+
 ## E1 — Core build and kernel compatibility
 
 Use a **separate** Python environment, matching DeepInfer's documented toolchain where possible.
 
-Before building, confirm that aarch64 wheels or source builds exist for DeepInfer's pinned `torch==2.13.0+cu132` and `flash-attn-4`.
-
 Build/test independently:
 - DeepInfer C++ extension and imports (without weights).
-- Python-level hardware gating: `deep_cluster.hardware.get_bf16_tflops_limit()` raises on compute capability 12.x and is called by `LLMEngine.__init__`; log it as its own component so a gating failure is not mistaken for a kernel failure. Audit `is_sm_major_10()` call sites the same way.
 - DeepGEMM: isolated matrix operation + reference comparison.
 - FlashMLA, DeepEP, DeepSelect, TileLang: test only code paths relevant to Qwen and single-GPU operation.
 - SM121-specific execution, memory usage, optional CUDA Graph capture.
@@ -29,6 +59,10 @@ For each component log one outcome:
 
 **Pass:** at least a minimal independent kernel and extension can execute correctly. **Fail:** mark and investigate the failing component, not the whole architecture.
 
+2026-10-20 progress: core extension build/import and the same 14 upstream CPU sequence tests passed in two environments. Subsequent SM121 probes passed 12 RMSNorm cases, one CUDA Graph replay, cuBLASLt BF16, and NVFP4 synthetic/actual-weight-slice comparisons. Native DeepGEMM BF16 dispatch rejects architecture 12. The minimal GPU gate is satisfied; full backend compatibility remains incomplete. See [core results](E1_BUILD_REPORT.md) and [GPU results](E1_GPU_REPORT.md).
+
+The subsequent [complete expert experiment](E2_EXPERT_REPORT.md) independently matched CSF decoding and FP32 weight dequantization to executed TensorFold reference source, then separately measured arithmetic agreement and activation quantization differences. Agreement with the same stored quantized representation does not establish model quantization quality.
+
 ## E2 — Model executor and cache adapter
 
 1. Introduce new architecture registration and a Qwen-specific config adapter; do not change DeepSeek V4.1 behavior.
@@ -37,6 +71,18 @@ For each component log one outcome:
 4. Compare logits to a known-correct implementation at matched precision and input.
 
 **Pass:** numerically justified agreement on supported paths, no invalid memory accesses.
+
+2026-10-20 partial result: three full real expert projections plus SwiGLU passed selected SM121 arithmetic checks at batch 1/8/32; an FP32-dequantized-weight control preserving BF16 activations also passed. FP4 activation fidelity is unresolved, and that initial experiment did not validate a model adapter, routed MoE, full layer, prefill/decode state or logits. Later MoE evidence is recorded below. See [E2_EXPERT_REPORT.md](E2_EXPERT_REPORT.md).
+
+Subsequent native result: the original TensorFold expert CUDA source compiled for SM121 and passed 11 cases using compressed GPU weights and BF16 activations, including batch 17/tails/strides, BF16 and FP32 down output, skip and graph replay. The maximum selected complete-output relative L2 error was about 0.0378%. A metadata scan budgeted one native pack of main routed expert weights/scales at 63.2815 GiB, excluding all other model/runtime components; full-model capacity is not confirmed. See [E2_NATIVE_REPORT.md](E2_NATIVE_REPORT.md).
+
+Subsequent integrated result: complete layer-0 MoE passed 8 joint SM121 checks with synthetic BF16 hidden states, actual router/top-10, device plans, compressed expert weights, MXFP8 shared expert and weighted combine. The maximum selected output L2 error was 0.02821%; all 512 experts were covered using an explicitly injected-logit stress case. The initial 7/8 result and CPU/GPU router BF16-boundary diagnosis are retained. No decoder block, model state, logits or performance validation is implied. See [E2_MOE_REPORT.md](E2_MOE_REPORT.md).
+
+Subsequent decoder/state result: real layers 0/GDN and 3/QSA ran independently with four-stream hyper-connections, MXFP8 projections and complete MoE. Sixteen selected checks met preset gates, including prefill/decode, snapshot/restore, reset/growth, two-request layouts, fixed-prefix graph forward, real-budget sparse QSA on primed caches and FP8 KV partitioning. CPU output L2 errors were 0.11932%/0.12926%; one GDN row changed its selected expert set against CPU full path, while same-logit Top-10 and native partition expert sets agreed. This is not full model or DeepInfer executor validation. See [E2_BLOCK_REPORT.md](E2_BLOCK_REPORT.md).
+
+Subsequent [minimal executor milestone](E2_EXECUTOR_REPORT.md): a bounded, serialized Python host executor now runs real GDN/QSA block backends. Sixteen lifecycle/state GPU checks passed, including cancel/drain/generation, interleaved positions/padding, complete prefix restore, growth invalidation, continuous graph reuse, cross-stream tensor dependencies and host-exception rollback. Two independent FP32 PyTorch GPU diagnostics (TF32 disabled) report output L2 differences of 0.09776%/0.13366%, with 0/17 route-set differences per layer. Two local timing comparisons show graph/eager output identity and eager/graph median ratios 1.327×/1.388×. These are one-block measurements; the reference is a numerical control, not a quality ceiling. Full model loading, token/logits, quality, long-context memory and the DeepInfer C++ scheduler bridge remain open. No MTP was enabled.
+
+Subsequent [complete loading milestone](E2_LOAD_REPORT.md): all 48 target layers and 24,576 routed experts loaded together, with 69.8511 GiB unique CUDA weight storage, 26.8222 GiB read-only n-gram mappings and separately retained raw MTP/vision tensors. All 375,487 source tensors have a storage/representation disposition; no full-table residency or whole-checkpoint payload hash is implied. Selected complete-target token/logit execution and restore/replay ran with MTP disabled. Prefill versus serial final logits differ by about 10.68%, triggering numerical review; this is not a task-quality percentage. The user explicitly authorized stopping the existing service for this milestone. Full-model reference/quality, full-context capacity, performance and DeepInfer scheduler integration remain open.
 
 ## E3 — Speculative decode and recurrent state
 
@@ -49,9 +95,19 @@ Test `K=0` before enabling speculative decoding. Then test each supported native
 
 **Pass:** validated state invariants and unbiased speculative sampling under the chosen supported sampling scheme.
 
+Subsequent [DFlash2 integration](E3_DFLASH2_REPORT.md): real 603M BF16 drafter weights and the complete target passed six forced state cases and three 16-token greedy prompts in fixed/dynamic modes. A thin binding calls original DeepInfer MTPVarlen, with lagged empirical rates and Spark costs. Outputs/logits/live state matched same-path serial execution. Aggregate exploratory timing ratios were 1.90×/2.03×, one sample favored fixed; only thinking prefixes and one run per case were measured. This is a bounded greedy milestone, not the full stochastic/engine E3 acceptance. Independent draft/model forward parity, target prefill review, full answers, stable performance, long context and full scheduler integration remain open.
+
+Followup [official draft/complete-generation study](E3_FOLLOWUP_REPORT.md): eight requests completed to EOS, with 72 balanced timing runs. Tokens/live state matched serial, with separate exact-logit checks. Fixed/dynamic aggregate ratios were 1.781×/1.789×; all dynamic decisions chose width4 and one short task slowed down. FP32 draft mathematical controls passed; BF16 draft outputs differ, and a target MoE precision control did not fix prefill. These are bounded decode observations, not E4 service comparisons or general quality/long-context proof.
+
+Subsequent [five-mode budget audit](E3_BUDGET_AUDIT_REPORT.md): 200 balanced timings on the eight reused regression tasks and six separate calibration prompts. Fixed1/2/3 aggregate decode ratios were 1.278×/1.597×/1.794×; dynamic was 1.799× and chose width4 at all 475 decisions. Three tasks were replayed at all 166 serial positions (1992 timed actions, 664 live-state checks). A future-aware path reduces modeled cost by 20.3% on the mixed-acceptance task, versus 3.5% on the high-acceptance code task. This exposes local prediction headroom, not an online speedup. Next evaluate independently calibrated pre-draft gating and verification choices on new inputs; full-engine/multi-request and numerical reference work remain separate.
+
+Subsequent [frozen local-policy study](E3_LOCAL_POLICY_REPORT.md): 16 training / 6 independent calibration / 8 new test prompts, 392 balanced runs. A pre-draft gate plus calibrated post-draft progress predictor improved aggregate decode speed 1.95% over same-run fixed3 (38.55→39.30 tok/s); gate alone was slower. Eight tests completed to EOS with exact outputs/live states and separate kept-logit checks. A separate [immutable-math/EOS study](E3_DRAFT_FASTPATH_REPORT.md) ran 128 balanced measurements on the reused eight prompts: hidden/proposals stayed exact; cache alone gave only 0.21%, cache+EOS gave 1.26% over its own fixed3 baseline. No combined result or statistical significance is established. Eight-row execution was not yet validated at those milestones.
+
+The subsequent [eight-row study](E3_WIDE_BLOCK_REPORT.md), following its [fixed design](E3_WIDE_BLOCK_PLAN.md), passed 44 full-target window/prefix checks, legacy four-row identity and full official eight-row FP32 controls using unchanged external SM121 kernels. On eight reused regression tasks, 200 balanced timings measured fixed3/fixed7/dynamic7 at 38.10/41.50/43.10 decode tok/s. Dynamic selected widths3..8, beating fixed7 by 3.86%; 56 separate non-serial oracle runs and all 272 main/secondary timings matched tokens/live state. Crucially, the separate 72-run matched control found dynamic effectively tied with a calibration-selected fixed width7 (six drafts): 42.21 vs 42.20 tok/s. Wider drafting is promising on this workload; online adaptation over a suitable static length is not established. Initial unsupported commit(keep=0) test-driver failure, official BF16 differences and target prefill limits are retained. No full scheduler, stochastic-sampling, native Qwen MTP, long-context or E4 engine claim follows.
+
 ## E4 — Performance, cost and selection
 
-Compare DeepInfer-adapted, vLLM and SGLang under controlled conditions:
+Compare DeepInfer-adapted, the existing TensorFold service, vLLM and SGLang under controlled conditions (first verify each candidate is available and correct):
 - same model revision, weights/quantization, context, generated-token cap and sampling settings;
 - concurrency 1, 4, 8; cold and warm runs;
 - 512 / 4k / 16k input lengths where the hardware permits;
@@ -59,9 +115,17 @@ Compare DeepInfer-adapted, vLLM and SGLang under controlled conditions:
 
 Collect `TTFT_ms`, `TPOT_ms`, `output_tokens_per_second`, `total_output_tokens_per_second`, `draft_acceptance_rate`, `peak_memory_bytes`, power/thermal notes and failure count. Report token accounting explicitly and never use theoretical full-acceptance output as measured throughput.
 
-GB10 uses unified CPU/GPU memory, and `nvidia-smi` may not report GPU memory usage. Define `peak_memory_bytes` by method: record both the framework allocator peak (e.g. `torch.cuda.max_memory_allocated`) and the system-level drop in `MemAvailable` from `/proc/meminfo`, and state which one each comparison uses.
-
 **Pass:** reproducible improvement on at least one target workload without an unacceptable correctness/memory regression. Document negative results.
+
+2026-10-20 bounded E4 result: [matched plan](E4_MATCHED_PLAN.md), [report](E4_MATCHED_REPORT.md), [public main data](../results/e4/2026-10-20-matched.json). Four ABBA loading sessions produced 336 timed runs over eight new English texts / fourteen settings. Dynamic measured 47.37 versus fixed6/fixed7 46.39/46.30 decode tok/s (+2.12%/+2.31%) within the candidate path. Candidate timed output IDs match own serial; 84 separate nonserial oracles check committed logits/final live state. All 240 objective main answer checks pass; prose/capped prefixes have no full quality claim. Cross-engine hashes differ on six settings, and native original first repetitions are slower under asymmetric per-case warmup; a separate post-hoc native warmup control is preserved alongside the main data. Original native MTP 48.82 tok/s is not a fair warmed leaderboard comparison; post-hoc per-case warmup measured 55.99 tok/s over 112 timings (28 additional warmups), with native hashes/counts/text unchanged. Cold prompt latency and target verification dominate engineering priorities. This completes bounded TensorFold measurements, not the broad E4 multi-engine/concurrency/long-context gate.
+
+## E5 — Bounded native engine bridge
+
+2026-10-21: [plan](E5_ENGINE_BRIDGE_PLAN.md), [report](E5_ENGINE_BRIDGE_REPORT.md), [data](../results/e5/2026-10-21-engine-bridge.json). The real DeepInfer C++ Scheduler now drives the complete Qwen target-only execution through a synchronous adapter. CPU toy and real-token replay checks passed the same seven-group matrix; GPU checks covered 364 full-logit rows and 79 live-state comparisons, with replay-equivalent dispatch/output ledgers and complete native logical-block return. Two GPU preflight harness failures (special-token vocabulary and tokenizer return type) were corrected and retained. This is not full LLMEngine/Worker, GPU cache-page mapping, async/ragged batch or a performance result. Target prefill numerical review remains open; DFlash2 draft-head profiling/compression is next.
+
+## E6 — Optional draft-head compression
+
+2026-10-21: [frozen plan](E6_DRAFT_HEAD_PLAN.md), [report](E6_DRAFT_HEAD_REPORT.md), [data](../results/e6/2026-10-21-draft-head.json), [reusable API and device boundaries](DRAFT_HEAD_USAGE.md). Four heads × fixed7/dynamic7 × eight new tasks × four repetitions produced 256 timings; 64 independent oracles checked 2,616 committed logit rows and live state, with timed outputs/state also exact. All tasks reached EOS. Full Q4 dynamic measured 45.54 versus BF16-full 41.70 decode tok/s (+9.23%); fixed subset coverage loss in Chinese is retained. Twelve stored-weight Q4 arithmetic cases and unchanged target-head SHA passed. Original target BF16 head remains resident; no model-wide memory saving, full BF16-target equivalence, cross-GPU, random-sampling, batching or cross-study native-MTP speed claim follows. BF16 remains the API default; an explicit optional provider and observable fallback support reuse. Q8/mixed precision is a future comparison, not measured by E6.
 
 ## Experiment record template
 
@@ -83,3 +147,19 @@ notes: null
 ```
 
 Never commit raw user prompts, API keys, identifying machine reports, model weights or binary traces.
+
+## E7 — Warmed full-Q4 / native matched comparison
+
+2026-10-21: [plan](E7_TENSORFOLD_MATCH_PLAN.md), [report](E7_TENSORFOLD_MATCH_REPORT.md), [data](../results/e7/2026-10-21-tensorfold-match.json). All 200 formal timings, 100 full warmups (including 40 candidate nonserial oracles) completed across native/ours/ours/native loads. Full Q4 dynamic 45.62 versus native MTP 49.18 aggregate decode tok/s; natural tasks 45.57 versus 43.58. Complete-request sums 38.14 versus 18.79 s, summed TTFT 19.77 versus 1.65 s. Native and candidate outputs differ on two tasks; no overall speed lead. Next validate full-prompt chunking through unchanged decode arithmetic before timing; do not mix INT8 or budget recalibration.
+
+## E8 — Decode-arithmetic prompt chunking
+
+2026-10-21: [plan](E8_PREFILL_PLAN.md), [report](E8_PREFILL_REPORT.md), [data](../results/e8/2026-10-21-chunked-prompt.json). 81 full prompt/tail comparisons (every-row logits/features, boundary live state and eight-step continuation) passed; 160 warmed timings. Eight-row chunks: 109.23 versus serial 23.43 prompt tok/s, 4.66×. Includes state init/capture/concat, excludes tokenization/network. No drafter resident or full speculative generation; serving default unchanged. Next integrate rows8 into complete Q4 dynamic requests and measure actual wire TTFT/complete wall/decode.
+
+### E8 complete-generation integration
+
+2026-10-21: [plan](E8_INTEGRATION_PLAN.md), [report](E8_INTEGRATION_REPORT.md), [usage](PROMPT_USAGE.md), [data](../results/e8/2026-10-21-integrated-prompt.json). New Q4 SSE executor defaults to rows8. All 40 full-generation oracle comparisons (3,348 committed logit rows) and 80 timed outputs/separate post-request live-state checks passed against serial rows1 and E7 IDs. Paired TTFT 19.69→4.23 s; complete-request sums 37.92→22.67 s (1.67×). Decode 45.91→45.39 tok/s, a retained 1.14% regression. One load / reused ten tasks; native was not rerun, so no new native ranking. Next remaining prompt costs, target verification/decode and budget feedback; INT8 remains a separate comparison.
+
+## E9 — Decode time distribution
+
+2026-10-21: [plan](E9_PROFILE_PLAN.md), [report](E9_DECODE_PROFILE_REPORT.md), [data](../results/e9/2026-10-21-decode-profile.json). E8 untraced target83.81% / draft14.39%. Three valid Nsight decode ranges cover202,995 kernels; GPU activity91.76%, not SM utilization. Expert/qmmf/BF16 families78.6% cumulative kernel time. Twelve independent generation oracles and15 post-request output/state checks pass. Initial repeated collection failed (one valid trace retained separately); single recording succeeds. Four controls are genuinely CUDA-untraced, eight intermediate controls CUDA-recorded/NVTX-inactive; correction retained. Next measure target kernels/verification effectiveness and draft backbone; no new speedup or native ranking.

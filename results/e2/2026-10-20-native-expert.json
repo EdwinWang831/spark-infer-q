@@ -1,0 +1,555 @@
+{
+  "experiment": "E2-native-packed-weight-BF16-activation-expert",
+  "status": "NATIVE_W4A16_EXPERT_PASS",
+  "overall_e2_complete": false,
+  "observed_interval_utc": {
+    "start": "2026-10-20T14:22:12.502326+00:00",
+    "end": "2026-10-20T14:31:05.975670+00:00"
+  },
+  "deepinfer_sha": "774ce244b87cc0eb8d4b94ab9f5de2ab22049f01",
+  "build": {
+    "started_at_utc": "2026-10-20T14:24:11.343705+00:00",
+    "source_patched": false,
+    "cuda_arch_target": "12.1",
+    "gpu_execution_tested": false,
+    "status": "PASS",
+    "torch": "2.13.0+cu132",
+    "binary_name": "spark_q_native_expert_probe.so",
+    "binary_sha256": "ecada37dca7d6e601f7c46f937e8799fc61aae059df88e676b8f7d740e797441",
+    "cuda_initialized": false,
+    "finished_at_utc": "2026-10-20T14:24:53.860828+00:00"
+  },
+  "native_probe": {
+    "started_at_utc": "2026-10-20T14:27:29.907112+00:00",
+    "scope": "original TensorFold native one-expert forward, BF16 activations, compressed GPU weights",
+    "routing_tested": false,
+    "full_model_tested": false,
+    "performance_measured": false,
+    "cases": [
+      {
+        "name": "complete_b1_torch.bfloat16",
+        "batch": 1,
+        "seed": 20261020,
+        "input_row_stride": 2560,
+        "output_dtype": "torch.bfloat16",
+        "hidden_error": {
+          "relative_l2_error": 0.0,
+          "max_abs_error": 0.0,
+          "rmse": 0.0
+        },
+        "complete_error": {
+          "relative_l2_error": 0.0,
+          "max_abs_error": 0.0,
+          "rmse": 0.0
+        },
+        "down_error_actual_hidden": {
+          "relative_l2_error": 0.0,
+          "max_abs_error": 0.0,
+          "rmse": 0.0
+        },
+        "output_guards_unchanged": true,
+        "status": "PASS"
+      },
+      {
+        "name": "complete_b1_torch.float32",
+        "batch": 1,
+        "seed": 20261020,
+        "input_row_stride": 2560,
+        "output_dtype": "torch.float32",
+        "hidden_error": {
+          "relative_l2_error": 0.0,
+          "max_abs_error": 0.0,
+          "rmse": 0.0
+        },
+        "complete_error": {
+          "relative_l2_error": 4.4342382921058743e-07,
+          "max_abs_error": 3.5762786865234375e-07,
+          "rmse": 3.979516449703624e-08
+        },
+        "down_error_actual_hidden": {
+          "relative_l2_error": 4.4342382921058743e-07,
+          "max_abs_error": 3.5762786865234375e-07,
+          "rmse": 3.979516449703624e-08
+        },
+        "output_guards_unchanged": true,
+        "status": "PASS"
+      },
+      {
+        "name": "complete_b8_torch.bfloat16",
+        "batch": 8,
+        "seed": 20261021,
+        "input_row_stride": 2560,
+        "output_dtype": "torch.bfloat16",
+        "hidden_error": {
+          "relative_l2_error": 0.00010014186409534886,
+          "max_abs_error": 0.001953125,
+          "rmse": 2.7295960535411723e-05
+        },
+        "complete_error": {
+          "relative_l2_error": 0.00037802295992150903,
+          "max_abs_error": 0.0009765625,
+          "rmse": 3.502328399918042e-05
+        },
+        "down_error_actual_hidden": {
+          "relative_l2_error": 1.8699078282224946e-05,
+          "max_abs_error": 0.000244140625,
+          "rmse": 1.7324524606010527e-06
+        },
+        "output_guards_unchanged": true,
+        "status": "PASS"
+      },
+      {
+        "name": "complete_b8_torch.float32",
+        "batch": 8,
+        "seed": 20261021,
+        "input_row_stride": 2560,
+        "output_dtype": "torch.float32",
+        "hidden_error": {
+          "relative_l2_error": 0.00010014186409534886,
+          "max_abs_error": 0.001953125,
+          "rmse": 2.7295960535411723e-05
+        },
+        "complete_error": {
+          "relative_l2_error": 9.274650074075907e-05,
+          "max_abs_error": 0.00011251866817474365,
+          "rmse": 8.592945960117504e-06
+        },
+        "down_error_actual_hidden": {
+          "relative_l2_error": 4.2541694256215123e-07,
+          "max_abs_error": 4.172325134277344e-07,
+          "rmse": 3.941477899616075e-08
+        },
+        "output_guards_unchanged": true,
+        "status": "PASS"
+      },
+      {
+        "name": "complete_b17_torch.bfloat16",
+        "batch": 17,
+        "seed": 20261023,
+        "input_row_stride": 2576,
+        "output_dtype": "torch.bfloat16",
+        "hidden_error": {
+          "relative_l2_error": 8.521477866452187e-06,
+          "max_abs_error": 0.000244140625,
+          "rmse": 2.4837208911776543e-06
+        },
+        "complete_error": {
+          "relative_l2_error": 0.00011207747593289241,
+          "max_abs_error": 0.0009765625,
+          "rmse": 1.103251452150289e-05
+        },
+        "down_error_actual_hidden": {
+          "relative_l2_error": 6.935928104212508e-05,
+          "max_abs_error": 0.0009765625,
+          "rmse": 6.827480774518335e-06
+        },
+        "output_guards_unchanged": true,
+        "status": "PASS"
+      },
+      {
+        "name": "complete_b17_torch.float32",
+        "batch": 17,
+        "seed": 20261023,
+        "input_row_stride": 2576,
+        "output_dtype": "torch.float32",
+        "hidden_error": {
+          "relative_l2_error": 8.521477866452187e-06,
+          "max_abs_error": 0.000244140625,
+          "rmse": 2.4837208911776543e-06
+        },
+        "complete_error": {
+          "relative_l2_error": 8.043247362365946e-06,
+          "max_abs_error": 1.7344951629638672e-05,
+          "rmse": 7.917571451798722e-07
+        },
+        "down_error_actual_hidden": {
+          "relative_l2_error": 4.28434987043147e-07,
+          "max_abs_error": 4.172325134277344e-07,
+          "rmse": 4.2173265768497004e-08
+        },
+        "output_guards_unchanged": true,
+        "status": "PASS"
+      },
+      {
+        "name": "complete_b32_torch.bfloat16",
+        "batch": 32,
+        "seed": 20261022,
+        "input_row_stride": 2560,
+        "output_dtype": "torch.bfloat16",
+        "hidden_error": {
+          "relative_l2_error": 2.8830847440985963e-05,
+          "max_abs_error": 0.0009765625,
+          "rmse": 9.078085895453114e-06
+        },
+        "complete_error": {
+          "relative_l2_error": 0.00018389231991022825,
+          "max_abs_error": 0.001953125,
+          "rmse": 1.940945912792813e-05
+        },
+        "down_error_actual_hidden": {
+          "relative_l2_error": 6.0561884311027825e-05,
+          "max_abs_error": 0.0009765625,
+          "rmse": 6.392188424797496e-06
+        },
+        "output_guards_unchanged": true,
+        "status": "PASS"
+      },
+      {
+        "name": "complete_b32_torch.float32",
+        "batch": 32,
+        "seed": 20261022,
+        "input_row_stride": 2560,
+        "output_dtype": "torch.float32",
+        "hidden_error": {
+          "relative_l2_error": 2.8830847440985963e-05,
+          "max_abs_error": 0.0009765625,
+          "rmse": 9.078085895453114e-06
+        },
+        "complete_error": {
+          "relative_l2_error": 2.7296890038996935e-05,
+          "max_abs_error": 4.5940279960632324e-05,
+          "rmse": 2.8811437005060725e-06
+        },
+        "down_error_actual_hidden": {
+          "relative_l2_error": 4.261554806817003e-07,
+          "max_abs_error": 5.364418029785156e-07,
+          "rmse": 4.49793233769924e-08
+        },
+        "output_guards_unchanged": true,
+        "status": "PASS"
+      },
+      {
+        "name": "zero_input",
+        "batch": 1,
+        "seed": 7,
+        "input_row_stride": 2560,
+        "output_dtype": "torch.float32",
+        "hidden_error": {
+          "relative_l2_error": 0.0,
+          "max_abs_error": 0.0,
+          "rmse": 0.0
+        },
+        "complete_error": {
+          "relative_l2_error": 0.0,
+          "max_abs_error": 0.0,
+          "rmse": 0.0
+        },
+        "down_error_actual_hidden": {
+          "relative_l2_error": 0.0,
+          "max_abs_error": 0.0,
+          "rmse": 0.0
+        },
+        "output_guards_unchanged": true,
+        "status": "PASS"
+      },
+      {
+        "name": "skip_expert",
+        "skipped_expert_outputs_unchanged": true,
+        "status": "PASS"
+      },
+      {
+        "name": "cuda_graph_changed_input_replay",
+        "changed_input_replay": true,
+        "hidden_error": {
+          "relative_l2_error": 5.55170254301629e-06,
+          "max_abs_error": 0.0001220703125,
+          "rmse": 1.7059853689715965e-06
+        },
+        "complete_error": {
+          "relative_l2_error": 5.473863893712405e-06,
+          "max_abs_error": 8.374452590942383e-06,
+          "rmse": 5.572849204327213e-07
+        },
+        "status": "PASS"
+      }
+    ],
+    "packing_checks": {
+      "gate_proj": {
+        "status": "PASS",
+        "max_abs_difference": 7.450580596923828e-09,
+        "relative_l2_difference": 1.9155896424649654e-08
+      },
+      "up_proj": {
+        "status": "PASS",
+        "max_abs_difference": 7.450580596923828e-09,
+        "relative_l2_difference": 1.915585201572867e-08
+      },
+      "down_proj": {
+        "status": "PASS",
+        "max_abs_difference": 7.450580596923828e-09,
+        "relative_l2_difference": 2.074443017363592e-08
+      }
+    },
+    "torch": "2.13.0+cu132",
+    "cuda_build": "13.2",
+    "capability": [
+      12,
+      1
+    ],
+    "native_binary_sha256": "ecada37dca7d6e601f7c46f937e8799fc61aae059df88e676b8f7d740e797441",
+    "source_files_unchanged": true,
+    "activation_dtype": "torch.bfloat16",
+    "extension_provider": "thin binding to original experts.cu; linear._ext override only",
+    "checkpoint_revision": "b9ce18a6887e18c089fdea8509a33e63429a3300",
+    "expert": "model.language_model.layers.0.mlp.experts.0",
+    "gpu_persistent_weight_bytes": 2764812,
+    "gpu_weight_allocator_delta_bytes": 2765824,
+    "cpu_only_fp32_reference_weight_bytes": 19660800,
+    "gpu_fp32_dequantized_weights_present": false,
+    "numerical_gates": {
+      "complete_relative_l2": 0.003,
+      "hidden_relative_l2": 0.002,
+      "elementwise_atol": 0.005,
+      "elementwise_rtol": 0.01
+    },
+    "torch_peak_allocated_bytes": 3477504,
+    "torch_peak_reserved_bytes": 23068672,
+    "base_global_torch_libraries_loaded": false,
+    "status": "PASS",
+    "finished_at_utc": "2026-10-20T14:27:31.429856+00:00",
+    "runner_sha256": "8f18bb8a2a51d886eba384c20b93b3e3112814dbb0f63efb2aecf30f4ef88bbf"
+  },
+  "main_expert_storage_budget": {
+    "status": "PASS_METADATA_BUDGET_ONLY",
+    "checkpoint_revision": "b9ce18a6887e18c089fdea8509a33e63429a3300",
+    "config_sha256": "b50dbc52a0c83b0cd2a44a372c1fb6b5e0e6827d22f2611c97d4d030f92f6b28",
+    "index_sha256": "5fa166bbb1cf25adda455117563efa72a2072272001f459eedece131ffc913e1",
+    "layers": 48,
+    "experts_per_layer": 512,
+    "complete_experts": 24576,
+    "projections": 73728,
+    "logical_weight_shape_counts": {
+      "(640, 2560)": 49152,
+      "(2560, 640)": 24576
+    },
+    "original_code_bytes": 60397977600,
+    "decoded_scale_bytes": 7549747200,
+    "native_packed_main_routed_expert_bytes": 67948019712,
+    "native_packed_main_routed_expert_gib": 63.281524658203125,
+    "on_disk_selected_weight_csf_global_payload_bytes": 64364183848,
+    "metadata_bytes_read": 90629263,
+    "tensor_payload_bytes_read": 0,
+    "full_weight_hash_verified": false,
+    "assumptions": [
+      "Exactly one native pack per main-model routed expert; no duplicate weight caches.",
+      "Uses original TensorFold Experts4 block geometry: 144 int32 per 32x32 weight tile, plus global FP32 scale."
+    ],
+    "excluded": [
+      "shared experts",
+      "non-expert projections and embeddings/ngram",
+      "vision",
+      "MTP weights and proposal buffers",
+      "KV and GDN/conv state",
+      "graph pools",
+      "workspace/activations",
+      "allocator/context/driver overhead"
+    ],
+    "full_model_peak_measured": false,
+    "full_model_fits_confirmed": false
+  },
+  "external_sources": {
+    "__init__.py": {
+      "sha256": "9f6ce7ca61c89543d6aebe2a2cae0826968fffbf9e3a830e7119bad5903e3129",
+      "bytes": 137
+    },
+    "cuda/__init__.py": {
+      "sha256": "c836dd0526b132b0186e20eda993055a1b6855e163ddb18f3fed8ca21c9d4578",
+      "bytes": 117
+    },
+    "cuda/experts.py": {
+      "sha256": "71534ff9a82c33109d81264d72c30ca50e8c0d36d81810b53fba54eabb37da3e",
+      "bytes": 7476
+    },
+    "cuda/prompt_precision.py": {
+      "sha256": "2d190812ad9034fc2c0188a06f9fe814be0eab655cca08257c383160de323251",
+      "bytes": 1238
+    },
+    "cuda/nvfp4/__init__.py": {
+      "sha256": "edecfd2fbf67a9694abb16400f04e417eabf39d2e8aa8a6d24949d1f0cfcace4",
+      "bytes": 123
+    },
+    "cuda/nvfp4/experts.py": {
+      "sha256": "e0e8c9397c9a587a86f74c6ff937c34c6dbb410a2f7d3a495b61b3a8d71ddd5d",
+      "bytes": 7215
+    },
+    "cuda/nvfp4/linear.py": {
+      "sha256": "04136cbf4fa5f8b9c3a9cb655e4643929ead09d29367f1b7c135f662d0fe6f25",
+      "bytes": 22657
+    },
+    "cuda/nvfp4/experts.cu": {
+      "sha256": "5d42a8d9e60e98b0b9b3325a20b5543f7c37c9dde1f72ce282b023a562136630",
+      "bytes": 8524
+    },
+    "cuda/experts.cuh": {
+      "sha256": "8de734885943e6f547feae4796aa1d7bdacf119494c99c776e4d0cc165d1fec0",
+      "bytes": 4226
+    }
+  },
+  "binary_architecture": "ELF file    1: experts.sm_121.cubin",
+  "test_counts": {
+    "native_functional_cases": 11,
+    "native_cases_passed": 11,
+    "existing_local_unittests_passed": 7
+  },
+  "integration_boundary": "Original TensorFold Python pack/gate_up/down wrappers with a thin extension provider bound to unmodified experts.cu and experts.cuh. Routing plan supplied manually for one expert; no full engine integration.",
+  "memory_interpretation": [
+    "GPU weight tensors contain native packed codes and scale bytes/global scales. The 19,660,800-byte FP32 dequantized weight reference exists only on CPU.",
+    "Measured Torch tensor peak excludes CUDA context, driver and external-library allocations; reserved memory includes allocator pools.",
+    "63.2815 GiB is a metadata-derived budget for one native pack of all main routed experts only. It is not observed full-model GPU memory or a capacity guarantee.",
+    "Other weights, shared experts, vision/ngram, MTP, GDN/KV states, graph pools and workspaces are excluded. CPU duplicates also consume DGX unified memory and must be considered in a future loader."
+  ],
+  "scope_limits": [
+    "Only layer 0 expert 0 with synthetic BF16 inputs. No representative captured model activations or end-to-end logits/quality evaluation.",
+    "Selected numerical agreement is within declared tolerances, not bitwise identity to every CPU reference or to the deployed TensorFold binary.",
+    "No routing/top-10 mixture/shared expert, Qwen decoder layer, state rollback, MTP or full-model load tested.",
+    "No throughput/latency/speedup measurements; selected one-expert graph replay is not a full scheduler CUDA Graph test."
+  ],
+  "isolation": {
+    "separate_builder_and_gpu_containers": true,
+    "cpu_limit": 2,
+    "ram_limit_bytes": 6442450944,
+    "torch_allocator_limit_bytes": 536870912,
+    "full_checkpoint_mounted": false,
+    "gpu_container_resources": "623505408\nlow 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\n",
+    "experiments_stopped": true
+  },
+  "service_continuity": {
+    "checks": {
+      "container_id_unchanged": true,
+      "image_unchanged": true,
+      "pid_unchanged": true,
+      "start_time_unchanged": true,
+      "restart_count_unchanged": true,
+      "command_unchanged": true,
+      "entrypoint_unchanged": true,
+      "environment_unchanged": true,
+      "mounts_unchanged": true,
+      "running": true,
+      "not_oom_killed": true,
+      "health_ok_before": true,
+      "health_ok_after": true,
+      "experiment_stopped": true,
+      "experiment_not_oom_killed": true,
+      "deepinfer_source_unchanged": true
+    },
+    "all_checks_passed": true,
+    "http_before": 200,
+    "http_after": 200,
+    "restart_count_before": 0,
+    "restart_count_after": 0,
+    "limitation": "Before/after snapshots do not measure transient latency or prove continuous availability."
+  },
+  "scripts_sha256": {
+    "scripts/e2_native_bindings.cpp": "f9d8ca3bb4e4ff06178b8a169baee3b505a2e910430d191aa1352cc71c64dc0e",
+    "scripts/e2_build_native.py": "9e57f4aa39fb8584e2111833b9783f3b76e45798bef5cd72d75832a803f2f8df",
+    "scripts/e2_native_expert_smoke.py": "8f18bb8a2a51d886eba384c20b93b3e3112814dbb0f63efb2aecf30f4ef88bbf",
+    "scripts/e2_native_storage.py": "e02790c77ea8edeccb41a62b7fe5d794035b77feed5dc0c3074e6a59d6ddf99b",
+    "scripts/e2_run_native.sh": "8ef66a101ad55fbcea1fbc9c6716db1f4c31ef50f03c69d4db3de3f855f7aefc"
+  },
+  "artifact_inventory": {
+    "e2_native_storage.py": {
+      "bytes": 4030,
+      "sha256": "e02790c77ea8edeccb41a62b7fe5d794035b77feed5dc0c3074e6a59d6ddf99b"
+    },
+    "e2_native_expert_smoke.py": {
+      "bytes": 11951,
+      "sha256": "8f18bb8a2a51d886eba384c20b93b3e3112814dbb0f63efb2aecf30f4ef88bbf"
+    },
+    "e2_native_bindings.cpp": {
+      "bytes": 518,
+      "sha256": "f9d8ca3bb4e4ff06178b8a169baee3b505a2e910430d191aa1352cc71c64dc0e"
+    },
+    "e2_build_native.py": {
+      "bytes": 2093,
+      "sha256": "9e57f4aa39fb8584e2111833b9783f3b76e45798bef5cd72d75832a803f2f8df"
+    },
+    "reference/tensorfold/__init__.py": {
+      "bytes": 137,
+      "sha256": "9f6ce7ca61c89543d6aebe2a2cae0826968fffbf9e3a830e7119bad5903e3129"
+    },
+    "reference/tensorfold/cuda/prompt_precision.py": {
+      "bytes": 1238,
+      "sha256": "2d190812ad9034fc2c0188a06f9fe814be0eab655cca08257c383160de323251"
+    },
+    "reference/tensorfold/cuda/experts.py": {
+      "bytes": 7476,
+      "sha256": "71534ff9a82c33109d81264d72c30ca50e8c0d36d81810b53fba54eabb37da3e"
+    },
+    "reference/tensorfold/cuda/__init__.py": {
+      "bytes": 117,
+      "sha256": "c836dd0526b132b0186e20eda993055a1b6855e163ddb18f3fed8ca21c9d4578"
+    },
+    "reference/tensorfold/cuda/nvfp4/linear.py": {
+      "bytes": 22657,
+      "sha256": "04136cbf4fa5f8b9c3a9cb655e4643929ead09d29367f1b7c135f662d0fe6f25"
+    },
+    "reference/tensorfold/cuda/nvfp4/experts.py": {
+      "bytes": 7215,
+      "sha256": "e0e8c9397c9a587a86f74c6ff937c34c6dbb410a2f7d3a495b61b3a8d71ddd5d"
+    },
+    "reference/tensorfold/cuda/nvfp4/__init__.py": {
+      "bytes": 123,
+      "sha256": "edecfd2fbf67a9694abb16400f04e417eabf39d2e8aa8a6d24949d1f0cfcace4"
+    },
+    "reference/tensorfold/cuda/nvfp4/experts.cu": {
+      "bytes": 8524,
+      "sha256": "5d42a8d9e60e98b0b9b3325a20b5543f7c37c9dde1f72ce282b023a562136630"
+    },
+    "reference/tensorfold/cuda/experts.cuh": {
+      "bytes": 4226,
+      "sha256": "8de734885943e6f547feae4796aa1d7bdacf119494c99c776e4d0cc165d1fec0"
+    },
+    "artifacts/native-build.json": {
+      "bytes": 420,
+      "sha256": "1e8aad93eb9d8af11bf96ce8e17a7b7e4977c8a71a2eff0bf6fa987d60d07827"
+    },
+    "artifacts/native-smoke.json": {
+      "bytes": 8799,
+      "sha256": "7ad99ded7396865b7c2bc94e354bb357987c1531dd9ce6be53aae0247562c930"
+    },
+    "artifacts/build-exit.txt": {
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    "artifacts/native-smoke-exit.txt": {
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    "artifacts/source-manifest.json": {
+      "bytes": 1184,
+      "sha256": "6e15e5733cbce3f82a63d9dc10b9257c9914ecc270648164d322eef049a4d37b"
+    },
+    "artifacts/storage-budget.json": {
+      "bytes": 1408,
+      "sha256": "003777606e828c85e964a4ea2fe05fa23b6c90153706c2c6330adf673449fe8f"
+    },
+    "artifacts/storage-budget-exit.txt": {
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    "logs/cubin-targets.log": {
+      "bytes": 36,
+      "sha256": "7bd90b1a1b784047c932b1c7b9e8486a7bc532e2df452bd74cd850f300fbac2f"
+    },
+    "logs/native-smoke.log": {
+      "bytes": 5291,
+      "sha256": "f73c5ca248a618d13cf939a7508d42b88e145f1fd2e85ec41f79e854ddb564e5"
+    },
+    "logs/build.log": {
+      "bytes": 1572,
+      "sha256": "5c26502cfbbb312dc1b4ecc2088baf83f8f0764c4198fec5be2be1ae54c17015"
+    },
+    "logs/storage-budget.log": {
+      "bytes": 1408,
+      "sha256": "003777606e828c85e964a4ea2fe05fa23b6c90153706c2c6330adf673449fe8f"
+    },
+    "build/spark_q_native_expert_probe.so": {
+      "bytes": 669536,
+      "sha256": "ecada37dca7d6e601f7c46f937e8799fc61aae059df88e676b8f7d740e797441"
+    }
+  },
+  "next_step": "Build a reusable SM121 backend boundary for these native expert calls, then validate routing/weighted aggregation/shared expert and complete memory budgeting. Continue engine/state and MTP interface validation without treating this component pass as full-model readiness.",
+  "performance_measured": false,
+  "full_model_fits_confirmed": false,
+  "evidence_privacy": "Private raw logs and source snapshots remain under .git/e2-native-evidence; checkpoint payload remains in the private experiment workspace. Tracked results contain metadata and hashes only."
+}

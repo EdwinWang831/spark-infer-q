@@ -1,0 +1,320 @@
+{
+  "status": "METADATA_ACCOUNTING_ONLY",
+  "checkpoint_revision": "b9ce18a6887e18c089fdea8509a33e63429a3300",
+  "config_sha256": "b50dbc52a0c83b0cd2a44a372c1fb6b5e0e6827d22f2611c97d4d030f92f6b28",
+  "index_sha256": "5fa166bbb1cf25adda455117563efa72a2072272001f459eedece131ffc913e1",
+  "tensor_payload_bytes_read": 0,
+  "metadata_bytes_read": 100416991,
+  "serialized_payload_bytes": 102138950916,
+  "serialized_payload_gib": 95.12431073561311,
+  "categories": {
+    "lm_head": {
+      "serialized_payload_bytes": 1271398400,
+      "tensor_count": 1,
+      "dtype_payload_bytes": {
+        "BF16": 1271398400
+      }
+    },
+    "main_other_layer_weights": {
+      "serialized_payload_bytes": 4495015960,
+      "tensor_count": 1449,
+      "dtype_payload_bytes": {
+        "BF16": 1460832000,
+        "F32": 4055040,
+        "F8_E4M3": 2938306560,
+        "U8": 91822080,
+        "I64": 280
+      }
+    },
+    "main_routed_experts": {
+      "serialized_payload_bytes": 64364478760,
+      "tensor_count": 368640,
+      "dtype_payload_bytes": {
+        "U8": 64267223040,
+        "U32": 96665896,
+        "F32": 589824
+      }
+    },
+    "mtp": {
+      "serialized_payload_bytes": 1596720640,
+      "tensor_count": 4637,
+      "dtype_payload_bytes": {
+        "BF16": 181136896,
+        "U8": 1258291200,
+        "F8_E4M3": 157286400,
+        "F32": 6144
+      }
+    },
+    "ngram_tables": {
+      "serialized_payload_bytes": 28800138244,
+      "tensor_count": 257,
+      "dtype_payload_bytes": {
+        "U8": 25600122880,
+        "F8_E4M3": 3200015360,
+        "F32": 4
+      }
+    },
+    "other": {
+      "serialized_payload_bytes": 13148160,
+      "tensor_count": 3,
+      "dtype_payload_bytes": {
+        "F32": 40960,
+        "BF16": 13107200
+      }
+    },
+    "token_embedding": {
+      "serialized_payload_bytes": 1271398400,
+      "tensor_count": 1,
+      "dtype_payload_bytes": {
+        "BF16": 1271398400
+      }
+    },
+    "vision": {
+      "serialized_payload_bytes": 326652352,
+      "tensor_count": 499,
+      "dtype_payload_bytes": {
+        "BF16": 9660896,
+        "F8_E4M3": 162125568,
+        "U8": 154865664,
+        "F32": 224
+      }
+    }
+  },
+  "main_routed_native_pack_bytes": 67948019712,
+  "native_main_plus_serialized_other_accounting_bytes": 105722491868,
+  "mtp_off_accounting_bytes": 104125771228,
+  "accounting_is_runtime_fit_estimate": false,
+  "largest_tensors": [
+    {
+      "name": "model.language_model.embed_tokens.weight",
+      "bytes": 1271398400,
+      "dtype": "BF16",
+      "shape": [
+        248320,
+        2560
+      ]
+    },
+    {
+      "name": "lm_head.weight",
+      "bytes": 1271398400,
+      "dtype": "BF16",
+      "shape": [
+        248320,
+        2560
+      ]
+    },
+    {
+      "name": "model.language_model.layers.1.ple.ple_embedding.ngram_embedding.shard_99.weight",
+      "bytes": 200000960,
+      "dtype": "U8",
+      "shape": [
+        2500012,
+        80
+      ]
+    },
+    {
+      "name": "model.language_model.layers.1.ple.ple_embedding.ngram_embedding.shard_98.weight",
+      "bytes": 200000960,
+      "dtype": "U8",
+      "shape": [
+        2500012,
+        80
+      ]
+    },
+    {
+      "name": "model.language_model.layers.1.ple.ple_embedding.ngram_embedding.shard_97.weight",
+      "bytes": 200000960,
+      "dtype": "U8",
+      "shape": [
+        2500012,
+        80
+      ]
+    },
+    {
+      "name": "model.language_model.layers.1.ple.ple_embedding.ngram_embedding.shard_96.weight",
+      "bytes": 200000960,
+      "dtype": "U8",
+      "shape": [
+        2500012,
+        80
+      ]
+    },
+    {
+      "name": "model.language_model.layers.1.ple.ple_embedding.ngram_embedding.shard_95.weight",
+      "bytes": 200000960,
+      "dtype": "U8",
+      "shape": [
+        2500012,
+        80
+      ]
+    },
+    {
+      "name": "model.language_model.layers.1.ple.ple_embedding.ngram_embedding.shard_94.weight",
+      "bytes": 200000960,
+      "dtype": "U8",
+      "shape": [
+        2500012,
+        80
+      ]
+    },
+    {
+      "name": "model.language_model.layers.1.ple.ple_embedding.ngram_embedding.shard_93.weight",
+      "bytes": 200000960,
+      "dtype": "U8",
+      "shape": [
+        2500012,
+        80
+      ]
+    },
+    {
+      "name": "model.language_model.layers.1.ple.ple_embedding.ngram_embedding.shard_92.weight",
+      "bytes": 200000960,
+      "dtype": "U8",
+      "shape": [
+        2500012,
+        80
+      ]
+    },
+    {
+      "name": "model.language_model.layers.1.ple.ple_embedding.ngram_embedding.shard_91.weight",
+      "bytes": 200000960,
+      "dtype": "U8",
+      "shape": [
+        2500012,
+        80
+      ]
+    },
+    {
+      "name": "model.language_model.layers.1.ple.ple_embedding.ngram_embedding.shard_90.weight",
+      "bytes": 200000960,
+      "dtype": "U8",
+      "shape": [
+        2500012,
+        80
+      ]
+    }
+  ],
+  "state_geometry": {
+    "target_attention_layers": 12,
+    "target_gdn_layers": 36,
+    "target_two_bank_recurrent_bytes_per_request": 226492416,
+    "target_conv_bytes_per_request": 2211840
+  },
+  "state_scenarios": [
+    {
+      "context_rows_per_request": 4096,
+      "requests": 1,
+      "kv_dtype": "bf16",
+      "target_kv_index_pool_bytes": 116391936,
+      "target_two_bank_recurrent_and_conv_bytes": 228704256,
+      "one_mtp_attention_layer_extra_cache_bytes_if_enabled": 9699328
+    },
+    {
+      "context_rows_per_request": 4096,
+      "requests": 5,
+      "kv_dtype": "bf16",
+      "target_kv_index_pool_bytes": 581959680,
+      "target_two_bank_recurrent_and_conv_bytes": 1143521280,
+      "one_mtp_attention_layer_extra_cache_bytes_if_enabled": 48496640
+    },
+    {
+      "context_rows_per_request": 4096,
+      "requests": 1,
+      "kv_dtype": "fp8",
+      "target_kv_index_pool_bytes": 67633152,
+      "target_two_bank_recurrent_and_conv_bytes": 228704256,
+      "one_mtp_attention_layer_extra_cache_bytes_if_enabled": 5636096
+    },
+    {
+      "context_rows_per_request": 4096,
+      "requests": 5,
+      "kv_dtype": "fp8",
+      "target_kv_index_pool_bytes": 338165760,
+      "target_two_bank_recurrent_and_conv_bytes": 1143521280,
+      "one_mtp_attention_layer_extra_cache_bytes_if_enabled": 28180480
+    },
+    {
+      "context_rows_per_request": 32768,
+      "requests": 1,
+      "kv_dtype": "bf16",
+      "target_kv_index_pool_bytes": 931135488,
+      "target_two_bank_recurrent_and_conv_bytes": 228704256,
+      "one_mtp_attention_layer_extra_cache_bytes_if_enabled": 77594624
+    },
+    {
+      "context_rows_per_request": 32768,
+      "requests": 5,
+      "kv_dtype": "bf16",
+      "target_kv_index_pool_bytes": 4655677440,
+      "target_two_bank_recurrent_and_conv_bytes": 1143521280,
+      "one_mtp_attention_layer_extra_cache_bytes_if_enabled": 387973120
+    },
+    {
+      "context_rows_per_request": 32768,
+      "requests": 1,
+      "kv_dtype": "fp8",
+      "target_kv_index_pool_bytes": 541065216,
+      "target_two_bank_recurrent_and_conv_bytes": 228704256,
+      "one_mtp_attention_layer_extra_cache_bytes_if_enabled": 45088768
+    },
+    {
+      "context_rows_per_request": 32768,
+      "requests": 5,
+      "kv_dtype": "fp8",
+      "target_kv_index_pool_bytes": 2705326080,
+      "target_two_bank_recurrent_and_conv_bytes": 1143521280,
+      "one_mtp_attention_layer_extra_cache_bytes_if_enabled": 225443840
+    },
+    {
+      "context_rows_per_request": 262144,
+      "requests": 1,
+      "kv_dtype": "bf16",
+      "target_kv_index_pool_bytes": 7449083904,
+      "target_two_bank_recurrent_and_conv_bytes": 228704256,
+      "one_mtp_attention_layer_extra_cache_bytes_if_enabled": 620756992
+    },
+    {
+      "context_rows_per_request": 262144,
+      "requests": 5,
+      "kv_dtype": "bf16",
+      "target_kv_index_pool_bytes": 37245419520,
+      "target_two_bank_recurrent_and_conv_bytes": 1143521280,
+      "one_mtp_attention_layer_extra_cache_bytes_if_enabled": 3103784960
+    },
+    {
+      "context_rows_per_request": 262144,
+      "requests": 1,
+      "kv_dtype": "fp8",
+      "target_kv_index_pool_bytes": 4328521728,
+      "target_two_bank_recurrent_and_conv_bytes": 228704256,
+      "one_mtp_attention_layer_extra_cache_bytes_if_enabled": 360710144
+    },
+    {
+      "context_rows_per_request": 262144,
+      "requests": 5,
+      "kv_dtype": "fp8",
+      "target_kv_index_pool_bytes": 21642608640,
+      "target_two_bank_recurrent_and_conv_bytes": 1143521280,
+      "one_mtp_attention_layer_extra_cache_bytes_if_enabled": 1803550720
+    }
+  ],
+  "full_model_peak_measured": false,
+  "full_model_fits_confirmed": false,
+  "state_formula_source": "selected unchanged TensorFold Python State/KVCache geometry; not measured deployed Zig allocation",
+  "excluded_from_state_scenarios": [
+    "prefix caches",
+    "snapshots/branch copies",
+    "GDN replay scratch",
+    "PLE state",
+    "CUDA graphs",
+    "activations/workspaces",
+    "allocator/context/driver overhead",
+    "MTP recurrent/proposal buffers and weights"
+  ],
+  "accounting_limitations": [
+    "Non-main serialized bytes are not all native layout sizes.",
+    "MTP loader may repack weights; n-gram tables may be streamed or resident.",
+    "Runtime padding, conversion overlap and duplicated CPU/GPU weights are unmeasured.",
+    "Five full 256K requests are a scenario, not a tested supported configuration."
+  ]
+}

@@ -1,0 +1,294 @@
+{
+  "experiment": "E1-core-build",
+  "status": "CORE_PASS_E1_GPU_PENDING",
+  "upstream_sha": "774ce244b87cc0eb8d4b94ab9f5de2ab22049f01",
+  "observed_interval_utc": {
+    "start": "2026-10-20T12:51:26.713883+00:00",
+    "end": "2026-10-20T13:18:20.078601+00:00"
+  },
+  "observed_interval_client": {
+    "start": "2026-10-20T05:51:26.713883-07:00",
+    "end": "2026-10-20T06:18:20.078601-07:00"
+  },
+  "scope": "Unmodified upstream C++ extension build, import and selected CPU sequence tests only; no vendor GPU kernels, model weights, inference or speed benchmark.",
+  "isolation": {
+    "upstream_tracked_source_unchanged": true,
+    "builder_gpu_device_requests": null,
+    "builder_device_mounts": [],
+    "builder_runtime": "runc",
+    "builder_memory_limit_bytes": 6442450944,
+    "builder_nano_cpus": 2000000000,
+    "builder_mount_destinations": [
+      "/workspace/e1"
+    ]
+  },
+  "bootstrap": {
+    "build": {
+      "finished_at_utc": "2026-10-20T12:55:10.802489+00:00",
+      "returncode": 0,
+      "status": "BUILD_PASS",
+      "cpp_compile_units": 13,
+      "log_sha256": "55d56ac68aefc75fc462911396b3c1e89e8b21294cb65f2e1f0fa510ea6eb5bd"
+    },
+    "initial_import": {
+      "observed_at_utc": "2026-10-20T12:56:41.872205+00:00",
+      "returncode": 1,
+      "status": "IMPORT_FAIL",
+      "error": "ImportError: libcuda.so.1: cannot open shared object file"
+    },
+    "final_import_status": "PASS",
+    "cpu_smoke": {
+      "observed_at_utc": "2026-10-20T12:59:34.539718+00:00",
+      "status": "PASS",
+      "gpu_execution_tested": false,
+      "model_weights_loaded": false,
+      "upstream_sha": "774ce244b87cc0eb8d4b94ab9f5de2ab22049f01",
+      "torch_version": "2.13.0a0+9186a08b2c.nv26.07",
+      "torch_cuda_build": "13.3",
+      "binary_name": "_C.cpython-312-aarch64-linux-gnu.so",
+      "binary_sha256": "cf1abda2b27ca1eaf2aec7ea187f2c52ad75e1af7335b59610ca31406fdcc39e",
+      "engine_present": true,
+      "cuda_initialized_before_tests": false,
+      "upstream_test_file": "tests/engine/test_sequence.py",
+      "test_exit_code": 0,
+      "test_counts": {
+        "passed": 14,
+        "failed": 0,
+        "skipped": 0
+      },
+      "cuda_initialized_after_tests": false
+    },
+    "binary": {
+      "name": "bootstrap-_C.cpython-312-aarch64-linux-gnu.so",
+      "bytes": 14745480,
+      "sha256": "cf1abda2b27ca1eaf2aec7ea187f2c52ad75e1af7335b59610ca31406fdcc39e"
+    },
+    "inherits_system_site_packages": true
+  },
+  "pinned_torch_environment": {
+    "build": {
+      "started_at_utc": "2026-10-20T13:13:48.709634+00:00",
+      "finished_at_utc": "2026-10-20T13:15:13.488942+00:00",
+      "returncode": 0,
+      "status": "BUILD_PASS",
+      "torch": "2.13.0+cu132",
+      "cuda_compiler": "13.3",
+      "inherits_system_site_packages": false,
+      "cpp_compile_units": 13,
+      "log_sha256": "e623356a450ea4211a1891f29982261b02a4687aee7f0f1da067d87154927f06"
+    },
+    "cpu_smoke": {
+      "observed_at_utc": "2026-10-20T13:17:04.487335+00:00",
+      "status": "PASS",
+      "gpu_execution_tested": false,
+      "model_weights_loaded": false,
+      "upstream_sha": "774ce244b87cc0eb8d4b94ab9f5de2ab22049f01",
+      "torch_version": "2.13.0+cu132",
+      "torch_cuda_build": "13.2",
+      "binary_name": "_C.cpython-312-aarch64-linux-gnu.so",
+      "binary_sha256": "f6aa14b790eb7bc729251eea152fd9c83cf215bc5ab912e25ee19c57d8fc1768",
+      "engine_present": true,
+      "cuda_initialized_before_tests": false,
+      "upstream_test_file": "tests/engine/test_sequence.py",
+      "test_exit_code": 0,
+      "test_counts": {
+        "passed": 14,
+        "failed": 0,
+        "skipped": 0
+      },
+      "cuda_initialized_after_tests": false
+    },
+    "binary": {
+      "name": "release-_C.cpython-312-aarch64-linux-gnu.so",
+      "bytes": 14746608,
+      "sha256": "f6aa14b790eb7bc729251eea152fd9c83cf215bc5ab912e25ee19c57d8fc1768"
+    },
+    "inherits_system_site_packages": false,
+    "torch_runtime_version": "2.13.0+cu132",
+    "torch_cuda_build": "13.2",
+    "cuda_compiler": "13.3",
+    "cuda_compiler_note": "CUDA compiler/headers are 13.3 while the pinned PyTorch wheel targets 13.2. This is not a full exact-version reproduction of every upstream dependency.",
+    "base_global_torch_libraries_loaded": false,
+    "loaded_torch_library_basenames": [
+      "libc10.so",
+      "libc10_cuda.so",
+      "libtorch.so",
+      "libtorch_cpu.so",
+      "libtorch_cuda.so",
+      "libtorch_global_deps.so",
+      "libtorch_nvshmem.so",
+      "libtorch_python.so"
+    ],
+    "packages": {
+      "ninja": "1.13.0",
+      "filelock": "4.2.4",
+      "triton": "3.7.1",
+      "nvidia-cufft": "12.2.0.46",
+      "sympy": "1.14.0",
+      "nvidia-nccl-cu13": "2.29.7",
+      "cuda-pathfinder": "1.8.3",
+      "fsspec": "2026.9.0",
+      "nvidia-cusparse": "12.7.10.1",
+      "nvidia-nvjitlink": "13.4.92",
+      "nvidia-cusolver": "12.2.0.1",
+      "mpmath": "1.3.0",
+      "torch": "2.13.0+cu132",
+      "MarkupSafe": "3.0.4",
+      "cuda-bindings": "13.4.4",
+      "setuptools": "81.0.0",
+      "nvidia-cusparselt-cu13": "0.8.1",
+      "pybind11": "3.0.1",
+      "nvidia-cuda-cupti": "13.2.75",
+      "cuda-toolkit": "13.2.1",
+      "nvidia-cudnn-cu13": "9.20.0.48",
+      "nvidia-nvshmem-cu13": "3.4.5",
+      "nvidia-cuda-nvrtc": "13.2.78",
+      "typing_extensions": "4.16.0",
+      "nvidia-nvtx": "13.2.75",
+      "packaging": "26.3",
+      "nvidia-cublas": "13.4.0.1",
+      "iniconfig": "2.3.1",
+      "Jinja2": "3.1.6",
+      "nvidia-cufile": "1.17.1.22",
+      "networkx": "3.7",
+      "pytest": "8.4.2",
+      "numpy": "2.3.5",
+      "nvidia-cuda-runtime": "13.2.75",
+      "pip": "24.0",
+      "pluggy": "1.7.0",
+      "Pygments": "2.21.0",
+      "nvidia-curand": "10.4.2.55"
+    },
+    "pip_check": {
+      "returncode": 0,
+      "stdout": "No broken requirements found.\n",
+      "stderr": ""
+    },
+    "torch_wheel": {
+      "package": "torch",
+      "version": "2.13.0+cu132",
+      "name": "torch-2.13.0+cu132-cp312-cp312-manylinux_2_28_aarch64.whl",
+      "bytes": 432146828,
+      "sha256": "184f88e91546a2087aee2e5e71012ea6182aaf9d6bc81c28375be2816c349a49",
+      "matches_pip_report_digest": true
+    }
+  },
+  "driver_library": {
+    "observed_at_utc": "2026-10-20T12:58:14.350191+00:00",
+    "source_basename": "libcuda.so.580.173.02",
+    "bytes": 96460560,
+    "sha256": "a13f3101b105930ba0796b1ab99721cbee3e19360ced21253e2a09e1a102fb99",
+    "gpu_devices_mounted": false,
+    "note": "Real driver library used solely for process-local dynamic linking; no GPU devices attached."
+  },
+  "resolved_environment_issues": [
+    {
+      "stage": "bootstrap import",
+      "observed": "Missing libcuda.so.1 in GPU-less container",
+      "resolution": "Copied real installed driver library into experiment directory and adjusted only experiment process LD_LIBRARY_PATH; no GPU device mounts; no source patch."
+    },
+    {
+      "stage": "fresh pinned environment dependencies",
+      "observed": "files.pythonhosted.org ReadTimeoutError",
+      "initial_install": {
+        "started_at_utc": "2026-10-20T13:07:17.524757+00:00",
+        "finished_at_utc": "2026-10-20T13:08:59.352856+00:00",
+        "returncode": 2,
+        "status": "DEPENDENCY_INSTALL_FAIL",
+        "inherits_system_site_packages": false
+      },
+      "retry_install": {
+        "started_at_utc": "2026-10-20T13:10:31.888504+00:00",
+        "finished_at_utc": "2026-10-20T13:12:46.999807+00:00",
+        "returncode": 0,
+        "status": "PASS",
+        "inherits_system_site_packages": false,
+        "package_index": "https://pypi.tuna.tsinghua.edu.cn/simple",
+        "local_wheels": "Official PyTorch/NVIDIA wheels retained with observed SHA256 pins"
+      },
+      "resolution": "Used retained official PyTorch/NVIDIA wheels plus Tsinghua PyPI mirror; clean environment installation completed."
+    },
+    {
+      "stage": "SSH observation channel",
+      "observed": "SSH transport timed out during release build observation",
+      "resolution": "Alternate SSH route retrieved successful build artifact; service health/PID/start time/restart count verified afterward."
+    }
+  ],
+  "service_continuity": {
+    "before_utc": "2026-10-20T12:51:26.713883+00:00",
+    "after_utc": "2026-10-20T13:18:20.078601+00:00",
+    "checks": {
+      "container_id_unchanged": true,
+      "image_id_unchanged": true,
+      "pid_unchanged": true,
+      "started_at_unchanged": true,
+      "restart_count_unchanged": true,
+      "arguments_unchanged": true,
+      "environment_sha256_unchanged": true,
+      "mounts_unchanged": true,
+      "service_running": true,
+      "service_not_oom_killed": true,
+      "health_ok_before": true,
+      "health_ok_after": true,
+      "model_config_matches_e0_sha256": true,
+      "upstream_tracked_source_unchanged": true
+    },
+    "all_checks_passed": true,
+    "health_http_before": 200,
+    "health_http_after": 200,
+    "service_restart_count_before": 0,
+    "service_restart_count_after": 0,
+    "model_config_sha256": "b50dbc52a0c83b0cd2a44a372c1fb6b5e0e6827d22f2611c97d4d030f92f6b28",
+    "builder_resources": {
+      "memory.peak": "6447067136",
+      "memory.events": "low 0\nhigh 0\nmax 18721\noom 0\noom_kill 0\noom_group_kill 0"
+    },
+    "builder_stop_returncode": 0,
+    "builder_stopped": true,
+    "builder_oom_killed": false,
+    "workspace_preserved": true,
+    "limitation": "Before/after snapshots do not quantify transient latency impact or continuous availability. A temporary SSH transport interruption was resolved through an alternate route; remote build artifacts showed successful completion."
+  },
+  "source_integrity": {
+    "upstream_tracked_source_unchanged": true,
+    "patches_applied": false
+  },
+  "gpu_component_status": {
+    "DeepGEMM": "NOT_RUN",
+    "FlashMLA": "NOT_RUN",
+    "DeepEP": "NOT_RUN",
+    "DeepSelect": "NOT_RUN",
+    "TileLang": "NOT_RUN",
+    "SM121 numerical kernels": "NOT_RUN",
+    "CUDA Graph": "NOT_RUN",
+    "Qwen weight loading": "NOT_RUN",
+    "Qwen MTP/GDN/QSA correctness": "NOT_RUN"
+  },
+  "overall_e1_complete": false,
+  "performance_measured": false,
+  "speedup": null,
+  "test_coverage_note": "The same 14 upstream CPU cases passed in two environments; this is not 28 distinct cases and not a model/kernel correctness test.",
+  "reproduction_scripts_sha256": {
+    "scripts/e1_build_core.sh": "020036c02eb561d25ed58d7f57c625cb4cdb30fd20e2fdc6e6b68130fd030c29",
+    "scripts/e1_core_smoke.py": "5f385aa41a067f7bb77b46275e2c6c0c2c8fa1769395a050c183ed57fa8d1abb"
+  },
+  "executed_script_sha256": {
+    "prepare-release.sh": "f2e8579956ae512b469ff9e930bffe7d055cd9c239dfc4c7b4fa3e30244d5860",
+    "core-smoke.py": "5f385aa41a067f7bb77b46275e2c6c0c2c8fa1769395a050c183ed57fa8d1abb",
+    "build-core.sh": "1168a21bb161a0847293414c3295f5851657010bfa59ee8cc5d23194675d5f03",
+    "build-release.sh": "cce065dbab33e669094e17d73782f75ed3ce89477d2da4d5cade866c5650dbb7"
+  },
+  "raw_log_sha256": {
+    "core-import-initial.log": "ae73700eb97e06ffede4d1149d6172c5103dd665b5a72326e2f0ea4c55ba9128",
+    "core-build-release.log": "e623356a450ea4211a1891f29982261b02a4687aee7f0f1da067d87154927f06",
+    "release-preflight.log": "14b15ffc9aa27421e4007650a82a29cf9f05596eece8b095ea9579c386574ae6",
+    "pinned-torch-index.log": "34f38bc1816a972d73ed8e1f9a32ab44bbe31629a46c9ba47fcf3ad5dfc269e3",
+    "core-smoke-release.log": "b9f7723ec557f492c2082346d8b989a95af444db9d77bb9d60053f52bf512e59",
+    "core-smoke-bootstrap.log": "c29779517dc5eb04597df3d7fcf8e51abcd59502e4685cc726d0f2f0c249fc8a",
+    "release-env-install.log": "eb85917828c3dac1abeef0bce54165d7e2483d7f93574f8cdc050773e00de2e9",
+    "core-import-driver.log": "c358e6df7084512dde22d3cf665aec5e3f75b9a25088017b996b395410fc90b5",
+    "core-build.log": "55d56ac68aefc75fc462911396b3c1e89e8b21294cb65f2e1f0fa510ea6eb5bd",
+    "release-env-install-retry.log": "b46ecf8d51e865c4a7526d3100ecd2cc92b6a016f6fb6f58ac92e769a782a9e5"
+  },
+  "evidence_privacy": "Raw logs/host identities remain in local .git/e1-evidence and the private remote workspace. This record does not include user prompts, tokens, hostnames, SSH addresses or model paths."
+}

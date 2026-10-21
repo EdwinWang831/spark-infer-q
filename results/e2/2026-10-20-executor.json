@@ -1,0 +1,537 @@
+{
+  "started_at_utc": "2026-10-20T16:15:43.407946+00:00",
+  "scope": "bounded target-only executor on independent real layers 0/GDN and 3/QSA",
+  "quality_evaluation": "NOT_MEASURED",
+  "full_model_performance": "NOT_MEASURED",
+  "mtp_enabled": false,
+  "layers": [
+    {
+      "index": 0,
+      "cases": [
+        {
+          "name": "independent_pytorch_gpu_reference",
+          "rows": 17,
+          "output_difference": {
+            "relative_l2": 0.0009775881189852953,
+            "max_abs": 0.03125,
+            "bit_exact": false
+          },
+          "review_threshold_relative_l2": 0.01,
+          "requires_numerical_review": false,
+          "answer_quality_conclusion": "NOT_MEASURED",
+          "reference_device": "cuda",
+          "executor_matches_direct_native_output_exactly": true,
+          "attention_branch_difference": {
+            "relative_l2": 0.001773068797774613,
+            "max_abs": 0.001953125,
+            "bit_exact": false
+          },
+          "moe_input_difference": {
+            "relative_l2": 0.0020047235302627087,
+            "max_abs": 0.015625,
+            "bit_exact": false
+          },
+          "route_rows_with_set_difference": 0,
+          "route_pick_slots_different": 2,
+          "topk_given_same_native_logits_exact": true,
+          "pytorch_router_given_native_input_sets_equal": true,
+          "router_difference_given_native_input": {
+            "relative_l2": 2.858244670278509e-06,
+            "max_abs": 7.152557373046875e-06,
+            "bit_exact": false
+          },
+          "routing_boundary_diagnostics": [],
+          "state_difference": {
+            "relative_l2": 0.0006784484721720219,
+            "max_abs": 0.00026332587003707886,
+            "bit_exact": false
+          },
+          "conv_difference": {
+            "relative_l2": 0.00025058668688870966,
+            "max_abs": 0.00390625,
+            "bit_exact": false
+          },
+          "status": "PASS"
+        },
+        {
+          "name": "interleaved_requests_positions_nan_padding",
+          "interleaved_positions_and_outputs_exact": true,
+          "nan_padding_zero_and_unexecuted": true,
+          "committed_positions": [
+            5,
+            7
+          ],
+          "graph_stats": {
+            "graph_captures": 1,
+            "graph_hits": 0,
+            "graph_invalidations": 0,
+            "graph_evictions": 0,
+            "eager_batches": 1,
+            "model_calls": 2
+          },
+          "status": "PASS"
+        },
+        {
+          "name": "inflight_cancel_drain_generation_reuse",
+          "canceled_output_suppressed": true,
+          "slot_quarantined_until_finish": true,
+          "generation_changed": true,
+          "late_completion_and_checkpoint_rejected": true,
+          "fresh_request_output_exact": true,
+          "graph_stats": {
+            "graph_captures": 1,
+            "graph_hits": 0,
+            "graph_invalidations": 1,
+            "graph_evictions": 0,
+            "eager_batches": 2,
+            "model_calls": 3
+          },
+          "status": "PASS"
+        },
+        {
+          "name": "full_checkpoint_restores_overwritten_prefix",
+          "prefix_overwritten_before_restore": true,
+          "checkpoint_copies_kv_prefix": true,
+          "replayed_output_and_state_exact": true,
+          "graph_stats": {
+            "graph_captures": 2,
+            "graph_hits": 0,
+            "graph_invalidations": 1,
+            "graph_evictions": 0,
+            "eager_batches": 2,
+            "model_calls": 4
+          },
+          "status": "PASS"
+        },
+        {
+          "name": "capacity_growth_invalidates_graph_bindings",
+          "layout_version_changed": true,
+          "stale_graph_bindings_invalidated": true,
+          "output_and_state_exact": true,
+          "graph_stats": {
+            "graph_captures": 2,
+            "graph_hits": 0,
+            "graph_invalidations": 1,
+            "graph_evictions": 0,
+            "eager_batches": 1,
+            "model_calls": 3
+          },
+          "status": "PASS"
+        },
+        {
+          "name": "graph_reuse_across_committed_decode_steps",
+          "decode_steps": 6,
+          "committed_position": 9,
+          "graph_reuse_with_position_updates": true,
+          "commit_outside_graph": true,
+          "outputs_and_state_exact": true,
+          "graph_stats": {
+            "graph_captures": 2,
+            "graph_hits": 4,
+            "graph_invalidations": 0,
+            "graph_evictions": 0,
+            "eager_batches": 1,
+            "model_calls": 7
+          },
+          "status": "PASS"
+        },
+        {
+          "name": "prepared_cancel_and_padding_only_batch",
+          "canceled_prepared_work_rejected": true,
+          "all_padding_model_calls": 0,
+          "status": "PASS"
+        },
+        {
+          "name": "cross_stream_input_lifetime_and_output_dependency",
+          "producer_backend_consumer_streams_distinct": true,
+          "input_released_after_dispatch": true,
+          "consumer_output_exact_without_backend_host_sync": true,
+          "status": "PASS"
+        },
+        {
+          "name": "transaction_rollback_after_dispatched_host_failure",
+          "fault_kind": "host exception after successful CUDA dispatch",
+          "prefix_state_restored_exactly": true,
+          "next_execution_exact": true,
+          "cuda_device_fault_recovery_tested": false,
+          "status": "PASS"
+        },
+        {
+          "name": "local_executor_graph_vs_eager_wall_time",
+          "scope": "one real block; serialized request bookkeeping, full-state backup, forward/commit/masking and completion wait",
+          "alternating_order": true,
+          "warmup_decode_steps": 4,
+          "eager": {
+            "samples": 24,
+            "median_ms": 1.391110497934278,
+            "p95_ms": 1.5550680036540143
+          },
+          "graph": {
+            "samples": 24,
+            "median_ms": 1.0479939992364962,
+            "p95_ms": 1.1400169969419949
+          },
+          "median_eager_over_graph_ratio": 1.3274031138992737,
+          "outputs_bit_exact": true,
+          "full_model_speedup_claimed": false,
+          "status": "PASS"
+        }
+      ],
+      "hidden_input_seed": 20261040,
+      "hidden_shape": [
+        40,
+        10240
+      ],
+      "hidden_dtype": "bfloat16",
+      "kv_dtype": "bfloat16",
+      "torch_peak_allocated_bytes": 1974439936,
+      "torch_peak_reserved_bytes": 2113929216,
+      "status": "PASS"
+    },
+    {
+      "index": 3,
+      "cases": [
+        {
+          "name": "independent_pytorch_gpu_reference",
+          "rows": 17,
+          "output_difference": {
+            "relative_l2": 0.001336642075330019,
+            "max_abs": 0.03125,
+            "bit_exact": false
+          },
+          "review_threshold_relative_l2": 0.01,
+          "requires_numerical_review": false,
+          "answer_quality_conclusion": "NOT_MEASURED",
+          "reference_device": "cuda",
+          "executor_matches_direct_native_output_exactly": true,
+          "attention_branch_difference": {
+            "relative_l2": 0.0022341017611324787,
+            "max_abs": 0.001953125,
+            "bit_exact": false
+          },
+          "moe_input_difference": {
+            "relative_l2": 0.003135174745693803,
+            "max_abs": 0.015625,
+            "bit_exact": false
+          },
+          "route_rows_with_set_difference": 0,
+          "route_pick_slots_different": 8,
+          "topk_given_same_native_logits_exact": true,
+          "pytorch_router_given_native_input_sets_equal": true,
+          "router_difference_given_native_input": {
+            "relative_l2": 2.7458554541226476e-06,
+            "max_abs": 6.198883056640625e-06,
+            "bit_exact": false
+          },
+          "routing_boundary_diagnostics": [],
+          "key_difference": {
+            "relative_l2": 0.0006496066343970597,
+            "max_abs": 0.015625,
+            "bit_exact": false
+          },
+          "value_difference": {
+            "relative_l2": 0.0005536341923289001,
+            "max_abs": 0.00390625,
+            "bit_exact": false
+          },
+          "status": "PASS"
+        },
+        {
+          "name": "interleaved_requests_positions_nan_padding",
+          "interleaved_positions_and_outputs_exact": true,
+          "nan_padding_zero_and_unexecuted": true,
+          "committed_positions": [
+            5,
+            7
+          ],
+          "graph_stats": {
+            "graph_captures": 1,
+            "graph_hits": 0,
+            "graph_invalidations": 0,
+            "graph_evictions": 0,
+            "eager_batches": 1,
+            "model_calls": 2
+          },
+          "status": "PASS"
+        },
+        {
+          "name": "inflight_cancel_drain_generation_reuse",
+          "canceled_output_suppressed": true,
+          "slot_quarantined_until_finish": true,
+          "generation_changed": true,
+          "late_completion_and_checkpoint_rejected": true,
+          "fresh_request_output_exact": true,
+          "graph_stats": {
+            "graph_captures": 1,
+            "graph_hits": 0,
+            "graph_invalidations": 1,
+            "graph_evictions": 0,
+            "eager_batches": 2,
+            "model_calls": 3
+          },
+          "status": "PASS"
+        },
+        {
+          "name": "full_checkpoint_restores_overwritten_prefix",
+          "prefix_overwritten_before_restore": true,
+          "checkpoint_copies_kv_prefix": true,
+          "replayed_output_and_state_exact": true,
+          "graph_stats": {
+            "graph_captures": 2,
+            "graph_hits": 0,
+            "graph_invalidations": 1,
+            "graph_evictions": 0,
+            "eager_batches": 2,
+            "model_calls": 4
+          },
+          "status": "PASS"
+        },
+        {
+          "name": "capacity_growth_invalidates_graph_bindings",
+          "layout_version_changed": true,
+          "stale_graph_bindings_invalidated": true,
+          "output_and_state_exact": true,
+          "graph_stats": {
+            "graph_captures": 2,
+            "graph_hits": 0,
+            "graph_invalidations": 1,
+            "graph_evictions": 0,
+            "eager_batches": 1,
+            "model_calls": 3
+          },
+          "status": "PASS"
+        },
+        {
+          "name": "graph_reuse_across_committed_decode_steps",
+          "decode_steps": 6,
+          "committed_position": 9,
+          "graph_reuse_with_position_updates": true,
+          "commit_outside_graph": true,
+          "outputs_and_state_exact": true,
+          "graph_stats": {
+            "graph_captures": 1,
+            "graph_hits": 5,
+            "graph_invalidations": 0,
+            "graph_evictions": 0,
+            "eager_batches": 1,
+            "model_calls": 7
+          },
+          "status": "PASS"
+        },
+        {
+          "name": "prepared_cancel_and_padding_only_batch",
+          "canceled_prepared_work_rejected": true,
+          "all_padding_model_calls": 0,
+          "status": "PASS"
+        },
+        {
+          "name": "cross_stream_input_lifetime_and_output_dependency",
+          "producer_backend_consumer_streams_distinct": true,
+          "input_released_after_dispatch": true,
+          "consumer_output_exact_without_backend_host_sync": true,
+          "status": "PASS"
+        },
+        {
+          "name": "transaction_rollback_after_dispatched_host_failure",
+          "fault_kind": "host exception after successful CUDA dispatch",
+          "prefix_state_restored_exactly": true,
+          "next_execution_exact": true,
+          "cuda_device_fault_recovery_tested": false,
+          "status": "PASS"
+        },
+        {
+          "name": "local_executor_graph_vs_eager_wall_time",
+          "scope": "one real block; serialized request bookkeeping, full-state backup, forward/commit/masking and completion wait",
+          "alternating_order": true,
+          "warmup_decode_steps": 4,
+          "eager": {
+            "samples": 24,
+            "median_ms": 1.1805210015154444,
+            "p95_ms": 1.3707979960599914
+          },
+          "graph": {
+            "samples": 24,
+            "median_ms": 0.8507649981766008,
+            "p95_ms": 0.925795997318346
+          },
+          "median_eager_over_graph_ratio": 1.3875994005931038,
+          "outputs_bit_exact": true,
+          "full_model_speedup_claimed": false,
+          "status": "PASS"
+        }
+      ],
+      "hidden_input_seed": 20261043,
+      "hidden_shape": [
+        40,
+        10240
+      ],
+      "hidden_dtype": "bfloat16",
+      "kv_dtype": "bfloat16",
+      "torch_peak_allocated_bytes": 2005107200,
+      "torch_peak_reserved_bytes": 2074083328,
+      "status": "PASS"
+    }
+  ],
+  "reference_policy": "same represented weights/BF16 boundaries with independent PyTorch FP32 GPU arithmetic; differences reported separately from lifecycle checks",
+  "harness_sha256": {
+    "e2_executor_smoke.py": "e9488407856f00451cf064e72cc7627d7036fb0a8e46c6a2961cad9cf8b14e44",
+    "e2_block_reference.py": "d46279331a2bb7ebaf1a55e065fbebdc1efb590f2681e3a3ea97596935c9b86a",
+    "e2_block_support.py": "409d3bedd4c3f49bbdcf602626c7bb5b815e31950b363b748e486a0282f73bff",
+    "e2_run_executor.sh": "3dc3dd32bf68fb71809d9397cbd7590debc8855dc5b737c3daaeabcd95547d52",
+    "spark_infer_q/__init__.py": "623ddaf4adfbf51e0c029203b0ff1780ebcc5824ff8300de5f1e6d6cd819d5d7",
+    "spark_infer_q/executor.py": "e2d981663cfa9f71858fc2d8737246b8a10def79c62f6aa3e670ccb75e2bc16e",
+    "spark_infer_q/tensorfold_block.py": "5527a5f6407c3dbb136003f687151b9754249423f964f71975e4eb9a1b9dadfa"
+  },
+  "extensions_sha256": {
+    "spark_q_moe_linear": "556ec68bfd476385bde2f142422c77893fa6a02da11b7eb23ff43862dd512985",
+    "spark_q_moe_plan": "f64a75592241f3424139c1ad8a757325df4d5f9cadd13686c1cccc9a96804f31",
+    "spark_q_moe_prompt": "49ac7f98c89ba4582d9b34df082a7fc6934a30d9da71677ed4f699f6d18ce7e3",
+    "spark_q_block_gdn": "48d9db2a9f2d9ebd7929b32b2a1d390fe01a8b1306b3054d82f9ec280aff3913",
+    "spark_q_block_gdn_io": "d71673e5a1e36a157d02eb116da5f208cd4055213e1373ed9aab36af70e0b830",
+    "spark_q_block_gdn_shared": "89a960e17a4e5f723f9329469aeb4ec8fb7f2383f58daa8e9651fa7e23313fc9"
+  },
+  "external_source_files_sha256": {
+    "families/qwen4_exp/cuda/weights.py": "b2f630f035406ffd800d3b6d69a471c72c485dc0c3ad5ef04eeb327b97a7f6a3",
+    "families/qwen4_exp/cuda/hc_check.py": "e5241860067d233fb438ca1c71d736f1932e355caf92a81198f5af7077c6fbcd",
+    "families/qwen4_exp/cuda/gdn_multi.py": "8f9721bf2510b312c475d107637e0ee3fba427205d305947a6031700367e90d4",
+    "families/qwen4_exp/cuda/gdn.cpp": "2c84d93bdd38ddb254e1d2dd1c979e5486ad0fa0f09dae58c6c326fc70f39937",
+    "families/qwen4_exp/cuda/hc_upmix.py": "e2d0a75c4b080e511fdb14f67786b7b90a18c762b4644b45feefc8f1f7afb577",
+    "families/qwen4_exp/cuda/engine.py": "de8b9df4882ff3d32c5749d4e253408b278b8ddaed9a71683eb3f0f133df0782",
+    "families/qwen4_exp/cuda/state.py": "e92b98d62849c4f023fe68219a89889b21f161a2bd5f99a4fe1cd27cb7e39f19",
+    "families/qwen4_exp/cuda/yarn.py": "29076c0c9f32651c61f9159e7f152221d9edb9e6d6e33b08cd1e8e184c38bad2",
+    "families/qwen4_exp/cuda/ngram.py": "cf3c061978f1dc33ea2d714807763524c6498e30a2373123829af41fcf790736",
+    "families/qwen4_exp/cuda/exl3_pack.py": "f22fb38c7ca893c5b39eccf4502f0ac0056e7eeaf33fef4be90e48de40bf59ce",
+    "families/qwen4_exp/cuda/attn_multi.py": "c075cf5e9c3dbf80a7ae2eaf3a6af4105d4efb23d78dc58721bb73636406cac7",
+    "families/qwen4_exp/cuda/qmm.py": "772123811351485844054504ecd27c3398cef8d043420c000b16b26d3a986e11",
+    "families/qwen4_exp/cuda/prefixes.py": "b6b0208a44b6ad22b947a6b428dba6d01eaf59cfcb46201c8827cbec0a781e2e",
+    "families/qwen4_exp/cuda/multi_fill.py": "f2996562162e91a2faeb391bc0cefec6266b4aa3637aa05010bd0b24b7d97456",
+    "families/qwen4_exp/cuda/gdn_io.cpp": "28c777bd85454cb47730545105d5c837f303c242550400496a66d9f7ba78af20",
+    "families/qwen4_exp/cuda/forward.py": "1ec9344c85cac5f8954a4b45188ae468e2834899996e10c083b1a81ac3096424",
+    "families/qwen4_exp/cuda/bf16.py": "f82e49e29e5d5f2c1430c48f00878af0715303debf023c401a1f840a727fa45d",
+    "families/qwen4_exp/cuda/gdn_io.cu": "fd834e01a4cb181290312bdc02c753518044ce8cf419ac603beb5b13d1e2f63c",
+    "families/qwen4_exp/cuda/kvcache.py": "709a022c0aba2bb3070b30badb6b912a93ed2e83f1d8e5b6cbc72d512e9eec6e",
+    "families/qwen4_exp/cuda/image_rows.py": "43122f4b5b9a309a7625b3a3f2cdcf7622374b3ddedc7db186bf44b5b8536422",
+    "families/qwen4_exp/cuda/mtp.py": "49700f7aacbf74d78f34efd9a66ac5851c2bfc1472c111a19858ad4273b2eb01",
+    "families/qwen4_exp/cuda/multi_tp.py": "00e47d2ae5c25f4f5630460e818ca8aac36ccc448b1ae09f3e84b14400c52f77",
+    "families/qwen4_exp/cuda/gdn.cu": "f7f36249bfe146b96094e9f1e968a15a3dcf9c58184f4437495110ae1e35fe9e",
+    "families/qwen4_exp/cuda/hc_fused.py": "0cedb247eb4269e218dc61eb7edabe56e19a54fb98120bd39c1c961bd8b95994",
+    "families/qwen4_exp/cuda/nvfp4_moe.py": "46ca1c6de3a682af5aeac7861be10e8b66700dbdb1be383ef3233c6c9e70563d",
+    "families/qwen4_exp/cuda/kv8_multi.py": "1a8c1a126d797560f59611f706b64f54f87cfc87a726eda75160f3e056681932",
+    "families/qwen4_exp/cuda/gdn_io.py": "8516b19320df5044e8eea1c5a896aaf14f46b3f7ef294a163661f212b8d384e0",
+    "families/qwen4_exp/cuda/prompt_mm.py": "be78e330af84579e34a4327cfb07e320f961286ff407a0f31187d5652f32a3ff",
+    "families/qwen4_exp/cuda/attention.py": "ab41744715725efb604a95be94c02ed5699e3dcb0148e5c1909ec8db1fa84692",
+    "families/qwen4_exp/cuda/multi_plan.py": "18171ff12c0459910991ae64e533b3965a38ed6a6fa28dc68d106d08291e577d",
+    "families/qwen4_exp/cuda/nvfp4.py": "d92b93a48a5980111e36636c1c762879347091f3c58c081141df52315a34248b",
+    "families/qwen4_exp/cuda/kvquant.py": "b893b9841117629f3e6f37eb9e3c3994242bf8d3476657f7cc6885d3bb6c8123",
+    "families/qwen4_exp/cuda/prompt_plan.py": "6cee04112f28aaaaaa389ce74915c6a91da22223e59a96d810b2813191812257",
+    "families/qwen4_exp/cuda/exl3.py": "1cd791ce7c43aa74de1902946e7fca5e8b0e373244a818f73b27989969c08c6e",
+    "families/qwen4_exp/cuda/weight_types.py": "f01db1863226aa91be71a7aedcfe73212a4b729990c5239d07c3da94004cec0a",
+    "families/qwen4_exp/cuda/reader.py": "c06b340443e5aa862d6ffafedffe5282587e1f9d9ae08f5387ab34022af7e437",
+    "families/qwen4_exp/cuda/glue.py": "6934d5de5919ee222b347d5841036c2c4ea28784d7f5419f93128f9ff099e5ff",
+    "families/qwen4_exp/cuda/decode.py": "3fc7854572886d05c36498ed0a6b263295b4e2bfa9844b33b3bde424598029f6",
+    "families/qwen4_exp/cuda/multi_solo.py": "0eae985c88f310cd1070440ef7c0ea640e92006f1a8a25556cb603bbdcc33831",
+    "families/qwen4_exp/cuda/gdn.py": "7f4f7deed17e0d0e764828a543be29b140476714f0f85992507a8b2dfd31f0a6",
+    "families/qwen4_exp/cuda/kv8.py": "f91aff3852ce74f486d7044aceba76379de18717a4462f4b2fc28e2b3be58b13",
+    "families/qwen4_exp/cuda/graphs.py": "dc8b583b55e8c9bbc21b0100c0a24c68747027551ce52dc60e2db69508be647f",
+    "families/qwen4_exp/cuda/multi.py": "f56cbec323b6593be77efe0e9fa2c3c6af9c8bfeb17ed2859f1f31074359ef5d",
+    "families/qwen4_exp/cuda/exl3_mm.py": "0c1f4b024b5e3750fa8b8eadda0addd30216dc9702b98712fe03f346b46e590d",
+    "cuda/kernels/qmm_tiles.py": "2768f581909a9b0df95a1405d9db9f2e1a3214156c683a339ffefd55f67d022c",
+    "cuda/kernels/gdn.cpp": "1203b16dc8a81b3fb297b8b78159692c648498b211da0ed5a9cd4267873df885",
+    "cuda/kernels/prefill_attention.cu": "e5511f4b29b2a9ec2fa0c272bd7efc83c219ca1fb2f2aed2906edb263cbbbf84",
+    "cuda/kernels/gdn_prefill.cu": "d0f75d39d5436305d4433f5d825d818432918950aa5a234422eece7485d1bb57",
+    "cuda/kernels/qmm.py": "0f86c9abcfd1922d82b6481fa5001f415bbb2a9fe15415e0e4d5d2e24191eaf2",
+    "cuda/kernels/qmm_frag.cuh": "476da5f919b1593375faab72c4c6c75f7620b78ae0a85f60856c80102e715833",
+    "cuda/kernels/qmm_prefill.cu": "be112df7a73c47530f998caaf44fd75a8490e59ec1152f89d170d72f10c13f9b",
+    "cuda/kernels/prefill_attention.cpp": "989130131471e0f6dc6594849468c4175a99b9ab9f30d8d418a0cc69527d97aa",
+    "cuda/kernels/gdn.cu": "bb07c9e160f88cb7a90153b7101f0f78c4f9040159f17b75b4f145abb7431cad",
+    "cuda/kernels/affine_kernels.py": "9165d92bf0a3908ce525b69802f14b4534bf9615bc8e470f539e72f0902fa1a5",
+    "cuda/kernels/qmm.cpp": "7a54ca9926adb3a0afcc0b42c82b5fd148b7c1c948dd38a729568172668c81ab",
+    "cuda/kernels/attention.py": "785a62d36033cca82446fd847cf8f3b5d7d1c306e2261fdefab9000a2a565a5d",
+    "cuda/kernels/qmm.cu": "8aa8a7c554959e9fa1ae812f3597f1480d5c47f607593a19332341437130b45e",
+    "cuda/kernels/affine.py": "74967b517a5a0f253f6cfaacc85ce8fc31d0eaddb5367e97985d2469140ac19d",
+    "cuda/kernels/qmm_group.cu": "9950e54b0901ec3950b0145fa3f4357ce4904ed70d303708d64db8c94a6c4668",
+    "cuda/kernels/prefill_attention.py": "5f80885d328de29850df286541a05da584215055debddebb1566cd3999e1e994",
+    "cuda/kernels/qmm_prefill8.cu": "b6fa59c8325f8d711937473fbb5bf03ed2000bd11f18022a485d971f35e42172",
+    "cuda/kernels/gdn.py": "84c8cebbadd11fc676ab15757d345ec7db150033e958a37ca2e3db62457264bf",
+    "cuda/nvfp4/gemm_ws.cu": "54a81d2d32bf706ac2f01ae752b9bb48fdcc5de3feca442c7fd78b8747b63e37",
+    "cuda/nvfp4/nvfp4q.cuh": "6b823ddf0f4bfc42f4687d57c9fe46a1a7f7cbc33074a6f51c857e745cf4601d",
+    "cuda/nvfp4/swiglu4.cuh": "0f9e566a688f162b55b78013f8d3d58f8ee44fc900a8fe96c2e6d4bdc75c40dc",
+    "cuda/nvfp4/checkpoint.cpp": "b37f9f63aeaf821671414ff5acf139bbee3d6196d1c09fa669ffc7b3162138e1",
+    "cuda/nvfp4/mma4.cuh": "257ed3bdc913d6aacc8b387c25a70e27cf9a1fcaab82109f783b6717917b556a",
+    "cuda/nvfp4/gemm_ck.cu": "0c7cc5a19b438db7f1fddcbe2d824d7e383f3129384fc9ee6c1f47785ec0ef8d",
+    "cuda/nvfp4/act.cu": "943efa80549bea1cf31984be2639faeb9327cbbced7876c48acb92c433267546",
+    "cuda/nvfp4/linear.py": "04136cbf4fa5f8b9c3a9cb655e4643929ead09d29367f1b7c135f662d0fe6f25",
+    "cuda/nvfp4/qmmf.cpp": "13364659eef86b75ba875e384a9373913671c120c3ae7dd6bc73873e05f16be4",
+    "cuda/nvfp4/prompt.cpp": "605f4bb6e3baac5b00bf9e679d1ae7503f42b6a212c2b80f8c8122f250aa763d",
+    "cuda/nvfp4/qmmf.cu": "52477baf67e0babac2c612ab6a1d20f6683bde0ab2b961a4771843b62cb05e3a",
+    "cuda/nvfp4/checkpoint.py": "0f77f74d5567a8d25fd527f7219b87a4a30a85e25d0cb15fc7febf5f46433ae6",
+    "cuda/nvfp4/format.py": "8b5d85790d47da354a6ca4796cf123d94b10a333370d1b46d307aae772f15320",
+    "cuda/nvfp4/lane4.cu": "7dfdd956cc45970459ebf8dfd81dd1571d8f5d95e86a884c0c71a368e4e7529d",
+    "cuda/nvfp4/experts.py": "e0e8c9397c9a587a86f74c6ff937c34c6dbb410a2f7d3a495b61b3a8d71ddd5d",
+    "cuda/nvfp4/prompt.cu": "89275c250aec25c6fe2abe02ca596c96b0e797d3191e0d4aef176c3b22dc0155",
+    "cuda/nvfp4/experts.cu": "5d42a8d9e60e98b0b9b3325a20b5543f7c37c9dde1f72ce282b023a562136630",
+    "cuda/build.py": "d82402b726267ef08093a9a006d4dd85db4172da603a28a4823930f3e2d933ee",
+    "cuda/direct_read.py": "7cb34b2ca6be6a1467a0645291988f869467272cfcdc5e27867df5aa4450fd26",
+    "cuda/moe.py": "32c16689dad01b7e10ba8b6a80bec24ad856406c3ee2c13da9f3600f89319e7e",
+    "cuda/experts.py": "71534ff9a82c33109d81264d72c30ca50e8c0d36d81810b53fba54eabb37da3e",
+    "cuda/prompt_precision.py": "2d190812ad9034fc2c0188a06f9fe814be0eab655cca08257c383160de323251",
+    "cuda/geometry.py": "dc320f5ee06bed2134b12f394b9605bf9b471b1ba64dbdb6d89a0468b94dd962",
+    "families/qwen4_exp/host_table.py": "52dc3148f276fdf8814df83eabf7cddf7866185157dabce400241b33e0434a3d",
+    "families/qwen4_exp/ssd_table.py": "b3fabaee9cdfbb6ce5d69bf216f63afe98ae54abc88b222a0c8f1312dd6af45e"
+  },
+  "torch": "2.13.0+cu132",
+  "cuda_build": "13.2",
+  "capability": [
+    12,
+    1
+  ],
+  "checkpoint_revision": "b9ce18a6887e18c089fdea8509a33e63429a3300",
+  "tf32_override": "0",
+  "torch_allow_tf32": false,
+  "float32_matmul_precision": "highest",
+  "status": "PASS",
+  "base_global_torch_libraries_loaded": false,
+  "finished_at_utc": "2026-10-20T16:16:15.652505+00:00",
+  "runner_sha256": "e9488407856f00451cf064e72cc7627d7036fb0a8e46c6a2961cad9cf8b14e44",
+  "experiment": "E2-minimal-target-only-executor",
+  "interpretation": {
+    "lifecycle_cases_passed": 16,
+    "numerical_diagnostics_completed": 2,
+    "local_timing_comparisons_completed": 2,
+    "numerical_reference_is_quality_ceiling": false,
+    "deepinfer_cpp_scheduler_integrated": false,
+    "full_model_logits_validated": false,
+    "synthetic_hidden_states": true,
+    "independent_layers_not_stacked": true,
+    "supported_probe_limits": {
+      "requests": 2,
+      "checkpoint_budget": 4,
+      "initial_capacity": 8,
+      "context_limit": 64,
+      "max_rows_per_request": 32,
+      "max_packed_rows": 64,
+      "graph_cache_limit": 8
+    },
+    "numerical_status_pass_means": "finite diagnostic completed; 1 percent L2 is a review flag, not a quality or equivalence gate"
+  },
+  "isolation": {
+    "experiment_cpu_limit": 2,
+    "experiment_memory_limit_bytes": 6442450944,
+    "torch_allocator_limit_bytes": 3221225472,
+    "cgroup_memory_peak_bytes": 2753249280,
+    "cgroup_peak_scope": "container lifetime including preliminary and final runs; separate accounting from CUDA allocator",
+    "cgroup_memory_events": {
+      "low": 0,
+      "high": 0,
+      "max": 0,
+      "oom": 0,
+      "oom_kill": 0,
+      "oom_group_kill": 0
+    },
+    "existing_service_health": "ok",
+    "existing_service_pid_start_restart_unchanged": true,
+    "existing_service_configuration_unchanged": true,
+    "existing_service_latency_measured": false,
+    "experiment_containers_stopped_afterward": true
+  }
+}
