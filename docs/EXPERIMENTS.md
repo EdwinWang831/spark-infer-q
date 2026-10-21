@@ -163,3 +163,11 @@ Never commit raw user prompts, API keys, identifying machine reports, model weig
 ## E9 — Decode time distribution
 
 2026-10-21: [plan](E9_PROFILE_PLAN.md), [report](E9_DECODE_PROFILE_REPORT.md), [data](../results/e9/2026-10-21-decode-profile.json). E8 untraced target83.81% / draft14.39%. Three valid Nsight decode ranges cover202,995 kernels; GPU activity91.76%, not SM utilization. Expert/qmmf/BF16 families78.6% cumulative kernel time. Twelve independent generation oracles and15 post-request output/state checks pass. Initial repeated collection failed (one valid trace retained separately); single recording succeeds. Four controls are genuinely CUDA-untraced, eight intermediate controls CUDA-recorded/NVTX-inactive; correction retained. Next measure target kernels/verification effectiveness and draft backbone; no new speedup or native ranking.
+
+## Proposed next experiments (not yet numbered or run)
+
+These plans follow E9 and carry no GPU results; assign E numbers and freeze inputs/thresholds when they are scheduled. Host-only reference helpers and tests live in `spark_infer_q/moe_cost.py`.
+
+- [Prefill numerics reference](PREFILL_REFERENCE_PLAN.md): judge serial-decode and native-prefill prompt arithmetic against an FP32 dequantized reference instead of against each other, with a pre-registered rule for switching the prompt path.
+- [Achieved bandwidth accounting](ACHIEVED_BANDWIDTH_PLAN.md): log per-step routed expert unions to turn E9 kernel times into achieved GB/s per family, and decide between kernel tuning and reading fewer bytes.
+- [Expert-union-aware verification budget](MOE_AWARE_BUDGET_PLAN.md): test whether a step-time model in rows plus routed-expert union predicts better than MTPVarlen's rows-only model, then swap only that model into the budget.
