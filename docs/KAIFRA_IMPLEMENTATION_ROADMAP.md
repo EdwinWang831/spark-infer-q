@@ -1,6 +1,7 @@
 # Kaifra 实施路线图：从 SparkInfer-Q 实验原型到自主推理引擎
 
 > **状态：设计提议，不包含任何实际实现或新的 GPU 运行结果。**  
+> **基础路线：基于 DeepInfer 原生 C++ Scheduler / MTPVarlen 进行 Qwen 与 Spark 深度适配，不从零实现新的 Scheduler；TensorFold 组件作为可替换执行后端，DFlash2 作为草稿提供者。**  
 > 此文档与 [Kaifra Vision RFC](KAIFRA_VISION_RFC.md) 同 PR，落实“怎样才算自己的引擎”。  
 > 先保留 `spark-infer-q` 仓库与包名，不启用自动迁移或重命名。
 
@@ -8,26 +9,27 @@
 
 ### 成功的 Kaifra MVP（最低完整定义）
 
-一台 DGX Spark 上，由**我们自己维护的**请求循环、状态控制、任务队列、调度与执行契约驱动同一份 Qwen Target（可以复用外部获许可 CUDA kernel），提供基本服务 API：
+一台 DGX Spark 上，**在 DeepInfer C++ Scheduler / MTPVarlen 底座上由我们维护和扩展** Qwen 请求状态、任务队列、GPU Batch、推测验证与执行契约，并驱动同一份 Qwen Target（可复用外部获许可 CUDA kernel），提供基本服务 API：
 
 - 单模型加载、显式 checkpoint/量化/后端版本；
 - Text-only greedy streaming、EOS/max_tokens、取消、限额/拒绝；
 - 分块 Prefill、target-only decode、正确缓存和 GDN/QSA 状态管理；
 - 可选 Q4 DFlash2 DraftProvider，拒绝后保证 Target 参考输出/状态正确；
 - 完整 decode/prefill 与端到端 SSE/HTTP 指标，错误安全回退；
-- 可以不启动 TensorFold 原来的 serving 服务，也不必借助 DeepInfer 的原本独立 LLMEngine 进程。
+- 可以不启动 TensorFold 原来的 serving 服务，也不必运行 DeepInfer 原本针对 DeepSeek 的完整 LLMEngine/Worker 进程；**仍然复用并扩展 DeepInfer C++ Scheduler、BlockManager（逻辑配额）和 MTPVarlen**，Kaifra 自己适配 Qwen GPU KV/GDN/PLE 状态。
 
 **不要求**自研所有 CUDA kernel，不要求从第一个版本支持全模型、vision、随机采样、长上下文或多用户，不要求一开始超越 TensorFold。
 
-**仅包装 TensorFold 现成服务 API ≠ 自己的执行引擎。** 最简单的可验收区别：请求计划、device state 的生命周期和 speculative verify/commit 由 Kaifra 的运行时控制，GPU kernel 只是可替换的执行 provider。
+**仅包装 TensorFold 现成服务 API ≠ 自己的执行引擎。** 最简单的可验收区别：**DeepInfer-derived** 调度计划通过 Kaifra 自己的 Qwen 适配器驱动 device state 的生命周期、speculative verify/commit 和 API；GPU kernel 只是可替换的执行 provider。我们不主张 DeepInfer Scheduler 是自行发明。
 
 ## 2. 理想结构（先契约、后优化）
 
 ~~~mermaid
 flowchart TD
     API["Kaifra API / stream"] --> R["Request Runtime"]
-    R --> AD["Admission + Cancellation"]
-    AD --> CP["Cost / SLO Policy"]
+    R --> DS["DeepInfer C++ Scheduler + BlockManager"]
+    DS --> AD["Kaifra Qwen Adapter / Admission + Cancellation"]
+    AD --> CP["DeepInfer MTPVarlen + Kaifra Cost / SLO Policy"]
     CP --> BP["Batch & Phase Planner"]
     BP --> EX["Kaifra Executor"]
     EX --> KP["Kernel Adapter: TensorFold-derived, later alternatives"]
@@ -40,7 +42,7 @@ flowchart TD
 
 只有三条必须先清晰隔离的接口：
 
-1. **RequestRuntime**：控制请求身份、等待/运行/完成/取消、输出和故障隔离；不直接操作 GPU 权重；
+1. **DeepInfer-based RequestRuntime**：以原生 C++ Scheduler 的 `schedule/process_outputs` 和逻辑 BlockManager 为起点，扩展 Qwen 请求身份、等待/运行/完成/取消、输出与故障隔离；不重造同质 Scheduler，也不在其中直接操作 GPU 权重；
 2. **ExecutorBackend**：以批次/图 plan 调用 Prefill、Decode/Verify、Snapshot、Commit、Restore、Release；外部 kernel/weight loader 可注入；
 3. **DraftProvider**：根据 Target 已提交特征和 pending token 给出 proposal，表明 block 大小、量化、token map、候选分布和状态开销；始终由 Target 进行合法验证。
 
@@ -101,11 +103,11 @@ class KaifraEngine(Protocol):
 
 **验收：**历史结果可追溯，回归测试能识别数值与输出变化；训练/测试切分不混淆。优先落实 E8 完整生成（包括 TTFT/完整请求），其 prompt-only 4.66× **不替代**端到端性能结果。
 
-### K1 — 独立 Target-only Runtime
+### K1 — 基于 DeepInfer 的 Target-only Runtime
 
-**交付：**一个 `KaifraEngine` 自有请求状态机、Target KernelAdapter、bounded chunked Prefill、serial Decode、stream、EOS/max_tokens、cancel、权重加载与清理。
+**交付：**沿用 E5 已证明可用的原生 DeepInfer C++ Scheduler / BlockManager 逻辑，构建由 Kaifra 维护的 `KaifraEngine` Qwen 请求状态机/Target KernelAdapter、bounded chunked Prefill、serial Decode、stream、EOS/max_tokens、cancel、权重加载与清理。
 
-**验收：**同路径目标 Serial 逐 row logits、有效 GDN/QSA/PLE state 连贯；输入长度上限、非空响应、请求取消/复用、错误和资源回收正确。新引擎不依赖 TensorFold 的 HTTP server 或 DeepInfer 的 Worker 常驻。
+**验收：**同路径目标 Serial 逐 row logits、有效 GDN/QSA/PLE state 连贯；输入长度上限、非空响应、请求取消/复用、错误和资源回收正确。**运行时继续使用原生 DeepInfer C++ Scheduler，但不依赖 TensorFold 的 HTTP server 或原版 DeepSeek 专用 DeepInfer Worker 常驻。**
 
 ### K2 — DFlash2/Q4 接入并测量执行路径
 
@@ -171,7 +173,7 @@ TensorFold 的**当前**代码已经有：
 
 | 次序 | PR 目标 | 预期改动 |
 | --- | --- | --- |
-| PR-K1 | `kaifra/runtime` 请求状态与状态契约 | 独立 API/生命周期、单测/回归与 no-kernel fake backend |
+| PR-K1 | `kaifra/runtime` DeepInfer-derived 请求状态与状态契约 | 在 E5 C++ Scheduler 桥接上构建 API/生命周期、单测/回归与 no-kernel fake backend，保留上游归属 |
 | PR-K2 | `kaifra/executor` Target-only 路径 | Qwen kernel adapter + Prefill/Decode、有效 state 对照 |
 | PR-K3 | `kaifra/spec` Q4 DFlash2 | provider 接口、K 档位、拒绝正确性 + E7/E8 复现 |
 | PR-K4 | `kaifra/graphs` & batched verify | 静态 GPU buffers、Graph 尺寸、双请求 state 隔离 |
@@ -181,9 +183,9 @@ TensorFold 的**当前**代码已经有：
 
 ## 7. 原创性与停止条件
 
-- **工程创新**：当我们掌握了自己的 runtime、state lifecycle、batch + correct verification，并有真实用户负载优势时，能够有根据地称为独立推理引擎；不必自研全部 kernels。
+- **工程创新**：在明确承认 DeepInfer-based 架构和上游版权的前提下，当我们维护完整的 Qwen runtime、state lifecycle、batch + correct verification，并有真实用户负载优势时，能够有根据地称为独立维护的衍生推理引擎；不必自研全部 kernels 或重新发明 Scheduler。
 - **算法创新**：仅在新联合决策机制、数值/状态约束或缓存算法被清晰形式化、查新、消融并超过最新强基线之后主张；成本感知/动态草稿不是首次提出。
 - **中止/缩减条件**：GPU batch/状态长期无法正确支持、优化收益不能超过变更噪声、维护成本明显高于可用收益时保留 TensorFold serving + SparkInfer-Q 可验证研究模块，不为“自研”牺牲可靠性。
 - **名字**：Kaifra 是工作名。先不改仓库、产品发布、公司或域名，完成目标市场和商标检索再决定。
 
-**最先值得完成的一步：**保留并整理 E8 分块路径的正确性与真实端到端实验，然后建立由我们独立维护的 Target-only RequestRuntime，逐步替换测试 harness 中的单请求生成循环。
+**最先值得完成的一步：**保留并整理 E8 分块路径的正确性与真实端到端实验，然后**继续扩展现有 E5 DeepInfer C++ Scheduler 桥接**，使其驱动 Kaifra 自己的 Qwen Target-only 执行/状态服务，逐步替换测试 harness 中的单请求生成循环。
