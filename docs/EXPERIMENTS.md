@@ -123,6 +123,10 @@ Collect `TTFT_ms`, `TPOT_ms`, `output_tokens_per_second`, `total_output_tokens_p
 
 2026-10-21: [plan](E5_ENGINE_BRIDGE_PLAN.md), [report](E5_ENGINE_BRIDGE_REPORT.md), [data](../results/e5/2026-10-21-engine-bridge.json). The real DeepInfer C++ Scheduler now drives the complete Qwen target-only execution through a synchronous adapter. CPU toy and real-token replay checks passed the same seven-group matrix; GPU checks covered 364 full-logit rows and 79 live-state comparisons, with replay-equivalent dispatch/output ledgers and complete native logical-block return. Two GPU preflight harness failures (special-token vocabulary and tokenizer return type) were corrected and retained. This is not full LLMEngine/Worker, GPU cache-page mapping, async/ragged batch or a performance result. Target prefill numerical review remains open; DFlash2 draft-head profiling/compression is next.
 
+## E6 — Optional draft-head compression
+
+2026-10-21: [frozen plan](E6_DRAFT_HEAD_PLAN.md), [report](E6_DRAFT_HEAD_REPORT.md), [data](../results/e6/2026-10-21-draft-head.json), [reusable API and device boundaries](DRAFT_HEAD_USAGE.md). Four heads × fixed7/dynamic7 × eight new tasks × four repetitions produced 256 timings; 64 independent oracles checked 2,616 committed logit rows and live state, with timed outputs/state also exact. All tasks reached EOS. Full Q4 dynamic measured 45.54 versus BF16-full 41.70 decode tok/s (+9.23%); fixed subset coverage loss in Chinese is retained. Twelve stored-weight Q4 arithmetic cases and unchanged target-head SHA passed. Original target BF16 head remains resident; no model-wide memory saving, full BF16-target equivalence, cross-GPU, random-sampling, batching or cross-study native-MTP speed claim follows. BF16 remains the API default; an explicit optional provider and observable fallback support reuse. Q8/mixed precision is a future comparison, not measured by E6.
+
 ## Experiment record template
 
 ```yaml

@@ -4,6 +4,8 @@
 
 **Experimental inference acceleration for Qwen models on NVIDIA DGX Spark (GB10 / SM121), inspired by [DeepInfer](https://github.com/deepseek-ai/DeepInfer).**
 
+> **Latest draft-head result:** On eight new mixed Chinese/English tasks, full-vocabulary Q4 drafting measured **45.54 decode tok/s versus BF16-full 41.70 (+9.23%)** under the same dynamic policy. All 256 timed outputs/live states and 64 independent committed-logit/state oracles passed. A fixed reduced vocabulary harmed Chinese coverage; full Q4 is the preferred next candidate. Proposal agreement was 27/28 in four calibration contexts, not a general BF16-fidelity claim. The target remains NVFP4, the selector/backbone BF16; results are from one Spark. See the [E6 report](docs/E6_DRAFT_HEAD_REPORT.md), [data](results/e6/2026-10-21-draft-head.json) and [optional projection API / usage](docs/DRAFT_HEAD_USAGE.md).
+
 > **Research status:** A same-machine TensorFold native MTP / DFlash2 study now contains 336 timed runs on eight new English prompt texts (14 settings). Within our path, frozen DeepInfer dynamic budgeting measured 47.37 decode tok/s versus fixed6/fixed7 at 46.39/46.30 (+2.12%/+2.31%). Cross-engine outputs differ on six settings, and the original native timings show a first-repetition effect with asymmetric warmup; a separate native per-case warmup control reached **55.99 tok/s**, alongside the untouched main data. The control is post hoc and sequential, with cross-engine output differences retained; no speed lead over native TensorFold is established. Our cold prompt path remains a major end-to-end bottleneck; target verification accounts for about 80% of dynamic decode, the entire drafter about 18%. See the [matched report](docs/E4_MATCHED_REPORT.md), [method](docs/E4_MATCHED_PLAN.md) and [full data](results/e4/2026-10-20-matched.json).
 >
 > Candidate timed output IDs matched its own serial oracle; 84 separate nonserial runs checked committed logits and final live state. All 240 objectively checkable main-study answers passed. Prose has no semantic quality score, and capped code is only a prefix. Official draft BF16 fidelity, target prefill numerical differences, long context and full-engine validation remain open. Earlier [wide-block](docs/E3_WIDE_BLOCK_REPORT.md), [local-policy](docs/E3_LOCAL_POLICY_REPORT.md) and [draft-fastpath](docs/E3_DRAFT_FASTPATH_REPORT.md) gains are separate studies and must not be multiplied.
@@ -20,7 +22,7 @@ The current prototype combines **TensorFold model execution**, an adapted **DFla
 
 The complete DeepInfer engine is not integrated. E3/E4 speeds describe the DFlash2 experimental execution loop; they are not benchmarks of the separate scheduler bridge below or of a full DeepInfer engine.
 
-A separate [bounded native-scheduler bridge](docs/E5_ENGINE_BRIDGE_REPORT.md) now lets the real DeepInfer C++ Scheduler drive the complete Qwen target-only path. Seven GPU scenario groups passed, with 364 full-logit rows and 79 live-state checks. Device state remains owned by the Qwen backend; native blocks are logical accounting. GPU requests execute serially, and this is not the full Worker/async pipeline or a throughput result. The next scoped experiment is DFlash2 draft-head profiling and compression.
+A separate [bounded native-scheduler bridge](docs/E5_ENGINE_BRIDGE_REPORT.md) now lets the real DeepInfer C++ Scheduler drive the complete Qwen target-only path. Seven GPU scenario groups passed, with 364 full-logit rows and 79 live-state checks. Device state remains owned by the Qwen backend; native blocks are logical accounting. GPU requests execute serially, and this is not the full Worker/async pipeline or a throughput result. The subsequent [E6 draft-head study](docs/E6_DRAFT_HEAD_REPORT.md) measured full-vocabulary Q4 against the unchanged BF16 draft projection; actual multi-request GPU batching remains future work.
 
 ## Investigation stages
 
@@ -32,6 +34,7 @@ A separate [bounded native-scheduler bridge](docs/E5_ENGINE_BRIDGE_REPORT.md) no
 | E3 | Draft adapters, speculative verification, GDN/QSA state correctness | Bounded greedy DFlash2 integration passed with native DeepInfer variable budget; random sampling, full scheduler and native Qwen MTP remain open |
 | E4 | Apples-to-apples engine comparison, including TensorFold / vLLM / SGLang | Partial: [short-context TensorFold / DFlash2 measurements](docs/E4_MATCHED_REPORT.md) completed; warmup/numerical limits retained; vLLM / SGLang, long context and concurrency not measured |
 | E5 | Minimal native engine bridge | Bounded target-only C++ Scheduler / full-Qwen lifecycle checks passed; full Worker/cache/async and GPU batching remain open |
+| E6 | Optional draft-head compression | 256 bounded timings / 64 oracle runs passed; full Q4 dynamic +9.23% versus same-task BF16-full; fixed subset coverage and cross-device limits retained |
 
 For precise pass criteria and failure classification, see [docs/EXPERIMENTS.md](docs/EXPERIMENTS.md).
 See also [architecture candidates](docs/ARCHITECTURE.md) and the [initial source audit](docs/PORTING_MATRIX.md).

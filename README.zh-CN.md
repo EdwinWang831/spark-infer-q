@@ -4,6 +4,8 @@
 
 **面向 NVIDIA DGX Spark（GB10 / SM121）的 Qwen 模型推理加速实验，借鉴 [DeepInfer](https://github.com/deepseek-ai/DeepInfer)。**
 
+> **最新草稿头结果：** 八条新中英任务上，完整词表 Q4 在相同动态策略下达到 **45.54 decode token/s，BF16-full 为 41.70（+9.23%）**。256 次计时输出/有效状态及 64 次独立已提交 logits/状态对照全部通过。固定子词表损害中文覆盖，下一候选优先保留完整词表 Q4。四个校准上下文的提案一致率为 27/28，不代表通用 BF16 fidelity；主模型仍为 NVFP4，selector/backbone 保留 BF16。实测仅覆盖一台 Spark。详见 [E6 报告](docs/E6_DRAFT_HEAD_REPORT.md)、[数据](results/e6/2026-10-21-draft-head.json)和[可选投影接口/使用说明](docs/DRAFT_HEAD_USAGE.md)。
+
 > **研究进展：** 同机原生 TensorFold MTP / DFlash2 对照已完成 336 次计时，覆盖八个新英文提示文本、十四种设置。我们路径内部，冻结的 DeepInfer 动态预算达到 47.37 decode token/s，固定六/七草稿为 46.39 / 46.30，提升 2.12% / 2.31%。跨引擎六种设置的输出不同，且原生原始计时存在首轮效应、双方预热不对称；另行逐用例预热控制中，原生达到 **55.99 token/s**，与原始数据并列保留。该控制为事后顺序 session，仍有跨引擎输出差异；目前没有相对原生 TensorFold 的速度优势证据。当前冷 prompt 路径仍是端到端主要瓶颈；动态 decode 中 target 验证约占 80%，整个 drafter 约占 18%。详见[同机报告](docs/E4_MATCHED_REPORT.md)、[方法](docs/E4_MATCHED_PLAN.md)和[完整数据](results/e4/2026-10-20-matched.json)。
 >
 > 候选全部计时输出 IDs 与本路径串行 oracle 一致，另有 84 次独立非串行运行核对已提交 logits 和最终有效状态；主实验 240 次可客观判定的答案检查均通过。散文没有语义质量评分，截断代码仅作前缀观测。官方草稿 BF16 fidelity、target prefill 数值差异、长上下文和完整引擎验证仍待解决。此前[八行](docs/E3_WIDE_BLOCK_REPORT.md)、[局部策略](docs/E3_LOCAL_POLICY_REPORT.md)和[草稿快路径](docs/E3_DRAFT_FASTPATH_REPORT.md)是独立实验，收益不能相乘。
@@ -20,7 +22,7 @@
 
 目前尚未接入完整 DeepInfer 引擎。E3/E4 已报告速度对应 DFlash2 实验执行循环，不是下方独立调度桥接器或完整 DeepInfer 引擎的基准成绩。
 
-另有[最小真实调度桥接](docs/E5_ENGINE_BRIDGE_REPORT.md)：DeepInfer 原版 C++ Scheduler 已实际驱动完整 Qwen target-only 路径，七组 GPU 场景通过，核对 364 行完整 logits 和 79 次有效状态。真实状态仍由 Qwen 后端管理，原生 block 仅作逻辑配额；GPU 请求仍逐个执行，尚未接入完整 Worker/异步流水，也不是吞吐结果。下一项为 DFlash2 草稿头成本拆测与压缩。
+另有[最小真实调度桥接](docs/E5_ENGINE_BRIDGE_REPORT.md)：DeepInfer 原版 C++ Scheduler 已实际驱动完整 Qwen target-only 路径，七组 GPU 场景通过，核对 364 行完整 logits 和 79 次有效状态。真实状态仍由 Qwen 后端管理，原生 block 仅作逻辑配额；GPU 请求仍逐个执行，尚未接入完整 Worker/异步流水，也不是吞吐结果。后续 [E6 草稿头实验](docs/E6_DRAFT_HEAD_REPORT.md)已对照完整词表 Q4 与未变的 BF16 草稿投影；真实多请求 GPU batch 仍待开展。
 
 ## 实验阶段
 
@@ -32,6 +34,7 @@
 | E3 | 草稿适配、投机验证、GDN/QSA 状态正确性 | 有界 greedy DFlash2 集成与原生 DeepInfer 动态预算检查通过；随机采样、完整调度器及原生 Qwen MTP 仍待完成 |
 | E4 | 同条件对照 TensorFold / vLLM / SGLang 等引擎 | 部分完成：[短上下文 TensorFold / DFlash2 同机实测](docs/E4_MATCHED_REPORT.md)已完成，保留预热/数值限制；vLLM / SGLang、长上下文和并发未测 |
 | E5 | 最小原生引擎桥接 | C++ Scheduler 驱动完整 Qwen 的有界 target-only 生命周期检查通过；完整 Worker/cache/异步与 GPU batch 未完成 |
+| E6 | 可选草稿头压缩 | 256 次有界计时 / 64 次 oracle 通过；完整 Q4 动态相对同任务 BF16-full +9.23%；保留固定子词表覆盖与跨设备限制 |
 
 详细通过标准和失败分类见 [docs/EXPERIMENTS.md](docs/EXPERIMENTS.md)。另见[候选架构](docs/ARCHITECTURE.md)和[初始源码审计](docs/PORTING_MATRIX.md)。[适配接口清单](docs/ADAPTER_INTERFACES.md)区分引擎/缓存与 MTP 需求，以及已经完成的算子实验。
 
