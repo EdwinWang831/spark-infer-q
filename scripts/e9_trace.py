@@ -8,6 +8,8 @@ from spark_infer_q.draft_head import HeadDraft
 
 class Trace:
     active=False
+    collection_started=False
+    task=None
 
     @contextmanager
     def phase(self,name):
@@ -21,13 +23,15 @@ class Trace:
     def start(self,task):
         import torch
         assert not self.active
-        torch.cuda.cudart().cudaProfilerStart();self.active=True
+        if not self.collection_started:
+            torch.cuda.cudart().cudaProfilerStart();self.collection_started=True
+        self.task=task;self.active=True
         torch.cuda.nvtx.range_push('e9.decode.'+task)
 
     def end(self):
         import torch
         torch.cuda.nvtx.range_pop();self.active=False
-        torch.cuda.cudart().cudaProfilerStop()
+        if self.task=='length_code':torch.cuda.cudart().cudaProfilerStop()
 
     def wrap(self,name,function):
         def call(*args,**kwargs):

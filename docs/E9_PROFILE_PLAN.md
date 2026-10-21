@@ -11,3 +11,9 @@ Nsight Systems 2026.3.1预检：默认CUDA硬件追踪未捕获到kernel事件�
 同时统计CPU CUDA API时间、同步调用、launch调用、内存传输和GPU kernel区间并集，保留每条输入与宽度分布、采样/邻近控制耗时比。嵌套区间要去重；CPU调用与GPU执行可能重叠，不能相加；同步API时间不是独立的可消除成本。GPU kernel空档包含主机调度/驱动/运行库等，不能一律称为Python。当前容器perf权限不支持CPU栈采样，不改系统权限；不能精确归因的部分明确保留。
 
 首次采样是诊断，不作无采样性能提升或原生TensorFold排名宣称。报告instrumentation和动态宽度可能被采样扰动的限制，依据实际瓶颈提出下一项受控优化。
+
+## 采集器修复记录
+
+首轮`repeat:3:defer`出现Nsight agent断连；15个请求的输出/状态通过，但只恢复出完整中文JSON时间线，不能当作三份采样成功。保留初始方法commit `d33c073` 和远端失败原始资料。
+
+后续独立加载改为一次CUDAProfilerStart/Stop：首次标记decode前启动，最后一条长代码标记decode后停止；三个NVTX根区间之外的prompt、控制和oracle即使被录制，也全部排除统计。结束时先让目标Python进程退出，再等待Nsight完成导出，不向整个采集器进程组同时发信号。原定任务、控制和正确性方法不变。分析器按明确task根区间过滤，拒绝缺失时间线。

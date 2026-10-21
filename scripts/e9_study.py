@@ -30,7 +30,7 @@ def main():
         'contract':{'default_prefill_rows':8,'tasks':['zh_json','thinking_math','length_code'],
             'controls':'two untraced requests before and two after each traced complete decode',
             'trace':'Nsight Systems 2026.3.1 cuda-sw,nvtx, no CPU samples/context switches',
-            'captured':'decode only; excludes prompt, initialization, profiler start/stop and correctness checks',
+            'captured':'one collection, three labeled decode ranges; analysis excludes intervening prompt/controls/oracles and profiler start/stop',
             'head':'full vocabulary Q4; frozen E6 policy; E8 generation semantics',
             'limits':'instrumentation changes timing and possibly dynamic widths; CPU API and GPU intervals overlap'}}
     path=root/'artifacts/profile-study.json'
@@ -41,7 +41,7 @@ def main():
     try:
         env=dict(os.environ,E3_ROOT=str(root))
         proc=subprocess.Popen(['nsys','profile','--trace=cuda-sw,nvtx','--sample=none','--cpuctxsw=none',
-            '--capture-range=cudaProfilerApi','--capture-range-end=repeat:3:defer','--force-overwrite=true',
+            '--capture-range=cudaProfilerApi','--capture-range-end=stop','--force-overwrite=true',
             '--output='+str(root/'artifacts/decode'),'bash',str(root/'e3_run.sh'),'e9_ours.py',
             '--root',str(root),'--checkpoint',str(a.checkpoint)],
             env=env,stdout=log,stderr=subprocess.STDOUT,cwd=root,start_new_session=True)
@@ -80,10 +80,16 @@ def main():
             try:
                 with urllib.request.urlopen(url+'/e4/resource',timeout=10) as r:r.read()
             except OSError:pass
-            os.killpg(proc.pid,signal.SIGINT)
+            # Let the application exit first, preserving the Nsight agent's flush.
+            for item in Path('/proc').iterdir():
+                if not item.name.isdigit():continue
+                try:args=(item/'cmdline').read_bytes().split(b'\0')
+                except OSError:continue
+                if args and args[0]==sys.executable.encode() and str(root/'e9_ours.py').encode() in args:
+                    os.kill(int(item.name),signal.SIGINT)
             try:proc.wait(timeout=180)
             except subprocess.TimeoutExpired:
-                os.killpg(proc.pid,signal.SIGKILL);proc.wait(timeout=10)
+                proc.terminate();proc.wait(timeout=30)
         log.close();report['finished_unix']=time.time();save()
         print(json.dumps({'status':report['status'],'tasks':len(report['tasks']),
             'timings':sum(len(t['timings']) for t in report['tasks'])}),flush=True)

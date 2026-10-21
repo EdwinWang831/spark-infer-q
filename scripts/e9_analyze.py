@@ -43,7 +43,7 @@ class RangeIndex:
         return 'unclassified'
 
 
-def analyze(path):
+def analyze(path,task=None):
     c=sqlite3.connect(path);c.row_factory=sqlite3.Row
     tables={r[0] for r in c.execute("select name from sqlite_master where type='table'")}
     def rows(name):return [dict(r) for r in c.execute('select * from '+name)] if name in tables else []
@@ -52,7 +52,7 @@ def analyze(path):
     for r in rows('NVTX_EVENTS'):
         name=r.get('text') or strings.get(r.get('textId'),'')
         if name.startswith('e9.') and r.get('end') is not None:nvtx.append(dict(start=r['start'],end=r['end'],name=name,tid=r['globalTid']))
-    roots=[r for r in nvtx if r['name'].startswith('e9.decode.')];assert len(roots)==1
+    roots=[r for r in nvtx if r['name'].startswith('e9.decode.') and (task is None or r['name']=='e9.decode.'+task)];assert len(roots)==1
     root=roots[0];lo,hi=root['start'],root['end'];wall=hi-lo;assert wall>0
     nvtx=[r for r in nvtx if r['tid']==root['tid'] and lo<=r['start']<r['end']<=hi]
     groups={prefix:RangeIndex([r for r in nvtx if r['name'].startswith('e9.'+prefix+'.')]) for prefix in ('phase','target','draft','selector')}
@@ -96,6 +96,18 @@ def analyze(path):
     copy_counts=defaultdict(lambda:{'calls':0,'bytes':0,'sum_ns':0})
     for r in copies:
         group=copy_counts[str(r['copyKind'])];group['calls']+=1;group['bytes']+=r['bytes'];group['sum_ns']+=r['end']-r['start']
+    api_by_range={}
+    for prefix,index in groups.items():
+        buckets=defaultdict(list)
+        for api in main:buckets[index.find(api['start'],api['end'])].append(api)
+        api_by_range[prefix]={}
+        for label,entries in buckets.items():
+            ints=[(r['start'],r['end']) for r in entries]
+            syncs=[(r['start'],r['end']) for r in entries if 'Synchronize' in r['name']]
+            launches=[(r['start'],r['end']) for r in entries if 'Launch' in r['name']]
+            api_by_range[prefix][label]={'api_calls':len(entries),'api_union_ms':duration(ints)/1e6,
+                'sync_calls':len(syncs),'sync_union_ms':duration(syncs)/1e6,
+                'launch_calls':len(launches),'launch_union_ms':duration(launches)/1e6}
     enum_rows=rows('ENUM_CUDA_MEMCPY_OPER')
     enum={str(r['id']):r.get('label',r.get('name',str(r))) for r in enum_rows}
     result={'task':root['name'].removeprefix('e9.decode.'),'decode_range_ms':wall/1e6,
@@ -114,6 +126,7 @@ def analyze(path):
             'sync_overlap_gpu_activity_ms':intersection_duration(sync,activity)/1e6,
             'launch_calls':sum('Launch' in r['name'] for r in main),'launch_union_ms':duration(launch)/1e6,
             'launch_overlap_gpu_activity_ms':intersection_duration(launch,activity)/1e6,
+            'api_by_nvtx_range':api_by_range,
             'api_by_name':{k:{'calls':len(v),'union_ms':duration(v)/1e6,'sum_ms':sum(b-a for a,b in v)/1e6} for k,v in sorted(api_groups.items())}},
         'possible_data_loss_messages':sum(any(word in r['text'].lower() for word in ('dropped','lost events','buffer overflow')) for r in rows('DIAGNOSTIC_EVENT')),
         'trace_sha256':hashlib.sha256(Path(path).read_bytes()).hexdigest(),
@@ -128,8 +141,8 @@ def analyze(path):
 
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('sqlite',type=Path);p.add_argument('output',type=Path);a=p.parse_args()
-    result=analyze(a.sqlite);out=json.dumps(result,indent=2,allow_nan=False)+'\n'
+    p=argparse.ArgumentParser();p.add_argument('sqlite',type=Path);p.add_argument('output',type=Path);p.add_argument('--task');a=p.parse_args()
+    result=analyze(a.sqlite,a.task);out=json.dumps(result,indent=2,allow_nan=False)+'\n'
     for private in ('/Users/','/home/kai/','/workspace/','/checkpoint-store/'):assert private not in out
     a.output.write_text(out);print(json.dumps({'task':result['task'],'decode_ms':result['decode_range_ms'],
         'gpu_active_percent':result['gpu']['kernel_copy_memset_busy_percent'],'kernel_calls':result['gpu']['kernel_calls']}))
