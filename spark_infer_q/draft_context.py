@@ -103,4 +103,3 @@ class CachedContextDraft(HeadDraft):
             if trace:observations.append((x.float()+residual.float()).to(x.dtype))
         hidden,_=self.norm(x,'norm.weight',residual)
         return hidden,observations
-

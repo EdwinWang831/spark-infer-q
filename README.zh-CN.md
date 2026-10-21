@@ -22,6 +22,8 @@
 
 此前 [E6 草稿头实验](docs/E6_DRAFT_HEAD_REPORT.md)中，完整词表 Q4 动态 decode 比同任务 BF16-full 草稿头**快 9.23%**（45.54 / 41.70 token/s；256 次计时、64 次 oracle 检查）。Q4 现已用于完整执行器。量化仅覆盖草稿输出头；主模型使用 NVFP4，草稿 backbone、selector 和 KV 保留 BF16。这不代表通用的 BF16 等价质量。不同实验的收益不能相乘。
 
+**E13 实验分支（可选路径）：** 三个1,024/1,536/1,920-token合成输入中，DFlash历史投影增量缓存让加权decode从 **39.73→42.22 tok/s（+6.27%）**，包含首轮构建和追加。24次计时的输出/live state及另外6次committed-logit oracle通过；12个较短任务则为 **−0.31%**，因此全局默认不变。这是最多生成96 token的同执行器decode对照，没有新增原生TensorFold排名或4K以上结论。独立接受率筛选的held-out Brier误差下降18.64%，尚非在线策略提速。研究worker在实验间保留现有权重常驻。[报告](docs/E13_DRAFT_CACHE_CONFIDENCE_REPORT.md) · [缓存用法](docs/DRAFT_CONTEXT_CACHE_USAGE.md)。
+
 ## 研究问题
 
 能否将 DeepInfer 的引擎、调度、投机验证和内存管理优势用于 **单台 DGX Spark**，同时将模型执行器与 GPU 内核适配到 Qwen3.8-Flash-Next？或者，基于 vLLM / SGLang 的实现能否在已验证的速度与工程投入之间取得更好的平衡？
@@ -36,7 +38,7 @@
 
 独立的[原生调度桥接（E5）](docs/E5_ENGINE_BRIDGE_REPORT.md)已让 DeepInfer 原版 C++ Scheduler 驱动完整 Qwen target-only 路径，七组 GPU 场景通过，核对 364 行完整 logits 和 79 次有效状态。真实状态仍由 Qwen 后端管理，原生 block 仅作逻辑配额；GPU 请求仍逐个执行。完整 Worker/cache/异步流水及真实多请求 GPU batch 尚未接入。
 
-下一步实测优先级为 target 内核效率、有效验证预算，再推进草稿 backbone 压缩。图执行和同步调整需要独立受控对照。E8 后仍需重新对照原生 TensorFold；长上下文、并发、随机采样及官方 BF16 草稿 fidelity 也尚未验证。
+下一步实测优先级为 target 内核效率、有效验证预算，再推进草稿 backbone 压缩。图执行和同步调整需要独立受控对照。E8 后仍需重新对照原生 TensorFold。E13已补充选定的1K–2K缓存/状态及decode检查；4K以上上下文、并发、随机采样及官方BF16草稿fidelity仍未验证。
 
 ## 实验阶段
 

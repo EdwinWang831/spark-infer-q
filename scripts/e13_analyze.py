@@ -124,19 +124,21 @@ def confidence(raw):
     return dict(status='PASS_CONFIDENCE_SCREEN',model=model,metrics=metrics,cost_screen=cost_screen(raw['tasks']),
         comparisons={base:bootstrap_delta(losses,base,'margin') for base in ('depth','adaptive_depth')},
         heldout_observed_labels=sum(counts.values()),heldout_depth_counts=dict(counts),
+        unsupported_depths=[d for d,m in model.items() if m['n']==0],
         observed_steps=len(steps),committed_logits_state_exact=True,
         context_range=[min(s['context_rows'] for s in steps),max(s['context_rows'] for s in steps)],
         observations=raw['tasks'],source_sha256=raw['source_sha256'],
         limits=['margin is a post-draft proxy, not a calibrated full-vocabulary probability',
                 'conditional labels censored at first rejection/EOS/output cap',
                 'depth baseline is fitted on training prompts; adaptive baseline also updates past test steps only',
+                'unobserved depths are not calibrated and cannot justify a larger online width',
                 'signal/route observation is excluded from formal cache timings',
                 'no online confidence policy or combined expert-cost policy was tested'])
 
 
-def integrated(raw):
-    assert raw['status']=='PASS_E13_INTEGRATED' and raw['contract']==CONTRACT
-    assert [t['id'] for t in raw['tasks']]==[t['id'] for t in TASKS]
+def integrated(raw, expected_tasks=TASKS, expected_contract=CONTRACT):
+    assert raw['status']=='PASS_E13_INTEGRATED' and raw['contract']==expected_contract
+    assert [t['id'] for t in raw['tasks']]==[t['id'] for t in expected_tasks]
     summary={};widths={};steps={}
     for mode in CONTRACT['modes']:
         tasks=[];widths[mode]=Counter();steps[mode]=[]
@@ -180,10 +182,15 @@ def integrated(raw):
 
 
 def main():
-    parser=argparse.ArgumentParser();parser.add_argument('phase',choices=('signals','integrated'))
+    parser=argparse.ArgumentParser();parser.add_argument('phase',choices=('signals','integrated','long-integrated'))
     parser.add_argument('input',type=Path);parser.add_argument('output',type=Path);args=parser.parse_args()
-    raw=json.loads(args.input.read_text());result=(confidence if args.phase=='signals' else integrated)(raw)
-    result['contract']=CONTRACT
+    raw=json.loads(args.input.read_text())
+    if args.phase=='long-integrated':
+        from e13_long_decode import TASKS as LONG_TASKS, CONTRACT as LONG_CONTRACT
+        result=integrated(raw,LONG_TASKS,LONG_CONTRACT)
+        result['limits'].append('three lengths share a synthetic repeated-background template; bootstrap describes these cases, not independent semantic tasks')
+    else:result=(confidence if args.phase=='signals' else integrated)(raw)
+    result['contract']=raw['contract']
     result['raw_sha256']=hashlib.sha256(args.input.read_bytes()).hexdigest()
     result['analyzer_sha256']=hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
     content=json.dumps(result,indent=2,ensure_ascii=False,allow_nan=False)+'\n'

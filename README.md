@@ -22,6 +22,8 @@ These are sums of per-task medians, **not individual request latencies**. The im
 
 Earlier [E6 draft-head measurements](docs/E6_DRAFT_HEAD_REPORT.md) found full-vocabulary Q4 dynamic decoding **9.23% faster** than the same-task BF16-full draft head (45.54 versus 41.70 tok/s; 256 timings and 64 oracle checks). Q4 is now used by the complete executor. This quantizes the draft output head only; the target uses NVFP4 and the draft backbone, selector and KV remain BF16. This is not a general claim of BF16-equivalent quality. Separate study gains must not be multiplied.
 
+**E13 experimental branch (opt-in):** On three synthetic 1,024/1,536/1,920-token inputs, incremental DFlash context projections improved weighted decode **39.73→42.22 tok/s (+6.27%)**, including initial cache build and append. All 24 timings passed output/live-state checks; six separate committed-logit oracles passed. The 12 shorter tasks showed **−0.31%**, so the global default is unchanged. This is decode-only, 96-token-capped, same-executor evidence; no new native TensorFold ranking or 4K+ claim. A separate confidence screen reduced held-out Brier error 18.64%, without an online policy speed claim. The research worker keeps the existing weights resident. [Report](docs/E13_DRAFT_CACHE_CONFIDENCE_REPORT.md) · [cache usage](docs/DRAFT_CONTEXT_CACHE_USAGE.md).
+
 ## Research question
 
 Can we retain DeepInfer's engine, scheduling, speculative verification and memory-management advantages while adapting its model executor and GPU kernels to Qwen3.8-Flash-Next on **a single DGX Spark**? Or does a vLLM / SGLang-based implementation provide a better verified speed-versus-effort tradeoff?
@@ -36,7 +38,7 @@ The complete Q4 SSE research executor is [`scripts/e8_ours.py`](scripts/e8_ours.
 
 A separate [native-scheduler bridge (E5)](docs/E5_ENGINE_BRIDGE_REPORT.md) lets the real DeepInfer C++ Scheduler drive the complete Qwen target-only path. Seven GPU scenario groups passed, checking 364 full-logit rows and 79 live states. Device state remains owned by the Qwen backend; native blocks provide logical accounting. GPU requests execute serially. The full Worker/cache/async pipeline and actual multi-request GPU batching remain open.
 
-The next measured priorities are target-kernel efficiency and useful verification budgets, followed by draft-backbone compression. Graph execution and synchronization changes need their own controlled comparisons. A fresh native TensorFold comparison is still needed after E8; long context, concurrency, random sampling and official BF16 draft fidelity also remain unvalidated.
+The next measured priorities are target-kernel efficiency and useful verification budgets, followed by draft-backbone compression. Graph execution and synchronization changes need their own controlled comparisons. A fresh native TensorFold comparison is still needed after E8. E13 adds selected 1K–2K cache/state and decode checks; 4K+ context, concurrency, random sampling and official BF16 draft fidelity remain unvalidated.
 
 ## Investigation stages
 

@@ -103,4 +103,3 @@ def run(session, arguments):
     report.update(status='PASS_LONG_CACHE_PROBE', same_length_reset=True, rewind_rejected=True,
                   target_object_id=id(session.weights), draft_object_id=id(session.draft))
     return report
-
