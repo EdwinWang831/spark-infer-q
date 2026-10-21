@@ -18,6 +18,10 @@
 
 目前尚未接入完整 DeepInfer 引擎和 C++ 多请求调度器。已报告速度对应这条有界混合实现，不是完整 DeepInfer 引擎的基准成绩。
 
+## 下一阶段：全局 Cost-Aware Scheduler（设计中）
+
+[全局调度设计 RFC v0.1](docs/GLOBAL_COST_AWARE_SCHEDULER_RFC.md) 提出了跨请求 DFlash2 验证预算、Prefill/Decode 协调、统一内存准入和多请求状态正确性的分阶段方案。**仅为设计提案，当前仓库尚未实现完整的多请求全局调度器，也没有对应服务级加速结果。**
+
 ## 实验阶段
 
 | 阶段 | 目标 | 状态 |
