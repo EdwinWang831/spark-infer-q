@@ -34,14 +34,14 @@ def online_summary(raw):
         tasks.append(dict(id=task['id'],group=task.get('group',task['id']),language=task['language'],family=task['family'],
                           eos=task['eos'],output_cap=task['output_cap'],prompt_tokens=task['prompt_tokens'],
                           completion_tokens=task['completion_tokens'],median_decode_ms=medians))
-    def summarize(subset):
+    def summarize(subset,cluster_key='group'):
         tokens=sum(t['completion_tokens']-1 for t in subset)
         costs={m:sum(t['median_decode_ms'][m] for t in subset) for m in modes}
         comparisons={}
         for baseline in modes:
             if baseline==selected:continue
             groups=defaultdict(list)
-            for task in subset:groups[task['group']].append(task)
+            for task in subset:groups[task[cluster_key]].append(task)
             keys=sorted(groups);rng=random.Random(20261022);draws=[]
             for _ in range(4000):
                 sampled=[t for key in rng.choices(keys,k=len(keys)) for t in groups[key]]
@@ -49,7 +49,7 @@ def online_summary(raw):
             draws.sort()
             comparisons[baseline]=dict(throughput_factor=costs[baseline]/costs[selected],time_reduction=1-costs[selected]/costs[baseline],
                                        group_bootstrap_time_reduction_95=[draws[99],draws[3899]])
-        return dict(tasks=len(subset),groups=len({t['group'] for t in subset}),eos=sum(t['eos'] for t in subset),
+        return dict(tasks=len(subset),groups=len({t[cluster_key] for t in subset}),cluster_key=cluster_key,eos=sum(t['eos'] for t in subset),
                     decoded_rows=tokens,weighted_decode_tps={m:1000*tokens/costs[m] for m in modes},
                     sum_task_median_decode_ms=costs,comparisons=comparisons)
     overall=summarize(tasks)
@@ -71,10 +71,11 @@ def online_summary(raw):
         costs={m:sum(r['decode_ms'] for t in raw['tasks'] for r in t['timings'] if r['mode']==m and r['repetition']==rep) for m in modes}
         repeats.append(dict(repetition=rep,costs_ms=costs,selected_factors={m:costs[m]/costs[selected] for m in modes if m!=selected}))
     return dict(status='PASS',contract=raw['contract'],selected_arm=selected,overall=overall,strata=strata,phases=phases,
-                per_task=tasks,repeat_factors=repeats,formal_runs=len(tasks)*len(modes)*repetitions,
+                family_clustered_sensitivity=summarize(tasks,'family'),per_task=tasks,repeat_factors=repeats,formal_runs=len(tasks)*len(modes)*repetitions,
                 oracle_runs=sum(len(t['checks']) for t in raw['tasks']),
                 committed_logit_rows=sum(c['logit_rows'] for t in raw['tasks'] for c in t['checks']),
-                source_sha256=raw['source_sha256'],model_sha256=raw['model_sha256'],evidence_tasks=raw['tasks'])
+                source_sha256=raw['source_sha256'],model_sha256=raw['model_sha256'],
+                training_sha256=raw.get('training_sha256'),prior_sha256=raw.get('prior_sha256'),evidence_tasks=raw['tasks'])
 
 
 def export(root,out):
@@ -123,17 +124,26 @@ def export(root,out):
             assert obj['dataset_sha256']==hashlib.sha256(json.dumps(datasets,sort_keys=True).encode()).hexdigest()
             if not obj['gate_pass']:report['status']='COMPLETE_OFFLINE_GATE_FAILED'
             elif report.get('online',{}).get('status')=='PASS':report['status']='PASS_E16_EXPANSION'
+    audit=root/'e16-independent-audit.json'
+    if audit.exists():
+        checked=read(audit.name);assert checked['status']=='PASS_E16_INDEPENDENT_CPU_AUDIT'
+        assert checked['dataset_sha256']==report['training']['dataset_sha256']
+        report['independent_audit']=checked
     def write(path,value):
         content=json.dumps(value,indent=2,ensure_ascii=False,allow_nan=False)+'\n'
         for prefix in ('/home/kai/','/Users/','/workspace/','/checkpoint-store/'):assert prefix not in content
         path.write_text(content)
     if report.get('pipeline',{}).get('status')=='STOPPED_ON_FAILURE':report['status']='STOPPED_ON_FAILURE'
-    write(out/'2026-10-21-bilingual-expansion.json',report)
     for name in ('e16-f0-model.json','e16-f1-model.json','e16-selected-model.json'):
         if (root/name).exists():
             assert report['training']['status']=='PASS_E16_TRAINING'
             obj=read(name);assert obj['dataset_sha256']==report['training']['dataset_sha256']
+            group=obj['feature_group'];assert obj['metadata']==report['training']['models'][group]['metadata']
             write(out/name,dict(obj,experimental=True))
+    if report.get('online',{}).get('status')=='PASS':
+        assert report['online']['training_sha256']==sha(root/'e16-training.json')
+        assert report['online']['model_sha256']==sha(root/'e16-selected-model.json')
+    write(out/'2026-10-21-bilingual-expansion.json',report)
     return report
 
 

@@ -38,5 +38,10 @@ class BilingualExportTests(unittest.TestCase):
         self.assertEqual(result['overall']['groups'],1)
         self.assertEqual(result['strata']['natural_eos']['tasks'],2)
         self.assertEqual(result['strata']['cap_reached']['tasks'],0)
+        raw['tasks'][1]['group']='another_task_same_family'
+        clustered=online_summary(raw)
+        self.assertEqual(clustered['overall']['groups'],2)
+        self.assertEqual(clustered['family_clustered_sensitivity']['groups'],1)
+        self.assertEqual(clustered['overall']['weighted_decode_tps'],clustered['family_clustered_sensitivity']['weighted_decode_tps'])
         raw['tasks'][0]['timings'][0]['steps'][0]['emitted']=2
         with self.assertRaises(AssertionError):online_summary(raw)

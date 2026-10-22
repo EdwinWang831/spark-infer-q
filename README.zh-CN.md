@@ -26,7 +26,9 @@
 
 **E14 在线置信度预算（未确认提速）：** 9个新任务（含1K–1.8K输入）的108次计时及27次committed-logit/live-state oracle全部通过。margin策略为 **37.790 / 后置深度基线37.765 tok/s（+0.065%）**，耗时下降区间跨零；两组验证宽度序列完全相同。冻结曲线下32种分桶组合全选anchor+5草稿，更新实测成本后仍有30–32/32组合选同一宽度；新任务深层接受率也被高估。因此保留实验状态，下一步先补深度校准、检查信号能否改变动作，再作在线速度结论。沿用同一次常驻加载，没有新的原生TensorFold排名。[报告](docs/E14_CONFIDENCE_BUDGET_REPORT.md) · [数据](results/e14/2026-10-21-online-budget.json)。
 
-**E15 七深度预测器（实验路径）：** 已用104条新合成提示、8,344个serial位置训练轻量预测器，按语义组隔离训练/校准/测试，另将SQL整族留出。六条另行冻结的新在线任务中，F1路径为 **44.30 decode tok/s / 现有缓存滞后预算40.28（+10.00%）**；校准固定七草稿为39.96（预测器+10.88%）。六任务中位数及五轮汇总均正向；90次正式输出/状态检查、18次独立oracle（2,286行committed logits）全部通过。特征、CPU传输和预测计入耗时，主模型与草稿权重冻结且常驻。这是128-token cap的greedy decode，含1K/1.5K合成输入；自然EOS、更广任务及F0/F1在线消融仍待验证，没有新增原生TensorFold排名或默认切换。[报告](docs/E15_CONFIDENCE_TRAINING_REPORT.md) · [证据](results/e15/2026-10-21-confidence-training.json) · [实验预测器](results/e15/2026-10-21-selected-model.json)。
+**E15 七深度预测器（实验路径）：** 已用104条新合成提示、8,344个serial位置训练轻量预测器，按语义组隔离训练/校准/测试，另将SQL整族留出。六条另行冻结的新在线任务中，F1路径为 **44.30 decode tok/s / 现有缓存滞后预算40.28（+10.00%）**；校准固定七草稿为39.96（预测器+10.88%）。六任务中位数及五轮汇总均正向；90次正式输出/状态检查、18次独立oracle（2,286行committed logits）全部通过。特征、CPU传输和预测计入耗时，主模型与草稿权重冻结且常驻。这是128-token cap的greedy decode，含1K/1.5K合成输入；该pilot未覆盖自然EOS和更广任务，后续E16已补充这些检查及F0/F1在线消融，没有新增原生TensorFold排名或默认切换。[报告](docs/E15_CONFIDENCE_TRAINING_REPORT.md) · [证据](results/e15/2026-10-21-confidence-training.json) · [实验预测器](results/e15/2026-10-21-selected-model.json)。
+
+**E16 中英文扩展（2026-10-22核验，实验路径）：** 600条人工编写合成提示（英文240/中文240/混合120）、36,846个采样位置，463条自然完成，实际训练两种小头。另行冻结的20条在线任务/300次计时/100次独立oracle（31,540行committed logits）中，选定F1为 **44.08 tok/s / 现有lagged预算40.21（+9.61%）/ 同任务旧E15 F1 42.72（再提升3.18%）**。英文对lagged **+7.60%**、中文 **+10.75%**；15/20在线任务自然EOS，覆盖选定1K/1.5K输入及最多1K输出。相对旧预测器有两条任务退化；F1比F0总体仅快0.30%，尚无明确优势。全部特征/传输/缓存费用计时，同一常驻加载；保持opt-in，没有默认切换、4K以上、真实用户分布泛化或新增原生TensorFold排名。[报告](docs/E16_BILINGUAL_EXPANSION_REPORT.md) · [证据](results/e16/2026-10-21-bilingual-expansion.json) · [预测器](results/e16/e16-selected-model.json)。
 
 ## 研究问题
 
