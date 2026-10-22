@@ -1,0 +1,3863 @@
+{
+  "status": "PASS_BOUNDED_SYNCHRONOUS_NATIVE_SCHEDULER_BRIDGE",
+  "reports": {
+    "cpu": {
+      "status": "PASS_BOUNDED_NATIVE_SCHEDULER_BRIDGE",
+      "kind": "cpu_native_scheduler",
+      "limits": [
+        "bounded synchronous bridge; no native Worker, GPU sampler, speculation or async pipeline",
+        "native block IDs are logical accounting only; Qwen owns actual GDN/QSA state",
+        "multiple scheduled requests execute serially on GPU; not a batched throughput benchmark",
+        "serial prompt arithmetic retained; prefill numerical discrepancy remains unresolved"
+      ],
+      "cases": [
+        {
+          "case": "single_eos_and_plan_fences",
+          "status": "PASS",
+          "events": [
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "single",
+              "prompt": true,
+              "start": 0,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            }
+          ],
+          "completed": [
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "single",
+              "token_ids": [
+                99
+              ],
+              "processed_position": 1,
+              "status": "SequenceStatus.FINISHED_STOPPED",
+              "cancelled": false
+            }
+          ],
+          "free_native_blocks": 20,
+          "total_native_blocks": 20,
+          "backend_checks": {
+            "input_prefix_checks": 1,
+            "released_states": 1
+          }
+        },
+        {
+          "case": "two_requests_chunked_prompt_and_interleaved_decode",
+          "status": "PASS",
+          "events": [
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": true,
+              "start": 0,
+              "rows": 32,
+              "published": 0,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": true,
+              "start": 32,
+              "rows": 7,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": true,
+              "start": 0,
+              "rows": 25,
+              "published": 0,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": true,
+              "start": 25,
+              "rows": 15,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 40,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 39,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 41,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 40,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 42,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 41,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 43,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 42,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 44,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 43,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 45,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 44,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 46,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 45,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 47,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 46,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 48,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 47,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 49,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 48,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 50,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 49,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 51,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 50,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 52,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 51,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 53,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 52,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 54,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 53,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 55,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 54,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 56,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 55,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 57,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 56,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 58,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 57,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 59,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 58,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 60,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 59,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 61,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 60,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 62,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 61,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 63,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 62,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 64,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 63,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 65,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 64,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 66,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 65,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 67,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 66,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 68,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 67,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 69,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 68,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 70,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 69,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 71,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 70,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 72,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 71,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 73,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 72,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 74,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 73,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 75,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 74,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 76,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 75,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 77,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 76,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 78,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 77,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 79,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 78,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 80,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 79,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 81,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 80,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 82,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 81,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 83,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 82,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 84,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 83,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 85,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 84,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 86,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 85,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            }
+          ],
+          "completed": [
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "token_ids": [
+                28,
+                30,
+                46,
+                77,
+                34,
+                78,
+                42,
+                45,
+                69,
+                67,
+                51,
+                20,
+                63,
+                19,
+                55,
+                52,
+                28,
+                30,
+                46,
+                77,
+                34,
+                78,
+                42,
+                45,
+                69,
+                67,
+                51,
+                20,
+                63,
+                19,
+                55,
+                52,
+                28,
+                30,
+                46,
+                77,
+                34,
+                78,
+                42,
+                45,
+                69,
+                67,
+                51,
+                20,
+                63,
+                19,
+                55,
+                52
+              ],
+              "processed_position": 86,
+              "status": "SequenceStatus.FINISHED_LENGTH_CAPPED",
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "token_ids": [
+                73,
+                2,
+                16,
+                31,
+                54,
+                44,
+                61,
+                3,
+                24,
+                95,
+                81,
+                66,
+                43,
+                53,
+                36,
+                94,
+                73,
+                2,
+                16,
+                31,
+                54,
+                44,
+                61,
+                3,
+                24,
+                95,
+                81,
+                66,
+                43,
+                53,
+                36,
+                94,
+                73,
+                2,
+                16,
+                31,
+                54,
+                44,
+                61,
+                3,
+                24,
+                95,
+                81,
+                66,
+                43,
+                53,
+                36,
+                94
+              ],
+              "processed_position": 87,
+              "status": "SequenceStatus.FINISHED_LENGTH_CAPPED",
+              "cancelled": false
+            }
+          ],
+          "free_native_blocks": 20,
+          "total_native_blocks": 20,
+          "backend_checks": {
+            "input_prefix_checks": 98,
+            "released_states": 2
+          }
+        },
+        {
+          "case": "length_cap_prefix_only",
+          "status": "PASS",
+          "events": [
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "capped",
+              "prompt": true,
+              "start": 0,
+              "rows": 32,
+              "published": 0,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "capped",
+              "prompt": true,
+              "start": 32,
+              "rows": 8,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "capped",
+              "prompt": false,
+              "start": 40,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "capped",
+              "prompt": false,
+              "start": 41,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            }
+          ],
+          "completed": [
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "capped",
+              "token_ids": [
+                73,
+                2,
+                16
+              ],
+              "processed_position": 42,
+              "status": "SequenceStatus.FINISHED_LENGTH_CAPPED",
+              "cancelled": false
+            }
+          ],
+          "free_native_blocks": 20,
+          "total_native_blocks": 20,
+          "backend_checks": {
+            "input_prefix_checks": 4,
+            "released_states": 1
+          }
+        },
+        {
+          "case": "cancel_waiting_and_generation_reuse",
+          "status": "PASS",
+          "events": [
+            {
+              "slot": 0,
+              "generation": 2,
+              "request_id": "reuse",
+              "prompt": true,
+              "start": 0,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            }
+          ],
+          "completed": [
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "reuse",
+              "token_ids": [],
+              "processed_position": 0,
+              "status": "SequenceStatus.FINISHED_ABORTED",
+              "cancelled": true
+            },
+            {
+              "slot": 0,
+              "generation": 2,
+              "request_id": "reuse",
+              "token_ids": [
+                99
+              ],
+              "processed_position": 1,
+              "status": "SequenceStatus.FINISHED_STOPPED",
+              "cancelled": false
+            }
+          ],
+          "free_native_blocks": 20,
+          "total_native_blocks": 20,
+          "backend_checks": {
+            "input_prefix_checks": 1,
+            "released_states": 2
+          }
+        },
+        {
+          "case": "cancel_prepared_prompt_and_generation_reuse",
+          "status": "PASS",
+          "events": [
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "reuse",
+              "prompt": true,
+              "start": 0,
+              "rows": 32,
+              "published": 0,
+              "cancelled": true
+            },
+            {
+              "slot": 0,
+              "generation": 2,
+              "request_id": "reuse",
+              "prompt": true,
+              "start": 0,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            }
+          ],
+          "completed": [
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "reuse",
+              "token_ids": [],
+              "processed_position": 0,
+              "status": "SequenceStatus.FINISHED_ABORTED",
+              "cancelled": true
+            },
+            {
+              "slot": 0,
+              "generation": 2,
+              "request_id": "reuse",
+              "token_ids": [
+                99
+              ],
+              "processed_position": 1,
+              "status": "SequenceStatus.FINISHED_STOPPED",
+              "cancelled": false
+            }
+          ],
+          "free_native_blocks": 20,
+          "total_native_blocks": 20,
+          "backend_checks": {
+            "input_prefix_checks": 2,
+            "released_states": 2
+          }
+        },
+        {
+          "case": "cancel_prepared_decode_and_generation_reuse",
+          "status": "PASS",
+          "events": [
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "reuse",
+              "prompt": true,
+              "start": 0,
+              "rows": 32,
+              "published": 0,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "reuse",
+              "prompt": true,
+              "start": 32,
+              "rows": 7,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "reuse",
+              "prompt": false,
+              "start": 39,
+              "rows": 1,
+              "published": 0,
+              "cancelled": true
+            },
+            {
+              "slot": 0,
+              "generation": 2,
+              "request_id": "reuse",
+              "prompt": true,
+              "start": 0,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            }
+          ],
+          "completed": [
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "reuse",
+              "token_ids": [
+                28
+              ],
+              "processed_position": 39,
+              "status": "SequenceStatus.FINISHED_ABORTED",
+              "cancelled": true
+            },
+            {
+              "slot": 0,
+              "generation": 2,
+              "request_id": "reuse",
+              "token_ids": [
+                99
+              ],
+              "processed_position": 1,
+              "status": "SequenceStatus.FINISHED_STOPPED",
+              "cancelled": false
+            }
+          ],
+          "free_native_blocks": 20,
+          "total_native_blocks": 20,
+          "backend_checks": {
+            "input_prefix_checks": 4,
+            "released_states": 2
+          }
+        },
+        {
+          "case": "invalid_admission_and_full_slots",
+          "status": "PASS",
+          "events": [],
+          "completed": [
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "a",
+              "token_ids": [],
+              "processed_position": 0,
+              "status": "SequenceStatus.FINISHED_ABORTED",
+              "cancelled": true
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "b",
+              "token_ids": [],
+              "processed_position": 0,
+              "status": "SequenceStatus.FINISHED_ABORTED",
+              "cancelled": true
+            }
+          ],
+          "free_native_blocks": 20,
+          "total_native_blocks": 20,
+          "backend_checks": {
+            "input_prefix_checks": 0,
+            "released_states": 2
+          }
+        }
+      ],
+      "core_sha256": "f6aa14b790eb7bc729251eea152fd9c83cf215bc5ab912e25ee19c57d8fc1768",
+      "upstream_revision": "774ce244b87cc0eb8d4b94ab9f5de2ab22049f01",
+      "torch_version": "2.13.0+cu132",
+      "harness_sha256": {
+        "e5_bridge_smoke.py": "7aa808f51c7dcf5ace280163a58df4626acc84ccbe54e5fb5f0aa7e130b2b041",
+        "spark_infer_q/deepinfer_bridge.py": "512bc8256a91502d8908d91b04d2eba2c49de9f3c5a346ae69bf663ce6e819ff",
+        "e3_target.py": "9fbd4d6edab3f148f894a09b82128012f460e02e1852ba1e7702b26357f584bb",
+        "e3_wide_target.py": "cb454e3fd741339552b15e7bdc168317e5fc013298fd3dc87d904f1bf12d6ace"
+      },
+      "cuda_initialized": false,
+      "elapsed_seconds": 0.6805431842803955
+    },
+    "replay": {
+      "status": "PASS_BOUNDED_NATIVE_SCHEDULER_BRIDGE",
+      "kind": "cpu_native_scheduler",
+      "limits": [
+        "bounded synchronous bridge; no native Worker, GPU sampler, speculation or async pipeline",
+        "native block IDs are logical accounting only; Qwen owns actual GDN/QSA state",
+        "multiple scheduled requests execute serially on GPU; not a batched throughput benchmark",
+        "serial prompt arithmetic retained; prefill numerical discrepancy remains unresolved"
+      ],
+      "cases": [
+        {
+          "case": "single_eos_and_plan_fences",
+          "status": "PASS",
+          "events": [
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "single",
+              "prompt": true,
+              "start": 0,
+              "rows": 25,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "single",
+              "prompt": false,
+              "start": 25,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "single",
+              "prompt": false,
+              "start": 26,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "single",
+              "prompt": false,
+              "start": 27,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            }
+          ],
+          "completed": [
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "single",
+              "token_ids": [
+                16,
+                18,
+                21,
+                248046
+              ],
+              "processed_position": 28,
+              "status": "SequenceStatus.FINISHED_STOPPED",
+              "cancelled": false
+            }
+          ],
+          "free_native_blocks": 36,
+          "total_native_blocks": 36,
+          "backend_checks": {
+            "input_prefix_checks": 4,
+            "released_states": 1
+          }
+        },
+        {
+          "case": "two_requests_chunked_prompt_and_interleaved_decode",
+          "status": "PASS",
+          "events": [
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": true,
+              "start": 0,
+              "rows": 32,
+              "published": 0,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": true,
+              "start": 32,
+              "rows": 5,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": true,
+              "start": 0,
+              "rows": 27,
+              "published": 0,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": true,
+              "start": 27,
+              "rows": 19,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 46,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 37,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 47,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 38,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 48,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 39,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 49,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 40,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 50,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 41,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 51,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 42,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 52,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 43,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 53,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 44,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 54,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 45,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 55,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 46,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 56,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 47,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 57,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 48,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 58,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 49,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 59,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 50,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 60,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 51,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 61,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 52,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 62,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 53,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 63,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 54,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 64,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 55,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 65,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 56,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 66,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 57,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 67,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 58,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 68,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 59,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 69,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 60,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 70,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 61,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 62,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            }
+          ],
+          "completed": [
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "token_ids": [
+                71093,
+                12305,
+                198,
+                727,
+                2542,
+                52339,
+                20449,
+                1590,
+                198,
+                262,
+                460,
+                2542,
+                2007,
+                364,
+                830,
+                303,
+                10001,
+                413,
+                830,
+                835,
+                220,
+                15,
+                8,
+                198,
+                71093,
+                248046
+              ],
+              "processed_position": 71,
+              "status": "SequenceStatus.FINISHED_STOPPED",
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "token_ids": [
+                90,
+                198,
+                220,
+                328,
+                591,
+                763,
+                328,
+                349,
+                455,
+                487,
+                198,
+                220,
+                328,
+                1767,
+                763,
+                220,
+                20,
+                11,
+                198,
+                220,
+                328,
+                15401,
+                763,
+                867,
+                198,
+                92,
+                248046
+              ],
+              "processed_position": 63,
+              "status": "SequenceStatus.FINISHED_STOPPED",
+              "cancelled": false
+            }
+          ],
+          "free_native_blocks": 36,
+          "total_native_blocks": 36,
+          "backend_checks": {
+            "input_prefix_checks": 55,
+            "released_states": 2
+          }
+        },
+        {
+          "case": "length_cap_prefix_only",
+          "status": "PASS",
+          "events": [
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "capped",
+              "prompt": true,
+              "start": 0,
+              "rows": 32,
+              "published": 0,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "capped",
+              "prompt": true,
+              "start": 32,
+              "rows": 14,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "capped",
+              "prompt": false,
+              "start": 46,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "capped",
+              "prompt": false,
+              "start": 47,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            }
+          ],
+          "completed": [
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "capped",
+              "token_ids": [
+                71093,
+                12305,
+                198
+              ],
+              "processed_position": 48,
+              "status": "SequenceStatus.FINISHED_LENGTH_CAPPED",
+              "cancelled": false
+            }
+          ],
+          "free_native_blocks": 36,
+          "total_native_blocks": 36,
+          "backend_checks": {
+            "input_prefix_checks": 4,
+            "released_states": 1
+          }
+        },
+        {
+          "case": "cancel_waiting_and_generation_reuse",
+          "status": "PASS",
+          "events": [
+            {
+              "slot": 0,
+              "generation": 2,
+              "request_id": "reuse",
+              "prompt": true,
+              "start": 0,
+              "rows": 25,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 2,
+              "request_id": "reuse",
+              "prompt": false,
+              "start": 25,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 2,
+              "request_id": "reuse",
+              "prompt": false,
+              "start": 26,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 2,
+              "request_id": "reuse",
+              "prompt": false,
+              "start": 27,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            }
+          ],
+          "completed": [
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "reuse",
+              "token_ids": [],
+              "processed_position": 0,
+              "status": "SequenceStatus.FINISHED_ABORTED",
+              "cancelled": true
+            },
+            {
+              "slot": 0,
+              "generation": 2,
+              "request_id": "reuse",
+              "token_ids": [
+                16,
+                18,
+                21,
+                248046
+              ],
+              "processed_position": 28,
+              "status": "SequenceStatus.FINISHED_STOPPED",
+              "cancelled": false
+            }
+          ],
+          "free_native_blocks": 36,
+          "total_native_blocks": 36,
+          "backend_checks": {
+            "input_prefix_checks": 4,
+            "released_states": 2
+          }
+        },
+        {
+          "case": "cancel_prepared_prompt_and_generation_reuse",
+          "status": "PASS",
+          "events": [
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "reuse",
+              "prompt": true,
+              "start": 0,
+              "rows": 32,
+              "published": 0,
+              "cancelled": true
+            },
+            {
+              "slot": 0,
+              "generation": 2,
+              "request_id": "reuse",
+              "prompt": true,
+              "start": 0,
+              "rows": 25,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 2,
+              "request_id": "reuse",
+              "prompt": false,
+              "start": 25,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 2,
+              "request_id": "reuse",
+              "prompt": false,
+              "start": 26,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 2,
+              "request_id": "reuse",
+              "prompt": false,
+              "start": 27,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            }
+          ],
+          "completed": [
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "reuse",
+              "token_ids": [],
+              "processed_position": 0,
+              "status": "SequenceStatus.FINISHED_ABORTED",
+              "cancelled": true
+            },
+            {
+              "slot": 0,
+              "generation": 2,
+              "request_id": "reuse",
+              "token_ids": [
+                16,
+                18,
+                21,
+                248046
+              ],
+              "processed_position": 28,
+              "status": "SequenceStatus.FINISHED_STOPPED",
+              "cancelled": false
+            }
+          ],
+          "free_native_blocks": 36,
+          "total_native_blocks": 36,
+          "backend_checks": {
+            "input_prefix_checks": 5,
+            "released_states": 2
+          }
+        },
+        {
+          "case": "cancel_prepared_decode_and_generation_reuse",
+          "status": "PASS",
+          "events": [
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "reuse",
+              "prompt": true,
+              "start": 0,
+              "rows": 32,
+              "published": 0,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "reuse",
+              "prompt": true,
+              "start": 32,
+              "rows": 5,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "reuse",
+              "prompt": false,
+              "start": 37,
+              "rows": 1,
+              "published": 0,
+              "cancelled": true
+            },
+            {
+              "slot": 0,
+              "generation": 2,
+              "request_id": "reuse",
+              "prompt": true,
+              "start": 0,
+              "rows": 25,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 2,
+              "request_id": "reuse",
+              "prompt": false,
+              "start": 25,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 2,
+              "request_id": "reuse",
+              "prompt": false,
+              "start": 26,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 2,
+              "request_id": "reuse",
+              "prompt": false,
+              "start": 27,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            }
+          ],
+          "completed": [
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "reuse",
+              "token_ids": [
+                90
+              ],
+              "processed_position": 37,
+              "status": "SequenceStatus.FINISHED_ABORTED",
+              "cancelled": true
+            },
+            {
+              "slot": 0,
+              "generation": 2,
+              "request_id": "reuse",
+              "token_ids": [
+                16,
+                18,
+                21,
+                248046
+              ],
+              "processed_position": 28,
+              "status": "SequenceStatus.FINISHED_STOPPED",
+              "cancelled": false
+            }
+          ],
+          "free_native_blocks": 36,
+          "total_native_blocks": 36,
+          "backend_checks": {
+            "input_prefix_checks": 7,
+            "released_states": 2
+          }
+        },
+        {
+          "case": "invalid_admission_and_full_slots",
+          "status": "PASS",
+          "events": [],
+          "completed": [
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "a",
+              "token_ids": [],
+              "processed_position": 0,
+              "status": "SequenceStatus.FINISHED_ABORTED",
+              "cancelled": true
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "b",
+              "token_ids": [],
+              "processed_position": 0,
+              "status": "SequenceStatus.FINISHED_ABORTED",
+              "cancelled": true
+            }
+          ],
+          "free_native_blocks": 36,
+          "total_native_blocks": 36,
+          "backend_checks": {
+            "input_prefix_checks": 0,
+            "released_states": 2
+          }
+        }
+      ],
+      "core_sha256": "f6aa14b790eb7bc729251eea152fd9c83cf215bc5ab912e25ee19c57d8fc1768",
+      "upstream_revision": "774ce244b87cc0eb8d4b94ab9f5de2ab22049f01",
+      "torch_version": "2.13.0+cu132",
+      "harness_sha256": {
+        "e5_bridge_smoke.py": "7aa808f51c7dcf5ace280163a58df4626acc84ccbe54e5fb5f0aa7e130b2b041",
+        "spark_infer_q/deepinfer_bridge.py": "512bc8256a91502d8908d91b04d2eba2c49de9f3c5a346ae69bf663ce6e819ff",
+        "e3_target.py": "9fbd4d6edab3f148f894a09b82128012f460e02e1852ba1e7702b26357f584bb",
+        "e3_wide_target.py": "cb454e3fd741339552b15e7bdc168317e5fc013298fd3dc87d904f1bf12d6ace"
+      },
+      "cpu_input_mode": "real tokenizer and frozen E4 output replay; no GPU forward",
+      "cuda_initialized": false,
+      "elapsed_seconds": 2.8356175422668457
+    },
+    "gpu": {
+      "status": "PASS_BOUNDED_NATIVE_SCHEDULER_BRIDGE",
+      "kind": "full_target_native_scheduler",
+      "limits": [
+        "bounded synchronous bridge; no native Worker, GPU sampler, speculation or async pipeline",
+        "native block IDs are logical accounting only; Qwen owns actual GDN/QSA state",
+        "multiple scheduled requests execute serially on GPU; not a batched throughput benchmark",
+        "serial prompt arithmetic retained; prefill numerical discrepancy remains unresolved"
+      ],
+      "cases": [
+        {
+          "case": "single_eos_and_plan_fences",
+          "status": "PASS",
+          "events": [
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "single",
+              "prompt": true,
+              "start": 0,
+              "rows": 25,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "single",
+              "prompt": false,
+              "start": 25,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "single",
+              "prompt": false,
+              "start": 26,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "single",
+              "prompt": false,
+              "start": 27,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            }
+          ],
+          "completed": [
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "single",
+              "token_ids": [
+                16,
+                18,
+                21,
+                248046
+              ],
+              "processed_position": 28,
+              "status": "SequenceStatus.FINISHED_STOPPED",
+              "cancelled": false
+            }
+          ],
+          "free_native_blocks": 36,
+          "total_native_blocks": 36,
+          "backend_checks": {
+            "full_logit_rows": 28,
+            "live_state_checks": 4,
+            "released_states": [
+              {
+                "slot": 0,
+                "generation": 1,
+                "last_device_position": 28
+              }
+            ]
+          }
+        },
+        {
+          "case": "two_requests_chunked_prompt_and_interleaved_decode",
+          "status": "PASS",
+          "events": [
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": true,
+              "start": 0,
+              "rows": 32,
+              "published": 0,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": true,
+              "start": 32,
+              "rows": 5,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": true,
+              "start": 0,
+              "rows": 27,
+              "published": 0,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": true,
+              "start": 27,
+              "rows": 19,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 46,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 37,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 47,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 38,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 48,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 39,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 49,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 40,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 50,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 41,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 51,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 42,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 52,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 43,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 53,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 44,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 54,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 45,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 55,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 46,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 56,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 47,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 57,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 48,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 58,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 49,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 59,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 50,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 60,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 51,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 61,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 52,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 62,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 53,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 63,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 54,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 64,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 55,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 65,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 56,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 66,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 57,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 67,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 58,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 68,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 59,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 69,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 60,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "prompt": false,
+              "start": 70,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 61,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "prompt": false,
+              "start": 62,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            }
+          ],
+          "completed": [
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "code",
+              "token_ids": [
+                71093,
+                12305,
+                198,
+                727,
+                2542,
+                52339,
+                20449,
+                1590,
+                198,
+                262,
+                460,
+                2542,
+                2007,
+                364,
+                830,
+                303,
+                10001,
+                413,
+                830,
+                835,
+                220,
+                15,
+                8,
+                198,
+                71093,
+                248046
+              ],
+              "processed_position": 71,
+              "status": "SequenceStatus.FINISHED_STOPPED",
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "json",
+              "token_ids": [
+                90,
+                198,
+                220,
+                328,
+                591,
+                763,
+                328,
+                349,
+                455,
+                487,
+                198,
+                220,
+                328,
+                1767,
+                763,
+                220,
+                20,
+                11,
+                198,
+                220,
+                328,
+                15401,
+                763,
+                867,
+                198,
+                92,
+                248046
+              ],
+              "processed_position": 63,
+              "status": "SequenceStatus.FINISHED_STOPPED",
+              "cancelled": false
+            }
+          ],
+          "free_native_blocks": 36,
+          "total_native_blocks": 36,
+          "backend_checks": {
+            "full_logit_rows": 134,
+            "live_state_checks": 55,
+            "released_states": [
+              {
+                "slot": 1,
+                "generation": 1,
+                "last_device_position": 71
+              },
+              {
+                "slot": 0,
+                "generation": 1,
+                "last_device_position": 63
+              }
+            ]
+          }
+        },
+        {
+          "case": "length_cap_prefix_only",
+          "status": "PASS",
+          "events": [
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "capped",
+              "prompt": true,
+              "start": 0,
+              "rows": 32,
+              "published": 0,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "capped",
+              "prompt": true,
+              "start": 32,
+              "rows": 14,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "capped",
+              "prompt": false,
+              "start": 46,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "capped",
+              "prompt": false,
+              "start": 47,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            }
+          ],
+          "completed": [
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "capped",
+              "token_ids": [
+                71093,
+                12305,
+                198
+              ],
+              "processed_position": 48,
+              "status": "SequenceStatus.FINISHED_LENGTH_CAPPED",
+              "cancelled": false
+            }
+          ],
+          "free_native_blocks": 36,
+          "total_native_blocks": 36,
+          "backend_checks": {
+            "full_logit_rows": 48,
+            "live_state_checks": 4,
+            "released_states": [
+              {
+                "slot": 0,
+                "generation": 1,
+                "last_device_position": 48
+              }
+            ]
+          }
+        },
+        {
+          "case": "cancel_waiting_and_generation_reuse",
+          "status": "PASS",
+          "events": [
+            {
+              "slot": 0,
+              "generation": 2,
+              "request_id": "reuse",
+              "prompt": true,
+              "start": 0,
+              "rows": 25,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 2,
+              "request_id": "reuse",
+              "prompt": false,
+              "start": 25,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 2,
+              "request_id": "reuse",
+              "prompt": false,
+              "start": 26,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 2,
+              "request_id": "reuse",
+              "prompt": false,
+              "start": 27,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            }
+          ],
+          "completed": [
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "reuse",
+              "token_ids": [],
+              "processed_position": 0,
+              "status": "SequenceStatus.FINISHED_ABORTED",
+              "cancelled": true
+            },
+            {
+              "slot": 0,
+              "generation": 2,
+              "request_id": "reuse",
+              "token_ids": [
+                16,
+                18,
+                21,
+                248046
+              ],
+              "processed_position": 28,
+              "status": "SequenceStatus.FINISHED_STOPPED",
+              "cancelled": false
+            }
+          ],
+          "free_native_blocks": 36,
+          "total_native_blocks": 36,
+          "backend_checks": {
+            "full_logit_rows": 28,
+            "live_state_checks": 4,
+            "released_states": [
+              {
+                "slot": 0,
+                "generation": 1,
+                "last_device_position": 0
+              },
+              {
+                "slot": 0,
+                "generation": 2,
+                "last_device_position": 28
+              }
+            ]
+          }
+        },
+        {
+          "case": "cancel_prepared_prompt_and_generation_reuse",
+          "status": "PASS",
+          "events": [
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "reuse",
+              "prompt": true,
+              "start": 0,
+              "rows": 32,
+              "published": 0,
+              "cancelled": true
+            },
+            {
+              "slot": 0,
+              "generation": 2,
+              "request_id": "reuse",
+              "prompt": true,
+              "start": 0,
+              "rows": 25,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 2,
+              "request_id": "reuse",
+              "prompt": false,
+              "start": 25,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 2,
+              "request_id": "reuse",
+              "prompt": false,
+              "start": 26,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 2,
+              "request_id": "reuse",
+              "prompt": false,
+              "start": 27,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            }
+          ],
+          "completed": [
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "reuse",
+              "token_ids": [],
+              "processed_position": 0,
+              "status": "SequenceStatus.FINISHED_ABORTED",
+              "cancelled": true
+            },
+            {
+              "slot": 0,
+              "generation": 2,
+              "request_id": "reuse",
+              "token_ids": [
+                16,
+                18,
+                21,
+                248046
+              ],
+              "processed_position": 28,
+              "status": "SequenceStatus.FINISHED_STOPPED",
+              "cancelled": false
+            }
+          ],
+          "free_native_blocks": 36,
+          "total_native_blocks": 36,
+          "backend_checks": {
+            "full_logit_rows": 60,
+            "live_state_checks": 5,
+            "released_states": [
+              {
+                "slot": 0,
+                "generation": 1,
+                "last_device_position": 32
+              },
+              {
+                "slot": 0,
+                "generation": 2,
+                "last_device_position": 28
+              }
+            ]
+          }
+        },
+        {
+          "case": "cancel_prepared_decode_and_generation_reuse",
+          "status": "PASS",
+          "events": [
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "reuse",
+              "prompt": true,
+              "start": 0,
+              "rows": 32,
+              "published": 0,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "reuse",
+              "prompt": true,
+              "start": 32,
+              "rows": 5,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "reuse",
+              "prompt": false,
+              "start": 37,
+              "rows": 1,
+              "published": 0,
+              "cancelled": true
+            },
+            {
+              "slot": 0,
+              "generation": 2,
+              "request_id": "reuse",
+              "prompt": true,
+              "start": 0,
+              "rows": 25,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 2,
+              "request_id": "reuse",
+              "prompt": false,
+              "start": 25,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 2,
+              "request_id": "reuse",
+              "prompt": false,
+              "start": 26,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            },
+            {
+              "slot": 0,
+              "generation": 2,
+              "request_id": "reuse",
+              "prompt": false,
+              "start": 27,
+              "rows": 1,
+              "published": 1,
+              "cancelled": false
+            }
+          ],
+          "completed": [
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "reuse",
+              "token_ids": [
+                90
+              ],
+              "processed_position": 37,
+              "status": "SequenceStatus.FINISHED_ABORTED",
+              "cancelled": true
+            },
+            {
+              "slot": 0,
+              "generation": 2,
+              "request_id": "reuse",
+              "token_ids": [
+                16,
+                18,
+                21,
+                248046
+              ],
+              "processed_position": 28,
+              "status": "SequenceStatus.FINISHED_STOPPED",
+              "cancelled": false
+            }
+          ],
+          "free_native_blocks": 36,
+          "total_native_blocks": 36,
+          "backend_checks": {
+            "full_logit_rows": 66,
+            "live_state_checks": 7,
+            "released_states": [
+              {
+                "slot": 0,
+                "generation": 1,
+                "last_device_position": 38
+              },
+              {
+                "slot": 0,
+                "generation": 2,
+                "last_device_position": 28
+              }
+            ]
+          }
+        },
+        {
+          "case": "invalid_admission_and_full_slots",
+          "status": "PASS",
+          "events": [],
+          "completed": [
+            {
+              "slot": 0,
+              "generation": 1,
+              "request_id": "a",
+              "token_ids": [],
+              "processed_position": 0,
+              "status": "SequenceStatus.FINISHED_ABORTED",
+              "cancelled": true
+            },
+            {
+              "slot": 1,
+              "generation": 1,
+              "request_id": "b",
+              "token_ids": [],
+              "processed_position": 0,
+              "status": "SequenceStatus.FINISHED_ABORTED",
+              "cancelled": true
+            }
+          ],
+          "free_native_blocks": 36,
+          "total_native_blocks": 36,
+          "backend_checks": {
+            "full_logit_rows": 0,
+            "live_state_checks": 0,
+            "released_states": [
+              {
+                "slot": 0,
+                "generation": 1,
+                "last_device_position": 0
+              },
+              {
+                "slot": 1,
+                "generation": 1,
+                "last_device_position": 0
+              }
+            ]
+          }
+        }
+      ],
+      "core_sha256": "f6aa14b790eb7bc729251eea152fd9c83cf215bc5ab912e25ee19c57d8fc1768",
+      "upstream_revision": "774ce244b87cc0eb8d4b94ab9f5de2ab22049f01",
+      "torch_version": "2.13.0+cu132",
+      "harness_sha256": {
+        "e5_bridge_smoke.py": "7aa808f51c7dcf5ace280163a58df4626acc84ccbe54e5fb5f0aa7e130b2b041",
+        "spark_infer_q/deepinfer_bridge.py": "512bc8256a91502d8908d91b04d2eba2c49de9f3c5a346ae69bf663ce6e819ff",
+        "e3_target.py": "9fbd4d6edab3f148f894a09b82128012f460e02e1852ba1e7702b26357f584bb",
+        "e3_wide_target.py": "cb454e3fd741339552b15e7bdc168317e5fc013298fd3dc87d904f1bf12d6ace"
+      },
+      "target": {
+        "load_seconds": 286.04422779299784,
+        "target_cuda_storage_bytes": 75002047104,
+        "raw_native_mtp_loaded": false,
+        "external_source_sha256": {
+          "cuda/build.py": "d82402b726267ef08093a9a006d4dd85db4172da603a28a4823930f3e2d933ee",
+          "cuda/direct_read.py": "7cb34b2ca6be6a1467a0645291988f869467272cfcdc5e27867df5aa4450fd26",
+          "cuda/exl3/decode.cuh": "47ae013bcad00186319f5ee05d4db400ed28f61c6a677d6fdffc8448526c4a58",
+          "cuda/exl3/experts.cpp": "b667ff9b7dabc2b2bc5c2bf77c762ebf3acd7e89e90218e2cd370772a21348e5",
+          "cuda/exl3/experts.cu": "807efd8f241edabce41cd2e149fbf8d61ea6875ca984de2ddf0411025c09a4b5",
+          "cuda/exl3/experts.py": "ed980055a0c039a0f6f46a3853f813545512329f4e022a0e966858f4ceff4525",
+          "cuda/exl3/experts_cb0.cu": "719ce51b1eb0218a36578adb9145358ee1271f0bbc72cfc575f3a273856bc236",
+          "cuda/exl3/experts_cb1.cu": "dad1e479d6047d4af6b30d38dab492df4534b829f8ef34d69552f6f033ee8825",
+          "cuda/exl3/experts_cb2.cu": "bcf5ea9c9d6f36dafa3132f52529006dfe0853425bad03040a9e37164f9266c4",
+          "cuda/exl3/experts_grouped.cuh": "cb2a016df23375db577ca2d9199ba145eb176e71a22295bdf386caba1cebff22",
+          "cuda/exl3/format.py": "25b617d65976ce9bec016f88086ed0565bd2ed56f223f9f490ecab73048145f7",
+          "cuda/exl3/inspect.py": "7f08c68855f0e94a8573e713eeaa04bc982d19d5f82605b2c78bea13db570c99",
+          "cuda/exl3/linear.cpp": "a80e17f39a7bde64ef2e8e01717d014caf72d66f535bdc9ee81160d71d17b6c5",
+          "cuda/exl3/linear.cu": "4251bec24334bcae9d97d5ed2ef9cdf44cb7163243cd4079a18e253922f627fe",
+          "cuda/exl3/linear.py": "aa267ee0f517fa9759f21c95419942c7c1f304be1bb8899975196e945f8c33d3",
+          "cuda/exl3/prefill.py": "8a14f0df77b9b31512853df66d64eaf06da07da7f2184071444fab0851cd9489",
+          "cuda/experts.py": "71534ff9a82c33109d81264d72c30ca50e8c0d36d81810b53fba54eabb37da3e",
+          "cuda/geometry.py": "dc320f5ee06bed2134b12f394b9605bf9b471b1ba64dbdb6d89a0468b94dd962",
+          "cuda/kernels/affine.py": "74967b517a5a0f253f6cfaacc85ce8fc31d0eaddb5367e97985d2469140ac19d",
+          "cuda/kernels/affine_kernels.py": "9165d92bf0a3908ce525b69802f14b4534bf9615bc8e470f539e72f0902fa1a5",
+          "cuda/kernels/attention.py": "785a62d36033cca82446fd847cf8f3b5d7d1c306e2261fdefab9000a2a565a5d",
+          "cuda/kernels/gdn.cpp": "1203b16dc8a81b3fb297b8b78159692c648498b211da0ed5a9cd4267873df885",
+          "cuda/kernels/gdn.cu": "bb07c9e160f88cb7a90153b7101f0f78c4f9040159f17b75b4f145abb7431cad",
+          "cuda/kernels/gdn.py": "84c8cebbadd11fc676ab15757d345ec7db150033e958a37ca2e3db62457264bf",
+          "cuda/kernels/gdn_prefill.cu": "d0f75d39d5436305d4433f5d825d818432918950aa5a234422eece7485d1bb57",
+          "cuda/kernels/prefill_attention.cpp": "989130131471e0f6dc6594849468c4175a99b9ab9f30d8d418a0cc69527d97aa",
+          "cuda/kernels/prefill_attention.cu": "e5511f4b29b2a9ec2fa0c272bd7efc83c219ca1fb2f2aed2906edb263cbbbf84",
+          "cuda/kernels/prefill_attention.py": "5f80885d328de29850df286541a05da584215055debddebb1566cd3999e1e994",
+          "cuda/kernels/qmm.cpp": "7a54ca9926adb3a0afcc0b42c82b5fd148b7c1c948dd38a729568172668c81ab",
+          "cuda/kernels/qmm.cu": "8aa8a7c554959e9fa1ae812f3597f1480d5c47f607593a19332341437130b45e",
+          "cuda/kernels/qmm.py": "0f86c9abcfd1922d82b6481fa5001f415bbb2a9fe15415e0e4d5d2e24191eaf2",
+          "cuda/kernels/qmm_frag.cuh": "476da5f919b1593375faab72c4c6c75f7620b78ae0a85f60856c80102e715833",
+          "cuda/kernels/qmm_group.cu": "9950e54b0901ec3950b0145fa3f4357ce4904ed70d303708d64db8c94a6c4668",
+          "cuda/kernels/qmm_prefill.cu": "be112df7a73c47530f998caaf44fd75a8490e59ec1152f89d170d72f10c13f9b",
+          "cuda/kernels/qmm_prefill8.cu": "b6fa59c8325f8d711937473fbb5bf03ed2000bd11f18022a485d971f35e42172",
+          "cuda/kernels/qmm_tiles.py": "2768f581909a9b0df95a1405d9db9f2e1a3214156c683a339ffefd55f67d022c",
+          "cuda/moe.py": "32c16689dad01b7e10ba8b6a80bec24ad856406c3ee2c13da9f3600f89319e7e",
+          "cuda/nvfp4/act.cu": "943efa80549bea1cf31984be2639faeb9327cbbced7876c48acb92c433267546",
+          "cuda/nvfp4/checkpoint.cpp": "b37f9f63aeaf821671414ff5acf139bbee3d6196d1c09fa669ffc7b3162138e1",
+          "cuda/nvfp4/checkpoint.py": "0f77f74d5567a8d25fd527f7219b87a4a30a85e25d0cb15fc7febf5f46433ae6",
+          "cuda/nvfp4/experts.cu": "5d42a8d9e60e98b0b9b3325a20b5543f7c37c9dde1f72ce282b023a562136630",
+          "cuda/nvfp4/experts.py": "e0e8c9397c9a587a86f74c6ff937c34c6dbb410a2f7d3a495b61b3a8d71ddd5d",
+          "cuda/nvfp4/format.py": "8b5d85790d47da354a6ca4796cf123d94b10a333370d1b46d307aae772f15320",
+          "cuda/nvfp4/gemm_ck.cu": "0c7cc5a19b438db7f1fddcbe2d824d7e383f3129384fc9ee6c1f47785ec0ef8d",
+          "cuda/nvfp4/gemm_ws.cu": "54a81d2d32bf706ac2f01ae752b9bb48fdcc5de3feca442c7fd78b8747b63e37",
+          "cuda/nvfp4/lane4.cu": "7dfdd956cc45970459ebf8dfd81dd1571d8f5d95e86a884c0c71a368e4e7529d",
+          "cuda/nvfp4/linear.py": "04136cbf4fa5f8b9c3a9cb655e4643929ead09d29367f1b7c135f662d0fe6f25",
+          "cuda/nvfp4/mma4.cuh": "257ed3bdc913d6aacc8b387c25a70e27cf9a1fcaab82109f783b6717917b556a",
+          "cuda/nvfp4/nvfp4q.cuh": "6b823ddf0f4bfc42f4687d57c9fe46a1a7f7cbc33074a6f51c857e745cf4601d",
+          "cuda/nvfp4/prompt.cpp": "605f4bb6e3baac5b00bf9e679d1ae7503f42b6a212c2b80f8c8122f250aa763d",
+          "cuda/nvfp4/prompt.cu": "89275c250aec25c6fe2abe02ca596c96b0e797d3191e0d4aef176c3b22dc0155",
+          "cuda/nvfp4/qmmf.cpp": "13364659eef86b75ba875e384a9373913671c120c3ae7dd6bc73873e05f16be4",
+          "cuda/nvfp4/qmmf.cu": "52477baf67e0babac2c612ab6a1d20f6683bde0ab2b961a4771843b62cb05e3a",
+          "cuda/nvfp4/swiglu4.cuh": "0f9e566a688f162b55b78013f8d3d58f8ee44fc900a8fe96c2e6d4bdc75c40dc",
+          "cuda/prompt_precision.py": "2d190812ad9034fc2c0188a06f9fe814be0eab655cca08257c383160de323251",
+          "families/qwen4_exp/cuda/attention.py": "ab41744715725efb604a95be94c02ed5699e3dcb0148e5c1909ec8db1fa84692",
+          "families/qwen4_exp/cuda/attn_multi.py": "c075cf5e9c3dbf80a7ae2eaf3a6af4105d4efb23d78dc58721bb73636406cac7",
+          "families/qwen4_exp/cuda/bf16.py": "f82e49e29e5d5f2c1430c48f00878af0715303debf023c401a1f840a727fa45d",
+          "families/qwen4_exp/cuda/decode.py": "3fc7854572886d05c36498ed0a6b263295b4e2bfa9844b33b3bde424598029f6",
+          "families/qwen4_exp/cuda/engine.py": "de8b9df4882ff3d32c5749d4e253408b278b8ddaed9a71683eb3f0f133df0782",
+          "families/qwen4_exp/cuda/exl3.py": "1cd791ce7c43aa74de1902946e7fca5e8b0e373244a818f73b27989969c08c6e",
+          "families/qwen4_exp/cuda/exl3_mm.py": "0c1f4b024b5e3750fa8b8eadda0addd30216dc9702b98712fe03f346b46e590d",
+          "families/qwen4_exp/cuda/exl3_pack.py": "f22fb38c7ca893c5b39eccf4502f0ac0056e7eeaf33fef4be90e48de40bf59ce",
+          "families/qwen4_exp/cuda/forward.py": "1ec9344c85cac5f8954a4b45188ae468e2834899996e10c083b1a81ac3096424",
+          "families/qwen4_exp/cuda/gdn.cpp": "2c84d93bdd38ddb254e1d2dd1c979e5486ad0fa0f09dae58c6c326fc70f39937",
+          "families/qwen4_exp/cuda/gdn.cu": "f7f36249bfe146b96094e9f1e968a15a3dcf9c58184f4437495110ae1e35fe9e",
+          "families/qwen4_exp/cuda/gdn.py": "7f4f7deed17e0d0e764828a543be29b140476714f0f85992507a8b2dfd31f0a6",
+          "families/qwen4_exp/cuda/gdn_io.cpp": "28c777bd85454cb47730545105d5c837f303c242550400496a66d9f7ba78af20",
+          "families/qwen4_exp/cuda/gdn_io.cu": "fd834e01a4cb181290312bdc02c753518044ce8cf419ac603beb5b13d1e2f63c",
+          "families/qwen4_exp/cuda/gdn_io.py": "8516b19320df5044e8eea1c5a896aaf14f46b3f7ef294a163661f212b8d384e0",
+          "families/qwen4_exp/cuda/gdn_multi.py": "8f9721bf2510b312c475d107637e0ee3fba427205d305947a6031700367e90d4",
+          "families/qwen4_exp/cuda/glue.py": "6934d5de5919ee222b347d5841036c2c4ea28784d7f5419f93128f9ff099e5ff",
+          "families/qwen4_exp/cuda/graphs.py": "dc8b583b55e8c9bbc21b0100c0a24c68747027551ce52dc60e2db69508be647f",
+          "families/qwen4_exp/cuda/hc_check.py": "e5241860067d233fb438ca1c71d736f1932e355caf92a81198f5af7077c6fbcd",
+          "families/qwen4_exp/cuda/hc_fused.py": "0cedb247eb4269e218dc61eb7edabe56e19a54fb98120bd39c1c961bd8b95994",
+          "families/qwen4_exp/cuda/hc_upmix.py": "e2d0a75c4b080e511fdb14f67786b7b90a18c762b4644b45feefc8f1f7afb577",
+          "families/qwen4_exp/cuda/image_rows.py": "43122f4b5b9a309a7625b3a3f2cdcf7622374b3ddedc7db186bf44b5b8536422",
+          "families/qwen4_exp/cuda/kv8.py": "f91aff3852ce74f486d7044aceba76379de18717a4462f4b2fc28e2b3be58b13",
+          "families/qwen4_exp/cuda/kv8_multi.py": "1a8c1a126d797560f59611f706b64f54f87cfc87a726eda75160f3e056681932",
+          "families/qwen4_exp/cuda/kvcache.py": "709a022c0aba2bb3070b30badb6b912a93ed2e83f1d8e5b6cbc72d512e9eec6e",
+          "families/qwen4_exp/cuda/kvquant.py": "b893b9841117629f3e6f37eb9e3c3994242bf8d3476657f7cc6885d3bb6c8123",
+          "families/qwen4_exp/cuda/mtp.py": "49700f7aacbf74d78f34efd9a66ac5851c2bfc1472c111a19858ad4273b2eb01",
+          "families/qwen4_exp/cuda/multi.py": "f56cbec323b6593be77efe0e9fa2c3c6af9c8bfeb17ed2859f1f31074359ef5d",
+          "families/qwen4_exp/cuda/multi_fill.py": "f2996562162e91a2faeb391bc0cefec6266b4aa3637aa05010bd0b24b7d97456",
+          "families/qwen4_exp/cuda/multi_plan.py": "18171ff12c0459910991ae64e533b3965a38ed6a6fa28dc68d106d08291e577d",
+          "families/qwen4_exp/cuda/multi_solo.py": "0eae985c88f310cd1070440ef7c0ea640e92006f1a8a25556cb603bbdcc33831",
+          "families/qwen4_exp/cuda/multi_tp.py": "00e47d2ae5c25f4f5630460e818ca8aac36ccc448b1ae09f3e84b14400c52f77",
+          "families/qwen4_exp/cuda/ngram.py": "cf3c061978f1dc33ea2d714807763524c6498e30a2373123829af41fcf790736",
+          "families/qwen4_exp/cuda/nvfp4.py": "d92b93a48a5980111e36636c1c762879347091f3c58c081141df52315a34248b",
+          "families/qwen4_exp/cuda/nvfp4_moe.py": "46ca1c6de3a682af5aeac7861be10e8b66700dbdb1be383ef3233c6c9e70563d",
+          "families/qwen4_exp/cuda/prefixes.py": "b6b0208a44b6ad22b947a6b428dba6d01eaf59cfcb46201c8827cbec0a781e2e",
+          "families/qwen4_exp/cuda/prompt_mm.py": "be78e330af84579e34a4327cfb07e320f961286ff407a0f31187d5652f32a3ff",
+          "families/qwen4_exp/cuda/prompt_plan.py": "6cee04112f28aaaaaa389ce74915c6a91da22223e59a96d810b2813191812257",
+          "families/qwen4_exp/cuda/qmm.py": "772123811351485844054504ecd27c3398cef8d043420c000b16b26d3a986e11",
+          "families/qwen4_exp/cuda/reader.py": "c06b340443e5aa862d6ffafedffe5282587e1f9d9ae08f5387ab34022af7e437",
+          "families/qwen4_exp/cuda/state.py": "e92b98d62849c4f023fe68219a89889b21f161a2bd5f99a4fe1cd27cb7e39f19",
+          "families/qwen4_exp/cuda/weight_types.py": "f01db1863226aa91be71a7aedcfe73212a4b729990c5239d07c3da94004cec0a",
+          "families/qwen4_exp/cuda/weights.py": "b2f630f035406ffd800d3b6d69a471c72c485dc0c3ad5ef04eeb327b97a7f6a3",
+          "families/qwen4_exp/cuda/yarn.py": "29076c0c9f32651c61f9159e7f152221d9edb9e6d6e33b08cd1e8e184c38bad2",
+          "families/qwen4_exp/host_table.py": "52dc3148f276fdf8814df83eabf7cddf7866185157dabce400241b33e0434a3d",
+          "families/qwen4_exp/ssd_table.py": "b3fabaee9cdfbb6ce5d69bf216f63afe98ae54abc88b222a0c8f1312dd6af45e"
+        },
+        "extensions_sha256": {
+          "spark_q_moe_linear": "556ec68bfd476385bde2f142422c77893fa6a02da11b7eb23ff43862dd512985",
+          "spark_q_moe_plan": "f64a75592241f3424139c1ad8a757325df4d5f9cadd13686c1cccc9a96804f31",
+          "spark_q_moe_prompt": "49ac7f98c89ba4582d9b34df082a7fc6934a30d9da71677ed4f699f6d18ce7e3",
+          "spark_q_block_gdn": "48d9db2a9f2d9ebd7929b32b2a1d390fe01a8b1306b3054d82f9ec280aff3913",
+          "spark_q_block_gdn_io": "d71673e5a1e36a157d02eb116da5f208cd4055213e1373ed9aab36af70e0b830",
+          "spark_q_block_gdn_shared": "89a960e17a4e5f723f9329469aeb4ec8fb7f2383f58daa8e9651fa7e23313fc9"
+        }
+      },
+      "torch_peak_allocated_bytes": 76129054208,
+      "torch_peak_reserved_bytes": 77061947392,
+      "cuda_initialized": true,
+      "elapsed_seconds": 349.51855969429016
+    }
+  },
+  "summary": {
+    "cpu": {
+      "case_groups": 7,
+      "scheduled_request_segments": 110,
+      "full_logit_rows": 0,
+      "live_state_checks": 0,
+      "completed_or_cancelled_requests": 12,
+      "all_native_logical_blocks_returned": true
+    },
+    "replay": {
+      "case_groups": 7,
+      "scheduled_request_segments": 79,
+      "full_logit_rows": 0,
+      "live_state_checks": 0,
+      "completed_or_cancelled_requests": 12,
+      "all_native_logical_blocks_returned": true
+    },
+    "gpu": {
+      "case_groups": 7,
+      "scheduled_request_segments": 79,
+      "full_logit_rows": 364,
+      "live_state_checks": 79,
+      "completed_or_cancelled_requests": 12,
+      "all_native_logical_blocks_returned": true
+    }
+  },
+  "replay_vs_gpu_dispatch_and_outputs_equal": true
+}

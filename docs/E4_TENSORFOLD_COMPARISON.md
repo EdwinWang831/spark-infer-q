@@ -1,5 +1,7 @@
 # TensorFold 对照：速度趋势、贡献归属与验证缺口
 
+后续实测见 [E4 同机报告](E4_MATCHED_REPORT.md)。本页保留实测前的源码审阅及 E3 证据边界；下文“未执行”指本页审阅当时，不代表当前仓库状态。
+
 核对日期：2026-10-20（America/Los_Angeles）。对照仓库为 MiaAI-Lab 的 [Single-DGX-Spark-TensorFold](https://github.com/MiaAI-Lab/Qwen3.8-Flash-Next-Single-DGX-Spark-TensorFold)，固定在 `656879fd752749bbd11a6e1a065a326c00940911`；我们的实测固定在 `69e7d7ae52d30a6b502e297b40cc5dd13750917e`。
 
 **结论：我们相对自身基线的进步有实测支持，但尚未证明比该 TensorFold 配方更快。较长 DFlash2 草稿的价值已经得到支持；在线动态预算相对合适固定长度的优势尚未建立。当前贡献主要是跨框架适配、局部成本决策实验和严格的状态验证，而不是原创 SM121 内核或首次动态草稿算法。**
