@@ -90,10 +90,14 @@ class KaifraEngine(Protocol):
 | E5 Scheduler Bridge | 原生 C++ schedule/process 生命周期、两请求取消/复用检查 | 真正的 batched GPU forward、Worker/异步与 DFlash 接线 |
 | E6 Draft Head | 可注入 Q4Backend、full vocab ID、同路径 state oracle | 正式引擎中的 Q4 proposer 生命周期与多请求常驻 |
 | E7 Native Match | 充分逐任务预热的同机对照脚本和 Q4 DFlash2 与 MTP 差距 | 与同一执行器 MTP 对照、可比长输出性能 |
-| E8 Prompt-only | 2/4/8 token 块与 serial 的 logits/features/state 检查；8 行 prompt 速度已单测 | Q4 完整 SSE 集成/独立多次测量及 CUDA Graph |
+| E8 Prompt + 集成 | 2/4/8 token 块与 serial 的 logits/features/state 检查；Q4 SSE 执行器默认 8 行分块，完整请求 1.67× | CUDA Graph；E8 之后的原生 TensorFold 重测 |
+| E10/E11 Target kernels | 专家核和投影的精确变体检查；`ProjectionRoute` 作为 opt-in | 收益只有 +0.08%/+0.62%，没有改默认 |
+| E12 Expert cost | `moe_cost.py` 每层专家并集与离线成本模型 | 能在验证前取得的成本特征（只用上一轮并集仅降 2.42% MAE） |
+| E13 Draft cache | `CachedContextDraft`（opt-in）与 1K–2K 状态检查 | 4K 以上的滑窗与位置处理 |
+| E15/E16 Confidence heads | `confidence_head.py` 七深度置信头、`ProgressModel` 元数据、常驻 worker；单请求相对滞后预算约 +10% | 正式引擎中的预测器生命周期、多请求下的成本与同步 |
 | 先前 PR #2 | Global Cost-Aware Scheduler 的控制面提案 | GPU 批处理、成本模型和运行时接入 |
 
-**重要依赖顺序：**当前 `main` 还没有合并 E5–E8 的开发代码。落实时应先把相关开发分支整理成审查清楚、依赖明确的 PR；**不要在旧 main 上重新发明 E5/E6 的实现或把原始大结果文件随意复制进 vision PR。**
+**重要依赖顺序：**E4–E16 的开发代码已合入 `main`（2026-10-22 核对）。后续实现应直接在 `main` 的这些模块上扩展；**不要重新发明 E5/E6/E15 的实现，也不要把原始大结果文件复制进 vision PR。**
 
 ## 4. 分阶段实施，严格的 Done 定义
 
@@ -101,7 +105,7 @@ class KaifraEngine(Protocol):
 
 **交付：**冻结相同 SM121、checkpoint、模型/草稿权重、Tokenizer、E7 客户端、原生/候选 binary hash、预热计划与输出差异。保留原生 MTP 和 Q4 DFlash2 的对照。
 
-**验收：**历史结果可追溯，回归测试能识别数值与输出变化；训练/测试切分不混淆。优先落实 E8 完整生成（包括 TTFT/完整请求），其 prompt-only 4.66× **不替代**端到端性能结果。
+**验收：**历史结果可追溯，回归测试能识别数值与输出变化；训练/测试切分不混淆。优先落实 E8 完整生成（包括 TTFT/完整请求），其 prompt-only 4.66× **不替代**端到端性能结果（进展：E8 集成已完成；仍缺 E8 之后的原生 TensorFold 重测）。
 
 ### K1 — 基于 DeepInfer 的 Target-only Runtime
 
@@ -111,7 +115,7 @@ class KaifraEngine(Protocol):
 
 ### K2 — DFlash2/Q4 接入并测量执行路径
 
-**交付：**`DraftProvider=DFlash2Q4`，完整词表投影、selector 和提案前缀；target-only/fixed K/dynamic K 可切换；每个 provider 明确 checkpoint/precision/block contract。
+**交付：**`DraftProvider=DFlash2Q4`，完整词表投影、selector 和提案前缀；target-only/fixed K/dynamic K 可切换，dynamic K 包括滞后先验和 E16 置信头两种预算；每个 provider 明确 checkpoint/precision/block contract。
 
 **验收：**至少 K=0/1/3/7、全接受、首/中/末拒绝、EOS、max_tokens，在每次 reject 后的下一轮继续生成可对照；随机采样仍明确 unsupported。报告 per-stage draft/target/commit、动态预算开销和完整请求速度。与单模式策略/普通 Decode 比较。
 
@@ -129,7 +133,7 @@ class KaifraEngine(Protocol):
 
 ### K5 — 成本感知的跨请求调度
 
-**交付：**测过的 batch bucket 成本、按请求历史接受率、内存准入与公平性限制；比较固定 K、TensorFold 已有成本策略、DeepInfer `MTPVarlen`、Kaifra 候选。
+**交付：**测过的 batch bucket 成本、按请求的置信头接受率（E14 显示只按深度的历史先验几乎不随输入变化，E15/E16 的置信头在单请求上快约 10%）、内存准入与公平性限制；比较固定 K、TensorFold 已有成本策略、DeepInfer `MTPVarlen`（滞后先验和置信头两种）、Kaifra 候选。
 
 **验收：**新冻结 2/4/5 请求混合负载中至少存在可复现的完整任务/吞吐优势，不得显著恶化交互 TTFT/TPOT p95 或状态正确性。否则保留简单策略为默认，复杂策略撤到研究模式。
 
@@ -188,4 +192,4 @@ TensorFold 的**当前**代码已经有：
 - **中止/缩减条件**：GPU batch/状态长期无法正确支持、优化收益不能超过变更噪声、维护成本明显高于可用收益时保留 TensorFold serving + SparkInfer-Q 可验证研究模块，不为“自研”牺牲可靠性。
 - **名字**：Kaifra 是工作名。先不改仓库、产品发布、公司或域名，完成目标市场和商标检索再决定。
 
-**最先值得完成的一步：**保留并整理 E8 分块路径的正确性与真实端到端实验，然后**继续扩展现有 E5 DeepInfer C++ Scheduler 桥接**，使其驱动 Kaifra 自己的 Qwen Target-only 执行/状态服务，逐步替换测试 harness 中的单请求生成循环。
+**最先值得完成的一步：**E8 分块路径的正确性与端到端实验已完成（2026-10-22 核对）。下一步是**继续扩展现有 E5 DeepInfer C++ Scheduler 桥接**，使其驱动 Kaifra 自己的 Qwen Target-only 执行/状态服务，逐步替换测试 harness 中的单请求生成循环；E16 的置信头预算随后作为 K2 的可选预算接入。

@@ -5,7 +5,7 @@
 > **项目关系：** Kaifra 为提议中的引擎/产品名称；SparkInfer-Q 继续作为已有研究仓库和实验代号。**本 PR 不重命名仓库、不修改推理运行时、不宣称实现了 Kaifra。**  
 > **目标设备：** 第一阶段聚焦单台 NVIDIA DGX Spark（GB10/SM121），未来再研究跨平台后端。  
 > **评估基线：** TensorFold、SGLang、vLLM，以及同一 Kaifra 执行器里的 target-only、native MTP、Q4 DFlash2。  
-> **最后核对日期：** 2026-10-21。对应具体提交、测试和许可证请以文末链接为准。
+> **最后核对日期：** 2026-10-22，按 `main` @ `51828be`（E4–E16 已合入）。对应具体提交、测试和许可证请以文末链接为准。
 
 ## 1. 一句话的愿景
 
@@ -35,7 +35,7 @@
 
 | 层次 | 定义 | 现在的位置 / 目标 |
 | --- | --- | --- |
-| R0：实验组合 | Python 实验循环 + 外部 Target kernel + 已有推测算法 | SparkInfer-Q 的 E3/E4/E6/E7 属于受控研究原型；尚非完整引擎 |
+| R0：实验组合 | Python 实验循环 + 外部 Target kernel + 已有推测算法 | SparkInfer-Q 的 E3–E16 属于受控研究原型；尚非完整引擎 |
 | R1：基于 DeepInfer 的可独立服务运行时 | **复用/改造 DeepInfer C++ Scheduler 和预算器**，由 Kaifra 维护 Qwen 请求/状态适配、Batch Plan、Prefill/Decode/Verify、提交、API、指标与回退；kernel 允许模块化复用 | **Kaifra MVP 的合理定义** |
 | R2：独立可优化的系统 | R1 加上自己的执行计划成本反馈、多请求联合调度、增量 draft cache、跨后端模型/草稿适配与版本化性能证据 | 长期技术壁垒；不承诺必然实现或领先 |
 
@@ -45,7 +45,7 @@
 
 ## 3. 我们已有的事实：亮点与缺口都要保留
 
-以下是**独立开发分支中的已提交实验报告**，未合并到此 PR 的基底 `main`；它们不因写入愿景而自动成为生产功能。
+以下实验报告最初写在独立开发分支上，现已全部合入 `main`（2026-10-22 核对）；它们不因写入愿景而自动成为生产功能。
 
 | 里程碑 | 已记录结果 | 必须保留的边界 |
 | --- | --- | --- |
@@ -53,11 +53,19 @@
 | E5 | 真正的 DeepInfer C++ Scheduler 与 Qwen target-only 生命周期桥接；限定两请求交错场景通过 | GPU 仍逐个请求执行，不是联合批处理或完整 Worker |
 | E6 | Q4 完整词表草稿头 + 原生动态预算，在同轮 8 任务中 45.54 vs BF16 41.70 decode tok/s，约 +9.23% | Q4 只是**草稿输出头额外副本**；backbone/selector 保留 BF16；整体内存不因此缩小 |
 | E7 | 同机充分预热：8 个自然任务 Q4 DFlash2 45.57 vs 原生 MTP 43.58 tok/s；全部 10 任务 45.62 vs 49.18 tok/s | **整体 Decode 未超过原生**；完整请求中位耗时之和 38.141 vs 18.791 秒；跨引擎输出 8/10 摘要相同 |
-| E8 prompt-only | 保留同一 Decode 算术，将 prompt 按 8 token 分块，10 任务 prompt 耗时中位数之和 19.679→4.220 秒，约 4.66×；81 组对照通过 | **尚不代表最终 SSE TTFT / 端到端加速**；完整 Q4 生成集成已另立方案，不能预支其结果 |
+| E8 prompt-only | 保留同一 Decode 算术，将 prompt 按 8 token 分块，10 任务 prompt 耗时中位数之和 19.679→4.220 秒，约 4.66×；81 组对照通过 | **尚不代表最终 SSE TTFT / 端到端加速**；完整 Q4 生成集成另见下一行 |
+| E8 完整生成集成 | 新的 Q4 SSE 执行器默认 8 行 prompt 分块；TTFT 中位数之和 19.69→4.23 秒，完整请求 37.92→22.67 秒（1.67×）；40 次完整生成 oracle 通过 | decode 45.91→45.39 tok/s（−1.14%）；E8 之后没有重测原生 TensorFold |
+| E9 | 未采样请求中 target 验证占 decode 的 83.81%，草稿占 14.39% | GPU 活动覆盖率 91.76% 不是 SM 利用率 |
+| E10/E11 | 专家核调参 holdout +0.08%；投影 MXFP8 完整生成 decode +0.62%；都没有改默认 | 说明调参空间有限，不等于已到带宽上限（硬件计数器返回 `ERR_NVGPUCTRPERM`） |
+| E12 | 本轮真实专家并集让离线成本 MAE 降 26.17%；只用上一轮并集仅降 2.42% | 真实并集要验证后才知道，不能在线使用；同前缀预算诊断最多 +1.28%，不是提速 |
+| E13 | DFlash 历史投影增量缓存：1K–2K 输入 decode +6.27% | 短输入 −0.31%，默认不变；4K 以上未测 |
+| E14 | 在线 margin 预算 +0.065%，区间跨零 | 深度先验下 MTPVarlen 几乎总选同一宽度 |
+| E15/E16 | 训练的七深度置信头：冻结新任务上相对滞后预算 +10.00%（E15）和 +9.61%（E16，20 个中英文任务）；E16 比旧 E15 头再快 3.18% | 单请求 greedy、opt-in；没有 4K 以上、多请求或默认切换 |
 
-这些结果至少说明两件事：
+这些结果至少说明三件事：
 1. 完整词表 Q4 DFlash2 具有实际工程价值；这是继续开发的支点；
-2. 不能从局部草稿加速推断完整系统领先：Prefill、GPU 调度、Context Attention 和状态复制都可能成为决定因素。
+2. 不能从局部草稿加速推断完整系统领先：Prefill、GPU 调度、Context Attention 和状态复制都可能成为决定因素；
+3. 目前测得的较大 decode 提升来自草稿和决策层：E6 的 Q4 草稿头 +9.23%、E13 的长输入缓存 +6.27%、E15/E16 的置信头预算约 +10%；target kernel 调参（E10/E11）只有 +0.08%/+0.62%。这和第 1 节“决定算哪些 token”的定位一致。不过这些收益都是单请求上各自测得的，不能相加。
 
 我们坚持用**相同输入、权重、精度、请求模式、预热和计时边界**做公平评估，同时保留语义/数值输出差异、吞吐波动与负结果。
 
@@ -126,6 +134,8 @@ Kaifra 的长期资产应当是**可复现的正确执行、经过版本化的�
 | Quantization-Aware Drafting | 联合考虑 Q4/Q8/词表覆盖、草稿质量、成本与调度 | 最终 tok/s/质量/内存 Pareto 优于单纯缩词表或固定精度 |
 | Stable Local Serving | 强约束 correctness、明确恢复/回退、可替换 kernel provider | 长时稳定性、取消竞态、并发、一致性与版本回归有证据 |
 
+截至 2026-10-22 的进展：DFlash Context Reuse 已有 E13 的首个结果（1K–2K 输入 +6.27%，短输入 −0.31%，仍为 opt-in）；Quantization-Aware Drafting 只有 E6 的 Q4 草稿头，Q8 和混合精度未测；其余四项还没有实验。
+
 **不要把“使用 DeepInfer”、“支持 cost-aware scheduling”、“支持 CUDA Graph”、“有 Q4 草稿头”单独写成原创算法。** 这些已有先例和上游归属。我们独立的机会在于**具体的新决策问题、新接口约束、新成本模型、新执行算法以及可复现实验结果**。
 
 ### 一个值得研究的新问题：资源约束下的联合优化
@@ -162,8 +172,8 @@ Kaifra 的长期资产应当是**可复现的正确执行、经过版本化的�
 
 ### Horizon A：追平可用性（先把地基补齐）
 
-- 正式冻结 E7 同机对照，以 E8 正确的分块 prompt 路径做完整 Q4 请求集成验收；不要把 prompt-only 4.66× 当端到端结果；
-- 解决 Target Prefill 与同路径 Serial 数值/状态差异；引入优化验证与 Target CUDA Graph，维护 rejected-prefix 回退与状态一致性；
+- 正式冻结 E7 同机对照，以 E8 正确的分块 prompt 路径做完整 Q4 请求集成验收；不要把 prompt-only 4.66× 当端到端结果（进展：E8 集成已完成，完整请求 1.67×；E8 之后还没有重测原生 TensorFold）；
+- 解决 Target Prefill 与同路径 Serial 数值/状态差异；引入优化验证与 Target CUDA Graph，维护 rejected-prefix 回退与状态一致性（进展：E8 的分块 prompt 沿用 decode 算术并通过对照；对照 FP32 参考的 [prefill 数值方案](PREFILL_REFERENCE_PLAN.md)未执行；Target CUDA Graph 未做）；
 - 建立有状态单请求 API（streaming、cancel、EOS/max length、指标与回退）；
 - 用同一执行器的 MTP/DFlash2/target-only 对照区分算法差异和运行时差异。
 
@@ -221,10 +231,11 @@ Kaifra 的长期资产应当是**可复现的正确执行、经过版本化的�
 
 ## 可追溯的参考与后续交付
 
-- [E5：原生 Scheduler / Qwen 的限定桥接](https://github.com/EdwinWang831/spark-infer-q/blob/f7ad99e1afbaafb0bbc0ecd62a56346ff46c1992/docs/E5_ENGINE_BRIDGE_REPORT.md)
-- [E6：完整词表 Q4 草稿头](https://github.com/EdwinWang831/spark-infer-q/blob/e059fb982ff4fe68d6fa47b9064963d6f47b52cd/docs/E6_DRAFT_HEAD_REPORT.md)
-- [E7：对照原生 TensorFold 的正式报告](https://github.com/EdwinWang831/spark-infer-q/blob/9bdbe53950e1ec7c724612a6b511c3e55f235400/docs/E7_TENSORFOLD_MATCH_REPORT.md)
-- [E8：分块 Prompt 的限定实测](https://github.com/EdwinWang831/spark-infer-q/blob/e9df9d7db320d99226c3bcabcc26979fd73d4963f/docs/E8_PREFILL_REPORT.md)
+- [E5：原生 Scheduler / Qwen 的限定桥接](E5_ENGINE_BRIDGE_REPORT.md)
+- [E6：完整词表 Q4 草稿头](E6_DRAFT_HEAD_REPORT.md)
+- [E7：对照原生 TensorFold 的正式报告](E7_TENSORFOLD_MATCH_REPORT.md)
+- [E8：分块 Prompt 的限定实测](E8_PREFILL_REPORT.md)；[完整生成集成](E8_INTEGRATION_REPORT.md)
+- [E9–E16 的报告与未执行方案的索引](EXPERIMENTS.md)
 - [此前的 Global Cost-Aware Scheduler RFC PR #2](https://github.com/EdwinWang831/spark-infer-q/pull/2)
 - [TensorFold 当前独立成本预算与多请求分配](https://github.com/ashhart/TensorFold/blob/d1018b318fb51981c4a18f12e40269a4d3ee9713/zig/src/core/lanes/allocate.zig)；[按深度估算收益与成本](https://github.com/ashhart/TensorFold/blob/d1018b318fb51981c4a18f12e40269a4d3ee9713/zig/src/core/lanes/depth.zig)
 - [DeepInfer 源码](https://github.com/deepseek-ai/DeepInfer)
