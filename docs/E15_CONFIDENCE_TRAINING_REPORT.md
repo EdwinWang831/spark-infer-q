@@ -82,7 +82,7 @@ native参考与预测器组还存在post-draft决策、metadata和runtime反馈�
 
 ## 常驻、复现与边界
 
-沿用既有resident worker和权重，没有下载或重新加载权重。结束后同PID319、同Target/DFlash对象、`load_count=1`、READY；原有失败计数1未增加。[复用证据](../results/e15/2026-10-21-resident-reuse.json)。每个模块/依赖实际源SHA和数据SHA随证据保留；实跑cache helper为`ee7a725`的原字节，与当前源码仅差EOF空行。训练显式在CPU执行并恢复线程设置，不更新Target/DFlash参数。
+沿用既有resident worker和权重，没有下载或重新加载权重。结束后同PID319、同Target/DFlash对象、`load_count=1`、READY；原有失败计数1未增加。[复用证据](../results/e15/2026-10-21-resident-reuse.json)。每个模块/依赖实际源SHA和数据SHA随证据保留；实跑cache helper为`ee7a725`的原字节，与当前源码仅差EOF空行。合入main后，`spark_infer_q/draft_fidelity.py`为[PR #4](https://github.com/EdwinWang831/spark-infer-q/pull/4)的超集：新增`step_outcome`、`paired_ratio`，本轮实际调用的`_verify`/`emitted_by_width`及其余顶层语句逐字未变，因此文件SHA不再等于实跑记录的`035e6e75…`；严格复现用`git show a3d0534:spark_infer_q/draft_fidelity.py`取原字节。`e15_export.py`按此读取，`tests/test_legacy_sources.py`持续核对当前源保留了实跑内容。训练显式在CPU执行并恢复线程设置，不更新Target/DFlash参数。
 
 采集及校验实际耗时约16.14分钟；两种拟合、离线评估与bootstrap合计约2.03秒。主要成本在生成真实标签，而非训练小头。CPU测试111项：108通过、3跳过；另在Spark的PyTorch CPU环境执行七项confidence-head测试全部通过，包含实际拟合。
 

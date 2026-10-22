@@ -1,4 +1,5 @@
 """Read-only, CPU audit of the finished E16 raw archive and public predictors."""
+import ast
 from collections import Counter
 import hashlib
 import json
@@ -11,6 +12,23 @@ from e16_tasks import TASKS, CONTRACT, selected_positions
 from e15_metrics import grouped_metrics
 from spark_infer_q.confidence_head import cumulative_labels, headroom_capture
 from spark_infer_q.local_policy import ProgressModel
+
+
+def _only_trailing_newlines(executed, current):
+    return executed.rstrip(b'\n')==current.rstrip(b'\n')
+
+
+def _statements_kept(executed, current):
+    """Every top-level statement of the executed file is unchanged in the current one."""
+    def statements(source):
+        text=source.decode()
+        return {ast.get_source_segment(text,node) for node in ast.parse(text).body}
+    return statements(executed)<=statements(current)
+
+
+# Sources changed after the run; their executed bytes are read from history.
+LEGACY_SOURCES={'spark_infer_q/draft_context.py':('ee7a725',_only_trailing_newlines),
+                'spark_infer_q/draft_fidelity.py':('a3d0534',_statements_kept)}
 
 
 def audit(root):
@@ -35,9 +53,10 @@ def audit(root):
             local=repository/(name if '/' in name else 'scripts/'+name)
             payload=local.read_bytes()
             if sha(payload)!=expected:
-                assert name=='spark_infer_q/draft_context.py',name
-                payload=subprocess.check_output(['git','show','ee7a725:'+name],cwd=repository)
-                assert payload.rstrip(b'\n')==local.read_bytes().rstrip(b'\n')
+                assert name in LEGACY_SOURCES,name
+                revision,compatible=LEGACY_SOURCES[name]
+                payload=subprocess.check_output(['git','show',f'{revision}:{name}'],cwd=repository)
+                assert compatible(payload,local.read_bytes()),name
                 assert sha(payload)==expected,name
                 legacy.append(name)
             if name in sources:assert sources[name]==expected,name
