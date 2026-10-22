@@ -3,7 +3,7 @@
 > **状态：PROPOSED / docs-only。** 这些是待验证的假设、候选设计与实验，不是新算法已经实现、性能已经取得或模型质量已获证明。  
 > **研究底座：** DeepInfer-derived Scheduler / MTPVarlen + TensorFold-derived Qwen Target/CUDA kernels + Q4 DFlash2；长远目标是由 Kaifra 维护的独立推理服务。  
 > **目标设备：** 单台 DGX Spark (GB10/SM121)，之后单独研究多设备；当前主要研究 `text-only / greedy / BF16 KV`。  
-> **版本基点：** `main` @ `9727154`；E10 与 E11 仍位于各自实验分支（2026-10-21）；名称 Kaifra 是暂定工作名。  
+> **版本基点：** 原稿写于 `main` @ `9727154`（2026-10-21）；2026-10-22 按 `main` @ `51828be` 更新，E10–E16 已合入，R1/R5/R6 已有实测结果（见各节的“状态更新”）；名称 Kaifra 是暂定工作名。  
 > **配套：** [验证矩阵和实验优先级](KAIFRA_DECODE_VALIDATION_MATRIX.md)。与 [Kaifra 引擎愿景 PR #3](https://github.com/EdwinWang831/spark-infer-q/pull/3) 及 [Global Scheduler PR #2](https://github.com/EdwinWang831/spark-infer-q/pull/2) 互补，**不替代它们**。
 
 ## 1. 研究问题：不是每个 Kernel 更快，而是每次 Target 成本带来多少正确输出
@@ -35,8 +35,12 @@ constraints:
 | [E7 对照原生 MTP](E7_TENSORFOLD_MATCH_REPORT.md) | 自然任务 DFlash2 45.57 vs native MTP 43.58；10 任务整体 45.62 vs 49.18 tok/s | 单请求总体尚未领先原生 |
 | [E8 完整分块 Prompt](E8_INTEGRATION_REPORT.md) | 同任务请求耗时之和 37.917→22.665 秒（减少 40.22%）；Decode 未提升 | Prompt 路径已有关键改善，剩余 Decode 需要单独攻坚 |
 | [E9 Nsight Decode](E9_DECODE_PROFILE_REPORT.md) | 正常未采样数据 Target Verify 占 83.81%；三个 GPU 样本活动区间 91.76%；5,492 验证行对 3,348 已提交行 | 活动率不是 SM/DRAM 利用率；2,144 未提交行不是可无损直接省掉的 39.04% 时间 |
-| [E10 专家核调参（分支）](https://github.com/EdwinWang831/spark-infer-q/blob/codex/e10-target-kernels/docs/E10_TARGET_KERNEL_REPORT.md) | holdout 缓存扰动复核最佳 Warp/prefetch 约 +0.08%，未升级默认 | 该搜索空间局部收益有限；不等于证明已触带宽上限 |
-| [E11 投影（分支）](https://github.com/EdwinWang831/spark-infer-q/blob/codex/e11-target-projections/docs/E11_PROJECTION_REPORT.md) | 完整生成 Decode 45.445→45.727 tok/s，+0.62%；部分任务退化 | 微基准局部 2× 不能直接外推端到端；候选未成为默认 |
+| [E10 专家核调参](E10_TARGET_KERNEL_REPORT.md) | holdout 缓存扰动复核最佳 Warp/prefetch 约 +0.08%，未升级默认 | 该搜索空间局部收益有限；不等于证明已触带宽上限 |
+| [E11 投影](E11_PROJECTION_REPORT.md) | 完整生成 Decode 45.445→45.727 tok/s，+0.62%；部分任务退化 | 微基准局部 2× 不能直接外推端到端；候选未成为默认 |
+| [E12 专家感知验证](E12_EXPERT_VERIFICATION_REPORT.md) | 本轮真实专家并集让离线成本 MAE 降 26.17%；只用上一轮并集仅降 2.42%；同前缀预算诊断最多 +1.28% | 真实并集不能在线使用；诊断不是 decode tok/s |
+| [E13 草稿上下文缓存](E13_DRAFT_CACHE_CONFIDENCE_REPORT.md) | 1K–2K 输入 39.73→42.22 tok/s（+6.27%）；短输入 −0.31% | opt-in，默认不变；4K 以上未测 |
+| [E14 在线 margin 预算](E14_CONFIDENCE_BUDGET_REPORT.md) | +0.065%，区间跨零；各轮的宽度序列相同 | 深度先验下 MTPVarlen 几乎不随输入改选宽度 |
+| [E15](E15_CONFIDENCE_TRAINING_REPORT.md)/[E16 置信头](E16_BILINGUAL_EXPANSION_REPORT.md) | 冻结新任务上相对滞后预算 +10.00% / +9.61%；E16 比旧 E15 头再快 3.18% | 单请求 greedy、opt-in；没有多请求或 4K 以上 |
 
 E10 的 Nsight Compute 硬件计数器因 `ERR_NVGPUCTRPERM` 未获得，**不能认定已证实达到 273 GB/s 的硬件带宽上限**；也不能把 E9 的 GPU 活动覆盖率等同于带宽利用率。以上数值仅对应其报告的设备、版本、任务与测量口径。
 
@@ -52,7 +56,9 @@ E10 的 Nsight Compute 硬件计数器因 `ERR_NVGPUCTRPERM` 未获得，**不�
 - **第三步联合预算：**用预测 `cost(k)` 替换或补充 DeepInfer MTPVarlen 中仅按宽度插值的成本曲线；先保留相同接受率先验，做**单变量**宽度选择 A/B，再研究候选树。
 - **决策门槛：**Held-out 成本预测必须优于 rows-only；完整 Decode 在相同输出契约下优于已校准的固定深度和原始 MTPVarlen，否则不升默认。
 
-**已有工作/避免重复：** [EcoSpec](https://arxiv.org/abs/2607.12696) 已提出预测专家重用减少验证成本；[EVICT](https://arxiv.org/abs/2605.00342) 已提出 MoE 推测树提前裁剪。因此单独“算专家并集”不具新颖性。仓库 [PR #1](https://github.com/EdwinWang831/spark-infer-q/pull/1) **已有**带宽核算、专家并集预算计划和 Host-only 参考代码。本 RFC 的 R1 将其作为前置工作，不创建第二套 `moe_cost.py` 或重复代码。
+**已有工作/避免重复：** [EcoSpec](https://arxiv.org/abs/2607.12696) 已提出预测专家重用减少验证成本；[EVICT](https://arxiv.org/abs/2605.00342) 已提出 MoE 推测树提前裁剪。因此单独“算专家并集”不具新颖性。仓库 [PR #1](https://github.com/EdwinWang831/spark-infer-q/pull/1)（已合入）**已有**专家占用核算（原称带宽核算，E12 之后改为占用速率）、专家并集预算计划和 Host-only 参考代码。本 RFC 的 R1 将其作为前置工作，不创建第二套 `moe_cost.py` 或重复代码。
+
+**状态更新（2026-10-22）：**[E12](E12_EXPERT_VERIFICATION_REPORT.md) 完成了第一步。本轮真实专家并集让 held-out 成本 MAE 降 26.17%（prompt bootstrap 区间 12.36%–35.26%，点估计刚过 25% 门槛，区间没有全部过）；按第二步的思路只用上一轮 width4 的并集，仅降 2.42%。在固定接受率先验下，即使直接知道真实 action 成本，同前缀预算诊断也只有 +1.277%。所以在这些上下文长度上，只改成本模型的预算收益很小；第二、三步按[方案](MOE_AWARE_BUDGET_PLAN.md)的停止规则暂缓，除非出现明显更好的验证前特征。这个 +1.277% 是在固定先验下算的，换成 E16 的置信头后需要重算。
 
 ### R2 — GDN-Aware Diffusion Draft Tree（带递归状态的成本感知验证树）
 
@@ -101,6 +107,8 @@ E10 的 Nsight Compute 硬件计数器因 `ERR_NVGPUCTRPERM` 未获得，**不�
 
 **已有工作：** DeepInfer/TensorFold/EVICT 均有成本和接受率自适应机制，不能仅凭 ML 预测器结构宣称创新。仓库 [PR #4](https://github.com/EdwinWang831/spark-infer-q/pull/4) 已规划“BF16 草稿数值差异是否伤害接受率”的诊断，先拿到该证据，再决定是否值得训练新的接受率控制器。
 
+**状态更新（2026-10-22）：**接受率部分已在单请求上实测，没有等 PR #4 的 fidelity 诊断。[E14](E14_CONFIDENCE_BUDGET_REPORT.md) 的分桶 margin 规则没有确认的提速；[E15](E15_CONFIDENCE_TRAINING_REPORT.md)/[E16](E16_BILINGUAL_EXPANSION_REPORT.md) 训练了七个条件 logistic 头（F0 25 个特征、F1 137 个特征），按 prompt 和语义组拆分，在冻结的新任务上相对滞后的 MTPVarlen 预算 +10.00% / +9.61%，特征、传输和预测都计入了耗时。还缺：成本预测部分、模式切换价值，以及和简单 EWMA、TensorFold depth policy 的对照。[草稿 fidelity 方案](DRAFT_FIDELITY_ACCEPTANCE_PLAN.md)仍未执行；以后执行时不要同时换草稿和控制器。
+
 ### R6 — Incremental DFlash Context Projection Cache（增量上下文复用）
 
 **大胆假设：**当 DFlash 每轮重算历史目标特征的 FC/context K/V 时，长上下文的重复投影可能持续增加成本；仅为新增且已提交的历史 token 计算投影并缓存，有机会降低 Proposer 成本。
@@ -110,6 +118,8 @@ E10 的 Nsight Compute 硬件计数器因 `ERR_NVGPUCTRPERM` 未获得，**不�
 - 先测试等价性：长上下文的 cached/uncached hidden、Top-16、Selector 提案、完整目标输出/已提交 logits/GDN/QSA 状态；若 FP32/BF16 舍入差异改变提案，记录并做接受率+速度复核，不能宣称 bit-exact。
 - 记录增加的 cache 字节、驻留/峰值与命中时间；短 prompt E9 中 Drafter 只有约 14%，不要想象缓存能让短请求整段 Decode 翻倍。
 - 与 [H-Spec](https://arxiv.org/abs/2609.24197) 的草稿侧 KV 缓存研究对照，不能声称自己第一个发现草稿缓存开销。
+
+**状态更新（2026-10-22）：**[E13](E13_DRAFT_CACHE_CONFIDENCE_REPORT.md) 实现了这个缓存（`CachedContextDraft`，opt-in）。1024/1536/1920-token 的三个输入上 decode 39.73→42.22 tok/s（+6.27%，含首轮构建和追加），四轮配对都为正，输出、committed logits 和状态检查通过；12 个短任务 −0.31%，所以默认不变。1024 容量的缓存约 25 MiB。4K 以上要先处理 DFlash 的 2048 滑窗和绝对位置。
 
 ### R7 — Spark Target + RTX 5070 Drafter 异构双设备实验
 
@@ -143,17 +153,18 @@ SLO(TTFT/TPOT p95), memory guard, fairness, fallback
 
 ```text
 E8/E9 固定执行器与正确性 oracle
-   ├── #1 Expert Union / Measured Bandwidth 基线 → R1 代价预测 → R5 小控制器
-   ├── #4 Draft BF16 fidelity / 真实接受率 → R5、R2 假设
+   ├── #1 Expert Union / 专家占用基线 → R1 代价预测（E12：离线完成，在线暂缓）
+   ├── R5 置信头预算（E15/E16：单请求在线 +10.00% / +9.61%）
+   ├── #4 Draft BF16 fidelity / 真实接受率 → R2 假设（未执行）
    ├── E5 DeepInfer Scheduler 桥接 → R3 2-request GPU batch → Global portfolio
-   ├── Q4 DFlash + long-context baseline → R6 incremental cache
+   ├── Q4 DFlash + long-context baseline → R6 incremental cache（E13：2K 以内完成）
    ├── R2 CPU toy branch-state → small GPU state fork → tree verify
    └── Grammar/n-gram 无训练原型 → full decode → 确定性约束 batch state
                       ↓
          R8 联合决策（仅融合已经单独验证有益的模块）
 ```
 
-**建议单请求近期主线：** R1 Offline Expert Footprint（借用 PR #1）和 R4 低成本草稿组合；R2 先做 CPU 状态分叉理论/正确性原型。  
+**建议单请求近期主线（2026-10-22 更新）：** R1 离线阶段已由 E12 完成，在线阶段暂缓。R5 按 E16 报告的下一步，先验证小头进入常驻实际执行入口后的收益，并用独立的外部任务来源检验泛化；R6 先解决 4K 以上的滑窗。R4 低成本草稿组合还没开始，仍是近期主线；R2 先做 CPU 状态分叉理论/正确性原型。  
 **建议系统工程主线：** R3 双请求真实 GPU Batch。  
 **长线高风险：** R2 tree、R7 双设备；R8 统一优化放在真实成本数据出来之后。
 
@@ -161,7 +172,7 @@ E8/E9 固定执行器与正确性 oracle
 
 ## 4. 研究成果、工程创新与原创算法要分开表述
 
-1. **复现/集成**：我们已在 Spark 上运行 Q4 DFlash + DeepInfer 预算与 TensorFold-derived Target，性能收益必须如实引用 E6/E7/E8。
+1. **复现/集成**：我们已在 Spark 上运行 Q4 DFlash + DeepInfer 预算与 TensorFold-derived Target，性能收益必须如实引用 E6/E7/E8 以及 E13/E15/E16。
 2. **独立工程能力**：由 DeepInfer-derived Scheduler 驱动我们的 GPU 执行与状态生命周期，经 API、批量状态/取消和长时正确性检验，可作为 Kaifra 衍生引擎的工程贡献。
 3. **算法创新**：需要具有明确增量的新决策信息或正确执行算法、严格查新、消融和强基线（TensorFold/DeepInfer/SGLang/vLLM），而非重新命名 EcoSpec 或 CaDDTree。
 4. **性能声称**：不同设备、输入、模型、版本、精度及输出轨迹的吞吐不能直接相加或排名。精确 greedy 回归属于同一路径的证明；随机 sampling 需要独立分布正确性（proposal/correction/RNG）验收。
@@ -184,6 +195,6 @@ E8/E9 固定执行器与正确性 oracle
 
 ## 6. 现在唯一可负责任的承诺
 
-我们会继续优先验证“**同样带宽条件下，更少重复成本、更高有用输出**”这个研究命题；对任何失败结果也保留实验记录。**没有新的 GPU benchmark 之前，以上方向对 Kaifra Decode 的加速百分比都是未知的。**
+我们会继续优先验证“**同样带宽条件下，更少重复成本、更高有用输出**”这个研究命题；对任何失败结果也保留实验记录。**R5（E15/E16）和 R6（E13）已有受限的单请求实测；其余方向在新的 GPU benchmark 之前，加速百分比都是未知的。**
 
 下一步从最便宜、最可证伪的实验开始；不要直接写一个宣称实现八种策略的大引擎。

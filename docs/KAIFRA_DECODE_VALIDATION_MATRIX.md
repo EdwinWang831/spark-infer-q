@@ -1,22 +1,22 @@
 # Kaifra Decode Frontier：实验验证矩阵、排序与止损规则
 
 > **状态：PROPOSED / design-only。** 对应 [Decode Frontier RFC](KAIFRA_DECODE_FRONTIER_RFC.md)。本文件没有启动实验、训练模型或修改运行时。阈值均为**拟议**，要在看新一轮 GPU 输出**之前**冻结，不能事后挑选获胜配置。  
-> **当前事实基线：** E8 rows8/full-vocab Q4 + DeepInfer MTPVarlen（仍是单请求、有界 greedy），E9 未采样开销和 Nsight GPU 活动分析。E10/E11 分支的负结果可供设计决策，不算本 PR 的新数据。
+> **当前事实基线（2026-10-22 更新）：** E8 rows8/full-vocab Q4 + DeepInfer MTPVarlen（仍是单请求、有界 greedy），E9 未采样开销和 Nsight GPU 活动分析，以及已合入 `main` 的 E10–E16：E10/E11 的负结果、E12 的专家成本离线结果、E13 的草稿缓存、E15/E16 的 opt-in 置信头预算。它们都不算本 PR 的新数据。
 
 ## 1. 选择原则：有限时间优先买信息
 
 优先级不是按想象中的最高理论加速排，而是按**实验代价、可证伪性、架构依赖、与当前瓶颈的匹配度**排序。
 
-| ID | 研究方向 | 当前建议 | 最便宜的第一步 | 不需要先实现 |
-| --- | --- | --- | --- | --- |
-| R1 | Expert-footprint / cost-aware verify | **P0**，复用 [PR #1](https://github.com/EdwinWang831/spark-infer-q/pull/1) | 测真实 Router 每层专家并集与时间的相关性，验证是否优于 rows-only | 不必训练 Predictor，也不必修改 Scheduler |
-| R5 | Tiny acceptance/cost predictor | **P1**，依赖 R1 和 [PR #4](https://github.com/EdwinWang831/spark-infer-q/pull/4) | 冻结历史特征，离线 replay 正确性和成本 | 不必先蒸馏大模型 |
-| R4 | Grammar / retrieval / n-gram DraftProvider | **P1**，可独立推进 | 用人工可解释的 JSON/引用/代码补丁任务比较 draft 成本和接受前缀 | 不必先训练新的 Drafter |
-| R3 | 2-request GPU batch / ragged verify | **P1**，系统底座 | Target-only 两请求各 1 行，一次共享 Forward 严格对照两个 solo | 不必先增加全局预算策略 |
-| R6 | DFlash context projection cache | **P2**，长上下文方向 | 离线量化重复投影时长随 prefix 增长的斜率 | 不必先实现跨模型 KV 复用 |
-| R2 | GDN-aware diffusion draft tree | **P2 / 高风险研究** | CPU recurrent branch/fork/commit toy oracle | 不必先编写 tree GPU kernel |
-| R8 | Portfolio + joint control | **P2/后期**，需要可靠成本曲线与 GPU batch | 在冻结的真实 trace 上离线枚举少量 legal modes | 不必现在写端到端自适应大框架 |
-| R7 | Spark Target + RTX5070 Draft | **P3 / 高风险探索** | 量化每轮 Feature bytes、增量协议与实际链路 RTT/带宽 | 不必先跑全模型分布式推理 |
+| ID | 研究方向 | 当前建议 | 最便宜的第一步 | 不需要先实现 | 状态（2026-10-22） |
+| --- | --- | --- | --- | --- | --- |
+| R1 | Expert-footprint / cost-aware verify | **P0**，复用 [PR #1](https://github.com/EdwinWang831/spark-infer-q/pull/1) | 测真实 Router 每层专家并集与时间的相关性，验证是否优于 rows-only | 不必训练 Predictor，也不必修改 Scheduler | 第一步已做（E12）：真实并集 MAE −26.17%，上一轮并集 −2.42%；在线暂缓 |
+| R5 | Tiny acceptance/cost predictor | **P1**，依赖 R1 和 [PR #4](https://github.com/EdwinWang831/spark-infer-q/pull/4) | 冻结历史特征，离线 replay 正确性和成本 | 不必先蒸馏大模型 | 接受率部分已做单请求在线（E15/E16）：相对滞后预算 +10.00% / +9.61%；没有等 R1 和 #4 |
+| R4 | Grammar / retrieval / n-gram DraftProvider | **P1**，可独立推进 | 用人工可解释的 JSON/引用/代码补丁任务比较 draft 成本和接受前缀 | 不必先训练新的 Drafter | 未开始 |
+| R3 | 2-request GPU batch / ragged verify | **P1**，系统底座 | Target-only 两请求各 1 行，一次共享 Forward 严格对照两个 solo | 不必先增加全局预算策略 | 未开始 |
+| R6 | DFlash context projection cache | **P2**，长上下文方向 | 离线量化重复投影时长随 prefix 增长的斜率 | 不必先实现跨模型 KV 复用 | 已做到 2K（E13）：长输入 +6.27%，短输入 −0.31%，opt-in |
+| R2 | GDN-aware diffusion draft tree | **P2 / 高风险研究** | CPU recurrent branch/fork/commit toy oracle | 不必先编写 tree GPU kernel | 未开始 |
+| R8 | Portfolio + joint control | **P2/后期**，需要可靠成本曲线与 GPU batch | 在冻结的真实 trace 上离线枚举少量 legal modes | 不必现在写端到端自适应大框架 | 未开始 |
+| R7 | Spark Target + RTX5070 Draft | **P3 / 高风险探索** | 量化每轮 Feature bytes、增量协议与实际链路 RTT/带宽 | 不必先跑全模型分布式推理 | 未开始 |
 
 核心要求：**不要把受已知依赖约束的 R2/R8 当成当前 E8 推理路径已经具备的特性。**
 
@@ -58,6 +58,8 @@
 **初始 Go 条件：**以 PR #1 事前阈值为准（其草案：held-out MAE 比 rows-only 至少低 25%）；同时完整预测器的运行成本低于预期每步收益。若模型不能胜过简单 rows baseline，应记作负结果，保持原 MTPVarlen 宽度策略。
 
 **独立价值：**若成本预测有效，可在不更改 Target 数值的前提下优化“相同预计有效 token 产出下的预计专家权重访问”。需证明实际性能，不能只证明 Router union 随宽度增长。
+
+**结果（E12）：**真实并集的 held-out MAE 比 rows+context 低 26.17%，区间 12.36%–35.26%，点估计过了 25% 门槛但区间没有全部过；而且真实并集不是在线可得的特征。在线可得的上一轮并集只低 2.42%，没有过门槛。按上面的规则记为在线 No-Go，保持原 MTPVarlen 的成本曲线。
 
 ### R2：树形推测与递归状态分叉
 
@@ -106,11 +108,15 @@
 
 **与 PR #4 关系：**先确认官方 BF16 arithmetic / FP32 控制相对我们的 DFlash Backbone 是否确实提高草稿接受率，再决定需要何种额外信号；不要同时更换草稿模型与控制器。
 
+**结果（E15/E16）：**在线 Go 条件在单请求上满足：冻结新任务上相对滞后的 MTPVarlen +10.00%（E15，6 个任务）和 +9.61%（E16，20 个任务，按任务族 bootstrap 的耗时下降区间 7.38%–10.46%），特征、传输和预测都计入耗时。上面的基线里，fixed-k（E15 的固定七草稿）和 DeepInfer `MTPVarlen` 已对照；简单 EWMA、只基于 rows 的成本模型和 TensorFold 的深度策略还没对照。训练没有等 PR #4 的 fidelity 诊断，这和上一条的顺序不同；该诊断以后执行时，保持控制器不变。
+
 ### R6：长上下文 DFlash Cache
 
 **试验:** 冻结 short/medium/long 的实际合法上下文长度，衡量 `ctx fc/norm`、每层 history K/V、concat 与 Selector 耗时占比；仅对已经 committed 的 Target features 使用 cache。
 
 **Go 条件：**在被允许的上下文桶有稳定的草稿成本下降，最终 Target 输出保持正确，额外 cache 不导致内存准入/并发退化。该实验应等到研究执行器支持更长、被验证的上下文时再全面运行；当前 E8 的容量上限不能冒充长上下文支持。
+
+**结果（E13）：**在 1024/1536/1920-token 输入上 decode +6.27%，四轮配对都为正，状态检查通过；12 个短任务 −0.31%。长输入桶满足 Go 条件，短输入不满足，所以缓存保持 opt-in。2K 以上还没测。
 
 ### R7：双 GPU / 双电脑划分
 
@@ -141,35 +147,35 @@
 5) 只在实测还有带宽/计算余量时继续写新 Kernel
 ```
 
-在 MoE 上，专家 union 与实际 DRAM 字节不是同一个概念；缓存命中、tile 重读、内存映射/页故障和路由变化都可能破坏简单模型。必须根据 GPU 计数器（若可用）或明确下界判断，不把估算称实测。
+在 MoE 上，专家 union 与实际 DRAM 字节不是同一个概念；缓存命中、tile 重读、内存映射/页故障和路由变化都可能破坏简单模型。必须根据 GPU 计数器（若可用）判断。E12 已说明专家 pack 占用既不是 DRAM 流量，也不是它的下界；没有计数器时只能当指示值，不把估算称实测。
 
 ## 5. 交付组织与 PR 边界
 
 这份 RFC 建议以后按下列**独立** PR 切分（**不是**本次自动创建这些 PR）：
 
-| 顺序 | 提交主题 | 验收 |
-| --- | --- | --- |
-| A | 利用 #1 的 Expert Union/带宽采集进入离线 Cost Model | held-out 核对、与 rows-only 对照；不改 live decode |
-| B | 利用 #4 的 Drafter BF16 Fidelity/Acceptance 对照 | 新冻结输入上的 accepted-prefix 改进证据或明确负结果 |
-| C | Dual-request Target-only GPU Batch | 一次共同 Forward，两个请求的状态/logits 完整对照 |
-| D | Grammar/Ngram provider 实验 | 明确 unconstrained / constrained contract 与隐私边界 |
-| E | CPU Tree Fork/Commit Oracle | 分支状态正确，尚不宣传 GPU tree |
-| F | Selector/Cost Predictor A/B | 单变量预算对照、有效 token/s 与完整请求时间 |
-| G | Long-context Drafter Cache | 随 prefix 的真实成本曲线，严格状态与内存校验 |
-| H | Portfolio/联合优化 | 独立结果已可信，完整系统多维 Pareto 报告 |
+| 顺序 | 提交主题 | 验收 | 状态（2026-10-22） |
+| --- | --- | --- | --- |
+| A | 利用 #1 的 Expert Union/专家占用采集进入离线 Cost Model | held-out 核对、与 rows-only 对照；不改 live decode | E12 已完成，在线 No-Go |
+| B | 利用 #4 的 Drafter BF16 Fidelity/Acceptance 对照 | 新冻结输入上的 accepted-prefix 改进证据或明确负结果 | 未执行，[方案](DRAFT_FIDELITY_ACCEPTANCE_PLAN.md)已在 `main` |
+| C | Dual-request Target-only GPU Batch | 一次共同 Forward，两个请求的状态/logits 完整对照 | 未开始 |
+| D | Grammar/Ngram provider 实验 | 明确 unconstrained / constrained contract 与隐私边界 | 未开始 |
+| E | CPU Tree Fork/Commit Oracle | 分支状态正确，尚不宣传 GPU tree | 未开始 |
+| F | Selector/Cost Predictor A/B | 单变量预算对照、有效 token/s 与完整请求时间 | 接受率部分由 E15/E16 完成 |
+| G | Long-context Drafter Cache | 随 prefix 的真实成本曲线，严格状态与内存校验 | E13 已完成到 2K |
+| H | Portfolio/联合优化 | 独立结果已可信，完整系统多维 Pareto 报告 | 未开始 |
 
 ### 这次 PR 能声称什么？
 
 - [x] 八个 Decode 创新方向被系统整理，有实现依赖、强基线、正确性门槛、失败条件；
 - [x] 明确承认 DeepInfer、TensorFold、EcoSpec、EVICT、DDTree、CaDDTree 和 llama.cpp 的相关现有工作；
-- [x] 把已有 PR #1/#4 接为前置工作，避免重复开发成本模型/草稿 fidelity；
-- [x] 保留 E8/E9 真实结果和 E10/E11 负结果；
+- [x] 把已有 PR #1/#4（均已合入）接为前置工作，避免重复开发成本模型/草稿 fidelity；
+- [x] 保留 E8/E9 真实结果、E10/E11 负结果，以及 E12–E16 的后续结果（2026-10-22 更新）；
 - [ ] **没有**任何新的 GPU benchmark / 模型推理优化 / 部署兼容性验收；
 - [ ] **没有**创建 GPU Batch、Draft Tree、多设备或 Portfolio 的实际实现。
 
 ## 6. 推荐第一步
 
-**最低风险验证：**先执行 PR #1 的 Expert Union+带宽观察，使用 E8/E9 正确执行器，测验证宽度、每层专家并集与实际 Target 时延；按 held-out 误差比较 rows-only 与 expert-aware。若没有改进，及时止损。  
+**最低风险验证（2026-10-22 更新）：**PR #1 的 Expert Union 观察已由 E12 完成，在线可得的特征没有过门槛，按规则止损。下一个最便宜、可证伪的第一步是 R4：在 JSON、引用和代码补丁任务上离线比较低成本草稿的成本与接受前缀。  
 **可并行开发：**E5 DeepInfer Scheduler → 两请求共享 GPU Forward 的状态正确性原型（先 Target-only，不用自适应草稿）。  
 **最高研究不确定性：**GDN-aware Tree 验证；应从 CPU toy state fork 开始，不要直接构建完整 GPU 树。
 
