@@ -32,6 +32,8 @@ Earlier [E6 draft-head measurements](docs/E6_DRAFT_HEAD_REPORT.md) found full-vo
 
 **E17/E18 preparation (2026-10-22, no new online speed claim):** A training-only 512-position regret pool and bounded reweighting recipe are ready. A new OASST1 source manifest freezes 480 reviewed human English/Chinese roots plus 120 grouped mixed-language derivatives (420/90/90 split), all tokenization checks passing; new Target labels and fitting have not started. True block4 Q4 drafting passed 1,872 paired action checks on 48 training prefixes, but reduced summed warm draft time by only 0.74%. A hindsight prefix oracle suggests examining skip-draft/full-draft gating; its +3.06% estimate is not online throughput. No default change or reload. [E17 preparation](docs/E17_TARGETED_RETRAINING_REPORT.md) · [E18 results](docs/E18_PREDRAFT_COMPUTE_REPORT.md).
 
+**E17 execution started (2026-10-22):** The finite resident chain now measures all feasible widths on the 512-position training hard pool, collects fresh train/calibration labels, fits four ordinary/weighted F0/F1 candidates, seals calibration selection, then collects the previously unopened test labels. The first 27-prompt /76-position cost shard passed. Online controls run only if the held-out gate passes; formal fitting and new speed results are still pending. [Execution plan](docs/E17_TARGETED_TRAINING_EXECUTION.md) · [launch snapshot](docs/E17_TARGETED_TRAINING_STATUS.md).
+
 ## Research question
 
 Can we retain DeepInfer's engine, scheduling, speculative verification and memory-management advantages while adapting its model executor and GPU kernels to Qwen3.8-Flash-Next on **a single DGX Spark**? Or does a vLLM / SGLang-based implementation provide a better verified speed-versus-effort tradeoff?

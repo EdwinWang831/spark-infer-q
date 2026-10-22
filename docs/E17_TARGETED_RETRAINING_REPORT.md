@@ -1,5 +1,7 @@
 # E17：补训准备与预算误差归因
 
+**后续正式执行已获授权并启动，见[执行方案](E17_TARGETED_TRAINING_EXECUTION.md)与[启动快照](E17_TARGETED_TRAINING_STATUS.md)。以下保留准备阶段结论。**
+
 2026-10-22。**补训数据、训练权重、难例复核池和对照配方已准备；尚未执行这轮新数据的Target标签采集或正式拟合，也没有新的decode提速结论。** [冻结方案](E17_TARGETED_RETRAINING_PLAN.md) · [训练配方](../results/e17/2026-10-22-training-recipe.json) · [归因数据](../results/e17/2026-10-22-preparation.json) · [难例池](../results/e17/2026-10-22-hard-pool.json)
 
 ## 为何先做归因
