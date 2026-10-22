@@ -2,7 +2,7 @@
 
 状态：**PROPOSED，尚未执行，没有新的 GPU 结果。** 实际排期时再分配 E 编号。所有提议的状态汇总在 [EXPERIMENTS.md](EXPERIMENTS.md#proposals-without-results-yet)。
 
-后续更新：[E10](https://github.com/EdwinWang831/spark-infer-q/blob/codex/e10-target-kernels/docs/E10_TARGET_KERNEL_REPORT.md)/[E11](https://github.com/EdwinWang831/spark-infer-q/blob/codex/e11-target-projections/docs/E11_PROJECTION_REPORT.md)（均在各自实验分支，尚未合入 main）的内核调参整段收益只有 +0.08% / +0.62%；[E12](E12_EXPERT_VERIFICATION_REPORT.md) 已逐步记录 Top-10 路由，并修正了 `routed_bytes` 的含义：pack 占用**不是** DRAM 流量，也不是它的下界（缓存命中会少读，tile 重读会多读）。E10 尝试 Nsight Compute 时驱动返回 `ERR_NVGPUCTRPERM`。在拿到硬件计数器之前，本方案只能给出指示性的占用速率，不能证明带宽利用率。
+后续更新：[E10](E10_TARGET_KERNEL_REPORT.md)/[E11](E11_PROJECTION_REPORT.md) 的内核调参整段收益只有 +0.08% / +0.62%；[E12](E12_EXPERT_VERIFICATION_REPORT.md) 已逐步记录 Top-10 路由，并修正了 `routed_bytes` 的含义：pack 占用**不是** DRAM 流量，也不是它的下界（缓存命中会少读，tile 重读会多读）。E10 尝试 Nsight Compute 时驱动返回 `ERR_NVGPUCTRPERM`。在拿到硬件计数器之前，本方案只能给出指示性的占用速率，不能证明带宽利用率。
 
 ## 动机
 
