@@ -7,6 +7,9 @@ import math
 from pathlib import Path
 import random
 import statistics
+import sys
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from e20_validate import CONTRACT, compatible_record
 from spark_infer_q.collector import selected_positions
