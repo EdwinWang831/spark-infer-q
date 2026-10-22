@@ -1,0 +1,23 @@
+{
+  "status": "PASS_RESIDENT_REUSE_E15",
+  "same_pid": true,
+  "same_target_weights_object": true,
+  "same_original_draft_object": true,
+  "load_count": 1,
+  "final_status": "READY",
+  "completed_jobs": 15,
+  "failed_jobs": 1,
+  "failed_jobs_unchanged": true,
+  "final_allocated_bytes": 77359853568,
+  "jobs": [
+    "014-e15-collect.json",
+    "015-e15-train.json",
+    "016-e15-online.json"
+  ],
+  "source_sha256": {
+    "014-e15-collect.json": "05cceaf4690e69ea27dc6a4e0f151cc7884bb9a2949d15ede77a72e805438061",
+    "015-e15-train.json": "4818405a79ecfffabc29e8e1d95db034f1f66047ced8e7f4a54ce95baf05fb10",
+    "016-e15-online.json": "3d20c641a754229a70817b0e0b93bb227d280320cf3f52c5cc08687665260999",
+    "worker-status.json": "48b045d2aefa8d153866c7cbc5f635ad6c9009be9a6e4451d111a278874bf1fc"
+  }
+}
