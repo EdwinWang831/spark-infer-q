@@ -55,7 +55,11 @@ def joint_union_total(*requests):
 
 
 def routed_bytes(total_experts, pack_bytes=EXPERT_PACK_BYTES):
-    """Lower bound: each selected expert pack is read once per step."""
+    """Selected-pack footprint, assuming each pack is counted once.
+
+    This is not measured DRAM traffic: caches can avoid reads, while tiles
+    can reread weights. Do not divide this by time to claim DRAM utilization.
+    """
     if total_experts < 0 or pack_bytes <= 0:
         raise ValueError('expert count and pack size must be nonnegative/positive')
     return total_experts*pack_bytes

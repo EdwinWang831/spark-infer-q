@@ -1,0 +1,25 @@
+"""New end-to-end holdout, frozen before any expanded model test predictions."""
+TASKS = [
+ dict(id='hold_en_explain',language='en',family='explain',thinking=False,prompt='Explain how a luggage carousel can deliver bags out of check-in order. Give a concrete example and one operational improvement. About 90 words.',output_cap=256),
+ dict(id='hold_en_write',language='en',family='writing',thinking=False,prompt='Write a friendly 90-word announcement for a neighborhood board-game night on July 16, 2027, at 6 PM in Cedar Hall. Mention free admission, bringing a favorite game, and how to volunteer.',output_cap=256),
+ dict(id='hold_en_code',language='en',family='code',thinking=False,prompt='Implement a Python function that finds the minimum window containing every character of a given pattern, respecting multiplicity. Include a docstring and three assertions. Return an empty string if impossible. Output only code.',output_cap=512),
+ dict(id='hold_en_math',language='en',family='math',thinking=True,prompt='A train travels 150 miles at 50 mph and 120 miles at 60 mph. Find its overall average speed. Show the exact fraction, the decimal, and a short check.',output_cap=512),
+ dict(id='hold_en_json',language='en',family='extract',thinking=False,prompt='Return only JSON with title, venue, date, time, fee_usd, requirements: Cedar Hall origami class; August 4 2027; 1 PM; $12; bring colored paper; suitable for beginners.',output_cap=256),
+ dict(id='hold_en_compare',language='en',family='practical',thinking=False,prompt='Compare a hand-crank and an electric coffee grinder for a small apartment. The user makes one cup each morning, has a $90 budget, and values quiet operation. Give a clear recommendation in 100 words.',output_cap=256),
+ dict(id='hold_en_long',language='en',family='long_context',thinking=False,target_prompt_tokens=1536,prompt='\n'.join(f'Log {i}: locker {i%17+1}, handler team {i%8+1}, inspection day {i%26+1}, recorded stock {i*13%90+5}, condition level {i%4}.' for i in range(100))+'\nLatest instruction: locker 7 is unavailable; Team 4 must relocate fragile equipment before Friday. Write a 120-word operational summary that honors the latest instruction and references two logs.',output_cap=384),
+ dict(id='hold_en_long_output',language='en',family='planning',thinking=False,prompt='Write a detailed 600-word plan for a community map-making workshop. Include preparation, accessibility, a timed agenda, volunteer roles, how to record corrections, and a worked example of resolving contradictory street information.',output_cap=1024),
+ dict(id='hold_zh_explain',language='zh',family='explain',thinking=False,prompt='用约140字解释为什么自动售货机退币时不一定退回投入的同一枚硬币，举例并说明一个设计考虑。',output_cap=256),
+ dict(id='hold_zh_write',language='zh',family='writing',thinking=False,prompt='写一则约140字的友好通知：2027年7月18日18点在松林大厅举办社区拼图活动，免费，欢迎自带拼图，可报名做志愿者。',output_cap=256),
+ dict(id='hold_zh_code',language='zh',family='code',thinking=False,prompt='用Python实现两个字符串的编辑距离，插入、删除、替换代价均为1。采用一维动态规划，加入中文文档字符串和三个断言，只输出代码。',output_cap=512),
+ dict(id='hold_zh_math',language='zh',family='math',thinking=True,prompt='一辆车先以每小时45公里行驶135公里，再以每小时70公里行驶140公里，求全程平均速度，给出分数和小数并验算。',output_cap=512),
+ dict(id='hold_zh_json',language='zh',family='extract',thinking=False,prompt='只返回JSON，字段title、venue、date、time、fee_cny、requirements：松林大厅剪纸课，2027年8月6日，下午2点，15元，带红纸，适合初学者。',output_cap=256),
+ dict(id='hold_zh_compare',language='zh',family='practical',thinking=False,prompt='比较手动和电动打蛋器。用户住小公寓，每周做一次蛋糕，预算120元，重视易清洗和收纳。用约150字给出明确建议。',output_cap=256),
+ dict(id='hold_zh_long',language='zh',family='long_context',thinking=False,target_prompt_tokens=1024,prompt='\n'.join(f'日志{i}：柜号{i%13+1}，负责人第{i%7+1}组，检查日期{i%25+1}号，存量{i*17%80+3}件，状态等级{i%5}。' for i in range(90))+'\n最新指示覆盖旧记录：6号柜暂停使用，第三组必须在周四前转移怕潮物品。请写约180字的行动总结，引用两条日志并遵守最新指示。',output_cap=384),
+ dict(id='hold_zh_long_output',language='zh',family='planning',thinking=False,prompt='写一份约900字的社区声音采集工作坊方案，包含准备、无障碍安排、分时日程、志愿者分工、录音授权记录、文件整理，以及处理两位讲述者回忆冲突的具体例子。',output_cap=1024),
+ dict(id='hold_mix_sql',language='mixed',family='sql',thinking=False,prompt='Write SQL to return each product whose stock is below its reorder threshold, joining products and inventory on product_id. 用中文解释NULL库存的处理，字段名使用英文，给出小型示例。',output_cap=384),
+ dict(id='hold_mix_json',language='mixed',family='structured',thinking=False,prompt='生成一个双语JSON菜单，英文键名，包含四种虚构无酒精饮料，每项有name_en、name_zh、price和ingredients，最后添加一个英文summary字段。只返回JSON。',output_cap=384),
+ dict(id='hold_mix_debug',language='mixed',family='debug',thinking=False,prompt='Python code uses rows = [[0]*3]*3 and then assigns rows[0][0] = 1. Explain the surprising result in Chinese, give corrected code with English identifiers and two assertions, then one English recap sentence.',output_cap=384),
+ dict(id='hold_mix_write',language='mixed',family='writing',thinking=False,prompt='Draft a bilingual sign for a shared rooftop garden: close the gate, water only your assigned bed, put tools away, report broken irrigation. 用中文逐条写规则，每条附一句自然英文，语气友好。',output_cap=384),
+]
+for task in TASKS:
+    task['group']=task['id']

@@ -1,0 +1,97 @@
+{
+  "source": "results/e13/2026-10-21-confidence.json",
+  "source_sha256": "905a19bee2e6c6e7eeb7adf93ebb6d1ea0c91e1cfe8a391b9d2f1839a61f5829",
+  "model": {
+    "1": {
+      "n": 202,
+      "success": 142,
+      "baseline": 0.7009803921568627,
+      "threshold": 3.23046875,
+      "buckets": [
+        {
+          "n": 101,
+          "success": 48,
+          "probability": 0.47572815533980584
+        },
+        {
+          "n": 101,
+          "success": 94,
+          "probability": 0.9223300970873787
+        }
+      ]
+    },
+    "2": {
+      "n": 115,
+      "success": 80,
+      "baseline": 0.6923076923076923,
+      "threshold": 3.1953125,
+      "buckets": [
+        {
+          "n": 58,
+          "success": 27,
+          "probability": 0.4666666666666667
+        },
+        {
+          "n": 57,
+          "success": 53,
+          "probability": 0.9152542372881356
+        }
+      ]
+    },
+    "3": {
+      "n": 71,
+      "success": 57,
+      "baseline": 0.7945205479452054,
+      "threshold": 4.6640625,
+      "buckets": [
+        {
+          "n": 36,
+          "success": 24,
+          "probability": 0.6578947368421053
+        },
+        {
+          "n": 35,
+          "success": 33,
+          "probability": 0.918918918918919
+        }
+      ]
+    },
+    "4": {
+      "n": 50,
+      "success": 42,
+      "baseline": 0.8269230769230769,
+      "threshold": 7.5625,
+      "buckets": [
+        {
+          "n": 25,
+          "success": 17,
+          "probability": 0.6666666666666666
+        },
+        {
+          "n": 25,
+          "success": 25,
+          "probability": 0.9629629629629629
+        }
+      ]
+    },
+    "5": {
+      "n": 42,
+      "success": 40,
+      "baseline": 0.9318181818181818,
+      "threshold": 8.9375,
+      "buckets": [
+        {
+          "n": 21,
+          "success": 19,
+          "probability": 0.8695652173913043
+        },
+        {
+          "n": 21,
+          "success": 21,
+          "probability": 0.9565217391304348
+        }
+      ]
+    }
+  },
+  "training_only": true
+}

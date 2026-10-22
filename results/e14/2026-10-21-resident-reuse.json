@@ -1,0 +1,20 @@
+{
+  "status": "PASS_RESIDENT_REUSE_E14",
+  "same_pid": true,
+  "same_target_weights_object": true,
+  "same_original_draft_object": true,
+  "load_count": 1,
+  "final_status": "READY",
+  "completed_jobs": 11,
+  "failed_jobs": 1,
+  "existing_failed_jobs_unchanged": true,
+  "jobs": [
+    "011-e14-online.json",
+    "012-e14-cost-probe.json"
+  ],
+  "source_sha256": {
+    "011-e14-online.json": "31d7f50e8189f785115bedece906047539ef703c0f2c6bc9200c16cf2f682501",
+    "012-e14-cost-probe.json": "25195f8de359621afbee32ea619a91b3d1329e45d95bb31bb8f98a49ed6691a8",
+    "worker-status.json": "0be49e8603f80d7aa320a43dfcb89737aea1199b502af41ff6b7c6b97c8c4678"
+  }
+}
