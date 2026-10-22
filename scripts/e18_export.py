@@ -37,17 +37,21 @@ def summarize(raw):
             positions.append(actions)
             draft4.append(rec['drafts']['4']['median_ms']);draft8.append(rec['drafts']['8']['median_ms'])
             cold4.append(rec['drafts']['4']['cold_ms']);cold8.append(rec['drafts']['8']['cold_ms'])
-    only8=oracle(positions,{8});joint=oracle(positions,{0,4,8});only4=oracle(positions,{4})
+    only8=oracle(positions,{8});joint=oracle(positions,{0,4,8});only4=oracle(positions,{4});skip=oracle(positions,{0,8})
+    assert joint['tokens_per_ms']>=skip['tokens_per_ms']-1e-12>=only8['tokens_per_ms']-2e-12
     fixed={}
     for block,width in ((0,1),(4,4),(8,8)):
         chosen=[next(a for a in p if a['block']==block and a['width']==min(width,max(v['width'] for v in p if v['block']==block))) for p in positions]
         fixed[f'{block}:{width}']=dict(emitted=sum(a['emitted'] for a in chosen),total_ms=sum(a['total_ms'] for a in chosen),
                                      tokens_per_ms=sum(a['emitted'] for a in chosen)/sum(a['total_ms'] for a in chosen))
     return dict(status='PASS_E18_FEASIBILITY_ANALYSIS',positions=len(positions),formal_actions=checks,
-        warmup_actions=checks//raw['contract']['repetitions'],first_three_equal=same,
+        warmup_actions=checks//raw['contract']['repetitions'],
+        formal_committed_logit_rows=sum(a['emitted'] for t in raw['tasks'] for p in t['positions'] for a in p['actions']),first_three_equal=same,
         draft=dict(warm_block4_median_ms=statistics.median(draft4),warm_block8_median_ms=statistics.median(draft8),
                    warm_paired_sum_reduction=1-sum(draft4)/sum(draft8),cold_block4_median_ms=statistics.median(cold4),cold_block8_median_ms=statistics.median(cold8)),
-        offline_prefix_oracles=dict(block8=only8,block4=only4,joint=joint,
+        offline_prefix_oracles=dict(block8=only8,block4=only4,skip_or_8=skip,joint=joint,
+                                   skip_relative_to_block8=skip['tokens_per_ms']/only8['tokens_per_ms']-1,
+                                   block4_marginal_relative_to_skip=joint['tokens_per_ms']/skip['tokens_per_ms']-1,
                                    joint_relative_to_block8=joint['tokens_per_ms']/only8['tokens_per_ms']-1),
         fixed_diagnostics=fixed,
         limits=['training prefixes only; hindsight token/cost aggregate oracle is not an online throughput bound or measured decode speed',

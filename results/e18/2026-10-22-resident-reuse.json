@@ -1,0 +1,24 @@
+{
+  "status": "PASS_E17_E18_RESIDENT_REUSE",
+  "worker_after": {
+    "status": "READY",
+    "pid": 319,
+    "load_count": 1,
+    "completed_jobs": 33,
+    "failed_jobs": 1,
+    "started_unix": 1792598860.217514,
+    "ready_unix": 1792599149.4385123,
+    "target_cuda_storage_bytes": 75002047104,
+    "last_job": "034-e18-draft-probe.json",
+    "allocated_bytes": 77359853568,
+    "reserved_bytes": 81208016896
+  },
+  "same_e16_target_draft_objects": true,
+  "same_pid": true,
+  "load_count": 1,
+  "new_failures": 0,
+  "successful_jobs": [
+    "033-e18-smoke.json",
+    "034-e18-draft-probe.json"
+  ]
+}
