@@ -29,6 +29,8 @@ Client / API
 
 **Native backend follow-up:** original TensorFold packed-weight/BF16-input expert kernels passed 11 SM121 probes without full weight expansion on GPU. This supplies a concrete candidate for the expert backend, not a final engine choice. Full routing/state integration and runtime memory remain unverified; the main routed expert pack budget alone is 63.2815 GiB. See [native results](E2_NATIVE_REPORT.md).
 
+**E5 evidence:** the [bounded native scheduler bridge](E5_ENGINE_BRIDGE_REPORT.md) runs actual C++ scheduling/metadata/output accounting against the full Qwen target-only backend. This validates a narrow integration boundary; logical block accounting is separate from device cache ownership, and full Worker/async/batched execution remains open. It does not select the final engine or imply a speed gain.
+
 ## Candidate B: vLLM-first
 
 Reuse a Qwen-compatible executor and integrate any measured DeepInfer scheduling improvements that are not already upstream in vLLM.

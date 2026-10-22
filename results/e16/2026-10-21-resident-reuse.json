@@ -1,0 +1,13 @@
+{
+  "status": "PASS_E16_RESIDENT_REUSE",
+  "pid": 319,
+  "load_count": 1,
+  "same_target_draft_objects": true,
+  "failed_jobs_before": 1,
+  "failed_jobs_after": 1,
+  "completed_jobs_before": 15,
+  "completed_jobs_after": 31,
+  "status_after": "READY",
+  "allocated_bytes_before": 77359853568,
+  "allocated_bytes_after": 77359853568
+}

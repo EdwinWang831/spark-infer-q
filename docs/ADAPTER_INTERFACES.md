@@ -1,6 +1,8 @@
 # Qwen / DeepInfer 接口清单
 
-此清单来自固定 DeepInfer `774ce244b87cc0eb8d4b94ab9f5de2ab22049f01` 的源码检查，**是适配设计与待测契约，不是已经实现或验证的 Qwen 接口**。后续已完成[两类原版 TensorFold block 的选定状态检查](E2_BLOCK_REPORT.md)，以及[自有最小执行器的真实 block 生命周期检查](E2_EXECUTOR_REPORT.md)。DeepInfer C++ scheduler 接入、完整模型和 MTP 正确性仍未证明。
+此清单来自固定 DeepInfer `774ce244b87cc0eb8d4b94ab9f5de2ab22049f01` 的源码检查，**是适配设计与待测契约，不是已经实现或验证的 Qwen 接口**。后续已完成[两类原版 TensorFold block 的选定状态检查](E2_BLOCK_REPORT.md)，以及[自有最小执行器的真实 block 生命周期检查](E2_EXECUTOR_REPORT.md)。在该阶段，DeepInfer C++ scheduler 接入、完整模型和 MTP 正确性尚未证明；后续 E5 的限定进展如下。
+
+后续 [E5 最小桥接](E5_ENGINE_BRIDGE_REPORT.md) 已让原版 C++ Scheduler 驱动完整 Qwen target-only 请求，并通过有界同步生命周期/状态检查；逻辑 block 不代表 GPU KV 页，完整 Worker/cache/sampler、异步流水及 DFlash2 此路径仍未集成。以下完整适配契约不能整体标为完成。
 
 ## 引擎与模型边界
 
