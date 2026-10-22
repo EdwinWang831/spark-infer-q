@@ -1,6 +1,6 @@
 # 提议：低位宽筛选加精确复核的 target 输出头
 
-状态：**PROPOSED，尚未执行，没有新的 GPU 结果。** 实际排期时再分配 E 编号。
+状态：**PROPOSED，尚未执行，没有新的 GPU 结果。** 实际排期时再分配 E 编号。所有提议的状态汇总在 [EXPERIMENTS.md](EXPERIMENTS.md#proposals-without-results-yet)。
 
 ## 动机
 

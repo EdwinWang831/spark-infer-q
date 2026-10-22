@@ -1,6 +1,6 @@
 # 提议：BF16 草稿算术偏差是否降低接受率
 
-状态：**PROPOSED，尚未执行，没有新的 GPU 结果。** 实际排期时再分配 E 编号，执行前冻结提示、阈值和分析方法。
+状态：**PROPOSED，尚未执行，没有新的 GPU 结果。** 实际排期时再分配 E 编号，执行前冻结提示、阈值和分析方法。所有提议的状态汇总在 [EXPERIMENTS.md](EXPERIMENTS.md#proposals-without-results-yet)。
 
 ## 动机
 
