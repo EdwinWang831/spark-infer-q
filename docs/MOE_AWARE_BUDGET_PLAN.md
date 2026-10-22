@@ -1,6 +1,8 @@
 # 提议：按 MoE 专家并集建模验证成本
 
-状态：**PROPOSED，尚未执行，没有新的 GPU 结果。** 依赖[实际带宽核算](ACHIEVED_BANDWIDTH_PLAN.md)采集的路由数据。实际排期时再分配 E 编号。
+状态：**PROPOSED，尚未执行，没有新的 GPU 结果。** 依赖[专家占用核算](ACHIEVED_BANDWIDTH_PLAN.md)采集的路由数据。实际排期时再分配 E 编号。
+
+后续更新：[E12](E12_EXPERT_VERIFICATION_REPORT.md) 已用真实路由执行了阶段 A 的离线观测，并复用了本仓库的 `moe_cost.py`。当前步的真实专家并集使 held-out 成本平均绝对误差降低 26.17%（区间 12.36%–35.26%），但只用上一轮的并集仅降低 2.42%；固定先验下的同前缀预算诊断最多 +1.28%，与计时噪声同量级。可部署的历史信号没有过门槛，按本方案的停止条件，阶段 B–D 暂缓。收益估计一侧的置信度预测器已在 [E15](E15_CONFIDENCE_TRAINING_REPORT.md)/[E16](E16_BILINGUAL_EXPANSION_REPORT.md) 取得 +9–10% 的在线 decode 提升。
 
 ## 动机
 
