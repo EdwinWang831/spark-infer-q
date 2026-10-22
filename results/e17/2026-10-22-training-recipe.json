@@ -1,0 +1,42 @@
+{
+  "status": "FROZEN_RECIPE_NOT_TRAINED",
+  "source_manifest_sha256": "ddb74f7846adab231b440ff76e2ef4d6e3ff2e93bc349eb6b5b4c85dd88bb334",
+  "training_inputs": [
+    "E16 original train only: 300 prompts /18567 positions",
+    "E17 external train: 420 prompts /336 source roots; new labels not collected"
+  ],
+  "calibration": "E17 new calibration: 90 prompts /72 roots; never mined into training weights",
+  "test": "E17 new test: 90 prompts /72 roots; unopened Target labels; original E16 test/OOD only for regression",
+  "candidates": [
+    "unweighted_f0",
+    "regret_weighted_f0",
+    "unweighted_f1",
+    "regret_weighted_f1"
+  ],
+  "fixed": {
+    "depths": 7,
+    "projection_seed": 20261021,
+    "l2": 0.005,
+    "max_iter": 80,
+    "device": "cpu",
+    "dtype": "float64",
+    "calibration": "unweighted positive-slope Platt"
+  },
+  "weights": {
+    "minimum": 1.0,
+    "maximum": 4.0,
+    "old_training_p90_equivalent_ms": 13.975236979604233,
+    "normalize": "within each conditional-depth mask",
+    "warning": "Approximate frozen-cost regret is a training signal; paired actual width costs must precede efficacy claims"
+  },
+  "selection": "calibration policy tokens/ms including full feature/transfer/prediction costs only; select once before test; no online winner switching",
+  "gates": [
+    "actual tokenization capacity passes",
+    "paired width cost audit on training prefixes",
+    "English and Chinese held-out replay gain lower bound >0 and capture >=.30",
+    "new independent full-decode online comparison with frozen E16 selected head and lagged reference"
+  ],
+  "draft_scope": "These seven-depth heads apply to full block8 post-draft budgeting only; block4/skip pre-draft gate requires separate causal features/labels",
+  "default_change": false,
+  "subject_weights_frozen": true
+}
