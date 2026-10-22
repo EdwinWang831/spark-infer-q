@@ -69,7 +69,7 @@ The complete executor is [`scripts/e8_ours.py`](scripts/e8_ours.py), which serve
 - Rerun the native TensorFold comparison after E8.
 - Wire the confidence predictor into the resident execution entry point and test generalization on independent external tasks (the next step named in the E16 report).
 - 4K+ context: handle DFlash's 2048-token sliding window and absolute positions first.
-- Let two requests share one target forward, starting from the E5 scheduler bridge.
+- Let two requests share one target forward, starting from the E5 scheduler bridge. The overall multi-request design is in the [global scheduler RFC](docs/GLOBAL_COST_AWARE_SCHEDULER_RFC.md) (Chinese; design only).
 - Five written but unrun proposals (prefill numerics reference, expert-footprint rate, the online stages of the expert-aware budget, draft fidelity, exact head screening) are listed under [proposals without results](docs/EXPERIMENTS.md#proposals-without-results-yet).
 
 ## Getting started (no GPU, no weights downloaded)
@@ -100,6 +100,7 @@ python3 -m unittest discover -s tests -v
 | A single experiment | `docs/E*_PLAN.md` (frozen plan), `docs/E*_REPORT.md` (report), `results/eN/` (sanitized data) |
 | Usage | [prompt-chunk executor](docs/PROMPT_USAGE.md), [Q4 draft head](docs/DRAFT_HEAD_USAGE.md), [draft context cache](docs/DRAFT_CONTEXT_CACHE_USAGE.md), [projection route](docs/E11_PROJECTION_USAGE.md), [resident worker](docs/RESIDENT_RESEARCH_WORKER.md) |
 | Architecture and porting | [architecture candidates](docs/ARCHITECTURE.md), [adapter interfaces](docs/ADAPTER_INTERFACES.md), [initial source audit](docs/PORTING_MATRIX.md) |
+| Design proposals | [Global cost-aware scheduler RFC](docs/GLOBAL_COST_AWARE_SCHEDULER_RFC.md) (Chinese): cross-request verification budget, prefill/decode coordination, unified-memory admission. Design only; not implemented and no serving speedup |
 
 ## Research question and scope
 
