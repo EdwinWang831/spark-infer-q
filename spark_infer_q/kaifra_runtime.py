@@ -169,7 +169,8 @@ class KaifraEngine:
             if not self._requests:
                 return []
             try:
-                self.bridge.step()
+                plan = self.bridge.step()
+                self.last_step_metrics = getattr(plan, 'metrics', ())
                 now, events = self.clock(), []
                 for handle, record in list(self._requests.items()):
                     done = self.bridge.completed.get(handle)

@@ -109,13 +109,15 @@ class KaifraEngine(Protocol):
 
 ### K1 — 基于 DeepInfer 的 Target-only Runtime
 
-2026-10-23 实施进展：[Target-only 运行时](K1_RUNTIME_REPORT.md)已实现并通过七组真实 GPU 生命周期检查；[API/用法](K1_RUNTIME_USAGE.md)。DFlash2 仍在原研究执行器中，后续按 K2 接入；K3/K4 等仍为计划。
+2026-10-23 实施进展：[Target-only 运行时](K1_RUNTIME_REPORT.md)已实现并通过七组真实 GPU 生命周期检查；[API/用法](K1_RUNTIME_USAGE.md)。DFlash2 与 E17 本轮动态预算按下述 K2 接入；K3/K4 等仍为计划。
 
 **交付：**沿用 E5 已证明可用的原生 DeepInfer C++ Scheduler / BlockManager 逻辑，构建由 Kaifra 维护的 `KaifraEngine` Qwen 请求状态机/Target KernelAdapter、bounded chunked Prefill、serial Decode、stream、EOS/max_tokens、cancel、权重加载与清理。
 
 **验收：**同路径目标 Serial 逐 row logits、有效 GDN/QSA/PLE state 连贯；输入长度上限、非空响应、请求取消/复用、错误和资源回收正确。**运行时继续使用原生 DeepInfer C++ Scheduler，但不依赖 TensorFold 的 HTTP server 或原版 DeepSeek 专用 DeepInfer Worker 常驻。**
 
 ### K2 — DFlash2/Q4 接入并测量执行路径
+
+2026-10-23：[接入报告](K2_DFLASH_SCHEDULER_REPORT.md)与[用法](K2_DFLASH_SCHEDULER_USAGE.md)。固定 K=1/3/7、原生 lagged/冻结 E16 confidence 以及现有 E17 本轮动态预算接入 K1 API；逐轮验证旧循环预算宽度。动态预算先限定单请求；联合 GPU batch/异步/Graph 仍待后续阶段。
 
 **交付：**`DraftProvider=DFlash2Q4`，完整词表投影、selector 和提案前缀；target-only/fixed K/dynamic K 可切换，dynamic K 包括滞后先验和 E16 置信头两种预算；每个 provider 明确 checkpoint/precision/block contract。
 

@@ -8,7 +8,7 @@ A research project on accelerating Qwen inference on a single NVIDIA DGX Spark (
 
 As of 2026-10-23, this repository includes E0–E22 implementations, tests and sanitized evidence, plus source-sealed E23/E24 research workflows. Ongoing workflows are not completed performance results.
 
-- **What it does**: Qwen3.8-Flash-Next (NVFP4, TensorFold kernels) runs speculative decoding with the DFlash2 drafter. DeepInfer's MTPVarlen decides how many drafts to verify at each step. The executor is a synchronous, single-request, greedy research prototype.
+- **What it does**: Qwen3.8-Flash-Next (NVFP4, TensorFold kernels) runs speculative decoding with the DFlash2 drafter. DeepInfer's MTPVarlen decides how many drafts to verify at each step. Performance studies primarily use synchronous single-request greedy execution; K2 fixed-draft mode also supports two interleaved requests.
 - **Largest single decode gain**: a lightweight confidence predictor trained in E15/E16. On separately frozen new tasks it is about 10% faster than the default lagged budget (E16: 44.08 vs 40.21 tok/s). It is opt-in for now.
 - **Prompt processing**: eight-row prompt chunks make complete requests 1.67× faster, cutting summed time to first token from 19.69 s to 4.23 s; decode speed is essentially unchanged (E8).
 - **Not there yet**: no overall lead over native TensorFold (45.62 vs 49.18 tok/s in E7; not rerun since E8). No multi-request GPU batching, 4K+ context or random sampling yet.
@@ -47,6 +47,7 @@ The remaining experiments laid groundwork or diagnosed:
 | [E4](docs/E4_MATCHED_REPORT.md) | Short-context same-machine comparison | Dynamic +2.12% over fixed six drafts; no lead over native TensorFold MTP |
 | [E5](docs/E5_ENGINE_BRIDGE_REPORT.md) | DeepInfer C++ Scheduler driving Qwen target-only requests | Seven GPU scenario groups pass; GPU requests still run one at a time |
 | [K1](docs/K1_RUNTIME_REPORT.md) | Reusable target-only runtime, output events and cancellation on E5 | Seven real GPU groups pass: 233 full-logit rows and 91 live-state checks; speculative decoding remains separate |
+| [K2](docs/K2_DFLASH_SCHEDULER_REPORT.md) | Q4 DFlash2 and native dynamic budgets on the Scheduler | Fixed K=1/3/7, native lagged/E16 and current E17 post-draft budgets; synchronous execution |
 | [E7](docs/E7_TENSORFOLD_MATCH_REPORT.md) | Warmed comparison with native TensorFold | 45.62 vs 49.18 tok/s overall; 45.57 vs 43.58 on eight natural-completion tasks |
 | [E9](docs/E9_DECODE_PROFILE_REPORT.md) | Nsight profile of decode | Target verification 83.81%, drafting 14.39% |
 
@@ -59,7 +60,7 @@ The remaining experiments laid groundwork or diagnosed:
 Each decode step has three parts:
 
 1. **Draft**: DFlash2 reads the target's committed features and proposes up to seven draft tokens at once. The output head is Q4; the draft backbone and selector stay BF16.
-2. **Budget**: decide how many rows (1–8) the target verifies this step. The default is DeepInfer's native MTPVarlen with lagged acceptance rates; optionally the rates come from the E16 confidence predictor.
+2. **Budget**: decide how many rows (1–8) the target verifies this step. The K2 server defaults to the existing E17 predictor with current post-draft MTPVarlen budgeting. Native lagged/E16 and fixed widths remain selectable.
 3. **Verify and commit**: the target verifies those rows at once, accepts the longest prefix that matches greedy decoding, and writes only that prefix into the GDN/QSA state.
 
 | Part | Source | Code in this repo |
@@ -73,7 +74,7 @@ Each decode step has three parts:
 
 The complete executor is [`scripts/e8_ours.py`](scripts/e8_ours.py), which serves SSE. It needs a prepared research environment, external dependencies and checkpoints; see [usage](docs/PROMPT_USAGE.md). A [resident worker](docs/RESIDENT_RESEARCH_WORKER.md) keeps the weights loaded between experiments.
 
-The [K1 runtime](docs/K1_RUNTIME_USAGE.md) separately exposes a native-scheduler target-only API and loopback SSE entry point. Its in-process API interleaves two requests; HTTP admits one generation at a time. The DFlash2 path has not been integrated into this runtime yet.
+The [K1 runtime](docs/K1_RUNTIME_USAGE.md) exposes a native-scheduler target-only API and loopback SSE entry point. [K2](docs/K2_DFLASH_SCHEDULER_USAGE.md) adds DFlash2 and native dynamic budgets to that runtime. Fixed-draft mode interleaves two requests; dynamic budgets currently admit one request, and HTTP admits one generation at a time. GPU requests still execute separately.
 
 ## Next steps
 

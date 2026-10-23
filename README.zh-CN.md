@@ -8,7 +8,7 @@
 
 截至 2026-10-23，仓库包含 E0–E22 的实现、测试和脱敏证据，以及源码封存的 E23/E24 研究流程。进行中的流程不代表已经取得性能成果。
 
-- **做什么**：Qwen3.8-Flash-Next（NVFP4，TensorFold 内核）用 DFlash2 草稿模型做推测解码，由 DeepInfer 的 MTPVarlen 决定每一步验证多少个草稿。执行器是同步、单请求、greedy 的研究原型。
+- **做什么**：Qwen3.8-Flash-Next（NVFP4，TensorFold 内核）用 DFlash2 草稿模型做推测解码，由 DeepInfer 的 MTPVarlen 决定每一步验证多少个草稿。性能实验以同步、单请求、greedy 为主；K2 固定草稿模式另支持双请求交错。
 - **最大的单项 decode 改进**：E15/E16 训练的轻量置信度预测器。在另行冻结的新任务上，它比默认的滞后预算快约 10%（E16：44.08 vs 40.21 tok/s），目前是可选路径。
 - **prompt 处理**：8 行分块让完整请求快 1.67 倍，首 token 时间之和从 19.69 秒降到 4.23 秒；decode 速度基本没变（E8）。
 - **还没做到**：整体速度没有超过原生 TensorFold（E7 时 45.62 vs 49.18 tok/s，E8 之后没有重测）；也还没有多请求 GPU batch、4K 以上上下文和随机采样。
@@ -47,6 +47,7 @@
 | [E4](docs/E4_MATCHED_REPORT.md) | 短上下文同机对照 | 动态比固定六草稿 +2.12%；没有领先原生 TensorFold MTP |
 | [E5](docs/E5_ENGINE_BRIDGE_REPORT.md) | 让 DeepInfer C++ Scheduler 驱动 Qwen target-only 请求 | 七组 GPU 场景通过；GPU 仍逐个请求执行 |
 | [K1](docs/K1_RUNTIME_REPORT.md) | 在 E5 上实现可调用的 Target-only 运行时、流式事件与取消 | 七组真实 GPU 场景通过：233 行 logits、91 次有效状态检查；推测解码尚未接入此运行时 |
+| [K2](docs/K2_DFLASH_SCHEDULER_REPORT.md) | 原生 Scheduler 接入 Q4 DFlash2 与动态预算 | 固定 K=1/3/7、原生滞后/E16 及现有 E17 本轮动态预算；仍为同步执行 |
 | [E7](docs/E7_TENSORFOLD_MATCH_REPORT.md) | 充分预热后对照原生 TensorFold | 整体 45.62 vs 49.18 tok/s；8 个自然完成的任务 45.57 vs 43.58 |
 | [E9](docs/E9_DECODE_PROFILE_REPORT.md) | 用 Nsight 剖析 decode | target 验证占 83.81%，草稿占 14.39% |
 
@@ -59,7 +60,7 @@
 每个 decode 步分三步：
 
 1. **出草稿**：DFlash2 读取 target 已提交的特征，一次给出最多 7 个草稿 token。输出头用 Q4，草稿主干和 selector 保持 BF16。
-2. **定预算**：决定这一步让 target 验证几行（1–8 行）。默认用 DeepInfer 原生 MTPVarlen 加滞后的接受率；也可以改用 E16 置信度预测器给出的接受率。
+2. **定预算**：决定这一步让 target 验证几行（1–8 行）。K2 服务默认使用现有 E17 预测器加本轮 post-draft MTPVarlen 动态预算；保留原生滞后/E16 和固定宽度选项。
 3. **验证并提交**：target 一次验证这些行，接受与 greedy 结果一致的最长前缀，只把这部分写入 GDN/QSA 状态。
 
 | 部分 | 来源 | 本仓库代码 |
@@ -73,7 +74,7 @@
 
 完整执行器是 [`scripts/e8_ours.py`](scripts/e8_ours.py)，提供 SSE 接口。它需要准备好的研究环境、外部依赖和检查点，见[用法说明](docs/PROMPT_USAGE.md)。实验之间由[常驻 worker](docs/RESIDENT_RESEARCH_WORKER.md) 保持权重加载。
 
-[K1 运行时](docs/K1_RUNTIME_USAGE.md)另提供原生 Scheduler 驱动的 Target-only API 和 loopback SSE 入口；同进程支持两请求交错，HTTP 一次一请求。它尚未与上述 DFlash2 路径统一。
+[K1 运行时](docs/K1_RUNTIME_USAGE.md)提供原生 Scheduler 驱动的 Target-only API 和 loopback SSE 入口；[K2](docs/K2_DFLASH_SCHEDULER_USAGE.md)进一步接入 DFlash2 和原生动态预算。固定草稿模式支持两请求交错，动态预算先限定单请求，HTTP 一次一请求；GPU 仍逐请求执行。
 
 ## 下一步
 

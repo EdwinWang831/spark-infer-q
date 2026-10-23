@@ -45,9 +45,13 @@ class Plan:
 
 class SchedulerBridge:
     def __init__(self, core, torch, group, sampling_class, backend, *, vocab_size,
-                 eos_ids, capacity=128, max_requests=2, token_budget=32):
-        if os.environ.get('DEEPINFER_USE_NEXTN_DECODE') != '0':
-            raise BridgeError('target-only bridge requires native nextn=0 before construction')
+                 eos_ids, capacity=128, max_requests=2, token_budget=32,
+                 max_drafts=0):
+        if type(max_drafts) is not int or not 0 <= max_drafts <= 7:
+            raise ValueError('max_drafts must be 0..7')
+        if os.environ.get('DEEPINFER_USE_NEXTN_DECODE') != str(max_drafts):
+            raise BridgeError('native NEXTN setting does not match bridge')
+        self.max_drafts = max_drafts
         if (any(type(v) is not int for v in (capacity, max_requests, token_budget)) or
                 not (capacity >= 16 and max_requests >= 1 and token_budget >= 16)):
             raise ValueError('unsupported scheduler capacity')
@@ -64,7 +68,7 @@ class SchedulerBridge:
         self.block_count = 1 + max_requests*((capacity+15)//16+2)
         self.blocks = core.BlockManager(self.block_count)
         self.pool = core.SequenceMetadataPool()
-        config = SimpleNamespace(max_model_len=capacity, runtime_max_model_len=capacity,
+        config = SimpleNamespace(max_model_len=capacity, runtime_max_model_len=capacity+2*max_drafts,
             max_num_batched_tokens=token_budget, max_num_seqs=max_requests,
             stop_preempted_request=True, chunked_prefill=True, engine_type=0,
             prefill_attempt_interval=1, prefill_any_attempt_interval=1)
@@ -156,19 +160,24 @@ class SchedulerBridge:
         for meta, seq in zip(metadata, output.scheduled_seqs, strict=True):
             entry = self.requests[meta.request_id]
             start = seq.num_cached_tokens
-            ids = tuple(seq.data.get_token_ids()[start:start+meta.seqlen_q])
-            if (len(ids) != meta.seqlen_q or meta.seqlen_k != start+len(ids)
-                    or (not meta.is_prompt and len(ids) != 1)):
-                self.poisoned = True
-                raise BridgeError('native token/position metadata mismatch')
+            row = self._work_row(meta, seq, entry)
             if self.backend.position(entry['state']) != start:
                 self.poisoned = True
                 raise BridgeError('native/device committed position mismatch')
-            rows.append(WorkRow(entry['handle'], start, ids, meta.is_prompt, meta.is_last_prompt_chunk))
+            rows.append(row)
         self.serial += 1
         plan = Plan(self.owner, self.serial, tuple(rows), metadata, output)
         self.pending = plan
         return plan
+
+    def _work_row(self, meta, seq, entry):
+        start = seq.num_cached_tokens
+        ids = tuple(seq.data.get_token_ids()[start:start+meta.seqlen_q])
+        if (len(ids) != meta.seqlen_q or meta.seqlen_k != start+len(ids)
+                or (not meta.is_prompt and len(ids) != 1)):
+            self.poisoned = True
+            raise BridgeError('native token/position metadata mismatch')
+        return WorkRow(entry['handle'], start, ids, meta.is_prompt, meta.is_last_prompt_chunk)
 
     def _plan(self, plan):
         self._ready()
