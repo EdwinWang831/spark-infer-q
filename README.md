@@ -6,7 +6,7 @@ A research project on accelerating Qwen inference on a single NVIDIA DGX Spark (
 
 ## At a glance
 
-As of 2026-10-23, this repository includes E0–E22 implementations, tests and sanitized evidence, plus source-sealed E23/E24 research workflows. Ongoing workflows are not completed performance results.
+As of 2026-10-23, this repository includes E0–E33 implementations, tests and sanitized evidence (E26 cancelled at the user’s request). E33 preserves the original BF16 target decision through an INT8-assisted head screen: matched W8/linear/Graph decode 46.91→48.51 tok/s (+3.41%, root95% +2.39%…+4.12%) on eight reused engineering roots /64 timings. Tokens, committed logits/features/live state and budget traces match. This remains a research path; E30–E32 candidates were not promoted.
 
 - **What it does**: Qwen3.8-Flash-Next (NVFP4, TensorFold kernels) runs speculative decoding with the DFlash2 drafter. DeepInfer's MTPVarlen decides how many drafts to verify at each step. The executor is a synchronous, single-request, greedy research prototype.
 - **Largest single decode gain**: a lightweight confidence predictor trained in E15/E16. On separately frozen new tasks it is about 10% faster than the default lagged budget (E16: 44.08 vs 40.21 tok/s). It is opt-in for now.
@@ -23,9 +23,18 @@ As of 2026-10-23, this repository includes E0–E22 implementations, tests and s
 | [E15](docs/E15_CONFIDENCE_TRAINING_REPORT.md) | Trained seven-depth confidence predictor | +10.00% over the lagged budget and +10.88% over fixed seven drafts, on 6 new tasks | Opt-in |
 | [E16](docs/E16_BILINGUAL_EXPANSION_REPORT.md) | Retrained on 600 English/Chinese prompts | +9.61% over the lagged budget and +3.18% over the E15 predictor (2 tasks slower), on 20 new tasks; English +7.60%, Chinese +10.75% | Opt-in |
 | [E17](docs/E17_COMPLETED_TRAINING_REPORT.md) | Targeted bilingual predictor retraining | 36.83 tok/s; +11.02% vs fixed budget, only +0.09% vs E16 (interval crosses zero), on 20 roots | No confirmed gain over E16 |
-| [E19](docs/E19_MLP_CAPACITY_REPORT.md) | Same-data 11,157-parameter MLP | Offline efficiency −0.55% vs linear; promotion gate failed | No online MLP timing |
+| [E19](docs/E19_MLP_CAPACITY_REPORT.md) | Same-data 11,157-parameter MLP | Offline efficiency −0.55% vs linear; promotion gate failed | E19 candidate not promoted |
 | [E21](docs/E21_ADAPTIVE_COLLECTOR_REPORT.md) | Adaptive training-label collector | Collection computation 21.13% less time on six roots; known Chinese case 2.15% slower | Validated collection entry, not serving TPS |
 | [E22](docs/E22_PREDICTOR_DIAGNOSIS_REPORT.md) | Optional NumPy scalar MLP runtime | Head-only 0.3353→0.0118 ms (28.38×); diagnostic replay still −0.06% vs linear | CPU prototype, no new decode TPS |
+| [E24](docs/E24_COVERAGE_EXPANSION_REPORT.md) | Retrain on 504 new QA/code/math/dialogue/long-input roots | Offline +0.252% vs frozen MLP, +0.212% vs linear; positive intervals | Offline gate passed |
+| [E25](docs/E25_ONLINE_COMPARISON_REPORT.md) | Actual decode, 12 roots / 108 paired runs | New MLP 47.15, frozen MLP 47.28, linear 47.49 tok/s; both relative intervals cross zero | No confirmed online gain |
+| [E27](docs/E27_LINEAR_COST_REPORT.md) | Matched linear weights: NumPy execution and causal live cost control | Original 43.39, NumPy 43.65, live 43.42 tok/s; NumPy +0.60%, repetition-sensitive interval crosses zero | Default unchanged; MLP/hybrid deferred |
+| [E28](docs/DRAFT_BACKBONE_W8_REPORT.md) | Five draft MLP blocks, INT8 weights / BF16 activations | Draft-stage time −6.89%; fixed-budget decode 42.04→42.29 tok/s (+0.61%, interval −0.52%…+1.66%) | Correctness passes; no confirmed decode gain |
+| [E29](docs/E29_TARGET_VERIFICATION_REPORT.md) | Target CUDA Graph with unchanged DFlash feature taps | Matched linear budget: 47.05→47.65 tok/s (+1.28%); Graph＋W8 48.01 (+2.04%); both intervals positive | Controlled gain on 8 reused roots; default unchanged |
+| [E30](docs/E30_TARGET_PROFILE_REPORT.md) | Profile frozen W8/linear/Graph; exact BF16 head weight layout | Target kernel time: experts41.3%, quantized projections26.9%, BF1623.4%; layout head-only+0.8%, below gate | Profile completed; candidate rejected, no new decode TPS |
+| [E31](docs/E31_EXPERT_SCALE_REPORT.md) | Packed FP8 expert-scale conversion, unchanged precision | Conversion instructions halved; expert pair +0.23% warm / −0.18% cache-perturbed, both intervals cross zero | Exact checks pass; candidate rejected, no decode promotion |
+| [E32](docs/E32_COMPACT_STAGING_REPORT.md) | Compact activation staging in MXFP8 projections | Shared memory/CTA −16%…−31%; real projection replay −1.06% warm / −0.92% cache-perturbed | 224 preflight +96 real checks pass; candidate rejected |
+| [E33](docs/E33_EXACT_HEAD_SCREEN_REPORT.md) | INT8-assisted head screening + directed FP64 bounds + original BF16 subset | Complete head time −36.24%; actual decode 46.91→48.51 tok/s (+3.41%, positive interval) | 8 roots /64 runs, exact checks pass; research only, default unchanged |
 | [E11](docs/E11_PROJECTION_REPORT.md) | MXFP8 split-K projections | decode +0.62%, complete requests −0.64% | Opt-in, default unchanged |
 | [E10](docs/E10_TARGET_KERNEL_REPORT.md) | Expert-kernel warps and staging depth | +0.08% on holdout | Not adopted |
 | [E12](docs/E12_EXPERT_VERIFICATION_REPORT.md) | Verification cost from the routed-expert union | offline cost error −26.17%, but the union is only known after verifying; features available online gave −2.42% | Not adopted |
@@ -51,13 +60,27 @@ The remaining experiments laid groundwork or diagnosed:
 
 [E20 fixed-width collection](docs/E20_FAST_COLLECTOR_REPORT.md) remains a research control; the adaptive [collector usage](docs/FAST_COLLECTOR_USAGE.md) is the recommended validated entry. [E18 short drafting](docs/E18_PREDRAFT_COMPUTE_REPORT.md) reduced draft-only time by 0.74% and did not establish an online win.
 
-**E23/E24 execution (2026-10-23 UTC):** the fixed-data action-regret objective [finished its fresh 60-root test](docs/E23_OBJECTIVE_COMPARISON_REPORT.md): +0.013% vs matched BCE and +0.019% vs linear, both intervals crossing zero, so no online promotion. The separate 504-prompt [coverage workflow](docs/E24_COVERAGE_EXPANSION_PLAN.md) passed tokenization and six GPU producer checks and is collecting learning data. Its expanded-data fit/test remain pending; see the [dated status](docs/E23_E24_EXECUTION_STATUS.md).
+**E23–E25 (2026-10-23 UTC):** the fixed-data action-regret objective [failed its fresh gate](docs/E23_OBJECTIVE_COMPARISON_REPORT.md). The subsequent [504-prompt coverage retraining](docs/E24_COVERAGE_EXPANSION_REPORT.md) finished and passed its 72-root offline gate. Its [actual decode comparison](docs/E25_ONLINE_COMPARISON_REPORT.md) found −0.263% vs frozen MLP and −0.717% vs linear, with both intervals crossing zero. No confirmed online improvement or policy replacement; offline estimates remain distinct from measured decode.
+
+**E26–E27 (2026-10-23 UTC):** the [hybrid study](docs/E26_RESIDUAL_HYBRID_PLAN.md) was cancelled at the user’s request after 18/108 timings, with no performance conclusion. The [linear online comparison](docs/E27_LINEAR_COST_REPORT.md) completed 12 new roots / 108 timings: live cost control +0.07% vs original and −0.53% vs frozen-cost NumPy; NumPy-only +0.60%, with a repetition-sensitive interval crossing zero. All correctness checks pass; resident weights were retained and the default is unchanged.
+
+**E28 (2026-10-23 UTC):** [draft MLP W8A16](docs/DRAFT_BACKBONE_W8_REPORT.md) completed 8 reused engineering roots / 64 timings, with exact target tokens, committed logits and live state checks. Observed draft acceptance is 73.74%→73.58%; verification rounds increase by 16. BF16 controls remain resident, so packed-weight size is not a measured net memory saving. Fixed budget only; dynamic policy remains untested with this quantization.
+
+**E29 (2026-10-23 UTC):** [target verification](docs/E29_TARGET_VERIFICATION_REPORT.md) completed 32 calibration prefixes / 1,536 width timings, 96 three-arm decode timings and 32 contemporaneous budget-control timings. The existing linear budget reduces computed verification rows 36.72%, verification time 12.70%, and improves decode 42.32→47.31 tok/s (+11.78%) versus fixed seven drafts; this revalidates the existing policy, not a new predictor gain. Pure Graph +1.28% is the new execution result with exactly matched decision/commit traces. The W8/cost change adds +0.75% over Graph alone, but that interval crosses zero. Tokens/logits/features/live state pass; weights stayed resident.
+
+**E30 (2026-10-23 UTC):** [history audit and current-path profile](docs/E30_TARGET_PROFILE_REPORT.md) confirms E10/E11 already tried expert launch/staging and projection tuning. Four reused calibration roots /32 early steps identify actual target GPU kernels; profiler overhead is4.85%–8.67%. A new NK→KN BF16 output-head layout preserves exact logits on32 real activations but saves only0.8% head time while adding1.27GB, so it stops before full decode. Target/draft stay resident; no retraining or precision change.
+
+**E31 (2026-10-23 UTC):** [expert-scale pair conversion](docs/E31_EXPERT_SCALE_REPORT.md) passes all 65,536 scale pairs, 24 real routed expert cases and eight diagnostic Graph/logit/feature/state comparisons. CUDA already provides this packed operation; it is an implementation optimization attempt, not a new algorithm. Static conversion instructions halve, but neither timing regime shows reliable gain, so the candidate stops before full decode. Weights remain resident and the default path is unchanged.
+
+**E32 (2026-10-23 UTC):** [compact staging](docs/E32_COMPACT_STAGING_REPORT.md) removes zero-filled unused rows while retaining exact MMA/accumulation. All 224 arithmetic/guard cases and 96 real inputs pass, plus 8 diagnostic logit/feature/state checks. A first collector missed class-method calls and failed its count assertion; preserved evidence and a private-proxy fix complete the screen. Both timing intervals are negative, so no full-decode promotion. Weights remain resident; default unchanged.
+
+**E33 (2026-10-23 UTC):** [head-screening report](docs/E33_EXACT_HEAD_SCREEN_REPORT.md) preserves the first failed cost gate, then fuses the same conservative interval computation. All 32 calibration windows retain the original winner; complete head time falls 36.24%. Separate full-generation comparison on eight reused engineering roots /64 timings gives +3.41% decode (root95% +2.39%…+4.12%), all four repetitions positive. Both arms verify 12,748 rows with identical acceptance/commit trajectories; screened calls have no natural fallback in 2,596 timed rounds. Original BF16 weights remain authoritative; helper payload adds 641 MB while enabled. No default/service switch or new native-TensorFold ranking claim.
 
 ## How it works
 
 Each decode step has three parts:
 
-1. **Draft**: DFlash2 reads the target's committed features and proposes up to seven draft tokens at once. The output head is Q4; the draft backbone and selector stay BF16.
+1. **Draft**: DFlash2 reads the target's committed features and proposes up to seven draft tokens at once. The output head is Q4; the default draft backbone and selector stay BF16. E28 separately tests INT8 MLP weights with BF16 activations.
 2. **Budget**: decide how many rows (1–8) the target verifies this step. The default is DeepInfer's native MTPVarlen with lagged acceptance rates; optionally the rates come from the E16 confidence predictor.
 3. **Verify and commit**: the target verifies those rows at once, accepts the longest prefix that matches greedy decoding, and writes only that prefix into the GDN/QSA state.
 
@@ -74,8 +97,9 @@ The complete executor is [`scripts/e8_ours.py`](scripts/e8_ours.py), which serve
 
 ## Next steps
 
+- Keep the E29 Graph path as an opt-in research candidate. Prioritize target data movement/fusion and real shared GPU compute; isolated W8 benefit beyond Graph is still unconfirmed.
 - Rerun the native TensorFold comparison after E8.
-- Complete the sealed E23/E24 objective and coverage experiments; require independent test and complete online A/B evidence before replacing the current policy.
+- Keep MLP/hybrid deferred. Diagnose whether linear budget changes reduce actual verification work before further training; retain independent tests and actual decode gates.
 - 4K+ context: handle DFlash's 2048-token sliding window and absolute positions first.
 - Let two requests share one target forward, starting from the E5 scheduler bridge. The overall multi-request design is in the [global scheduler RFC](docs/GLOBAL_COST_AWARE_SCHEDULER_RFC.md) (Chinese; design only).
 - Five written but unrun proposals (prefill numerics reference, expert-footprint rate, the online stages of the expert-aware budget, draft fidelity, exact head screening) are listed under [proposals without results](docs/EXPERIMENTS.md#proposals-without-results-yet).

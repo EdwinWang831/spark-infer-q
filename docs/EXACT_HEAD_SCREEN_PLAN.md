@@ -1,6 +1,6 @@
 # 提议：低位宽筛选加精确复核的 target 输出头
 
-状态：**PROPOSED，尚未执行，没有新的 GPU 结果。** 实际排期时再分配 E 编号。所有提议的状态汇总在 [EXPERIMENTS.md](EXPERIMENTS.md#proposals-without-results-yet)。
+状态：**已执行为[E33](E33_EXACT_HEAD_SCREEN_REPORT.md)**：完整头耗时少36.24%，另8条旧工程root/64次计时的实际decode +3.41%（root95% +2.39%～+4.12%），原BF16决策检查通过；仍是greedy研究路径，默认服务未切换。下文保留原提议及当时的合成估计；实际E33采用逐输出通道对称INT8而非下述group32 affine副本，真实结果以E33报告为准。
 
 ## 动机
 

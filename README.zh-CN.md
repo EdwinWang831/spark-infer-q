@@ -6,7 +6,7 @@
 
 ## 现状一览
 
-截至 2026-10-23，仓库包含 E0–E22 的实现、测试和脱敏证据，以及源码封存的 E23/E24 研究流程。进行中的流程不代表已经取得性能成果。
+截至2026-10-23，仓库包含E0–E33实现、测试和脱敏证据（E26依用户要求中止）。E33用INT8辅助筛选、原BF16头最终裁决，在相同W8草稿/线性预算/Graph基线上，实际decode 46.91→48.51 token/s（+3.41%，root95% +2.39%～+4.12%）；8条旧工程root、64次计时，输出、提交logits/特征/状态及预算轨迹一致。当前仍为研究路径；E30–E32候选均未晋升。
 
 - **做什么**：Qwen3.8-Flash-Next（NVFP4，TensorFold 内核）用 DFlash2 草稿模型做推测解码，由 DeepInfer 的 MTPVarlen 决定每一步验证多少个草稿。执行器是同步、单请求、greedy 的研究原型。
 - **最大的单项 decode 改进**：E15/E16 训练的轻量置信度预测器。在另行冻结的新任务上，它比默认的滞后预算快约 10%（E16：44.08 vs 40.21 tok/s），目前是可选路径。
@@ -23,9 +23,18 @@
 | [E15](docs/E15_CONFIDENCE_TRAINING_REPORT.md) | 训练七深度置信度预测器 | 6 个新任务上比滞后预算 +10.00%，比固定七草稿 +10.88% | 可选 |
 | [E16](docs/E16_BILINGUAL_EXPANSION_REPORT.md) | 用 600 条中英文提示重新训练 | 20 个新任务上比滞后预算 +9.61%，比 E15 的预测器 +3.18%（其中 2 个任务变慢）；英文 +7.60%，中文 +10.75% | 可选 |
 | [E17](docs/E17_COMPLETED_TRAINING_REPORT.md) | 中英文预测器定向补训 | 20个root上36.83 tok/s；比固定预算+11.02%，比E16仅+0.09%，区间跨零 | 未确认超过E16 |
-| [E19](docs/E19_MLP_CAPACITY_REPORT.md) | 相同数据的11,157参数MLP | 离线效率比线性低0.55%，未过晋升门槛 | 没有MLP在线测速 |
+| [E19](docs/E19_MLP_CAPACITY_REPORT.md) | 相同数据的11,157参数MLP | 离线效率比线性低0.55%，未过晋升门槛 | E19候选未晋升 |
 | [E21](docs/E21_ADAPTIVE_COLLECTOR_REPORT.md) | 自适应训练标签采集器 | 六个root上采集计算耗时减少21.13%；已知中文例仍慢2.15% | 采集入口已验证，不是服务TPS |
 | [E22](docs/E22_PREDICTOR_DIAGNOSIS_REPORT.md) | 可选NumPy标量MLP运行时 | 小头0.3353→0.0118毫秒（28.38×）；诊断回放仍比线性低0.06% | CPU原型，没有新增decode TPS |
+| [E24](docs/E24_COVERAGE_EXPANSION_REPORT.md) | 504条新root覆盖问答/代码/数学/多轮/长输入后补训 | 离线比冻结MLP高0.252%、比线性高0.212%，区间均为正 | 离线门槛通过 |
+| [E25](docs/E25_ONLINE_COMPARISON_REPORT.md) | 12个root、108次实际decode配对计时 | 新MLP 47.15、冻结MLP 47.28、线性47.49 token/s；两个相对区间均跨零 | 未确认实际提速 |
+| [E27](docs/E27_LINEAR_COST_REPORT.md) | 相同线性权重的NumPy执行＋因果实时费用对照 | 原版43.39、NumPy43.65、实时修正43.42 token/s；NumPy +0.60%，重复敏感性区间跨零 | 不替换默认；MLP/混合暂停 |
+| [E28](docs/DRAFT_BACKBONE_W8_REPORT.md) | 草稿五层MLP，INT8权重＋BF16激活 | 草稿阶段耗时−6.89%；固定预算decode 42.04→42.29 token/s（+0.61%，区间−0.52%～+1.66%） | 正确性通过，未确认decode收益 |
+| [E29](docs/E29_TARGET_VERIFICATION_REPORT.md) | target CUDA Graph，保留DFlash特征捕获 | 相同线性预算47.05→47.65 token/s（+1.28%）；Graph＋W8为48.01（+2.04%）；两项区间均为正 | 8条旧root受控正收益，默认不变 |
+| [E30](docs/E30_TARGET_PROFILE_REPORT.md) | 冻结W8/线性/Graph剖析，保持精度的BF16头布局 | target内核时间：专家41.3%、量化投影26.9%、BF16为23.4%；布局仅头部+0.8%，未过门槛 | 剖析完成、候选拒绝，无新增decode TPS |
+| [E31](docs/E31_EXPERT_SCALE_REPORT.md) | FP8专家scale成对转换，保持精度 | 转换静态指令减半；专家pair热复用+0.23%、缓存扰动−0.18%，区间均跨零 | 数值检查通过，候选拒绝，不进入整模长测 |
+| [E32](docs/E32_COMPACT_STAGING_REPORT.md) | MXFP8投影有效输入行紧凑staging | 每CTA共享内存少16%～31%；真实回放热复用−1.06%、缓存扰动−0.92% | 224组筛查＋96份真实输入通过，性能拒绝 |
+| [E33](docs/E33_EXACT_HEAD_SCREEN_REPORT.md) | INT8辅助头筛选＋定向FP64误差界＋原BF16子集精算 | 完整头耗时−36.24%；实际decode 46.91→48.51 token/s（+3.41%，区间为正） | 8条root/64次对照、精确检查通过；研究路径，默认不变 |
 | [E11](docs/E11_PROJECTION_REPORT.md) | 投影改用 MXFP8 split-K | decode +0.62%，完整请求 −0.64% | 可选，默认不变 |
 | [E10](docs/E10_TARGET_KERNEL_REPORT.md) | 调专家核的 warp 数和预取深度 | holdout 上 +0.08% | 未采用 |
 | [E12](docs/E12_EXPERT_VERIFICATION_REPORT.md) | 按路由专家并集估计验证成本 | 离线成本误差降 26.17%，但专家并集要验证后才知道；能在线用的特征只降 2.42% | 未采用 |
@@ -51,13 +60,27 @@
 
 [E20固定宽度采集](docs/E20_FAST_COLLECTOR_REPORT.md)保留为研究对照，推荐已验证的自适应[采集入口](docs/FAST_COLLECTOR_USAGE.md)。[E18短草稿](docs/E18_PREDRAFT_COMPUTE_REPORT.md)只让草稿计算减少0.74%，没有建立在线提速。
 
-**E23/E24执行（2026-10-23 UTC）：** 新机会损失目标已完成[60个新root的独立测试](docs/E23_OBJECTIVE_COMPARISON_REPORT.md)，比同结构BCE +0.013%、比线性+0.019%，区间均跨零，未进入在线晋升。另504条[覆盖扩展流程](docs/E24_COVERAGE_EXPANSION_PLAN.md)已通过分词容量和六场景GPU检查，正在采集学习数据，扩大数据后的拟合/测试仍待完成；见[带时间的状态](docs/E23_E24_EXECUTION_STATUS.md)。
+**E23–E25（2026-10-23 UTC）：** 固定数据的新机会损失目标[未通过独立门槛](docs/E23_OBJECTIVE_COMPARISON_REPORT.md)。随后[504条新root的覆盖补训](docs/E24_COVERAGE_EXPANSION_REPORT.md)已完成，并通过72个root的离线测试；但[实际decode对照](docs/E25_ONLINE_COMPARISON_REPORT.md)比冻结MLP低0.263%、比线性低0.717%，区间均跨零。没有确认实际提速，不替换当前策略；离线估算和实测decode仍分开报告。
+
+**E26–E27（2026-10-23 UTC）：** [混合路线](docs/E26_RESIDUAL_HYBRID_PLAN.md)依用户要求在18/108次计时后取消，不作性能结论。[线性实际对照](docs/E27_LINEAR_COST_REPORT.md)完成12条新root、108次计时：实时费用修正比原版+0.07%、比冻结费用NumPy−0.53%；纯NumPy比原版+0.60%，纳入重复波动的区间仍跨零。全部正确性通过，常驻模型未重载，默认不变。
+
+**E28（2026-10-23 UTC）：** [草稿MLP W8A16](docs/DRAFT_BACKBONE_W8_REPORT.md)完成8条旧工程回归root、64次计时，target输出token、已提交logits与live state检查全部通过。观测草稿接受率73.74%→73.58%，验证多16轮。BF16控制仍常驻，量化包大小不是实测整机净省内存。本轮仅固定预算，量化后的动态策略尚未验证。
+
+**E29（2026-10-23 UTC）：** [target验证对照](docs/E29_TARGET_VERIFICATION_REPORT.md)完成32个校准前缀、1,536次宽度计时、96次三组decode和32次同期预算计时。已有线性预算比固定7草稿少计算36.72%的验证行、验证耗时少12.70%，decode 42.32→47.31 token/s（+11.78%）；这是复核已有策略，不是新预测器收益。纯Graph在决策/提交轨迹精确相同下+1.28%，是本轮新增执行结果。W8及费用变化比纯Graph再高0.75%，但区间跨零。输出token、logits、特征与live state检查通过，权重保持常驻。
+
+**E30（2026-10-23 UTC）：** [历史核对与当前路径剖析](docs/E30_TARGET_PROFILE_REPORT.md)确认E10/E11已试过专家发射/预取和投影调参。本轮4条旧校准root、32个早期步骤统计真实target GPU内核，profiler扰动4.85%～8.67%。新NK→KN输出头布局在32份真实激活上保持logits精确一致，但只让头部省约0.8%时间，还多1.27GB副本，因此不进入整模长测。target/draft未重载，没有新训练或精度修改。
+
+**E31（2026-10-23 UTC）：** [专家scale成对转换](docs/E31_EXPERT_SCALE_REPORT.md)通过65,536对scale穷举、24组真实路由专家输出和8次诊断前向的Graph/logits/特征/状态检查。CUDA已提供该成对操作，这是实现优化尝试，不是新算法。转换静态指令减半，但两种计时条件均无可靠收益，停止候选、不做整模长测。权重常驻，默认路径不变。
+
+**E32（2026-10-23 UTC）：** [紧凑staging](docs/E32_COMPACT_STAGING_REPORT.md)去掉无效输入行填零，保持有效行MMA/累加顺序。224组算术/边界筛查、96份真实输入及8次诊断logits/特征/状态检查通过。首版采集器漏掉类方法调用、完整性断言失败，原记录保留并用私有代理补齐。两种计时区间均为负，不进入整模长测；权重常驻、默认不变。
+
+**E33（2026-10-23 UTC）：** [头筛选报告](docs/E33_EXACT_HEAD_SCREEN_REPORT.md)保留首轮成本门槛失败记录，随后仅融合相同保守区间计算。32份校准窗口均保留原argmax，完整头耗时少36.24%；另8条旧工程root、64次完整生成实测decode +3.41%（root95% +2.39%～+4.12%），四轮均为正。两组均验证12,748行，接受/提交轨迹相同；筛选路径2,596个计时轮次无自然回退。原BF16权重最终裁决，启用时辅助payload多约641MB；未切默认服务，也未新增原生TensorFold排名结论。
 
 ## 工作原理
 
 每个 decode 步分三步：
 
-1. **出草稿**：DFlash2 读取 target 已提交的特征，一次给出最多 7 个草稿 token。输出头用 Q4，草稿主干和 selector 保持 BF16。
+1. **出草稿**：DFlash2 读取 target 已提交的特征，一次给出最多 7 个草稿 token。输出头用 Q4，默认草稿主干和 selector 保持 BF16。E28另行测试INT8 MLP权重＋BF16激活。
 2. **定预算**：决定这一步让 target 验证几行（1–8 行）。默认用 DeepInfer 原生 MTPVarlen 加滞后的接受率；也可以改用 E16 置信度预测器给出的接受率。
 3. **验证并提交**：target 一次验证这些行，接受与 greedy 结果一致的最长前缀，只把这部分写入 GDN/QSA 状态。
 
@@ -74,8 +97,9 @@
 
 ## 下一步
 
+- 保留E29 Graph为可选研究路径，优先target数据搬运/融合及真正共享GPU计算；W8相对纯Graph的独立增益仍未确认。
 - E8 之后重新对照原生 TensorFold。
-- 完成已封存的E23/E24目标与覆盖实验；独立测试和完整在线A/B通过后，才考虑替换当前策略。
+- 暂缓MLP/混合路线。先检查线性预算改变能否减少实际验证工作，再决定是否继续训练；保留独立测试与实际decode门槛。
 - 4K 以上上下文：先处理 DFlash 的 2048 滑窗和绝对位置。
 - 让两个请求共享一次 target forward，从 E5 的调度桥接出发。多请求调度的整体设计见[全局调度 RFC](docs/GLOBAL_COST_AWARE_SCHEDULER_RFC.md)（仅为设计提案）。
 - 五份已写好、还没执行的方案（prefill 数值参考、专家占用速率、专家感知预算的在线阶段、草稿 fidelity、精确输出头筛选），见[未执行方案列表](docs/EXPERIMENTS.md#proposals-without-results-yet)。

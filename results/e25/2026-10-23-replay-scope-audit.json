@@ -1,0 +1,55 @@
+{
+  "scope": "post-hoc CPU replay diagnostic only; no refit, online selection, or new GPU execution",
+  "datasets_sha256": {
+    "e24-test-00-rows.jsonl": "49543e0e23f100d401eb32ad8e5dcde21c1aaeda9b769d477795e8113403f1e5",
+    "e24-test-01-rows.jsonl": "dd7b88bae2bff2bdb2a97721a8e58dfd7469be0f90a1259d70a4e75ead6f86e8",
+    "e24-test-02-rows.jsonl": "f37f7a72301071d6e453c5d33831b89557a7919b4aaa168b95699875180f2dc1"
+  },
+  "comparisons": {
+    "all_72": {
+      "prompts": 72,
+      "positions": 4545,
+      "versus": {
+        "frozen_reference": {
+          "relative_gain": 0.0025201535169687705,
+          "group_bootstrap_gain_95": [
+            0.0009383247632679392,
+            0.004093526861122854
+          ],
+          "groups": 72
+        },
+        "linear_reference": {
+          "relative_gain": 0.0021162746225484863,
+          "group_bootstrap_gain_95": [
+            0.0003539386013191592,
+            0.0036946522678904525
+          ],
+          "groups": 72
+        }
+      }
+    },
+    "online_12": {
+      "prompts": 12,
+      "positions": 718,
+      "versus": {
+        "frozen_reference": {
+          "relative_gain": 0.004220190777890931,
+          "group_bootstrap_gain_95": [
+            0.001491517409710097,
+            0.00699556041212368
+          ],
+          "groups": 12
+        },
+        "linear_reference": {
+          "relative_gain": 0.003543877991949218,
+          "group_bootstrap_gain_95": [
+            -0.0014845533509763031,
+            0.0073906830601921936
+          ],
+          "groups": 12
+        }
+      }
+    }
+  },
+  "auditor_sha256": "1da93ade1bc7dd2f8d7267ea9aaf0c11f29fec18d0edaf798b6201a3339c229a"
+}
