@@ -13,7 +13,7 @@ from urllib.request import Request,urlopen
 TASKS=[dict(id='zh',text='用两句话解释缓存如何加速重复读取。',cap=32),
        dict(id='code',text='Write a Python function sum_positive(xs) that sums positive values. Output only code.',cap=48),
        dict(id='json',text='Return only JSON with keys name, items and total, describing a fictional three-item shopping list.',cap=48)]
-MODES=('none','fixed7','confidence','adaptive')
+MODES=('none','confidence','adaptive')
 
 
 def run(session,arguments):

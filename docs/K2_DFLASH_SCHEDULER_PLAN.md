@@ -1,5 +1,7 @@
 # K2：DFlash2 与原生 Scheduler 推测解码闭环
 
+以下为分阶段封存的验收记录；最新范围见文末“移除固定模式”。
+
 2026-10-23，基于 K1（PR #13）增量开发，不等待新预测器训练、不修改主模型权重。
 
 固定 DeepInfer revision/扩展 SHA 与 E5/K1 一致。新增显式 max_drafts=7 原生上下文，退出恢复环境及 Python 缓存值；不启用 DeepSeek Worker/GPU sampler。原生 `schedule` 生成请求和宽度，适配器拼接 pending token 与原生 metadata 中的草稿，Target 验证并提交正确前缀，随后按原生顺序 `process_MTPInfo` → `process_outputs` 发布下一轮草稿和本轮输出。每个 schedule 均配对一次 process，包括分块 prompt、取消和空计划。
@@ -28,3 +30,10 @@
 `adaptive` 保留当前 E17 unweighted_f1 Python 线性预测器及原有 BudgetProbe 二进制。使用本轮累计概率同时作为 accept_rates/prev_accept_rates，剩余输出上限裁剪候选长度，context<768 选择 short 成本，否则 long；每个候选长度包含完整 draft/feature/predict 成本。原生 Scheduler 保守预留 NEXTN=7，通过其公开 `update_metadata_for_sampling_zos` 最终确定 q，再交给原生 process_outputs。宽度更改不会改变最大预留或 inflight 计数。限定单请求。首轮草稿仍在首 token 发布前预计算，因此 TTFT/decode 边界与旧循环不同，必须同时报告总请求时间。
 
 新增真实 CPU finalization 各拒绝位置测试；GPU 三提示独立执行旧 E17 循环，逐轮比较完整宽度序列、输出，并继续对 serial 检查 committed logits/state；在 adaptive 模式重跑长度1及三种取消/复用、真实 SSE/取消。小规模计时同轮对比 none/fixed7/confidence/adaptive。旧 E16 lagged 结果作为历史配置证据保留，不代表现有组合收益。
+
+
+## 2026-10-23 移除固定模式（复验前封存）
+
+按用户指示，K2 API/CLI 删除 fixed1/fixed3/fixed7，默认 adaptive；运行模式只保留 none（K1 对照）、lagged、confidence、adaptive。所有推测模式按预算选择验证宽度，最大七个候选草稿只是候选上限。移除固定模式的当前测试、双请求推测路径与文档入口；历史比较数据按原配置保留并标为历史。
+
+更新后的CPU suite检查动态预算/分块/拒绝/停止/取消及最终q；GPU suite保留三个动态模式、独立旧循环逐轮宽度对齐、oracle边界/停止/取消；在线suite只对比none/confidence/adaptive并检查SSE。新封存重跑，结果与旧配置证据分开记录。K1 target-only双请求不受本次模式移除影响。

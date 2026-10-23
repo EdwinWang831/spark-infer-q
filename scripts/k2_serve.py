@@ -9,7 +9,7 @@ def main():
     parser=argparse.ArgumentParser()
     parser.add_argument('--root',type=Path,required=True)
     parser.add_argument('--checkpoint',type=Path,required=True)
-    parser.add_argument('--mode',choices=('none','fixed1','fixed3','fixed7','lagged','confidence','adaptive'),default='adaptive')
+    parser.add_argument('--mode',choices=('none','lagged','confidence','adaptive'),default='adaptive')
     parser.add_argument('--capacity',type=int,default=256)
     parser.add_argument('--port',type=int,default=18083)
     parser.add_argument('--model',type=Path)

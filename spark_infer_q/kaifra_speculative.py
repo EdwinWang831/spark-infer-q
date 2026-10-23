@@ -193,11 +193,11 @@ class SpeculativeBackend:
 
 class SpeculativeSchedulerBridge(SchedulerBridge):
     """Native MTP counters/publishing and accepted-token flat-layout adapter."""
-    def __init__(self, *args, depth=7, curve=None, postdraft=False, **kwargs):
-        if type(depth) is not int or depth not in (1,3,7):
-            raise ValueError('supported draft depths are 1, 3 and 7')
+    def __init__(self, *args, curve=None, postdraft=False, **kwargs):
+        if not postdraft and curve is None:
+            raise ValueError('a dynamic verification budget is required')
         super().__init__(*args,max_drafts=7,**kwargs)
-        self.depth = depth
+        self.depth = 7
         self.postdraft = postdraft
         if postdraft and self.max_requests != 1:
             raise ValueError('post-draft mode requires a single-request measured cost curve')
@@ -325,12 +325,12 @@ class SpeculativeSchedulerBridge(SchedulerBridge):
             raise
 
 
-def speculative_engine(native, target, provider, *, eos_ids, prior, mode='fixed7',
+def speculative_engine(native, target, provider, *, eos_ids, prior, mode='adaptive',
                        capacity=256,max_requests=1,token_budget=32,prefill_rows=8,
                        tokenizer=None,curve=None,observer=None):
     if getattr(native,'max_drafts',None)!=7:
         raise ValueError('speculation requires a native max_drafts=7 context')
-    if mode not in ('fixed1','fixed3','fixed7','lagged','confidence','adaptive'):
+    if mode not in ('lagged','confidence','adaptive'):
         raise ValueError('unsupported speculative mode')
     if capacity+14>target.capacity or capacity+8>provider.max_context:
         raise ValueError('insufficient target/draft lookahead capacity')
@@ -341,16 +341,16 @@ def speculative_engine(native, target, provider, *, eos_ids, prior, mode='fixed7
     dynamic = mode in ('lagged','confidence')
     if dynamic and curve is None:
         raise ValueError('dynamic mode requires an explicit measured cost curve')
-    depth = int(mode[-1]) if mode.startswith('fixed') else 7
+    depth = 7
     backend=SpeculativeBackend(target,provider,eos_ids=eos_ids,depth=depth,prior=prior,
                                prefill_rows=prefill_rows,observer=observer)
     bridge=SpeculativeSchedulerBridge(native.core,native.torch,native.group,native.sampling_class,
         backend,vocab_size=int(target.w.head.b.weight.shape[0]),eos_ids=eos_ids,capacity=capacity,
-        max_requests=max_requests,token_budget=token_budget,depth=depth,curve=curve if dynamic else None,postdraft=mode=='adaptive')
+        max_requests=max_requests,token_budget=token_budget,curve=curve if dynamic else None,postdraft=mode=='adaptive')
     engine=KaifraEngine(bridge,tokenizer=tokenizer)
     engine.capabilities=dict(engine.capabilities,target_only=False,speculative=True,
                             draft_depth=depth,verification_budget=('current_postdraft_e17' if mode=='adaptive' else
-                                'native_mtp_varlen' if dynamic else 'fixed'))
+                                'native_mtp_varlen'))
     return engine
 
 

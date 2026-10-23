@@ -91,6 +91,7 @@ def validate(session,spec,native_module):
         def __init__(self,base,fault):
             self.base,self.fault=base,fault
             self.max_context,self.model=base.max_context,base.model
+            self.budget=base.budget
         def propose(self,handle,state,anchor,remaining):
             original,rates=self.base.propose(handle,state,anchor,remaining)
             ref=references[kinds[handle.request_id]]['tokens']
@@ -100,7 +101,7 @@ def validate(session,spec,native_module):
                 tokens[self.fault]=(tokens[self.fault]+1)%int(target.w.head.b.weight.shape[0])
             return tokens,rates
     with native_module.NativeScheduler(e1/'DeepInfer',e1/'build-release/lib/deepinfer',max_drafts=7) as native:
-        def make(mode='fixed7',max_requests=1,fault='natural'):
+        def make(mode='adaptive',max_requests=1,fault='natural'):
             provider,curve,metadata=spec.session_provider(session,mode)
             if fault!='natural':provider=ControlledProvider(provider,fault)
             return spec.speculative_engine(native,target,provider,eos_ids=session.eos,
@@ -120,7 +121,7 @@ def validate(session,spec,native_module):
                 output_tokens=sum(len(x.token_ids) for x in events),metadata=metadata or {}))
             e.close();shadows.clear()
             print(json.dumps(dict(k2_case=name,status='PASS')),flush=True)
-        for mode in ('fixed1','fixed3','fixed7','lagged','confidence','adaptive'):
+        for mode in ('lagged','confidence','adaptive'):
             for kind in prompts:
                 e,metadata=make(mode);h=submit(e,kind,kind)
                 events=[];widths=[]
@@ -139,9 +140,6 @@ def validate(session,spec,native_module):
         e,_=make(fault=None);h=submit(e,'controlled_eos','arithmetic',32)
         events=list(e.drain());assert events[-1].finish_reason=='stop'
         finish(e,'controlled_eos_in_proposal',events,[(h,'arithmetic',32)],diagnostic=True)
-        e,_=make(max_requests=2)
-        a,b=submit(e,'a','zh',24),submit(e,'b','code',24)
-        events=list(e.drain());finish(e,'two_requests_fixed7',events,[(a,'zh',24),(b,'code',24)])
         e,_=make('adaptive');h=submit(e,'one','zh',1);events=list(e.drain())
         assert events[-1].processed_position==len(references['zh']['ids'])
         finish(e,'max_tokens_one',events,[(h,'zh',1)])

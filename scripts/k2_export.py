@@ -12,21 +12,21 @@ def checked_job(raw,name,status):
 
 
 def export(raw,checkout):
-    cpu=checked_job(raw,'111-k2-adaptive-cpu-v1.json','PASS_K2_NATIVE_CPU')
-    gpu=checked_job(raw,'112-k2-adaptive-gpu-v1.json','PASS_K2_NATIVE_GPU')
-    online=checked_job(raw,'113-k2-adaptive-online-v1.json','PASS_K2_ONLINE')
-    audit=checked_job(raw,'114-k2-adaptive-resident-audit.json','PASS_K2_RESIDENT_AUDIT')
+    cpu=checked_job(raw,'150-k2-dynamic-only-cpu-v1.json','PASS_K2_NATIVE_CPU')
+    gpu=checked_job(raw,'151-k2-dynamic-only-gpu-v1.json','PASS_K2_NATIVE_GPU')
+    online=checked_job(raw,'152-k2-dynamic-only-online-v1.json','PASS_K2_ONLINE')
+    audit=checked_job(raw,'153-k2-dynamic-only-audit-v1.json','PASS_K2_RESIDENT_AUDIT')
     worker=json.loads((raw/'worker-status.json').read_text())
     assert worker['status']=='READY'
     assert len({x['worker_pid'] for x in (cpu,gpu,online,audit)} | {worker['pid']})==1
     assert all(x['load_count']==1 for x in (cpu,gpu,online,audit)) and worker['load_count']==1
     c,g,o=(x['result'] for x in (cpu,gpu,online))
-    assert len(c['cases'])==19 and len(g['cases'])==28
+    assert len(c['cases'])==15 and len(g['cases'])==18
     assert all(x['status']=='PASS' for x in c['cases']+g['cases']+o['http_cases'])
     assert g['full_logit_rows']>0 and g['live_state_checks']>0
     assert all(x['same_target_object'] and x['same_draft_object'] and not x['model_reloaded'] for x in (g,o))
     assert {x['case'] for x in o['http_cases']}=={'stream','cancel'}
-    assert len(o['timings'])==36 and o['serial_state_checks']==48
+    assert len(o['timings'])==27 and o['serial_state_checks']==36
     assert all(x['exact_tokens'] and x['exact_state'] for x in o['timings'])
     for result in (g,o):
         for name,sha in result['source_sha256'].items():
@@ -40,6 +40,7 @@ def export(raw,checkout):
     return dict(status='PASS_K2_INTEGRATED',cpu=c,gpu=g,online=o,resident=resident,
         same_worker=True,load_count=1,
         historical_native_lagged_evidence='2026-10-23-native-dflash.json',
+        historical_postdraft_evidence='2026-10-23-postdraft-e17.json',
         final_worker_status='READY',model_reloaded=False,
         prior_failures=[dict(job=failed['job'],status='FAIL',error=failed['error'],
                             cause='two-request test configured with one request slot; corrected before GPU')],

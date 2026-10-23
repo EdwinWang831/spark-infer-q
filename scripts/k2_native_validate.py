@@ -69,7 +69,7 @@ def cpu_suite(native,module):
         nonlocal checks
         assert state.history==[(1+i)%100 for i in range(state.pos)] or handle.request_id.startswith('eos')
         assert state.pos==pos+keep;checks+=1
-    def make(mode='fixed7',fault=None,prior=None,max_requests=1,eos=(99,)):
+    def make(mode='lagged',fault=None,prior=None,max_requests=1,eos=(99,)):
         return module.speculative_engine(native,target,ToyProvider(fault),eos_ids=eos,
             prior=prior or [.7]*7,mode=mode,capacity=128,max_requests=max_requests,
             curve=[(r,1.+r*.2) for r in range(1,9)] if mode=='lagged' else None,
@@ -80,18 +80,16 @@ def cpu_suite(native,module):
         assert not e.bridge.native.has_unfinished_seqs()
         cases.append(dict(case=name,status='PASS',events=len(events)))
         e.close()
-    for depth in (1,3,7):
-        for fault in (None,0,3,6) if depth==7 else (None,0):
-            e=make('fixed'+str(depth),fault)
-            h=e.submit_tokens('sequence',[1],max_tokens=24);events=list(e.drain())
-            assert [t for x in events for t in x.token_ids]==list(range(2,26))
-            assert events[-1].processed_position==24
-            finish(e,'fixed'+str(depth)+'_fault'+str(fault),events)
-    e=make(max_requests=2);a=e.submit_tokens('a',list(range(1,34)),max_tokens=16)
-    b=e.submit_tokens('b',[1],max_tokens=16);events=list(e.drain())
-    assert [t for x in events if x.handle==a for t in x.token_ids]==list(range(34,50))
-    assert [t for x in events if x.handle==b for t in x.token_ids]==list(range(2,18))
-    finish(e,'two_requests_chunked_prompt',events)
+    for fault in (None,0,3,6):
+        e=make(fault=fault)
+        h=e.submit_tokens('sequence',[1],max_tokens=24);events=list(e.drain())
+        assert [t for x in events for t in x.token_ids]==list(range(2,26))
+        assert events[-1].processed_position==24
+        finish(e,'lagged_fault'+str(fault),events)
+    e=make();h=e.submit_tokens('chunked',list(range(1,34)),max_tokens=16)
+    events=list(e.drain())
+    assert [t for x in events for t in x.token_ids]==list(range(34,50))
+    finish(e,'dynamic_chunked_prompt',events)
     e=make(eos=(90,99));e.submit_tokens('eos_nonprimary',[97],max_tokens=8)
     events=list(e.drain());assert [t for x in events for t in x.token_ids]==[98,99]
     assert events[-1].finish_reason=='stop';finish(e,'nonprimary_eos_inside_proposal',events)

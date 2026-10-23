@@ -117,9 +117,9 @@ class KaifraEngine(Protocol):
 
 ### K2 — DFlash2/Q4 接入并测量执行路径
 
-2026-10-23：[接入报告](K2_DFLASH_SCHEDULER_REPORT.md)与[用法](K2_DFLASH_SCHEDULER_USAGE.md)。固定 K=1/3/7、原生 lagged/冻结 E16 confidence 以及现有 E17 本轮动态预算接入 K1 API；逐轮验证旧循环预算宽度。动态预算先限定单请求；联合 GPU batch/异步/Graph 仍待后续阶段。
+2026-10-23：[接入报告](K2_DFLASH_SCHEDULER_REPORT.md)与[用法](K2_DFLASH_SCHEDULER_USAGE.md)。现有 E17 本轮动态预算及原生 lagged/冻结 E16 confidence 接入 K1 API；固定运行模式已移除，逐轮验证旧循环预算宽度。动态预算先限定单请求；联合 GPU batch/异步/Graph 仍待后续阶段。
 
-**交付：**`DraftProvider=DFlash2Q4`，完整词表投影、selector 和提案前缀；target-only/fixed K/dynamic K 可切换，dynamic K 包括滞后先验和 E16 置信头两种预算；每个 provider 明确 checkpoint/precision/block contract。
+**交付：**`DraftProvider=DFlash2Q4`，完整词表投影、selector 和提案前缀；target-only/dynamic K 可切换，dynamic K 包括默认 E17 本轮预算和原生滞后/E16 对照；每个 provider 明确 checkpoint/precision/block contract。
 
 **验收：**至少 K=0/1/3/7、全接受、首/中/末拒绝、EOS、max_tokens，在每次 reject 后的下一轮继续生成可对照；随机采样仍明确 unsupported。报告 per-stage draft/target/commit、动态预算开销和完整请求速度。与单模式策略/普通 Decode 比较。
 
@@ -137,7 +137,7 @@ class KaifraEngine(Protocol):
 
 ### K5 — 成本感知的跨请求调度
 
-**交付：**测过的 batch bucket 成本、按请求的置信头接受率（E14 显示只按深度的历史先验几乎不随输入变化，E15/E16 的置信头在单请求上快约 10%）、内存准入与公平性限制；比较固定 K、TensorFold 已有成本策略、DeepInfer `MTPVarlen`（滞后先验和置信头两种）、Kaifra 候选。
+**交付：**测过的 batch bucket 成本、按请求的置信头接受率（E14 显示只按深度的历史先验几乎不随输入变化，E15/E16 的置信头在单请求上快约 10%）、内存准入与公平性限制；比较 TensorFold 已有成本策略、DeepInfer `MTPVarlen`（滞后先验和置信头两种）、Kaifra 候选。
 
 **验收：**新冻结 2/4/5 请求混合负载中至少存在可复现的完整任务/吞吐优势，不得显著恶化交互 TTFT/TPOT p95 或状态正确性。否则保留简单策略为默认，复杂策略撤到研究模式。
 
@@ -145,7 +145,7 @@ class KaifraEngine(Protocol):
 
 **交付：**Native MTP / DFlash2 Q4 / no-draft 的受控低频选择；对切换时延、常驻、warmup、重建 state、图缓存收费；内存水位和前台/后台 SLO 的组合优化。
 
-**验收：**不以仅比较错误的单路 fixed3 作为胜利证据，而要超过独立校准选定的最佳单模式；每个模式正确性、低收益 fallback 和 workload 分布偏斜须披露。开关成本过高则退回按请求选模式。
+**验收：**不以仅比较错误的单路基线作为胜利证据，而要超过独立校准选定的最佳单模式；每个模式正确性、低收益 fallback 和 workload 分布偏斜须披露。开关成本过高则退回按请求选模式。
 
 ### K7 — 长时稳定性、API/发布与研究评估
 

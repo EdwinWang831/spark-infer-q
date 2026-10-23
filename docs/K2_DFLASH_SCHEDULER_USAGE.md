@@ -1,14 +1,15 @@
 # K2 原生调度推测解码
 
-`kaifra_speculative.py` 在 K1 请求 API 上接入 Q4 DFlash2。请求计划和输出账本由真实 DeepInfer C++ Scheduler 管理，验证宽度可用原生滞后策略或现有 E17 本轮动态预算；Target 沿用 TensorFold 算术。运行时仍为同步、greedy、纯文本；多请求在 GPU 上逐请求执行。
+`kaifra_speculative.py` 在 K1 请求 API 上接入 Q4 DFlash2。请求计划和输出账本由真实 DeepInfer C++ Scheduler 管理，验证宽度可用原生滞后策略或现有 E17 本轮动态预算；Target 沿用 TensorFold 算术。运行时仍为同步、greedy、纯文本；K2 推测解码当前只接受单请求。
 
 | 模式 | 原生调度行为 | 范围 |
 | --- | --- | --- |
 | none | K1 target-only，NEXTN=0 | 无草稿 |
-| fixed1 / fixed3 / fixed7 | 发布对应数量的草稿，原生空成本曲线返回固定验证长度 | 最多两请求交错已测 |
 | lagged | 原生 MTPVarlen + 按历史观测更新的条件接受率 | 单请求，显式单请求成本曲线 |
 | adaptive（CLI 默认） | E17 线性预测器 + 现有本轮 post-draft BudgetProbe；原生 ZOS 接口最终确定验证长度 | 单请求，按上下文切换冻结 short/long 成本 |
 | confidence | 原生 MTPVarlen + 已冻结 E16 七深度线性置信头 | 单请求，显式单请求成本曲线 |
+
+固定草稿运行模式已移除；`adaptive` 为默认，另外可选 `lagged`、`confidence` 动态对照及 `none` Target-only 对照。七个草稿是候选上限，实际验证宽度由预算器决定。
 
 ## 复用常驻 session
 

@@ -43,6 +43,12 @@ class SpeculativeContracts(unittest.TestCase):
         with self.assertRaises(ValueError):
             speculative_engine(SimpleNamespace(max_drafts=0),None,None,eos_ids={9},prior=[.5]*7)
 
+    def test_retired_fixed_modes_rejected_before_accessing_model(self):
+        native=SimpleNamespace(max_drafts=7)
+        for mode in ('fixed1','fixed3','fixed7'):
+            with self.subTest(mode=mode), self.assertRaisesRegex(ValueError,'unsupported speculative mode'):
+                speculative_engine(native,None,None,eos_ids={9},prior=[.5]*7,mode=mode)
+
     def test_projection_cache_changes_owner_on_interleaving(self):
         class Worker:
             max_context=256

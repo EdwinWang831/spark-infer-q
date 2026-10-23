@@ -6,7 +6,7 @@
 
 2026-10-23 engine milestone: [K1 target-only runtime](K1_RUNTIME_REPORT.md) builds on E5's real C++ Scheduler, adding a reusable request API, output events, lifecycle/cleanup and loopback SSE. Seven native/GPU groups pass (233 full-logit rows, 91 live-state comparisons); DFlash2 integration and actual cross-request GPU batching remain subsequent work. See [usage](K1_RUNTIME_USAGE.md).
 
-Subsequent [K2 integration](K2_DFLASH_SCHEDULER_REPORT.md) connects Q4 DFlash2, fixed K=1/3/7 and native lagged/E16 confidence and the current E17 post-draft BudgetProbe to that API. The latter is checked against the existing loop at every selected width. Cross-request GPU batching remains subsequent work; see [K2 usage](K2_DFLASH_SCHEDULER_USAGE.md).
+Subsequent [K2 integration](K2_DFLASH_SCHEDULER_REPORT.md) connects Q4 DFlash2, native lagged/E16 confidence and the current E17 post-draft BudgetProbe to that API. The latter is checked against the existing loop at every selected width. Cross-request GPU batching remains subsequent work; see [K2 usage](K2_DFLASH_SCHEDULER_USAGE.md).
 
 Evaluate and port useful DeepInfer components for Qwen on a single DGX Spark. MTP is an important workstream alongside the engine, scheduling, memory/cache management, GPU operators and Qwen executor. Its importance does not make the other components mere dependencies of MTP, and it does not require choosing a complete port over selective reuse before evidence is available. Keep the E0–E4 identifiers and prioritize work by dependencies, correctness evidence, likely benefit and porting cost.
 

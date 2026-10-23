@@ -1,6 +1,6 @@
 # K2：DFlash2 与现有 E17 动态预算接入 Scheduler
 
-2026-10-23，`PASS_K2_INTEGRATED`。K1 API 现支持 Q4 DFlash2、固定 K=1/3/7、原生 lagged/E16，以及 **E17 线性预测器 + 本轮 post-draft 动态预算**。`k2_serve.py` 默认 `adaptive`，保留其它模式作显式对照。没有训练新预测器或重载常驻权重。[事前方案](K2_DFLASH_SCHEDULER_PLAN.md)、[用法](K2_DFLASH_SCHEDULER_USAGE.md)、[E17 接入证据](../results/k2/2026-10-23-postdraft-e17.json)、[早期 E16/原生滞后证据](../results/k2/2026-10-23-native-dflash.json)。
+2026-10-23，`PASS_K2_INTEGRATED`。K1 API 现支持 Q4 DFlash2、原生 lagged/E16，以及 **E17 线性预测器 + 本轮 post-draft 动态预算**。`k2_serve.py` 默认 `adaptive`，固定1/3/7草稿模式已从API、CLI及当前测试中移除；保留动态对照及Target-only对照。最大七草稿为候选上限，验证宽度由预算器选择。没有训练新预测器或重载常驻权重。[事前方案](K2_DFLASH_SCHEDULER_PLAN.md)、[用法](K2_DFLASH_SCHEDULER_USAGE.md)、[E17 接入证据](../results/k2/2026-10-23-dynamic-only.json)、[早期 E16/原生滞后证据](../results/k2/2026-10-23-native-dflash.json)、[移除固定模式前的历史对照](../results/k2/2026-10-23-postdraft-e17.json)。历史文件中的固定模式只代表当时测试配置。
 
 这次首先交付调度接入与有界正确性验收。小样本计时不能证明优于接入前的研究执行器，也不建立最新 TensorFold/Graph 执行路径排名。
 
@@ -24,37 +24,37 @@
 
 每轮验证 pending token + 草稿前缀，`greedy_result` 决定输出与已提交行数。拒绝后特征不进入 context，纠正/bonus token 保持 pending。随后 `process_MTPInfo` → `process_outputs` 配对每次 schedule，包括 prompt chunks、取消与空计划。退出恢复 NEXTN 环境/Python缓存，按所有权清理 Gloo group。
 
-- 本地204项：192通过，12因依赖缺失跳过；K1 HTTP、取消/断线与资源隔离回归通过。
-- 真实 C++ Scheduler + CPU Toy Target：19组，131次状态检查。新增最终验证长度调整、全接受及首/中/末拒绝后的继续生成；同时保留固定 K、双请求、prompt分块、EOS、长度1、取消/代次复用检查。
-- 整模 Qwen/Q4 GPU：28组，**1,362行完整 committed logits、354次有效状态检查精确一致**。三个输入分别覆盖六个自然模式；另有五组 oracle-only 草稿边界、双请求 fixed7，以及 adaptive 长度1/三种取消与复用。受控草稿只用于边界，不计入自然接受率或性能结论。
+- 本地205项：193通过，12因依赖缺失跳过；K1 HTTP、取消/断线与资源隔离回归通过。
+- 真实 C++ Scheduler + CPU Toy Target：15组，100次状态检查。新增最终验证长度调整、全接受及首/中/末拒绝后的继续生成；同时保留动态预算、prompt分块、EOS、长度1、取消/代次复用检查。
+- 整模 Qwen/Q4 GPU：18组，**838行完整 committed logits、203次有效状态检查精确一致**。三个输入分别覆盖三个动态模式；另有五组 oracle-only 草稿边界，以及 adaptive 长度1/三种取消与复用。受控草稿只用于边界，不计入自然接受率或性能结论。
 - 旧 E17 独立循环在三个输入上逐轮宽度一致，并与相同 serial 输出一致。短样本不构成长上下文验证；768阈值的成本桶切换有本地契约检查。
-- 在线计时另做48次完整输出/最终状态核对（12预热+36计时）。真实 loopback SSE 与显式取消运行在 adaptive 模式，输出和 DONE/停止状态通过；取消使用受控 step 边界，不声称覆盖任意异步竞态。
+- 在线计时另做36次完整输出/最终状态核对（9预热+27计时）。真实 loopback SSE 与显式取消运行在 adaptive 模式，输出和 DONE/停止状态通过；取消使用受控 step 边界，不声称覆盖任意异步竞态。
 - 全部终止检查无活动状态、原生队列清空及逻辑块归还。最终审计确认 group释放、环境恢复、worker READY，load_count=1；不重载权重、不调用 empty_cache。
 
 ## 同轮小样本测速
 
-中文解释、Python函数、JSON三个提示，上限32/48/48，每种模式三次，四模式共36次。每种模式同样完整输出，合计 **309个 decode token**，九个请求各排除首 token。TPS按总 token/总时间计算；请求和TTFT列是九次之和。
+中文解释、Python函数、JSON三个提示，上限32/48/48，每种模式三次，三模式共27次。每种模式同样完整输出，合计 **309个 decode token**，九个请求各排除首 token。TPS按总 token/总时间计算；请求和TTFT列是九次之和。
 
 | 模式 | decode token/s | 完整请求耗时之和 | TTFT之和 |
 | --- | ---: | ---: | ---: |
-| none | 23.230 | 15.566 s | 2.264 s |
-| fixed7 | 38.701 | 10.331 s | 2.346 s |
-| confidence | 40.731 | 9.945 s | 2.358 s |
-| adaptive | 45.016 | 9.224 s | 2.359 s |
+| none | 22.497 | 16.026 s | 2.291 s |
+| confidence | 39.222 | 10.330 s | 2.452 s |
+| adaptive | 43.998 | 9.432 s | 2.409 s |
 
-本轮 E17 adaptive 相对 fixed7 的 decode 点估计为 **+16.32%**，完整请求耗时变化 **-10.72%**；相对 E16原生滞后 confidence 的 decode 点估计为 **+10.52%**。只有三个受控输入与三次重复，无代表性负载或独立性能晋升门槛，不作一般收益承诺。无草稿差额不能归因于本次 Scheduler 接线。
+本轮 E17 adaptive 相对 E16原生滞后 confidence 的 decode 点估计为 **+12.18%**，完整请求耗时变化 **-8.70%**。只有三个受控输入与三次重复，无代表性负载或独立性能晋升门槛，不作一般收益承诺。无草稿差额不能归因于本次 Scheduler 接线。移除固定模式前的数据单独保留，不作为当前可选策略。
+
 
 计时包含实际草稿、特征、预测、原生调度、验证、提交及循环；模型/provider/native上下文构造、预热和serial核对在计时外。请求计时含submit/tokenize/prompt，decode从首输出事件到终止。首轮草稿在第一个 token 发布前预计算，进入TTFT；旧研究循环从首 token 后计入首草稿，阶段边界不同，不能直接横比历史decode TPS。这里同时报告完整请求耗时。GPU请求仍分别同步执行，不是联合batch。
 
 ## 复现与保留的失败
 
 ```bash
-python3 scripts/k2_export.py results/raw/k2 results/k2/2026-10-23-postdraft-e17.json
+python3 scripts/k2_export.py results/raw/k2 results/k2/2026-10-23-dynamic-only.json
 python3 -m unittest discover -s tests -q
 ```
 
-导出器校验最新 GPU/在线封存源码SHA、case数、旧循环宽度对齐、36次计时、48次状态核对、同worker/load_count与最后READY。旧结果按原封存保留，不能冒充当前源码测试。原始日志/失败traceback在Git忽略目录，公开文件保存脱敏摘要和SHA。
+导出器校验最新 GPU/在线封存源码SHA、case数、旧循环宽度对齐、27次计时、36次状态核对、同worker/load_count与最后READY。旧结果按原封存保留，不能冒充当前源码测试。原始日志/失败traceback在Git忽略目录，公开文件保存脱敏摘要和SHA。
 
-早期 CPU 双请求fixture误设为单槽，在GPU前失败并修正。早期在线harness恢复release时产生引用环，删除临时实例hook后重跑；旧报告使用修正后版本。新增 E17/最终长度接口的CPU、GPU、在线均重新封存验证。GPU参考与候选共用Target算术，不是独立整模数值证明；独立CLI未为验证再次加载大模型，真实HTTP以resident session验证。
+早期 CPU 双请求fixture误设为单槽，在GPU前失败并修正。早期在线harness恢复release时产生引用环，删除临时实例hook后重跑；旧报告使用修正后版本。移除固定运行模式后，CPU、GPU、在线均重新封存验证。GPU参考与候选共用Target算术，不是独立整模数值证明；独立CLI未为验证再次加载大模型，真实HTTP以resident session验证。
 
 跨请求GPU batch、异步流水、完整KV页映射、随机采样、长上下文和更广负载下新旧执行器性能比较仍待后续工作。K2不表示DeepInfer全部模块已适配。
