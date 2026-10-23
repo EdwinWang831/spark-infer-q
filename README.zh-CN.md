@@ -6,7 +6,7 @@
 
 ## 现状一览
 
-截至 2026-10-23，仓库包含 E0–E31 的实现、测试和脱敏证据（E26依用户要求中止）。E29在8条旧root上测得target Graph +1.28%、Graph＋W8 +2.04%。E30拒绝BF16输出头布局候选。E31让专家scale转换静态指令减半，但专家pair没有可靠提速（热复用+0.23%、缓存扰动−0.18%），没有新增完整decode成绩。
+截至 2026-10-23，仓库包含 E0–E32 的实现、测试和脱敏证据（E26依用户要求中止）。E29在8条旧root上测得target Graph +1.28%、Graph＋W8 +2.04%。E30拒绝BF16输出头布局候选。E31让专家scale转换静态指令减半，但专家pair没有可靠提速（热复用+0.23%、缓存扰动−0.18%），没有新增完整decode成绩。E32去掉量化投影无效行填充，但真实投影回放反而慢约1%，候选拒绝。
 
 - **做什么**：Qwen3.8-Flash-Next（NVFP4，TensorFold 内核）用 DFlash2 草稿模型做推测解码，由 DeepInfer 的 MTPVarlen 决定每一步验证多少个草稿。执行器是同步、单请求、greedy 的研究原型。
 - **最大的单项 decode 改进**：E15/E16 训练的轻量置信度预测器。在另行冻结的新任务上，它比默认的滞后预算快约 10%（E16：44.08 vs 40.21 tok/s），目前是可选路径。
@@ -33,6 +33,7 @@
 | [E29](docs/E29_TARGET_VERIFICATION_REPORT.md) | target CUDA Graph，保留DFlash特征捕获 | 相同线性预算47.05→47.65 token/s（+1.28%）；Graph＋W8为48.01（+2.04%）；两项区间均为正 | 8条旧root受控正收益，默认不变 |
 | [E30](docs/E30_TARGET_PROFILE_REPORT.md) | 冻结W8/线性/Graph剖析，保持精度的BF16头布局 | target内核时间：专家41.3%、量化投影26.9%、BF16为23.4%；布局仅头部+0.8%，未过门槛 | 剖析完成、候选拒绝，无新增decode TPS |
 | [E31](docs/E31_EXPERT_SCALE_REPORT.md) | FP8专家scale成对转换，保持精度 | 转换静态指令减半；专家pair热复用+0.23%、缓存扰动−0.18%，区间均跨零 | 数值检查通过，候选拒绝，不进入整模长测 |
+| [E32](docs/E32_COMPACT_STAGING_REPORT.md) | MXFP8投影有效输入行紧凑staging | 每CTA共享内存少16%～31%；真实回放热复用−1.06%、缓存扰动−0.92% | 224组筛查＋96份真实输入通过，性能拒绝 |
 | [E11](docs/E11_PROJECTION_REPORT.md) | 投影改用 MXFP8 split-K | decode +0.62%，完整请求 −0.64% | 可选，默认不变 |
 | [E10](docs/E10_TARGET_KERNEL_REPORT.md) | 调专家核的 warp 数和预取深度 | holdout 上 +0.08% | 未采用 |
 | [E12](docs/E12_EXPERT_VERIFICATION_REPORT.md) | 按路由专家并集估计验证成本 | 离线成本误差降 26.17%，但专家并集要验证后才知道；能在线用的特征只降 2.42% | 未采用 |
@@ -69,6 +70,8 @@
 **E30（2026-10-23 UTC）：** [历史核对与当前路径剖析](docs/E30_TARGET_PROFILE_REPORT.md)确认E10/E11已试过专家发射/预取和投影调参。本轮4条旧校准root、32个早期步骤统计真实target GPU内核，profiler扰动4.85%～8.67%。新NK→KN输出头布局在32份真实激活上保持logits精确一致，但只让头部省约0.8%时间，还多1.27GB副本，因此不进入整模长测。target/draft未重载，没有新训练或精度修改。
 
 **E31（2026-10-23 UTC）：** [专家scale成对转换](docs/E31_EXPERT_SCALE_REPORT.md)通过65,536对scale穷举、24组真实路由专家输出和8次诊断前向的Graph/logits/特征/状态检查。CUDA已提供该成对操作，这是实现优化尝试，不是新算法。转换静态指令减半，但两种计时条件均无可靠收益，停止候选、不做整模长测。权重常驻，默认路径不变。
+
+**E32（2026-10-23 UTC）：** [紧凑staging](docs/E32_COMPACT_STAGING_REPORT.md)去掉无效输入行填零，保持有效行MMA/累加顺序。224组算术/边界筛查、96份真实输入及8次诊断logits/特征/状态检查通过。首版采集器漏掉类方法调用、完整性断言失败，原记录保留并用私有代理补齐。两种计时区间均为负，不进入整模长测；权重常驻、默认不变。
 
 ## 工作原理
 
