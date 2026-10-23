@@ -6,7 +6,7 @@
 
 ## 现状一览
 
-截至 2026-10-23，仓库包含 E0–E29 的实现、测试和脱敏证据（E26依用户要求中止）。E29接入target CUDA Graph：相同线性预算下decode 47.05→47.65 token/s（+1.28%）；Graph＋W8草稿达到48.01（+2.04%）。这是8条旧root上的受控结果，默认路径不变。
+截至 2026-10-23，仓库包含 E0–E30 的实现、测试和脱敏证据（E26依用户要求中止）。E29在8条旧root上测得target Graph +1.28%、Graph＋W8 +2.04%。E30剖析冻结路径并拒绝BF16输出头布局候选：仅头部约+0.8%，没有新增完整decode成绩。
 
 - **做什么**：Qwen3.8-Flash-Next（NVFP4，TensorFold 内核）用 DFlash2 草稿模型做推测解码，由 DeepInfer 的 MTPVarlen 决定每一步验证多少个草稿。执行器是同步、单请求、greedy 的研究原型。
 - **最大的单项 decode 改进**：E15/E16 训练的轻量置信度预测器。在另行冻结的新任务上，它比默认的滞后预算快约 10%（E16：44.08 vs 40.21 tok/s），目前是可选路径。
@@ -31,6 +31,7 @@
 | [E27](docs/E27_LINEAR_COST_REPORT.md) | 相同线性权重的NumPy执行＋因果实时费用对照 | 原版43.39、NumPy43.65、实时修正43.42 token/s；NumPy +0.60%，重复敏感性区间跨零 | 不替换默认；MLP/混合暂停 |
 | [E28](docs/DRAFT_BACKBONE_W8_REPORT.md) | 草稿五层MLP，INT8权重＋BF16激活 | 草稿阶段耗时−6.89%；固定预算decode 42.04→42.29 token/s（+0.61%，区间−0.52%～+1.66%） | 正确性通过，未确认decode收益 |
 | [E29](docs/E29_TARGET_VERIFICATION_REPORT.md) | target CUDA Graph，保留DFlash特征捕获 | 相同线性预算47.05→47.65 token/s（+1.28%）；Graph＋W8为48.01（+2.04%）；两项区间均为正 | 8条旧root受控正收益，默认不变 |
+| [E30](docs/E30_TARGET_PROFILE_REPORT.md) | 冻结W8/线性/Graph剖析，保持精度的BF16头布局 | target内核时间：专家41.3%、量化投影26.9%、BF16为23.4%；布局仅头部+0.8%，未过门槛 | 剖析完成、候选拒绝，无新增decode TPS |
 | [E11](docs/E11_PROJECTION_REPORT.md) | 投影改用 MXFP8 split-K | decode +0.62%，完整请求 −0.64% | 可选，默认不变 |
 | [E10](docs/E10_TARGET_KERNEL_REPORT.md) | 调专家核的 warp 数和预取深度 | holdout 上 +0.08% | 未采用 |
 | [E12](docs/E12_EXPERT_VERIFICATION_REPORT.md) | 按路由专家并集估计验证成本 | 离线成本误差降 26.17%，但专家并集要验证后才知道；能在线用的特征只降 2.42% | 未采用 |
@@ -63,6 +64,8 @@
 **E28（2026-10-23 UTC）：** [草稿MLP W8A16](docs/DRAFT_BACKBONE_W8_REPORT.md)完成8条旧工程回归root、64次计时，target输出token、已提交logits与live state检查全部通过。观测草稿接受率73.74%→73.58%，验证多16轮。BF16控制仍常驻，量化包大小不是实测整机净省内存。本轮仅固定预算，量化后的动态策略尚未验证。
 
 **E29（2026-10-23 UTC）：** [target验证对照](docs/E29_TARGET_VERIFICATION_REPORT.md)完成32个校准前缀、1,536次宽度计时、96次三组decode和32次同期预算计时。已有线性预算比固定7草稿少计算36.72%的验证行、验证耗时少12.70%，decode 42.32→47.31 token/s（+11.78%）；这是复核已有策略，不是新预测器收益。纯Graph在决策/提交轨迹精确相同下+1.28%，是本轮新增执行结果。W8及费用变化比纯Graph再高0.75%，但区间跨零。输出token、logits、特征与live state检查通过，权重保持常驻。
+
+**E30（2026-10-23 UTC）：** [历史核对与当前路径剖析](docs/E30_TARGET_PROFILE_REPORT.md)确认E10/E11已试过专家发射/预取和投影调参。本轮4条旧校准root、32个早期步骤统计真实target GPU内核，profiler扰动4.85%～8.67%。新NK→KN输出头布局在32份真实激活上保持logits精确一致，但只让头部省约0.8%时间，还多1.27GB副本，因此不进入整模长测。target/draft未重载，没有新训练或精度修改。
 
 ## 工作原理
 
