@@ -19,6 +19,12 @@ def export(raw, checkout):
     assert preflight['status'] == gpu['status'] == http['status'] == 'PASS'
     assert http['result']['status'] == 'PASS_K1_HTTP_GPU'
     assert {x['case'] for x in http['result']['cases']} == {'stream','cancel'}
+    assert len(http['result']['cases']) == 2
+    assert all(x['status']=='PASS' and x['complete_sse'] for x in http['result']['cases'])
+    assert http['result']['same_target_object'] and http['result']['same_draft_object']
+    assert not http['result']['model_reloaded']
+    assert http['result']['full_logit_rows'] > 0 and http['result']['live_state_checks'] > 0
+    assert http['result']['native']['core_sha256'] == result['native']['core_sha256']
     assert result['status'] == 'PASS_K1_NATIVE_GPU'
     assert preflight['result']['repeated_open'] and preflight['result']['borrowed_group_preserved']
     assert status['status'] == 'READY'
