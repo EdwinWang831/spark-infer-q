@@ -12,6 +12,7 @@ As of 2026-10-23, this repository includes E0–E22 implementations, tests and s
 - **Largest single decode gain**: a lightweight confidence predictor trained in E15/E16. On separately frozen new tasks it is about 10% faster than the default lagged budget (E16: 44.08 vs 40.21 tok/s). It is opt-in for now.
 - **Prompt processing**: eight-row prompt chunks make complete requests 1.67× faster, cutting summed time to first token from 19.69 s to 4.23 s; decode speed is essentially unchanged (E8).
 - **Two-request GPU batching**: the native DeepInfer scheduler can now send two requests through one target forward. In a controlled target-only test, aggregate decode throughput rose from 23.64 to 38.63 tok/s (+63.4%); this is an explicit synchronous API, without batched DFlash or HTTP validation. See the [report](docs/JOINT_TARGET_EXECUTION_REPORT.md).
+- **Large-chunk prefill (E36)**: a candidate preserving decode arithmetic passed exact logits, all draft features, live-state and eight-step handoff checks on seven prefixes. Prompt-only throughput rose from 110.87 to 889.22 tok/s (8.02×); this is a research adapter, with no full-request or HTTP result yet. See the [report](docs/E36_PREFILL_NUMERICS_REPORT.md).
 - **Not there yet**: no overall lead over native TensorFold (45.62 vs 49.18 tok/s in E7; not rerun since E8). Multi-request DFlash, 4K+ context and random sampling remain open.
 
 ## Key results
@@ -19,6 +20,7 @@ As of 2026-10-23, this repository includes E0–E22 implementations, tests and s
 | Experiment | Change | Result | Status |
 | --- | --- | --- | --- |
 | [Joint Target](docs/JOINT_TARGET_EXECUTION_REPORT.md) | Two requests share one target forward under the native scheduler | aggregate decode 23.64 → 38.63 tok/s (+63.4%), two bilingual pairs × four repetitions | Opt-in, synchronous target-only; no batched DFlash |
+| [E36](docs/E36_PREFILL_NUMERICS_REPORT.md) | Large-chunk prefill with matched projection/recurrence/MoE arithmetic | prompt-only 110.87 → 889.22 tok/s (8.02×); seven 4–512-token prefixes, four repetitions | Research adapter; exact gates pass, default integration pending |
 | [E6](docs/E6_DRAFT_HEAD_REPORT.md) | Full-vocabulary Q4 draft output head | decode 41.70 → 45.54 tok/s (+9.23%) | Default |
 | [E8](docs/E8_INTEGRATION_REPORT.md) | Eight-row prompt chunks using the decode arithmetic | complete requests 1.67× faster; decode −1.14% | Default |
 | [E13](docs/E13_DRAFT_CACHE_CONFIDENCE_REPORT.md) | Incremental cache for DFlash context projections | +6.27% on 1K–2K inputs; −0.31% on short inputs | Opt-in |

@@ -12,6 +12,7 @@
 - **最大的单项 decode 改进**：E15/E16 训练的轻量置信度预测器。在另行冻结的新任务上，它比默认的滞后预算快约 10%（E16：44.08 vs 40.21 tok/s），目前是可选路径。
 - **prompt 处理**：8 行分块让完整请求快 1.67 倍，首 token 时间之和从 19.69 秒降到 4.23 秒；decode 速度基本没变（E8）。
 - **双请求 GPU batch**：DeepInfer 原生调度器已能让两个请求共享一次 target 前向。受控 target-only 对照中，decode 总吞吐从 23.64 升至 38.63 tok/s（+63.4%）；目前是显式同步 API，尚未验证联合 DFlash 和 HTTP，见[报告](docs/JOINT_TARGET_EXECUTION_REPORT.md)。
+- **大块 prefill（E36）**：保留现有 decode 算术的候选，在七条前缀上通过 logits、全部草稿特征、有效状态和 8 步交接的精确对照；prompt 本体从 110.87 提升到 889.22 tok/s（8.02倍）。目前是研究适配器，尚无完整请求或 HTTP 收益，见[报告](docs/E36_PREFILL_NUMERICS_REPORT.md)。
 - **还没做到**：整体速度没有超过原生 TensorFold（E7 时 45.62 vs 49.18 tok/s，E8 之后没有重测）；多请求 DFlash、4K 以上上下文和随机采样仍待推进。
 
 ## 主要结果
@@ -19,6 +20,7 @@
 | 实验 | 改了什么 | 结果 | 现状 |
 | --- | --- | --- | --- |
 | [联合 Target](docs/JOINT_TARGET_EXECUTION_REPORT.md) | 原生调度下两个请求共享一次 target 前向 | 两组中英文请求对 × 四轮，decode 总吞吐 23.64 → 38.63 tok/s（+63.4%） | 可选、同步 target-only；尚未接双请求 DFlash |
+| [E36](docs/E36_PREFILL_NUMERICS_REPORT.md) | 大块 prefill，统一投影/递归/MoE 算术 | 七条4–512 token前缀、四轮，prompt本体 110.87 → 889.22 tok/s（8.02倍） | 研究适配器；精确门槛通过，默认引擎待接入 |
 | [E6](docs/E6_DRAFT_HEAD_REPORT.md) | 草稿输出头换成完整词表 Q4 | decode 41.70 → 45.54 tok/s（+9.23%） | 默认 |
 | [E8](docs/E8_INTEGRATION_REPORT.md) | prompt 按 8 行分块，沿用 decode 算术 | 完整请求快 1.67 倍；decode −1.14% | 默认 |
 | [E13](docs/E13_DRAFT_CACHE_CONFIDENCE_REPORT.md) | 增量缓存 DFlash 的历史投影 | 1K–2K 输入 +6.27%；短输入 −0.31% | 可选 |
