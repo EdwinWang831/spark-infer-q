@@ -139,7 +139,7 @@ class KaifraEngine(Protocol):
 
 **验收：**同请求 solo vs mixed token + logits + 有效状态对照；EOS / cancelled / slot reuse / graph padding / 低高接受混合无污染；报告总吞吐与 per-request TPOT p50/p95。仅两个请求交错但逐个 GPU forward **不算完成**。
 
-2026-10-23 实施：两个请求联合 48 层 Target forward、80 个预备 Graph、独立 E17 当前预算与异步 owner/SSE 已通过受控检查。两组固定英中 pair 的三次服务对照，合计 decode 31.09→38.58 token/s；不代表更大并发或生产性能。详见[报告](K4_BATCH_RUNTIME_REPORT.md)、[入口](K4_BATCH_RUNTIME_USAGE.md)。原 `K4_RUNTIME_OVERHEAD.md` 只记录单流开销优化，不代替本阶段验收。全局预算仍待 K5。
+2026-10-23 实施：两个请求联合 48 层 Target forward、80 个预备 Graph、独立 E17 当前预算与异步 owner/SSE 已通过受控检查。最初两组服务内部对照31.09→38.58 token/s缺少原优化单流基线；补充同负载后原短组38.16→33.65、较长混合组38.50→30.55，性能仍未达标。先修新 backend 的 singleton/长尾开销，详见[复核](K4_MATCHED_SCALING_DIAGNOSIS.md)。详见[报告](K4_BATCH_RUNTIME_REPORT.md)、[入口](K4_BATCH_RUNTIME_USAGE.md)。原 `K4_RUNTIME_OVERHEAD.md` 只记录单流开销优化，不代替本阶段验收。全局预算仍待 K5。
 
 ### K5 — 成本感知的跨请求调度
 

@@ -1,6 +1,8 @@
 # K4：双请求 GPU 联合验证与异步服务
 
-路线图 K4 的双请求链路已实现并通过受控验收：两个请求共享一次完整 48 层 Target forward，E17 当前草稿后动态预算、W8 草稿与 E33 精确筛选保持不变，异步 owner 驱动 DeepInfer 原生调度器，服务支持两个独立 SSE 流。入口与限制见[使用说明](K4_BATCH_RUNTIME_USAGE.md)，[公开证据](../results/k4/2026-10-23-batch-runtime.json)由导出器重新校验。
+**后续同负载复核发现性能回退，尚未达到性能目标。** 原优化单流顺序处理原短组为38.16 token/s，新 joint 为33.65；cap128混合组38.50→30.55。下文功能证据仍有效，后面的+24.1%只针对新 backend 内部 split/joint，不能代表超过原优化引擎。见[同负载性能复核](K4_MATCHED_SCALING_DIAGNOSIS.md)。
+
+路线图 K4 的双请求链路已实现并通过受控功能检查：两个请求共享一次完整 48 层 Target forward，E17 当前草稿后动态预算、W8 草稿与 E33 精确筛选保持不变，异步 owner 驱动 DeepInfer 原生调度器，服务支持两个独立 SSE 流。入口与限制见[使用说明](K4_BATCH_RUNTIME_USAGE.md)，[公开证据](../results/k4/2026-10-23-batch-runtime.json)由导出器重新校验。
 
 之前名为 K4 的[单流开销优化](K4_RUNTIME_OVERHEAD.md)只是运行时开销实验；本报告对应实施路线中的真正双请求 batch 阶段。
 
