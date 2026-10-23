@@ -8,6 +8,9 @@ import random
 import statistics
 import subprocess
 
+# Sources changed after the run; their executed bytes are read from history.
+LEGACY_SOURCES={'spark_infer_q/draft_context.py':'ee7a725','spark_infer_q/draft_fidelity.py':'a3d0534'}
+
 
 def online_summary(raw):
     assert raw['status']=='PASS_E15_ONLINE'
@@ -66,7 +69,7 @@ def main():
         obj=collected if src=='e15-collection.json' else trained
         for n,h in obj['source_sha256'].items():
             p=Path('scripts')/n if '/' not in n else Path(n)
-            payload=(subprocess.check_output(['git','show','ee7a725:'+n]) if n=='spark_infer_q/draft_context.py' else p.read_bytes())
+            payload=(subprocess.check_output(['git','show',LEGACY_SOURCES[n]+':'+n]) if n in LEGACY_SOURCES else p.read_bytes())
             assert hashlib.sha256(payload).hexdigest()==h,n
     report=dict(status='PASS_E15_PILOT',collection={k:v for k,v in collected.items() if k not in ('target_object_id','draft_object_id')},
                 training={k:v for k,v in trained.items() if k not in ('target_object_id','draft_object_id')},
@@ -77,6 +80,7 @@ def main():
                         'F0 charged the full F1 feature increment conservatively; end-to-end timings decide deployment',
                         'fixed offline and online control is post-draft and pays a full draft even at width1; target-only needed if fixed1 wins',
                         'cached helper executes ee7a725 source; current source differs only in trailing blank line',
+                        'draft_fidelity helper executes a3d0534 source; current source only adds step_outcome and paired_ratio',
                         'no 4K+, random sampling, native TensorFold ranking or multi-request batch claim'])
     online=root/'e15-online.json'
     if online.exists() and load(online.name)['status']=='PASS_E15_ONLINE':

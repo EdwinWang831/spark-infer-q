@@ -70,7 +70,7 @@ F1相对现有动态预算吞吐+9.61%、耗时下降8.77%；按20任务bootstra
 
 ## 复核、常驻与当前边界
 
-原始归档传输SHA256 `4f3a12e2241b5b729ae938f4da24ee9bee30506ca60cde6512af933826ef13ad`。本机独立CPU审计核对12片数据SHA、600条清单/语义分组、36,846条位置/标签/已知请求特征、所有实跑源码SHA、新旧模型绑定，并用导出F1逐条重新推理test/OOD，复现完整离线分组评估。跨平台log1p仅允许1e−13绝对误差，数值指标容差1e−12。原始训练JSON和选定模型SHA与线上记录一致。实跑cache helper仍为`ee7a725`原字节，与当前仓库仅差EOF空行，未为归档修改运行源。
+原始归档传输SHA256 `4f3a12e2241b5b729ae938f4da24ee9bee30506ca60cde6512af933826ef13ad`。本机独立CPU审计核对12片数据SHA、600条清单/语义分组、36,846条位置/标签/已知请求特征、所有实跑源码SHA、新旧模型绑定，并用导出F1逐条重新推理test/OOD，复现完整离线分组评估。跨平台log1p仅允许1e−13绝对误差，数值指标容差1e−12。原始训练JSON和选定模型SHA与线上记录一致。实跑cache helper仍为`ee7a725`原字节，与当前仓库仅差EOF空行，未为归档修改运行源。合入main后，`spark_infer_q/draft_fidelity.py`为[PR #4](https://github.com/EdwinWang831/spark-infer-q/pull/4)的超集（新增`step_outcome`、`paired_ratio`），本轮实际调用的`_verify`/`emitted_by_width`及其余顶层语句逐字未变，文件SHA不再等于实跑记录的`035e6e75…`；严格复现用`git show a3d0534:spark_infer_q/draft_fidelity.py`取原字节。`e16_audit.py`对这两个文件从历史读取实跑字节，并分别核对“仅差EOF空行”和“实跑的顶层语句全部保留”；`tests/test_legacy_sources.py`持续检查这一点。
 
 同PID319、同Target/DFlash对象、load_count=1，完成任务计数15→31；旧失败计数1未增加，最终READY，分配显存回到77,359,853,568 bytes。没有下载、重新加载或训练主体权重。完整任务链约3小时18分钟（含等待先行消融），其中最终在线约59.9分钟。原始特征/轨迹保留gitignored目录，公开小头不是完整模型权重。
 

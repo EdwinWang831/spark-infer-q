@@ -44,3 +44,9 @@
 这是有界greedy单请求采集加速，不是模型训练加速、模型服务decode TPS、多请求batch或4K+验证。数据采集收益不可直接换算成用户推理收益。
 
 完整结果与计时边界见[自适应采集器报告](E21_ADAPTIVE_COLLECTOR_REPORT.md)。
+
+## 合并 main 后的历史源码复现
+
+E20/E21 的验证绑定实际执行过的字节。main 后来只为 `draft_fidelity.py` 增加独立的 `step_outcome` / `paired_ratio` 辅助函数，原 `emitted_by_width` 未改；历史运行仍对应 Git `a3d0534:spark_infer_q/draft_fidelity.py`。缓存辅助仍对应 `ee7a725:spark_infer_q/draft_context.py`。审计器读取这些历史字节，核对归档 SHA，并验证当前文件只发生允许的独立扩展/末尾换行差异；不会把新字节伪装成旧运行。
+
+复用旧验证报告与封存任务时，应从归档或上述 Git 对象恢复相应的 worker 源，满足原来的精确 SHA 守卫。不要用当前仓库文件覆盖仍在运行的常驻 worker 源，也不要放宽守卫。该复现适配只影响 CPU 审计，不修改线上 Target/DFlash、标签或默认策略。

@@ -1,5 +1,6 @@
 """CPU source/input/identity audit for downloaded E20/E21 resident evidence."""
 import argparse
+import ast
 from collections import Counter
 import hashlib
 import json
@@ -10,6 +11,45 @@ import sys
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from e20_tasks import get_tasks as e20_tasks
 from e21_tasks import get_tasks as e21_tasks
+
+LEGACY_SOURCES = {'spark_infer_q/draft_context.py': 'ee7a725',
+                  'spark_infer_q/draft_fidelity.py': 'a3d0534'}
+
+
+def fidelity_additions_only(executed, current):
+    """Keep every executed statement in order; admit only known new helpers.
+
+    Unlike an unordered statement subset, this rejects redefining an executed
+    function or assigning to its globals after the original definition.
+    """
+    old = ast.parse(executed).body
+    new = ast.parse(current).body
+    index = 0
+    added = set()
+    for node in new:
+        if index < len(old) and ast.dump(node) == ast.dump(old[index]):
+            index += 1
+            continue
+        if (isinstance(node, ast.Import) and len(node.names) == 1
+                and node.names[0].name == 'random' and node.names[0].asname is None):
+            name = 'random'
+        elif (isinstance(node, ast.FunctionDef) and node.name in ('step_outcome', 'paired_ratio')
+              and not node.decorator_list):
+            name = node.name
+        else:
+            return False
+        if name in added:
+            return False
+        added.add(name)
+    return index == len(old)
+
+
+def compatible_legacy(name, executed, current):
+    if name == 'spark_infer_q/draft_context.py':
+        return executed.rstrip(b'\n') == current.rstrip(b'\n')
+    if name == 'spark_infer_q/draft_fidelity.py':
+        return fidelity_additions_only(executed, current)
+    return False
 
 
 def sha(path):
@@ -32,13 +72,17 @@ def audit(raw, out, experiment):
         if local.read_bytes() == path.read_bytes():
             matches.append(name)
         else:
-            assert name == 'spark_infer_q/draft_context.py'
-            assert local.read_bytes().rstrip(b'\n') == path.read_bytes().rstrip(b'\n')
-            canonical = subprocess.run(['git', 'show', 'ee7a725:'+name], cwd=repo,
+            assert name in LEGACY_SOURCES, name
+            revision = LEGACY_SOURCES[name]
+            canonical = subprocess.run(['git', 'show', revision+':'+name], cwd=repo,
                                        capture_output=True, check=True).stdout
+            assert canonical == path.read_bytes(), name
             assert hashlib.sha256(canonical).hexdigest() == digest
-            exceptions.append(dict(file=name, canonical_git_source='ee7a725:'+name,
-                                   current_worktree_difference='trailing newline only; runtime kept unchanged'))
+            assert compatible_legacy(name, canonical, local.read_bytes()), name
+            difference = ('trailing newline only' if name.endswith('draft_context.py')
+                          else 'only random import and independent step_outcome/paired_ratio helpers added')
+            exceptions.append(dict(file=name, canonical_git_source=revision+':'+name,
+                                   current_worktree_difference=difference+'; runtime kept unchanged'))
     tasks = (e20_tasks if experiment == 'e20' else e21_tasks)(raw/'source')
     digest = hashlib.sha256(json.dumps(tasks, sort_keys=True, ensure_ascii=False).encode()).hexdigest()
     assert digest == record['task_manifest_sha256']
