@@ -235,7 +235,7 @@ Verified 2026-10-22; executed 2026-10-21: [frozen plan](E16_BILINGUAL_EXPANSION_
 
 ## Proposals without results yet
 
-These five plans are in main as proposals, not results. None has its own GPU run, and no conclusion should be cited from them. Each file opens with a PROPOSED status line. When one is scheduled, give it an E number, freeze its inputs and thresholds, record the run as a normal plan/report pair, and update its row here.
+Four original proposals remain unexecuted or only partly evaluated, as stated in their rows below. The exact greedy head-screening proposal has now been executed as [E33](E33_EXACT_HEAD_SCREEN_REPORT.md) and is listed in the completed experiments. Future executions must freeze inputs and thresholds and preserve both failed and successful stages.
 
 | Plan | From | Status | Reference code |
 | --- | --- | --- | --- |
@@ -243,7 +243,6 @@ These five plans are in main as proposals, not results. None has its own GPU run
 | [Expert-footprint accounting](ACHIEVED_BANDWIDTH_PLAN.md): turn per-step routed expert unions and E9 kernel times into a per-family expert-footprint rate | #1 | Not run. Footprint is not measured DRAM traffic (see E12), so without hardware counters the result would only indicate kernel headroom; [E10](#e10--target-expert-kernel-launch-and-staging)/[E11](#e11--target-projection-execution) tuning has meanwhile measured +0.08%/+0.62% | `spark_infer_q/moe_cost.py` |
 | [Expert-union-aware verification budget](MOE_AWARE_BUDGET_PLAN.md): predict step time from rows plus routed-expert union and swap only that model into MTPVarlen | #1 | Partly run. E12 ran the offline cost stage: the current step's true union cut held-out cost MAE 26.17%, a history-only union only 2.42%, and same-prefix budget diagnostics stayed at or below 1.28%. The online stages are on hold under the plan's stop rule | `spark_infer_q/moe_cost.py` |
 | [Draft-fidelity acceptance](DRAFT_FIDELITY_ACCEPTANCE_PLAN.md): check whether the BF16 drafter's arithmetic lowers acceptance compared with official stepwise BF16 and FP32 drafters on the same serial prefixes | #4 | Not run | `spark_infer_q/draft_fidelity.py` (`step_outcome`, `paired_ratio`; `emitted_by_width` there is also used by E15/E16) |
-| [Exact greedy head screening](EXACT_HEAD_SCREEN_PLAN.md): screen the target head with a Q8 copy and rigorous bounds, then compute exact BF16 logits only for candidates, keeping the greedy argmax | #7 | Not run; only a synthetic bound check (`scripts/head_screen_bound_sim.py`) | `spark_infer_q/head_screen.py` |
 
 ## E28 — Draft MLP INT8 weights with BF16 activations
 
@@ -264,3 +263,7 @@ These five plans are in main as proposals, not results. None has its own GPU run
 ## E32 — Compact MXFP8 activation staging rejected
 
 2026-10-23 UTC: [plan](E32_COMPACT_STAGING_PLAN.md), [report](E32_COMPACT_STAGING_REPORT.md), [full sanitized timings](../results/e32/2026-10-23-compact-staging.json). Remove BM16 unused-row zero fill by storing only1..8 real rows; exact arithmetic/geometry retained, shared memory25,088→17,408..20,992B/CTA. All224 preflight,96 real projection outputs and8 diagnostic logit/feature/live-state checks pass. First collector missed shared gate/up class calls and failed its96-case assertion after72 cases; old evidence preserved, private-method proxy regression-tested and screen completed with the same binary/contract. Warm speed−1.060% (root95%−1.605%…−0.623%);128MiB perturbed−0.921% (−1.369%…−0.370%). Rejected before full decode; no default/precision change or weight reload.
+
+## E33 — Screened head with original BF16 decisions and matched decode gain
+
+2026-10-23 UTC: [screen plan](E33_EXACT_HEAD_SCREEN_PLAN.md), [fused bounds](E33_FUSED_BOUNDS_PLAN.md), [online plan](E33_ONLINE_PLAN.md), [report](E33_EXACT_HEAD_SCREEN_REPORT.md), [full sanitized evidence](../results/e33/2026-10-23-exact-head-screen.json). Per-output INT8 helper /FP32 scale, FP64 outward bounds and original BF16 subset, greedy only. Initial complete-head cost gate failed (+4.93% speed, interval crossing zero); immutable record retained. Directed FP64 fusion reduces complete head time36.24% on32 reused calibration windows; all winner/bound/subset checks pass. Separate eight reused engineering roots /64 normal runs: W8/linear/Graph baseline46.9088→screened48.5063 tok/s (+3.4055%, root95% +2.3853%…+4.1211%), four repetitions positive. Both arms verify12,748 rows and emit8,588 timed tokens with identical decisions/acceptance/state; no natural fallback in2,596 screened rounds, union1..116 tokens. Original BF16 head preserved,641MB auxiliary payload while enabled; same resident models/load1, three jobs PASS, no new failed jobs, no default/service or native-TensorFold ranking claim.

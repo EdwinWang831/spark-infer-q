@@ -6,7 +6,7 @@ A research project on accelerating Qwen inference on a single NVIDIA DGX Spark (
 
 ## At a glance
 
-As of 2026-10-23, this repository includes E0–E32 implementations, tests and sanitized evidence (E26 cancelled at the user’s request). E29 measured target Graph +1.28% and Graph＋W8 +2.04% on eight reused roots. E30 rejects a BF16 head-layout candidate. E31 halves static expert-scale conversion instructions but finds no reliable pair speedup (+0.23% warm, −0.18% cache-perturbed); no new full-decode result. E32 removes unused activation staging rows but real projection replay slows about 1%; the candidate is rejected.
+As of 2026-10-23, this repository includes E0–E33 implementations, tests and sanitized evidence (E26 cancelled at the user’s request). E33 preserves the original BF16 target decision through an INT8-assisted head screen: matched W8/linear/Graph decode 46.91→48.51 tok/s (+3.41%, root95% +2.39%…+4.12%) on eight reused engineering roots /64 timings. Tokens, committed logits/features/live state and budget traces match. This remains a research path; E30–E32 candidates were not promoted.
 
 - **What it does**: Qwen3.8-Flash-Next (NVFP4, TensorFold kernels) runs speculative decoding with the DFlash2 drafter. DeepInfer's MTPVarlen decides how many drafts to verify at each step. The executor is a synchronous, single-request, greedy research prototype.
 - **Largest single decode gain**: a lightweight confidence predictor trained in E15/E16. On separately frozen new tasks it is about 10% faster than the default lagged budget (E16: 44.08 vs 40.21 tok/s). It is opt-in for now.
@@ -34,6 +34,7 @@ As of 2026-10-23, this repository includes E0–E32 implementations, tests and s
 | [E30](docs/E30_TARGET_PROFILE_REPORT.md) | Profile frozen W8/linear/Graph; exact BF16 head weight layout | Target kernel time: experts41.3%, quantized projections26.9%, BF1623.4%; layout head-only+0.8%, below gate | Profile completed; candidate rejected, no new decode TPS |
 | [E31](docs/E31_EXPERT_SCALE_REPORT.md) | Packed FP8 expert-scale conversion, unchanged precision | Conversion instructions halved; expert pair +0.23% warm / −0.18% cache-perturbed, both intervals cross zero | Exact checks pass; candidate rejected, no decode promotion |
 | [E32](docs/E32_COMPACT_STAGING_REPORT.md) | Compact activation staging in MXFP8 projections | Shared memory/CTA −16%…−31%; real projection replay −1.06% warm / −0.92% cache-perturbed | 224 preflight +96 real checks pass; candidate rejected |
+| [E33](docs/E33_EXACT_HEAD_SCREEN_REPORT.md) | INT8-assisted head screening + directed FP64 bounds + original BF16 subset | Complete head time −36.24%; actual decode 46.91→48.51 tok/s (+3.41%, positive interval) | 8 roots /64 runs, exact checks pass; research only, default unchanged |
 | [E11](docs/E11_PROJECTION_REPORT.md) | MXFP8 split-K projections | decode +0.62%, complete requests −0.64% | Opt-in, default unchanged |
 | [E10](docs/E10_TARGET_KERNEL_REPORT.md) | Expert-kernel warps and staging depth | +0.08% on holdout | Not adopted |
 | [E12](docs/E12_EXPERT_VERIFICATION_REPORT.md) | Verification cost from the routed-expert union | offline cost error −26.17%, but the union is only known after verifying; features available online gave −2.42% | Not adopted |
@@ -72,6 +73,8 @@ The remaining experiments laid groundwork or diagnosed:
 **E31 (2026-10-23 UTC):** [expert-scale pair conversion](docs/E31_EXPERT_SCALE_REPORT.md) passes all 65,536 scale pairs, 24 real routed expert cases and eight diagnostic Graph/logit/feature/state comparisons. CUDA already provides this packed operation; it is an implementation optimization attempt, not a new algorithm. Static conversion instructions halve, but neither timing regime shows reliable gain, so the candidate stops before full decode. Weights remain resident and the default path is unchanged.
 
 **E32 (2026-10-23 UTC):** [compact staging](docs/E32_COMPACT_STAGING_REPORT.md) removes zero-filled unused rows while retaining exact MMA/accumulation. All 224 arithmetic/guard cases and 96 real inputs pass, plus 8 diagnostic logit/feature/state checks. A first collector missed class-method calls and failed its count assertion; preserved evidence and a private-proxy fix complete the screen. Both timing intervals are negative, so no full-decode promotion. Weights remain resident; default unchanged.
+
+**E33 (2026-10-23 UTC):** [head-screening report](docs/E33_EXACT_HEAD_SCREEN_REPORT.md) preserves the first failed cost gate, then fuses the same conservative interval computation. All 32 calibration windows retain the original winner; complete head time falls 36.24%. Separate full-generation comparison on eight reused engineering roots /64 timings gives +3.41% decode (root95% +2.39%…+4.12%), all four repetitions positive. Both arms verify 12,748 rows with identical acceptance/commit trajectories; screened calls have no natural fallback in 2,596 timed rounds. Original BF16 weights remain authoritative; helper payload adds 641 MB while enabled. No default/service switch or new native-TensorFold ranking claim.
 
 ## How it works
 
