@@ -239,6 +239,21 @@ class SpeculativeSchedulerBridge(SchedulerBridge):
                     any(not math.isfinite(c) or c<=0 for _,c in points)):
                 raise ValueError('positive measured cost curve for rows 1..8 required')
             self.native.decode_perf_curve = points
+        # These native calls synchronously copy/read CPU values; they do not
+        # retain Tensor storage. A bridge admits only one pending plan, so its
+        # metadata workspace can be reused after complete(). NumPy writes avoid
+        # tiny per-row Tensor allocations and dispatcher copy/index operations.
+        import numpy as np
+        self._cpu_arrays = dict(
+            proposals=np.zeros((self.max_requests, self.depth), dtype=np.int32),
+            rates=np.zeros((self.max_requests, self.depth), dtype=np.float32),
+            tokens=np.zeros(self.max_requests, dtype=np.int32),
+            accepted=np.zeros(self.max_requests*(self.depth+1), dtype=np.int32),
+            widths=np.ones(self.max_requests, dtype=np.int32),
+            positions=np.full(self.max_requests, -1, dtype=np.int32))
+        self._cpu_views = {
+            name: tuple(self.torch.from_numpy(array[:n]) for n in range(len(array)+1))
+            for name, array in self._cpu_arrays.items()}
 
     def prepare(self):
         plan = super().prepare()
@@ -262,9 +277,10 @@ class SpeculativeSchedulerBridge(SchedulerBridge):
                 widths = [self._entry(r.handle)['state'].next_width for r in plan.rows]
                 if any(not 1 <= q <= len(r.token_ids) for q,r in zip(widths,plan.rows)):
                     raise BridgeError('final post-draft width exceeds native reservation')
+                self._cpu_arrays['widths'][:len(widths)] = widths
                 plan.native_output.update_metadata_for_sampling_zos(plan.metadata,
-                    self.torch.tensor(widths,dtype=self.torch.int32,device='cpu'),
-                    self.torch.full((len(widths),),-1,dtype=self.torch.int32,device='cpu'),7)
+                    self._cpu_views['widths'][len(widths)],
+                    self._cpu_views['positions'][len(widths)],7)
                 plan.rows = tuple(self._work_row(m,seq,self._entry(row.handle))
                     for m,seq,row in zip(plan.metadata,plan.native_output.scheduled_seqs,plan.rows,strict=True))
             except Exception:
@@ -276,11 +292,11 @@ class SpeculativeSchedulerBridge(SchedulerBridge):
         if meta.is_prompt:
             return super()._work_row(meta,seq,entry)
         start = seq.num_cached_tokens
-        published = seq.data.get_token_ids()
+        data = seq.data
         drafts=(entry['state'].current_drafts if getattr(self.backend.provider,'deferred_draft',False)
                 else meta.last_next_n_token)
-        ids = tuple(published[start:]) + tuple(drafts[:meta.seqlen_q-1])
-        if (len(published)-start != 1 or len(ids)!=meta.seqlen_q or
+        ids = (data.get_last_token_id(),) + tuple(drafts[:meta.seqlen_q-1])
+        if (data.get_len()-start != 1 or len(ids)!=meta.seqlen_q or
                 not 1<=len(ids)<=self.depth+1 or meta.seqlen_k!=start+len(ids)):
             self.poisoned=True
             raise BridgeError('native speculative token/position metadata mismatch')
@@ -318,15 +334,18 @@ class SpeculativeSchedulerBridge(SchedulerBridge):
             raise BridgeError('backend fence not completed')
         torch = self.torch
         try:
-            proposals = torch.zeros((len(plan.rows),self.depth),dtype=torch.int32,device='cpu')
-            rates = torch.zeros((len(plan.rows),self.depth),dtype=torch.float32,device='cpu')
+            n = len(plan.rows)
+            proposals = self._cpu_views['proposals'][n]
+            rates = self._cpu_views['rates'][n]
+            self._cpu_arrays['proposals'][:n].fill(0)
+            self._cpu_arrays['rates'][:n].fill(0)
             flat, outputs, metrics = [], [], []
             for i,(row,result) in enumerate(zip(plan.rows,plan.results,strict=True)):
                 cancelled = self._entry(row.handle)['cancelled']
                 live = result is not None and not cancelled
                 if live:
-                    proposals[i] = torch.tensor(result.next_drafts,dtype=torch.int32)
-                    rates[i] = torch.tensor(result.conditional,dtype=torch.float32)
+                    self._cpu_arrays['proposals'][i] = result.next_drafts
+                    self._cpu_arrays['rates'][i] = result.conditional
                 out = result.outputs if live else ()
                 outputs.append(out[-1] if out else 0)
                 accepted = list(out[:-1])
@@ -344,9 +363,11 @@ class SpeculativeSchedulerBridge(SchedulerBridge):
             # input plan. This advances native process_cnt even for prompt chunks
             # and cancelled rows, pairing every native schedule_cnt exactly once.
             self.core.process_MTPInfo(plan.native_output,True,proposals,rates)
-            accepted = torch.tensor(flat if any(not r.prompt for r in plan.rows) else [],
-                                    dtype=torch.int32,device='cpu')
-            tokens = torch.tensor(outputs,dtype=torch.int32,device='cpu')
+            flat = flat if any(not r.prompt for r in plan.rows) else []
+            self._cpu_arrays['accepted'][:len(flat)] = flat
+            self._cpu_arrays['tokens'][:n] = outputs
+            accepted = self._cpu_views['accepted'][len(flat)]
+            tokens = self._cpu_views['tokens'][n]
             _, pushed = self.native.process_outputs(plan.native_output,accepted,tokens,None)
             pushed = list(map(int,pushed))
             for row,result,count in zip(plan.rows,plan.results,pushed,strict=True):

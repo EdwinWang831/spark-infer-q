@@ -4,7 +4,7 @@ import sys
 import unittest
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
-from k3e33_online_validate import summarize
+from k3e33_online_validate import summarize,summarize_overhead
 
 
 class MatchedSpeedAccounting(unittest.TestCase):
@@ -37,6 +37,22 @@ class MatchedSpeedAccounting(unittest.TestCase):
     def test_duplicate_roots_are_rejected(self):
         records=self.records();records[1]['group']=records[0]['group']
         with self.assertRaises(AssertionError):summarize(records)
+
+    def test_three_arm_comparison_preserves_pairing_and_weighted_timing(self):
+        records=self.records()
+        for root in records:
+            before=[dict(t,mode='native_before',decode_ms=t['decode_ms']*1.1)
+                    for t in root['timings'] if t['mode']=='native']
+            root['timings'].extend(before)
+        summary=summarize_overhead(records)
+        self.assertEqual(summary['timed_runs'],96)
+        self.assertEqual(summary['timed_tokens_per_arm'],288)
+        self.assertAlmostEqual(summary['decode_tps']['native'],288000/3112)
+        self.assertAlmostEqual(summary['decode_tps']['native_before'],288000/(3112*1.1))
+        self.assertAlmostEqual(summary['versus_before']['speed_gain'],.1)
+        self.assertAlmostEqual(summary['versus_legacy']['speed_gain'],2840/3112-1)
+        records[0]['timings'][-1]['mode']='native'
+        with self.assertRaises(AssertionError):summarize_overhead(records)
 
 
 if __name__=='__main__':unittest.main()

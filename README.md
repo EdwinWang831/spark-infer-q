@@ -50,6 +50,7 @@ The remaining experiments laid groundwork or diagnosed:
 | [K2](docs/K2_DFLASH_SCHEDULER_REPORT.md) | Q4 DFlash2 and native dynamic budgets on the Scheduler | Current E17 post-draft budget, with native lagged/E16 controls; synchronous execution |
 | [K3](docs/K3_GRAPH_RUNTIME_REPORT.md) | Target CUDA Graph execution for dynamic decoding | Explicit execution option, static workspace and eager fallback; host fences remain |
 | [K3 + E33](docs/K3_E33_RUNTIME_REPORT.md) | Full screened-head/W8/NumPy/Graph profile in native runtime | 47.459 vs contemporaneous E33 48.378 tok/s; 1.90% runtime cost, explicit profile |
+| [K4](docs/K4_RUNTIME_OVERHEAD.md) | Reduce single-slot polling, token-history copies and CPU metadata allocations | 47.282 → 47.994 tok/s (+1.51%); contemporaneous E33 gap 2.36% → 0.89% |
 | [E7](docs/E7_TENSORFOLD_MATCH_REPORT.md) | Warmed comparison with native TensorFold | 45.62 vs 49.18 tok/s overall; 45.57 vs 43.58 on eight natural-completion tasks |
 | [E9](docs/E9_DECODE_PROFILE_REPORT.md) | Nsight profile of decode | Target verification 83.81%, drafting 14.39% |
 

@@ -50,6 +50,7 @@
 | [K2](docs/K2_DFLASH_SCHEDULER_REPORT.md) | 原生 Scheduler 接入 Q4 DFlash2 与动态预算 | 现有 E17 本轮动态预算，保留原生滞后/E16 动态对照；同步执行 |
 | [K3](docs/K3_GRAPH_RUNTIME_REPORT.md) | 动态解码接入 Target CUDA Graph | 显式执行选项、静态工作区及 eager 回退；保留主机完成同步 |
 | [K3 + E33](docs/K3_E33_RUNTIME_REPORT.md) | 辅助头/W8/NumPy/Graph 完整迁入原生运行时 | 47.459 vs 同期 E33 48.378 tok/s；约1.90%接入开销，显式profile |
+| [K4](docs/K4_RUNTIME_OVERHEAD.md) | 减少单请求轮询、token 历史复制和 CPU 元数据分配 | 47.282 → 47.994 tok/s（+1.51%）；同期 E33 差距 2.36% → 0.89% |
 | [E7](docs/E7_TENSORFOLD_MATCH_REPORT.md) | 充分预热后对照原生 TensorFold | 整体 45.62 vs 49.18 tok/s；8 个自然完成的任务 45.57 vs 43.58 |
 | [E9](docs/E9_DECODE_PROFILE_REPORT.md) | 用 Nsight 剖析 decode | target 验证占 83.81%，草稿占 14.39% |
 

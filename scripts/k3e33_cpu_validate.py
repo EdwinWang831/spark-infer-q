@@ -14,6 +14,7 @@ def run(session,arguments):
         loader=importlib.util.spec_from_file_location(tag+'_toy',root/'scripts/k2_native_validate.py');toy=importlib.util.module_from_spec(loader);loader.loader.exec_module(toy)
         cases=[]
         with native_module.NativeScheduler(session.root.parent/'DeepInfer',session.root.parent/'build-release/lib/deepinfer',max_drafts=7) as native:
+            regression=toy.cpu_suite(native,spec)
             class Predicting(toy.ToyTarget):
                 prediction_calls=0
                 def run_predictions(self,state,ids,diagnostic=False):
@@ -31,8 +32,22 @@ def run(session,arguments):
                 e.submit_tokens('sequence',[1],max_tokens=24);events=e.step();assert provider.calls==0 and [t for x in events for t in x.token_ids]==[2]
                 events+=list(e.drain());assert [t for x in events for t in x.token_ids]==list(range(2,26))
                 assert not e.bridge.native.has_unfinished_seqs();e.close();cases.append(dict(fault=fault,status='PASS',calls=provider.calls))
+            # Reuse must start prefill on the very next step even when the last
+            # request ended between native prefill polling points. A polling
+            # optimization must never strand the newly admitted prompt.
+            e=spec.speculative_engine(native,target,Current(None),eos_ids=(99,),prior=[.7]*7,capacity=128)
+            reuse=[]
+            for index,limit in enumerate((1,3,8,24,2)):
+                h=e.submit_tokens('reused',[1],max_tokens=limit)
+                first=e.step()
+                assert [t for event in first for t in event.token_ids]==[2]
+                events=first+list(e.drain())
+                assert [t for event in events for t in event.token_ids]==list(range(2,2+limit))
+                assert e.bridge.blocks.get_num_free_blocks()==e.bridge.block_count-1
+                reuse.append(dict(generation=h.generation,limit=limit,first_step_immediate=True))
+            e.close()
         assert target.prediction_calls>0
-        return dict(prediction_calls=target.prediction_calls,status='PASS_K3E33_CPU',cases=cases,model_reloaded=False,source_sha256=manifest)
+        return dict(regression=regression,immediate_reuse=reuse,prediction_calls=target.prediction_calls,status='PASS_K3E33_CPU',cases=cases,model_reloaded=False,source_sha256=manifest)
     finally:
         for name in list(sys.modules):
             if name==tag or name.startswith(tag+'.'):sys.modules.pop(name,None)

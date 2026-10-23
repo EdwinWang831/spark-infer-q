@@ -68,10 +68,17 @@ class SchedulerBridge:
         self.block_count = 1 + max_requests*((capacity+15)//16+2)
         self.blocks = core.BlockManager(self.block_count)
         self.pool = core.SequenceMetadataPool()
+        # With one rank and one admitted slot there cannot be a second waiting
+        # prompt during decode. Polling Gloo for that impossible work every step
+        # only adds host latency. Native prefill resets decode_step to zero;
+        # restarting this polling phase at admission also makes reuse immediate.
+        # This counter is separate from native MTP schedule_cnt/process_cnt.
+        self.single_slot = max_requests == 1 and group.size() == 1
+        prefill_interval = capacity+1 if self.single_slot else 1
         config = SimpleNamespace(max_model_len=capacity, runtime_max_model_len=capacity+2*max_drafts,
             max_num_batched_tokens=token_budget, max_num_seqs=max_requests,
             stop_preempted_request=True, chunked_prefill=True, engine_type=0,
-            prefill_attempt_interval=1, prefill_any_attempt_interval=1)
+            prefill_attempt_interval=prefill_interval, prefill_any_attempt_interval=prefill_interval)
         self.native = core.Scheduler(16, self.blocks, None, min(self.eos_ids), group,
             config, 0, 0, capacity*max_requests, None, [], 1, vocab_size, False)
 
@@ -113,6 +120,8 @@ class SchedulerBridge:
         state = self.backend.create(handle)
         try:
             self.native.add_sequence(seq)
+            if self.single_slot:
+                self.native.decode_step = 0
         except Exception:
             # Admission may have partly changed native accounting. Never reuse
             # this scheduler after a failed native call, even before dispatch.
