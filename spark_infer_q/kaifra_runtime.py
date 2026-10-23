@@ -170,53 +170,66 @@ class KaifraEngine:
                 return []
             try:
                 plan = self.bridge.step()
-                self.last_step_metrics = getattr(plan, 'metrics', ())
-                target=getattr(self.bridge.backend,'target',None)
-                target_capabilities=getattr(target,'capabilities',{})
-                if target_capabilities:
-                    self.capabilities=dict(self.capabilities,**target_capabilities)
-                now, events = self.clock(), []
-                for handle, record in list(self._requests.items()):
-                    done = self.bridge.completed.get(handle)
-                    entry = self.bridge.requests.get(handle.request_id)
-                    if done is not None:
-                        tokens = tuple(done['token_ids'])
-                        position = done['processed_position']
-                        reason = ('cancelled' if done['cancelled'] else 'stop'
-                                  if tokens and tokens[-1] in self.bridge.eos_ids else 'length')
-                    else:
-                        if entry is None or entry['handle'] != handle:
-                            raise BridgeError('native request disappeared')
-                        tokens = tuple(entry['seq'].data.get_token_ids()[record.prompt_tokens:])
-                        position, reason = entry['seq'].num_cached_tokens, None
-                    if (tokens[:len(record.tokens)] != tuple(record.tokens) or
-                            len(tokens) > record.max_tokens):
-                        raise BridgeError('native output prefix or length contract violated')
-                    new = tokens[len(record.tokens):]
-                    if new and record.first_token is None:
-                        record.first_token = now
-                    record.tokens[:] = tokens
-                    if new or reason is not None:
-                        # Full text is a snapshot: byte-level token decoders may
-                        # revise an incomplete Unicode suffix on the next token.
-                        text = (self.tokenizer.decode(list(tokens), skip_special_tokens=True)
-                                if self.tokenizer is not None else None)
-                        events.append(OutputEvent(handle, new, text, reason, position,
-                            record.prompt_tokens, len(tokens), now-record.submitted,
-                            None if record.first_token is None else record.first_token-record.submitted,
-                            0.0 if record.first_token is None else now-record.first_token))
-                    if done is not None:
-                        del self._requests[handle]
-                        del self.bridge.completed[handle]
-                if not self._requests:
-                    # Native running queues may still contain terminal entries
-                    # until one final scheduling pass. Clear that bookkeeping
-                    # before reporting the runtime idle or reusing its capacity.
-                    self.bridge.drain()
-                # The research bridge retains traces; the long-lived engine
-                # emits bounded events instead of keeping every past plan.
-                self.bridge.events.clear()
-                return events
+                return self._collect_events(plan)
+            except Exception:
+                self.bridge.poisoned = True
+                raise
+
+    def _collect_events(self, plan):
+        self.last_step_metrics = getattr(plan, 'metrics', ())
+        target=getattr(self.bridge.backend,'target',None)
+        target_capabilities=getattr(target,'capabilities',{})
+        if target_capabilities:
+            self.capabilities=dict(self.capabilities,**target_capabilities)
+        now, events = self.clock(), []
+        for handle, record in list(self._requests.items()):
+            done = self.bridge.completed.get(handle)
+            entry = self.bridge.requests.get(handle.request_id)
+            if done is not None:
+                tokens = tuple(done['token_ids'])
+                position = done['processed_position']
+                reason = ('cancelled' if done['cancelled'] else 'stop'
+                          if tokens and tokens[-1] in self.bridge.eos_ids else 'length')
+            else:
+                if entry is None or entry['handle'] != handle:
+                    raise BridgeError('native request disappeared')
+                tokens = tuple(entry['seq'].data.get_token_ids()[record.prompt_tokens:])
+                position, reason = entry['seq'].num_cached_tokens, None
+            if (tokens[:len(record.tokens)] != tuple(record.tokens) or
+                    len(tokens) > record.max_tokens):
+                raise BridgeError('native output prefix or length contract violated')
+            new = tokens[len(record.tokens):]
+            if new and record.first_token is None:
+                record.first_token = now
+            record.tokens[:] = tokens
+            if new or reason is not None:
+                # Full text is a snapshot: byte-level token decoders may
+                # revise an incomplete Unicode suffix on the next token.
+                text = (self.tokenizer.decode(list(tokens), skip_special_tokens=True)
+                        if self.tokenizer is not None else None)
+                events.append(OutputEvent(handle, new, text, reason, position,
+                    record.prompt_tokens, len(tokens), now-record.submitted,
+                    None if record.first_token is None else record.first_token-record.submitted,
+                    0.0 if record.first_token is None else now-record.first_token))
+            if done is not None:
+                del self._requests[handle]
+                del self.bridge.completed[handle]
+        if not self._requests:
+            # Native running queues may still contain terminal entries
+            # until one final scheduling pass. Clear that bookkeeping
+            # before reporting the runtime idle or reusing its capacity.
+            self.bridge.drain()
+        # The research bridge retains traces; the long-lived engine
+        # emits bounded events instead of keeping every past plan.
+        self.bridge.events.clear()
+        return events
+
+    def finish_plan(self, plan):
+        with self._lock:
+            self._ready()
+            try:
+                self.bridge.complete(plan)
+                return self._collect_events(plan)
             except Exception:
                 self.bridge.poisoned = True
                 raise

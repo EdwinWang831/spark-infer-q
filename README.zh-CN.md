@@ -11,7 +11,7 @@
 - **做什么**：Qwen3.8-Flash-Next（NVFP4，TensorFold 内核）用 DFlash2 草稿模型做推测解码，由 DeepInfer 的 MTPVarlen 决定每一步验证多少个草稿。性能实验及 K2 动态预算运行时采用同步、单请求、greedy 执行。
 - **最大的单项 decode 改进**：E15/E16 训练的轻量置信度预测器。在另行冻结的新任务上，它比默认的滞后预算快约 10%（E16：44.08 vs 40.21 tok/s），目前是可选路径。
 - **prompt 处理**：8 行分块让完整请求快 1.67 倍，首 token 时间之和从 19.69 秒降到 4.23 秒；decode 速度基本没变（E8）。
-- **还没做到**：整体速度没有超过原生 TensorFold（E7 时 45.62 vs 49.18 tok/s，E8 之后没有重测）；也还没有多请求 GPU batch、4K 以上上下文和随机采样。
+- **还没做到**：整体速度没有超过原生 TensorFold（E7 时 45.62 vs 49.18 tok/s，E8 之后没有重测）；4K 以上上下文和随机采样仍未验证。独立 K4 服务已支持双请求 GPU batch 与异步 owner。
 
 ## 主要结果
 
@@ -34,7 +34,7 @@
 **怎么读这些数字**
 
 - 每个实验用自己的任务集，不同行的 tok/s 不能直接比较，收益也不能相乘。
-- 都是单台 Spark、单请求、greedy 解码。大多数任务是合成提示，上下文最多约 2K token。
+- 生成结果采用单台 Spark、greedy 解码；研究实验为单请求，K4 单独报告双请求服务计时。大多数任务是合成提示，上下文最多约 2K token。
 - 生成实验核对输出 token、committed logits 和 GDN/QSA 状态；CPU 原型和采集研究的具体核验范围见各自报告。
 - 特征提取、CPU 传输、预测等额外开销都算在耗时里。
 
@@ -50,7 +50,8 @@
 | [K2](docs/K2_DFLASH_SCHEDULER_REPORT.md) | 原生 Scheduler 接入 Q4 DFlash2 与动态预算 | 现有 E17 本轮动态预算，保留原生滞后/E16 动态对照；同步执行 |
 | [K3](docs/K3_GRAPH_RUNTIME_REPORT.md) | 动态解码接入 Target CUDA Graph | 显式执行选项、静态工作区及 eager 回退；保留主机完成同步 |
 | [K3 + E33](docs/K3_E33_RUNTIME_REPORT.md) | 辅助头/W8/NumPy/Graph 完整迁入原生运行时 | 47.459 vs 同期 E33 48.378 tok/s；约1.90%接入开销，显式profile |
-| [K4](docs/K4_RUNTIME_OVERHEAD.md) | 减少单请求轮询、token 历史复制和 CPU 元数据分配 | 47.282 → 47.994 tok/s（+1.51%）；同期 E33 差距 2.36% → 0.89% |
+| [运行时开销](docs/K4_RUNTIME_OVERHEAD.md) | 减少单请求轮询、token 历史复制和 CPU 元数据分配 | 47.282 → 47.994 tok/s（+1.51%）；同期 E33 差距 2.36% → 0.89% |
+| [K4 batch](docs/K4_BATCH_RUNTIME_REPORT.md) | 双请求联合 Target、E17 动态预算与异步 SSE owner | 两个固定 pair 的服务对照：合计 decode 31.09 → 38.58 tok/s；样本有限 |
 | [E7](docs/E7_TENSORFOLD_MATCH_REPORT.md) | 充分预热后对照原生 TensorFold | 整体 45.62 vs 49.18 tok/s；8 个自然完成的任务 45.57 vs 43.58 |
 | [E9](docs/E9_DECODE_PROFILE_REPORT.md) | 用 Nsight 剖析 decode | target 验证占 83.81%，草稿占 14.39% |
 
@@ -77,14 +78,14 @@
 
 完整执行器是 [`scripts/e8_ours.py`](scripts/e8_ours.py)，提供 SSE 接口。它需要准备好的研究环境、外部依赖和检查点，见[用法说明](docs/PROMPT_USAGE.md)。实验之间由[常驻 worker](docs/RESIDENT_RESEARCH_WORKER.md) 保持权重加载。
 
-[K1 运行时](docs/K1_RUNTIME_USAGE.md)提供原生 Scheduler 驱动的 Target-only API 和 loopback SSE 入口；[K2](docs/K2_DFLASH_SCHEDULER_USAGE.md)进一步接入 DFlash2 和原生动态预算。K2 动态预算限定单请求，HTTP 一次一请求；联合 GPU batch 待后续接入。
+[K1 运行时](docs/K1_RUNTIME_USAGE.md)提供原生 Scheduler 驱动的 Target-only API 和 loopback SSE 入口；[K2](docs/K2_DFLASH_SCHEDULER_USAGE.md)进一步接入 DFlash2 和原生动态预算。K2 动态预算限定单请求，HTTP 一次一请求；另有独立 [K4 入口](docs/K4_BATCH_RUNTIME_USAGE.md)支持双请求联合 GPU decode 与异步 SSE，保留每请求 E17 动态预算。
 
 ## 下一步
 
 - E8 之后重新对照原生 TensorFold。
 - 完成已封存的E23/E24目标与覆盖实验；独立测试和完整在线A/B通过后，才考虑替换当前策略。
 - 4K 以上上下文：先处理 DFlash 的 2048 滑窗和绝对位置。
-- 让两个请求共享一次 target forward，从 E5 的调度桥接出发。多请求调度的整体设计见[全局调度 RFC](docs/GLOBAL_COST_AWARE_SCHEDULER_RFC.md)（仅为设计提案）。
+- 在显式 K4 双请求联合执行之上，校准跨请求 batch 成本并验证更多混合负载。多请求调度的整体设计见[全局调度 RFC](docs/GLOBAL_COST_AWARE_SCHEDULER_RFC.md)（仅为设计提案）。
 - 五份已写好、还没执行的方案（prefill 数值参考、专家占用速率、专家感知预算的在线阶段、草稿 fidelity、精确输出头筛选），见[未执行方案列表](docs/EXPERIMENTS.md#proposals-without-results-yet)。
 
 ## 快速开始（不需要 GPU，不下载权重）

@@ -109,7 +109,7 @@ class KaifraEngine(Protocol):
 
 ### K1 — 基于 DeepInfer 的 Target-only Runtime
 
-2026-10-23 实施进展：[Target-only 运行时](K1_RUNTIME_REPORT.md)已实现并通过七组真实 GPU 生命周期检查；[API/用法](K1_RUNTIME_USAGE.md)。DFlash2 与 E17 本轮动态预算按下述 K2 接入；K3/K4 等仍为计划。
+2026-10-23 实施进展：[Target-only 运行时](K1_RUNTIME_REPORT.md)已实现并通过七组真实 GPU 生命周期检查；[API/用法](K1_RUNTIME_USAGE.md)。DFlash2 与 E17 本轮动态预算按下述 K2 接入；K3 Graph 与 K4 双请求 batch 已有独立验收，见各阶段的实施记录。
 
 **交付：**沿用 E5 已证明可用的原生 DeepInfer C++ Scheduler / BlockManager 逻辑，构建由 Kaifra 维护的 `KaifraEngine` Qwen 请求状态机/Target KernelAdapter、bounded chunked Prefill、serial Decode、stream、EOS/max_tokens、cancel、权重加载与清理。
 
@@ -138,6 +138,8 @@ class KaifraEngine(Protocol):
 **交付：**两个请求的一次 Target batch forward，正确持有各自 GDN/QSA/PLE 和拒绝后 rollback；先无草稿，再相同动态验证宽度，最后不同动态验证宽度的 ragged/合法 bucket。
 
 **验收：**同请求 solo vs mixed token + logits + 有效状态对照；EOS / cancelled / slot reuse / graph padding / 低高接受混合无污染；报告总吞吐与 per-request TPOT p50/p95。仅两个请求交错但逐个 GPU forward **不算完成**。
+
+2026-10-23 实施：两个请求联合 48 层 Target forward、80 个预备 Graph、独立 E17 当前预算与异步 owner/SSE 已通过受控检查。两组固定英中 pair 的三次服务对照，合计 decode 31.09→38.58 token/s；不代表更大并发或生产性能。详见[报告](K4_BATCH_RUNTIME_REPORT.md)、[入口](K4_BATCH_RUNTIME_USAGE.md)。原 `K4_RUNTIME_OVERHEAD.md` 只记录单流开销优化，不代替本阶段验收。全局预算仍待 K5。
 
 ### K5 — 成本感知的跨请求调度
 

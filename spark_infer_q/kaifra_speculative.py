@@ -223,13 +223,15 @@ class SpeculativeBackend:
 
 class SpeculativeSchedulerBridge(SchedulerBridge):
     """Native MTP counters/publishing and accepted-token flat-layout adapter."""
-    def __init__(self, *args, curve=None, postdraft=False, **kwargs):
+    def __init__(self, *args, curve=None, postdraft=False, independent_postdraft=False, **kwargs):
         if not postdraft and curve is None:
             raise ValueError('a dynamic verification budget is required')
         super().__init__(*args,max_drafts=7,**kwargs)
         self.depth = 7
         self.postdraft = postdraft
-        if postdraft and self.max_requests != 1:
+        if independent_postdraft and (not postdraft or not getattr(self.backend,'gpu_batch',False) or self.max_requests!=2):
+            raise ValueError('independent post-draft budgets require the two-request batch backend')
+        if postdraft and self.max_requests != 1 and not independent_postdraft:
             raise ValueError('post-draft mode requires a single-request measured cost curve')
         if curve is not None:
             if self.max_requests != 1:
