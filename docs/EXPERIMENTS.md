@@ -222,7 +222,7 @@ Verified 2026-10-22; executed 2026-10-21: [frozen plan](E16_BILINGUAL_EXPANSION_
 
 ## Proposals without results yet
 
-These five plans are in main as proposals, not results. None has its own GPU run, and no conclusion should be cited from them. Each file opens with a PROPOSED status line. When one is scheduled, give it an E number, freeze its inputs and thresholds, record the run as a normal plan/report pair, and update its row here.
+These six plans are in main as proposals, not results. None has its own GPU run, and no conclusion should be cited from them. Each file opens with a PROPOSED status line. When one is scheduled, give it an E number, freeze its inputs and thresholds, record the run as a normal plan/report pair, and update its row here.
 
 | Plan | From | Status | Reference code |
 | --- | --- | --- | --- |
@@ -231,3 +231,4 @@ These five plans are in main as proposals, not results. None has its own GPU run
 | [Expert-union-aware verification budget](MOE_AWARE_BUDGET_PLAN.md): predict step time from rows plus routed-expert union and swap only that model into MTPVarlen | #1 | Partly run. E12 ran the offline cost stage: the current step's true union cut held-out cost MAE 26.17%, a history-only union only 2.42%, and same-prefix budget diagnostics stayed at or below 1.28%. The online stages are on hold under the plan's stop rule | `spark_infer_q/moe_cost.py` |
 | [Draft-fidelity acceptance](DRAFT_FIDELITY_ACCEPTANCE_PLAN.md): check whether the BF16 drafter's arithmetic lowers acceptance compared with official stepwise BF16 and FP32 drafters on the same serial prefixes | #4 | Not run | `spark_infer_q/draft_fidelity.py` (`step_outcome`, `paired_ratio`; `emitted_by_width` there is also used by E15/E16) |
 | [Exact greedy head screening](EXACT_HEAD_SCREEN_PLAN.md): screen the target head with a Q8 copy and rigorous bounds, then compute exact BF16 logits only for candidates, keeping the greedy argmax | #7 | Not run; only a synthetic bound check (`scripts/head_screen_bound_sim.py`) | `spark_infer_q/head_screen.py` |
+| [Use-time lossless self-evolution](USE_TIME_SELF_EVOLUTION_PLAN.md): let the speculation stack improve itself from the owner's real usage, evaluating every candidate by exact counterfactual replay and promoting it only on temporally held-out evidence, so no evolution step can change outputs; staged EV0–EV6, starting with replay fidelity on E16's per-round logs | — | Not run | Reuses `spark_infer_q/draft_fidelity.py`, `spark_infer_q/confidence_head.py`, `scripts/resident_worker.py` |
