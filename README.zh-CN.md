@@ -69,7 +69,7 @@
 - E8 之后重新对照原生 TensorFold。
 - 把置信度预测器接入常驻执行入口，并用独立的外部任务检验泛化（E16 报告的下一步）。
 - 4K 以上上下文：先处理 DFlash 的 2048 滑窗和绝对位置。
-- 让两个请求共享一次 target forward，从 E5 的调度桥接出发。
+- 让两个请求共享一次 target forward，从 E5 的调度桥接出发。多请求调度的整体设计见[全局调度 RFC](docs/GLOBAL_COST_AWARE_SCHEDULER_RFC.md)（仅为设计提案）。
 - 五份已写好、还没执行的方案（prefill 数值参考、专家占用速率、专家感知预算的在线阶段、草稿 fidelity、精确输出头筛选），见[未执行方案列表](docs/EXPERIMENTS.md#proposals-without-results-yet)。
 
 ## 快速开始（不需要 GPU，不下载权重）
@@ -100,6 +100,7 @@ python3 -m unittest discover -s tests -v
 | 单个实验 | `docs/E*_PLAN.md`（事先冻结的方案）、`docs/E*_REPORT.md`（报告）、`results/eN/`（脱敏数据） |
 | 用法 | [prompt 分块执行器](docs/PROMPT_USAGE.md)、[Q4 草稿头](docs/DRAFT_HEAD_USAGE.md)、[草稿上下文缓存](docs/DRAFT_CONTEXT_CACHE_USAGE.md)、[投影路由](docs/E11_PROJECTION_USAGE.md)、[常驻 worker](docs/RESIDENT_RESEARCH_WORKER.md) |
 | 架构与移植 | [候选架构](docs/ARCHITECTURE.md)、[适配接口](docs/ADAPTER_INTERFACES.md)、[初始源码审计](docs/PORTING_MATRIX.md) |
+| 设计提案 | [全局 Cost-Aware Scheduler RFC](docs/GLOBAL_COST_AWARE_SCHEDULER_RFC.md)：跨请求验证预算、Prefill/Decode 协调、统一内存准入。仅为设计，尚未实现，也没有服务级加速结果 |
 
 ## 研究问题与范围
 
