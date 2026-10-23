@@ -35,3 +35,6 @@ finally:
 `native` 必须是 K2 的 NEXTN=7 NativeScheduler 上下文。一个GraphTarget持有一个固定地址workspace，当前只能由一个活动请求独占；完成/取消释放lease，下次复用时reset，图保留。先关闭engine，再关闭GraphTarget。调用者不得在Graph请求执行中并发使用同一个eager target/buffers；resident作业与服务本身均串行执行。capability计数在每次engine.step后更新，反映实际重放/回退。
 
 Graph是显式候选。研究中的E29收益和E33头优化不能当作这套服务的速度；K3接入结果见[报告](K3_GRAPH_RUNTIME_REPORT.md)。没有重新加载权重或训练预测器，尚无长上下文、多请求同时重放、随机采样及全主机异步执行结论。
+
+
+完整辅助头/W8/NumPy/Graph配置使用独立[profile e33入口](K3_E33_RUNTIME_USAGE.md)，同期匹配结果见[迁入报告](K3_E33_RUNTIME_REPORT.md)。本页baseline Graph不包含这些优化，勿将其44.78直接与完整配置比较。

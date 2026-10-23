@@ -131,6 +131,8 @@ class KaifraEngine(Protocol):
 
 **验收：**每个允许的 bucket 的 logits/状态/输出回归；被禁止的形状能可靠走 eager fallback；明确区分首次图 capture 和稳定 replay、批次变化。避免在未覆盖的 GDN/QSA 稀疏分支上强启 Graph。
 
+2026-10-23 补充：[完整E33配置](K3_E33_RUNTIME_REPORT.md)已迁入，保留辅助头/W8/NumPy/Graph及其费用和逐轮轨迹。同期新native 47.459、研究路径48.378 tok/s（约1.90%净接入开销）；为显式profile，不改变默认，不声称Graph再叠加E33历史收益。
+
 ### K4 — 真正双请求 GPU 联合验证（通向全局调度的硬门槛）
 
 **交付：**两个请求的一次 Target batch forward，正确持有各自 GDN/QSA/PLE 和拒绝后 rollback；先无草稿，再相同动态验证宽度，最后不同动态验证宽度的 ragged/合法 bucket。

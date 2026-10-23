@@ -34,6 +34,8 @@ class DraftState:
     context: object = None
     output_tokens: int = 0
     next_width: int = 1
+    current_drafts: tuple = (0,)*7
+    cumulative: tuple = ()
 
 
 @dataclass(frozen=True)
@@ -45,6 +47,11 @@ class VerifiedStep:
     draft_ms: float
     verify_ms: float
     commit_ms: float
+    head_fallback: bool = False
+    head_union_count: int | None = None
+    cumulative: tuple = ()
+    accepted: int = 0
+    observed: int = 0
 
 
 class PostDraftBudget:
@@ -84,10 +91,12 @@ class DFlashProvider:
         self.worker, self.model, self.feature_group = worker, model, feature_group
         self.max_context = worker.max_context
         self.budget = budget
+        self.deferred_draft = False
 
     def propose(self, handle, state, anchor, remaining):
         if self.budget is not None and remaining == 1:
             state.next_width = 1
+            state.cumulative = ()
             return [0]*7, [0.0]*7
         worker = self.worker
         if hasattr(worker, 'begin') and worker.request != handle:
@@ -101,6 +110,7 @@ class DFlashProvider:
             features = feature_vector(info['signals'], len(state.context),
                 state.output_tokens, remaining, False, self.feature_group)
             cumulative = self.model.predict(features)
+            state.cumulative = tuple(cumulative)
             rates = conditional_rates(cumulative)
             if self.budget is not None:
                 state.next_width = self.budget.choose(cumulative, len(state.context), remaining)
@@ -145,6 +155,8 @@ class SpeculativeBackend:
             raise BridgeError('speculative state ownership/position mismatch')
         target, torch = self.target, self.target.torch
         verify_ms = commit_ms = draft_ms = 0.0
+        head_info={}
+        accepted=observed=0
         with torch.inference_mode():
             if row.prompt:
                 for begin in range(0,len(row.token_ids),self.prefill_rows):
@@ -159,14 +171,27 @@ class SpeculativeBackend:
                 keep = len(row.token_ids)
             else:
                 t = time.perf_counter()
-                logits, features, buffers = target.run(state.target, list(row.token_ids))
+                predict=getattr(target,'run_predictions',None)
+                if predict is None:
+                    logits, features, buffers = target.run(state.target, list(row.token_ids))
+                    predicted = logits.argmax(-1).tolist()
+                else:
+                    pred,features,buffers,hidden,head_info=predict(state.target,list(row.token_ids),diagnostic=self.observer is not None)
+                    predicted=pred.tolist()
+                    logits=None
+                    if self.observer is not None:
+                        logits=target.screen.original(hidden) if hidden is not None else head_info['full_logits']
+                        if predicted!=logits.argmax(-1).tolist():
+                            raise BridgeError('screened predictions differ from original head')
+                        if not head_info['fallback'] and not torch.equal(head_info['exact'],logits[:,head_info['ids']]):
+                            raise BridgeError('screened subset differs from original BF16 logits')
                 verify_ms = (time.perf_counter()-t)*1000
-                predicted = logits.argmax(-1).tolist()
                 outputs, keep, _, _ = greedy_result(row.token_ids[0], list(row.token_ids[1:]),
                     predicted, self.eos_ids, max_tokens-state.output_tokens)
                 from .draft_signals import observed_labels
                 labels = observed_labels(row.token_ids[1:], predicted, len(outputs), self.eos_ids)
-                state.policy.observe(len(labels), sum(v for _,v in labels))
+                observed=len(labels);accepted=sum(v for _,v in labels)
+                state.policy.observe(observed,accepted)
                 t = time.perf_counter()
                 target.commit(state.target, buffers, len(row.token_ids), keep)
                 state.context = torch.cat([state.context,features[:keep]])
@@ -180,7 +205,8 @@ class SpeculativeBackend:
             next_drafts = [0]*self.depth
             conditional = [0.0]*self.depth
             remaining = max_tokens-state.output_tokens
-            if outputs and remaining > 0 and outputs[-1] not in self.eos_ids:
+            if (not getattr(self.provider,'deferred_draft',False) and outputs and
+                    remaining > 0 and outputs[-1] not in self.eos_ids):
                 t = time.perf_counter()
                 proposed, rates = self.provider.propose(row.handle,state,outputs[-1],remaining)
                 if len(proposed) < self.depth:
@@ -191,7 +217,8 @@ class SpeculativeBackend:
                 torch.cuda.synchronize()
                 draft_ms = (time.perf_counter()-t)*1000
             return VerifiedStep(tuple(outputs), keep, tuple(next_drafts), tuple(conditional),
-                                draft_ms, verify_ms, commit_ms)
+                                draft_ms, verify_ms, commit_ms, bool(head_info.get('fallback',False)),
+                                head_info.get('union_count'),state.cumulative,accepted,observed)
 
 
 class SpeculativeSchedulerBridge(SchedulerBridge):
@@ -220,6 +247,18 @@ class SpeculativeSchedulerBridge(SchedulerBridge):
             # finalization hook updates metadata and process_outputs' seqlens_q;
             # the admission token count remains a conservative reservation.
             try:
+                plan.draft_ms=[0.]*len(plan.rows)
+                for i,row in enumerate(plan.rows):
+                    entry=self._entry(row.handle)
+                    if getattr(self.backend.provider,'deferred_draft',False) and not entry['cancelled']:
+                        state=entry['state']
+                        remaining=entry['seq'].sampling_params.max_tokens-state.output_tokens
+                        t=time.perf_counter()
+                        with self.torch.inference_mode():
+                            proposed,_=self.backend.provider.propose(row.handle,state,row.token_ids[0],remaining)
+                            state.current_drafts=tuple(proposed[:7])
+                            self.torch.cuda.synchronize()
+                        plan.draft_ms[i]=(time.perf_counter()-t)*1000
                 widths = [self._entry(r.handle)['state'].next_width for r in plan.rows]
                 if any(not 1 <= q <= len(r.token_ids) for q,r in zip(widths,plan.rows)):
                     raise BridgeError('final post-draft width exceeds native reservation')
@@ -238,7 +277,9 @@ class SpeculativeSchedulerBridge(SchedulerBridge):
             return super()._work_row(meta,seq,entry)
         start = seq.num_cached_tokens
         published = seq.data.get_token_ids()
-        ids = tuple(published[start:]) + tuple(meta.last_next_n_token[:meta.seqlen_q-1])
+        drafts=(entry['state'].current_drafts if getattr(self.backend.provider,'deferred_draft',False)
+                else meta.last_next_n_token)
+        ids = tuple(published[start:]) + tuple(drafts[:meta.seqlen_q-1])
         if (len(published)-start != 1 or len(ids)!=meta.seqlen_q or
                 not 1<=len(ids)<=self.depth+1 or meta.seqlen_k!=start+len(ids)):
             self.poisoned=True
@@ -292,7 +333,11 @@ class SpeculativeSchedulerBridge(SchedulerBridge):
                 flat.extend(accepted+[-1]*(len(row.token_ids)-len(accepted)))
                 metrics.append(dict(request_id=row.handle.request_id,prompt=row.prompt,
                     verified_rows=len(row.token_ids),emitted=len(out),cancelled=cancelled,
-                    draft_ms=result.draft_ms if live else 0.0,
+                    accepted=result.accepted if live else 0,observed=result.observed if live else 0,
+                    context_rows=row.position,rates=list(result.cumulative) if live else [],
+                    head_fallback=result.head_fallback if live else False,
+                    head_union_count=result.head_union_count if live else None,
+                    draft_ms=(result.draft_ms+getattr(plan,'draft_ms',[0.]*len(plan.rows))[i]) if live else 0.0,
                     verify_ms=result.verify_ms if live else 0.0,
                     commit_ms=result.commit_ms if live else 0.0))
             # Publish the new draft while native bookkeeping still describes the
