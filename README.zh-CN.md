@@ -6,17 +6,19 @@
 
 ## 现状一览
 
-截至 2026-10-23，仓库包含 E0–E22 的实现、测试和脱敏证据，以及源码封存的 E23/E24 研究流程。进行中的流程不代表已经取得性能成果。
+截至 2026-10-23，仓库包含 E0–E22 的实现、测试和脱敏证据、源码封存的 E23/E24 研究流程，以及已验证的双请求 target-only 联合运行时。进行中的流程不代表已经取得性能成果。
 
 - **做什么**：Qwen3.8-Flash-Next（NVFP4，TensorFold 内核）用 DFlash2 草稿模型做推测解码，由 DeepInfer 的 MTPVarlen 决定每一步验证多少个草稿。性能实验及 K2 动态预算运行时采用同步、单请求、greedy 执行。
 - **最大的单项 decode 改进**：E15/E16 训练的轻量置信度预测器。在另行冻结的新任务上，它比默认的滞后预算快约 10%（E16：44.08 vs 40.21 tok/s），目前是可选路径。
 - **prompt 处理**：8 行分块让完整请求快 1.67 倍，首 token 时间之和从 19.69 秒降到 4.23 秒；decode 速度基本没变（E8）。
-- **还没做到**：整体速度没有超过原生 TensorFold（E7 时 45.62 vs 49.18 tok/s，E8 之后没有重测）；也还没有多请求 GPU batch、4K 以上上下文和随机采样。
+- **双请求 GPU batch**：DeepInfer 原生调度器已能让两个请求共享一次 target 前向。受控 target-only 对照中，decode 总吞吐从 23.64 升至 38.63 tok/s（+63.4%）；目前是显式同步 API，尚未验证联合 DFlash 和 HTTP，见[报告](docs/JOINT_TARGET_EXECUTION_REPORT.md)。
+- **还没做到**：整体速度没有超过原生 TensorFold（E7 时 45.62 vs 49.18 tok/s，E8 之后没有重测）；多请求 DFlash、4K 以上上下文和随机采样仍待推进。
 
 ## 主要结果
 
 | 实验 | 改了什么 | 结果 | 现状 |
 | --- | --- | --- | --- |
+| [联合 Target](docs/JOINT_TARGET_EXECUTION_REPORT.md) | 原生调度下两个请求共享一次 target 前向 | 两组中英文请求对 × 四轮，decode 总吞吐 23.64 → 38.63 tok/s（+63.4%） | 可选、同步 target-only；尚未接双请求 DFlash |
 | [E6](docs/E6_DRAFT_HEAD_REPORT.md) | 草稿输出头换成完整词表 Q4 | decode 41.70 → 45.54 tok/s（+9.23%） | 默认 |
 | [E8](docs/E8_INTEGRATION_REPORT.md) | prompt 按 8 行分块，沿用 decode 算术 | 完整请求快 1.67 倍；decode −1.14% | 默认 |
 | [E13](docs/E13_DRAFT_CACHE_CONFIDENCE_REPORT.md) | 增量缓存 DFlash 的历史投影 | 1K–2K 输入 +6.27%；短输入 −0.31% | 可选 |
@@ -34,7 +36,7 @@
 **怎么读这些数字**
 
 - 每个实验用自己的任务集，不同行的 tok/s 不能直接比较，收益也不能相乘。
-- 都是单台 Spark、单请求、greedy 解码。大多数任务是合成提示，上下文最多约 2K token。
+- 都是单台 Spark、greedy 解码。联合 Target 测量双请求总吞吐，其余为单请求研究；大多数任务是合成提示，上下文最多约 2K token。
 - 生成实验核对输出 token、committed logits 和 GDN/QSA 状态；CPU 原型和采集研究的具体核验范围见各自报告。
 - 特征提取、CPU 传输、预测等额外开销都算在耗时里。
 
@@ -74,17 +76,18 @@
 | greedy 验证规则 | 本仓库 | `spark_infer_q/speculative.py` |
 | prompt 分块 | 本仓库 | `spark_infer_q/prompt.py` |
 | 调度桥接（E5） | DeepInfer C++ Scheduler | `spark_infer_q/deepinfer_bridge.py`、`executor.py` |
+| 联合 Target 运行时 | 本仓库的执行与所有权适配，复用 DeepInfer 调度和 TensorFold 算子 | `spark_infer_q/kaifra_joint_target.py`、`kaifra_joint_runtime.py` |
 
 完整执行器是 [`scripts/e8_ours.py`](scripts/e8_ours.py)，提供 SSE 接口。它需要准备好的研究环境、外部依赖和检查点，见[用法说明](docs/PROMPT_USAGE.md)。实验之间由[常驻 worker](docs/RESIDENT_RESEARCH_WORKER.md) 保持权重加载。
 
-[K1 运行时](docs/K1_RUNTIME_USAGE.md)提供原生 Scheduler 驱动的 Target-only API 和 loopback SSE 入口；[K2](docs/K2_DFLASH_SCHEDULER_USAGE.md)进一步接入 DFlash2 和原生动态预算。K2 动态预算限定单请求，HTTP 一次一请求；联合 GPU batch 待后续接入。
+[K1 运行时](docs/K1_RUNTIME_USAGE.md)提供原生 Scheduler 驱动的 Target-only API 和 loopback SSE 入口；[K2](docs/K2_DFLASH_SCHEDULER_USAGE.md)进一步接入 DFlash2 和原生动态预算。K2 动态预算限定单请求，HTTP 一次一请求；独立的[联合 Target API](docs/JOINT_TARGET_EXECUTION_REPORT.md#api-与复现)已通过完整模型双请求 GPU 执行、状态、取消复用与自然 EOS 检查，尚未切换默认服务路径。
 
 ## 下一步
 
 - E8 之后重新对照原生 TensorFold。
 - 完成已封存的E23/E24目标与覆盖实验；独立测试和完整在线A/B通过后，才考虑替换当前策略。
 - 4K 以上上下文：先处理 DFlash 的 2048 滑窗和绝对位置。
-- 让两个请求共享一次 target forward，从 E5 的调度桥接出发。多请求调度的整体设计见[全局调度 RFC](docs/GLOBAL_COST_AWARE_SCHEDULER_RFC.md)（仅为设计提案）。
+- 将已验证的联合 Target 接入多请求动态 DFlash，再推进异步服务和更广任务覆盖。多请求调度的整体设计见[全局调度 RFC](docs/GLOBAL_COST_AWARE_SCHEDULER_RFC.md)（仅为设计提案）。
 - 五份已写好、还没执行的方案（prefill 数值参考、专家占用速率、专家感知预算的在线阶段、草稿 fidelity、精确输出头筛选），见[未执行方案列表](docs/EXPERIMENTS.md#proposals-without-results-yet)。
 
 ## 快速开始（不需要 GPU，不下载权重）
