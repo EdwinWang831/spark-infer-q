@@ -1,0 +1,112 @@
+{
+  "status": "PASS_CPU_RUNTIME_PROTOTYPE",
+  "cpu_predict_ms": {
+    "linear": 0.05151514835688431,
+    "mlp_python": 0.3353197070055103,
+    "mlp_numpy": 0.011815363222922315
+  },
+  "repeats_ms": {
+    "linear": [
+      0.051571089784374635,
+      0.05138596475262602,
+      0.05151383595602965,
+      0.05150946094545361,
+      0.0515367147500001,
+      0.051619527312141145,
+      0.05147483591372293,
+      0.05154640234650287,
+      0.05151514835688431
+    ],
+    "mlp_python": [
+      0.33518860550429963,
+      0.3353137070689627,
+      0.3354118985043897,
+      0.3352455820504474,
+      0.335267644572923,
+      0.3353197070055103,
+      0.335498902359177,
+      0.33572359370737104,
+      0.3367394375572985
+    ],
+    "mlp_numpy": [
+      0.011722546901182795,
+      0.011587730455175915,
+      0.01178561331016681,
+      0.0118228007295329,
+      0.011815363222922315,
+      0.01186299209621211,
+      0.011853300748043694,
+      0.01185830467420601,
+      0.011812425782409264
+    ]
+  },
+  "by_split_positions": {
+    "train": 45081,
+    "calibration": 5614,
+    "test": 5532
+  },
+  "max_probability_abs_error": 7.771561172376096e-16,
+  "changed_actions": {
+    "original_fee": 0,
+    "numpy_fee": 0
+  },
+  "original_mlp_cpu_ms": 0.339974312510094,
+  "head_only_speedup": 28.379974502601456,
+  "diagnostic_test_replay": {
+    "mlp_tokens_per_ms": 0.04450401050995592,
+    "linear_tokens_per_ms": 0.04453176760416719,
+    "relative_gain": -0.0006233099583649038
+  },
+  "source_sha256": {
+    "benchmark": "2e4a43176f3ce862ab2bb806ca3fd8f24dc88b42868def9ea5f7cbd6665a54d4",
+    "runtime": "9a87d1efd104e33cea4a4454016a61df4b4e043f1768411db1764ae71a7b9855"
+  },
+  "input_sha256": {
+    "e17-selected-model.json": "ed7a4873f1d8e2d95ed54c8acf2c34ef3cf4772ea113b48ee09e2775f3391dfe",
+    "e19-selected-model.json": "74e67b0b8386364f544db0ef5b25de6d1ddbb5edad117fd5ade56d009d26a611",
+    "e19-fit.json": "981d26db10d370aee95749c02b8bb9e28882ac1aaf409aaf1248fc902c210b61",
+    "e16-collection-00-rows.jsonl": "7cf5a7a601e5d796bbd8939be19e016447143660b180dbc4f1ae438abf161e69",
+    "e16-collection-01-rows.jsonl": "3e98a9ce5eaf70d2797c2ba730b6f36f470cda36d9336a157fdbe3d97e817cca",
+    "e16-collection-02-rows.jsonl": "7854f3be23cd4df9a3bc8209ee9d3be162fc456a44044232479934b5240cec51",
+    "e16-collection-03-rows.jsonl": "e02c5073dfd2935fe6d9b9c5f4864baa0233c479620d373d463bc6f9b598346f",
+    "e16-collection-04-rows.jsonl": "a1f97d1651115c337efa88f7fdcccbf21465688f15954e9a777e67899b93e1a8",
+    "e16-collection-05-rows.jsonl": "0a86d1939ffe66275eb5ca269b2b4df31df5f984a101ca38e0bede0fdf652d4b",
+    "e16-collection-06-rows.jsonl": "547ef7df43b289a51ae687cb24a9fe9c2b0bfc41f8e2758a983b09b2ff2fcec3",
+    "e16-collection-07-rows.jsonl": "cfe4ff7daf74f9d5aa092d69245f8823e20153b92e3208ff4aee91f4bcd77c74",
+    "e16-collection-08-rows.jsonl": "adcb2f11cdbc666c13429cc0b1ba5066cb9506e160089e11977fa5aa849991b7",
+    "e16-collection-09-rows.jsonl": "9cee149647a088739a7892b66188527406a1565923fd9f75a9c3d970b1dcfd52",
+    "e16-collection-10-rows.jsonl": "ca3dc5843900f12fda44ff152c23e4e00a957026c8bdba58027df5b512eb1813",
+    "e16-collection-11-rows.jsonl": "b9eedaecca215bcd164e70be7a8eb8063417005432c5367d70d4a517a3263dac",
+    "e17-learning-00-rows.jsonl": "dfb7f4e892d5edb89f6aa37e170bd1870ac1d3064c8653d67c7ea6f5d07b5116",
+    "e17-learning-01-rows.jsonl": "04c5b413fbc4dd0efd7b7dc872c74cb4233db066baea8e9a8c49e195ae6de572",
+    "e17-learning-02-rows.jsonl": "edcab08d74da49f143198abad3022c67f25622fd042c1d58c87d61b9b1b43917",
+    "e17-learning-03-rows.jsonl": "bd5b8e9a4acc13f795c65e0b3b31474ea448b830655ff72d84908abbb55d10c5",
+    "e17-learning-04-rows.jsonl": "cb860bfc10c0ee92eb62c366989c16f71c2cfbf45226dfbbdafb67a6326d8dd9",
+    "e17-learning-05-rows.jsonl": "61acc052b327635ce7366ff00add0b8a923ddf49e3d5280ceb6b481eb90e0e1b",
+    "e17-learning-06-rows.jsonl": "e82b5d8c3f1afe7f4520d133c02aab585d6be68f265eeae09c5e21d08e84bf82",
+    "e17-learning-07-rows.jsonl": "7abbe321775c5173d556397d95c18acf7efa6a6a3ff88a21d6e57207d8bc1061",
+    "e17-learning-08-rows.jsonl": "a9b8bba244a159419eff4b9f2df43d18e93379c2f80be0301efb2077a7f51caa",
+    "e17-learning-09-rows.jsonl": "af647532b0a6ca6064dc197acf8ee522fe4c6918acb37c82efd19eb4af5a9e25",
+    "e17-test-00-rows.jsonl": "979c072ebe4fa5f1d00754d9ee7510f780692f8e9cd5637862b598334392e456",
+    "e17-test-01-rows.jsonl": "3c3b715e6de8bf24a0a50da20f64a93644e168a27d4bcb5b4cde36556e04ef8e"
+  },
+  "numpy_version": "2.1.0",
+  "worker_status_sha256": "0cd04055dbb2e30ad6a5f9c160bfc3e71a25ace87d733b60d452df67a3066cbe",
+  "worker_unchanged": true,
+  "contract": {
+    "training": false,
+    "target_calls": 0,
+    "cuda_calls": 0,
+    "online_generation": false,
+    "backend": "NumPy float64, one-vector calls including input conversion, validation and calibration",
+    "initialization_timed": false,
+    "timing_inputs": "first 256 calibration positions; 9 rotated/reversed passes",
+    "validity": "post-test exploratory runtime check; no new independent promotion evidence",
+    "interpretation": "head-only timing and offline test replay; not measured model decode TPS"
+  },
+  "raw_sha256": "ed4aa9a9d4661901c86ae5f77e75ee2e2d9b24df6f54603d59f5cf28beaee0fe",
+  "launch_environment": {
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "2"
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "status": "PASS_COLLECTION_SOURCE_INPUT_AUDIT",
+  "experiment": "e20",
+  "auditor_sha256": "f2e89450ba781c0a9da319fce4230ef52bb220396d5c22c1ef80ecf2163739af",
+  "archive_sha256": "9e904d83f11cf9bef01eaa247c6491522aaa5b4f6c66ec71ef802dbf3ac3c145",
+  "source_files_verified": 17,
+  "current_repo_matches": [
+    "e20_validate.py",
+    "e20_tasks.py",
+    "e20_collect.py",
+    "spark_infer_q/collection_trajectory.py",
+    "spark_infer_q/collector.py",
+    "spark_infer_q/confidence_features.py",
+    "spark_infer_q/confidence_head.py",
+    "spark_infer_q/draft_fidelity.py",
+    "spark_infer_q/draft_head.py",
+    "spark_infer_q/prompt.py",
+    "spark_infer_q/speculative.py",
+    "e3_target.py",
+    "e3_wide_target.py",
+    "e16_tasks.py",
+    "e17_run_contract.py"
+  ],
+  "canonical_legacy_sources": [
+    {
+      "file": "spark_infer_q/draft_context.py",
+      "canonical_git_source": "ee7a725:spark_infer_q/draft_context.py",
+      "current_worktree_difference": "trailing newline only; runtime kept unchanged"
+    }
+  ],
+  "archived_inputs": [
+    "e17_new_tasks.json"
+  ],
+  "task_manifest_sha256": "0d10b7189d81016c7740b3292b493241a7c82b06209b97064d8c91d3c0d048fd",
+  "prompts": 8,
+  "independent_training_roots": 8,
+  "languages": {
+    "en": 3,
+    "zh": 3,
+    "mixed": 2
+  },
+  "resident_load_count": 1,
+  "same_target_and_draft_objects": true,
+  "limits": "checks declared sources/input manifest/transport/resident identity; tensor equality is established by GPU oracles, not recreated on CPU"
+}

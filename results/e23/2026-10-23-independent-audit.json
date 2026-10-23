@@ -1,0 +1,38 @@
+{
+  "status": "PASS_E23_INDEPENDENT_CPU_AUDIT",
+  "auditor_sha256": "2a33338056933c4fbb1eed1207d6c5a0c93181c62708dd61dc6a40277ac089b0",
+  "dataset_sha256": {
+    "e23-test-00-rows.jsonl": "4acd028de768932a15c68347894143d80d182f5c1bc45e10caef44ddcb3afcbc",
+    "e23-test-01-rows.jsonl": "4eb5267d333cf118d4d7ad8194efd794e0fe6f0bacf3757ed3414e75000f32ad",
+    "e23-test-02-rows.jsonl": "40f853750ab35f0d5e70e34a2692e5400a445552cbe957873587202e7b9d24ad"
+  },
+  "fit_sha256": "6100c731be5ffdffeb6cdfd0f1d1435390ecc678ee75b56a9d90dca913b2b50b",
+  "evaluation_sha256": "1cd564792a88c2d277422e5814b19a967a7f640418a166bcaba310a142476aaa",
+  "prompts": 72,
+  "roots": 60,
+  "positions": 4442,
+  "reproduced": {
+    "fixed": 0.038656615574802614,
+    "policy": 0.043184650574215985,
+    "lossless": 0.048550611058400896,
+    "oracle": 0.048550611058400896,
+    "captured": 0.45765484802572404
+  },
+  "versus_bce": {
+    "relative_gain": 0.00012762517982878308,
+    "group_bootstrap_gain_95": [
+      -0.0007998645015827588,
+      0.0010966498958453474
+    ],
+    "groups": 60
+  },
+  "versus_linear": {
+    "relative_gain": 0.0001947109466182706,
+    "group_bootstrap_gain_95": [
+      -0.0017491209971743915,
+      0.002308742740393832
+    ],
+    "groups": 60
+  },
+  "limits": "independent host CPU replay/semantic and SHA checks; no new Target calls, fitting or online throughput"
+}

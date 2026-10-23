@@ -6,7 +6,7 @@ A research project on accelerating Qwen inference on a single NVIDIA DGX Spark (
 
 ## At a glance
 
-As of 2026-10-22, the code, tests and sanitized data for E0–E16 are all on `main`.
+As of 2026-10-23, this repository includes E0–E22 implementations, tests and sanitized evidence, plus source-sealed E23/E24 research workflows. Ongoing workflows are not completed performance results.
 
 - **What it does**: Qwen3.8-Flash-Next (NVFP4, TensorFold kernels) runs speculative decoding with the DFlash2 drafter. DeepInfer's MTPVarlen decides how many drafts to verify at each step. The executor is a synchronous, single-request, greedy research prototype.
 - **Largest single decode gain**: a lightweight confidence predictor trained in E15/E16. On separately frozen new tasks it is about 10% faster than the default lagged budget (E16: 44.08 vs 40.21 tok/s). It is opt-in for now.
@@ -22,6 +22,10 @@ As of 2026-10-22, the code, tests and sanitized data for E0–E16 are all on `ma
 | [E13](docs/E13_DRAFT_CACHE_CONFIDENCE_REPORT.md) | Incremental cache for DFlash context projections | +6.27% on 1K–2K inputs; −0.31% on short inputs | Opt-in |
 | [E15](docs/E15_CONFIDENCE_TRAINING_REPORT.md) | Trained seven-depth confidence predictor | +10.00% over the lagged budget and +10.88% over fixed seven drafts, on 6 new tasks | Opt-in |
 | [E16](docs/E16_BILINGUAL_EXPANSION_REPORT.md) | Retrained on 600 English/Chinese prompts | +9.61% over the lagged budget and +3.18% over the E15 predictor (2 tasks slower), on 20 new tasks; English +7.60%, Chinese +10.75% | Opt-in |
+| [E17](docs/E17_COMPLETED_TRAINING_REPORT.md) | Targeted bilingual predictor retraining | 36.83 tok/s; +11.02% vs fixed budget, only +0.09% vs E16 (interval crosses zero), on 20 roots | No confirmed gain over E16 |
+| [E19](docs/E19_MLP_CAPACITY_REPORT.md) | Same-data 11,157-parameter MLP | Offline efficiency −0.55% vs linear; promotion gate failed | No online MLP timing |
+| [E21](docs/E21_ADAPTIVE_COLLECTOR_REPORT.md) | Adaptive training-label collector | Collection computation 21.13% less time on six roots; known Chinese case 2.15% slower | Validated collection entry, not serving TPS |
+| [E22](docs/E22_PREDICTOR_DIAGNOSIS_REPORT.md) | Optional NumPy scalar MLP runtime | Head-only 0.3353→0.0118 ms (28.38×); diagnostic replay still −0.06% vs linear | CPU prototype, no new decode TPS |
 | [E11](docs/E11_PROJECTION_REPORT.md) | MXFP8 split-K projections | decode +0.62%, complete requests −0.64% | Opt-in, default unchanged |
 | [E10](docs/E10_TARGET_KERNEL_REPORT.md) | Expert-kernel warps and staging depth | +0.08% on holdout | Not adopted |
 | [E12](docs/E12_EXPERT_VERIFICATION_REPORT.md) | Verification cost from the routed-expert union | offline cost error −26.17%, but the union is only known after verifying; features available online gave −2.42% | Not adopted |
@@ -31,7 +35,7 @@ As of 2026-10-22, the code, tests and sanitized data for E0–E16 are all on `ma
 
 - Each experiment uses its own task set, so tok/s values in different rows are not comparable, and gains must not be multiplied.
 - All results are single Spark, single request, greedy decoding. Most tasks are synthetic prompts with context up to about 2K tokens.
-- Every timed run's output tokens, committed logits and GDN/QSA state were checked against serial token-by-token execution.
+- Generation experiments check output tokens, committed logits and GDN/QSA state against serial execution. CPU-only and collection studies describe their separate validation scope in the linked reports.
 - Feature extraction, CPU transfers and prediction are included in the timings.
 
 The remaining experiments laid groundwork or diagnosed:
@@ -44,6 +48,10 @@ The remaining experiments laid groundwork or diagnosed:
 | [E5](docs/E5_ENGINE_BRIDGE_REPORT.md) | DeepInfer C++ Scheduler driving Qwen target-only requests | Seven GPU scenario groups pass; GPU requests still run one at a time |
 | [E7](docs/E7_TENSORFOLD_MATCH_REPORT.md) | Warmed comparison with native TensorFold | 45.62 vs 49.18 tok/s overall; 45.57 vs 43.58 on eight natural-completion tasks |
 | [E9](docs/E9_DECODE_PROFILE_REPORT.md) | Nsight profile of decode | Target verification 83.81%, drafting 14.39% |
+
+[E20 fixed-width collection](docs/E20_FAST_COLLECTOR_REPORT.md) remains a research control; the adaptive [collector usage](docs/FAST_COLLECTOR_USAGE.md) is the recommended validated entry. [E18 short drafting](docs/E18_PREDRAFT_COMPUTE_REPORT.md) reduced draft-only time by 0.74% and did not establish an online win.
+
+**E23/E24 execution (2026-10-23 UTC):** the fixed-data action-regret objective [finished its fresh 60-root test](docs/E23_OBJECTIVE_COMPARISON_REPORT.md): +0.013% vs matched BCE and +0.019% vs linear, both intervals crossing zero, so no online promotion. The separate 504-prompt [coverage workflow](docs/E24_COVERAGE_EXPANSION_PLAN.md) passed tokenization and six GPU producer checks and is collecting learning data. Its expanded-data fit/test remain pending; see the [dated status](docs/E23_E24_EXECUTION_STATUS.md).
 
 ## How it works
 
@@ -67,7 +75,7 @@ The complete executor is [`scripts/e8_ours.py`](scripts/e8_ours.py), which serve
 ## Next steps
 
 - Rerun the native TensorFold comparison after E8.
-- Wire the confidence predictor into the resident execution entry point and test generalization on independent external tasks (the next step named in the E16 report).
+- Complete the sealed E23/E24 objective and coverage experiments; require independent test and complete online A/B evidence before replacing the current policy.
 - 4K+ context: handle DFlash's 2048-token sliding window and absolute positions first.
 - Let two requests share one target forward, starting from the E5 scheduler bridge. The overall multi-request design is in the [global scheduler RFC](docs/GLOBAL_COST_AWARE_SCHEDULER_RFC.md) (Chinese; design only).
 - Five written but unrun proposals (prefill numerics reference, expert-footprint rate, the online stages of the expert-aware budget, draft fidelity, exact head screening) are listed under [proposals without results](docs/EXPERIMENTS.md#proposals-without-results-yet).
@@ -100,7 +108,7 @@ python3 -m unittest discover -s tests -v
 | A single experiment | `docs/E*_PLAN.md` (frozen plan), `docs/E*_REPORT.md` (report), `results/eN/` (sanitized data) |
 | Usage | [prompt-chunk executor](docs/PROMPT_USAGE.md), [Q4 draft head](docs/DRAFT_HEAD_USAGE.md), [draft context cache](docs/DRAFT_CONTEXT_CACHE_USAGE.md), [projection route](docs/E11_PROJECTION_USAGE.md), [resident worker](docs/RESIDENT_RESEARCH_WORKER.md) |
 | Architecture and porting | [architecture candidates](docs/ARCHITECTURE.md), [adapter interfaces](docs/ADAPTER_INTERFACES.md), [initial source audit](docs/PORTING_MATRIX.md) |
-| Design proposals | [Global cost-aware scheduler RFC](docs/GLOBAL_COST_AWARE_SCHEDULER_RFC.md) (Chinese): cross-request verification budget, prefill/decode coordination, unified-memory admission. Design only; not implemented and no serving speedup |
+| Design proposals | [Global scheduler](docs/GLOBAL_COST_AWARE_SCHEDULER_RFC.md), [Kaifra vision](docs/KAIFRA_VISION_RFC.md), [implementation roadmap](docs/KAIFRA_IMPLEMENTATION_ROADMAP.md), [decode frontier](docs/KAIFRA_DECODE_FRONTIER_RFC.md) and [validation matrix](docs/KAIFRA_DECODE_VALIDATION_MATRIX.md). Proposals, not implemented serving capabilities |
 
 ## Research question and scope
 

@@ -1,0 +1,182 @@
+{
+  "status": "IN_PROGRESS",
+  "contract": {
+    "architecture": [
+      137,
+      64,
+      32,
+      7
+    ],
+    "activation": "tanh",
+    "parameter_count": 11157,
+    "seed": 20261022,
+    "l2": 0.005,
+    "max_iter": 80,
+    "cpu_threads": 2,
+    "candidates": [
+      "unweighted_f1",
+      "regret_weighted_f1"
+    ],
+    "selection": "maximum calibration replay policy tokens/ms, including measured scalar CPU inference",
+    "weighting": "exact E17 train-only regret weights, normalized separately within each conditional depth",
+    "calibration": "independent unweighted positive-slope Platt, same as E17",
+    "bootstrap_samples": 2000,
+    "gate_capture": 0.3,
+    "online_modes": [
+      "selected",
+      "paired_linear",
+      "e17_selected",
+      "target_only"
+    ],
+    "online_repetitions": 3,
+    "gate": "E17-style fixed-control gate plus positive grouped gain lower bounds against matched F1 and E17 selected",
+    "limits": [
+      "same E17 split and 20 test roots reused for a prespecified architecture comparison; not a fresh external test",
+      "only calibration selects between two fixed MLP candidates; no test-driven architecture, seed or hyperparameter tuning",
+      "same F1 features, frozen hidden projection, draft/target, greedy arithmetic and costs",
+      "scalar CPU inference is the timed deployment backend; no GPU model batch claim",
+      "offline replay rates are estimates, not measured online throughput"
+    ]
+  },
+  "exporter_sha256": "3ca7526a28d2e129b6b6a07a64cfc018a23c0e66d8ce87191fa62ffdb06c8c5e",
+  "raw_sha256": {
+    "e19-source-seal.json": "095335b20ced154dfb84501bba19866c4abb1f3d06ea75df6212b3b3038a0c75",
+    "e19-cpu-preflight.json": "1c4d4666fea36c83387e1f896b272658141614110fa3a218ae84df2de1e60db9",
+    "e19-pipeline.json": "e4c88c389d2b2a93cb819547ba437240602e2aca024d6f78113f1826862425e0"
+  },
+  "source-seal": {
+    "contract": {
+      "architecture": [
+        137,
+        64,
+        32,
+        7
+      ],
+      "activation": "tanh",
+      "parameter_count": 11157,
+      "seed": 20261022,
+      "l2": 0.005,
+      "max_iter": 80,
+      "cpu_threads": 2,
+      "candidates": [
+        "unweighted_f1",
+        "regret_weighted_f1"
+      ],
+      "selection": "maximum calibration replay policy tokens/ms, including measured scalar CPU inference",
+      "weighting": "exact E17 train-only regret weights, normalized separately within each conditional depth",
+      "calibration": "independent unweighted positive-slope Platt, same as E17",
+      "bootstrap_samples": 2000,
+      "gate_capture": 0.3,
+      "online_modes": [
+        "selected",
+        "paired_linear",
+        "e17_selected",
+        "target_only"
+      ],
+      "online_repetitions": 3,
+      "gate": "E17-style fixed-control gate plus positive grouped gain lower bounds against matched F1 and E17 selected",
+      "limits": [
+        "same E17 split and 20 test roots reused for a prespecified architecture comparison; not a fresh external test",
+        "only calibration selects between two fixed MLP candidates; no test-driven architecture, seed or hyperparameter tuning",
+        "same F1 features, frozen hidden projection, draft/target, greedy arithmetic and costs",
+        "scalar CPU inference is the timed deployment backend; no GPU model batch claim",
+        "offline replay rates are estimates, not measured online throughput"
+      ]
+    },
+    "created_unix": 1792671447.72938,
+    "resident_pid": 319,
+    "load_count": 1,
+    "source_sha256": {
+      "e19_run_contract.py": "6691b9b8366258c3da1ac612ef9fb0287a33d1d0c12a4a05b4350df7f93085ec",
+      "e19_train.py": "646038092a18f6072001c13bf3f6f642ef93df21b4e3e0b9a5f1074534b50344",
+      "e19_online.py": "34bc0796069ed1d074cc6c28b66ae6950b13e718b978e5fe6e8f5d409cfef701",
+      "e19_pipeline.py": "c61de58bb285193c42b4b2e21393ca3d68aa05ba0f83c1e293baf06097d74911",
+      "spark_infer_q/mlp_head.py": "52e378708572736c18e0d0cc10090b454209b5ac7fc1b5cd9fd689549b960020",
+      "tests/test_mlp_head.py": "67b171745761252579f78bc370271914e2959699f0977a6a491d97eb2e39131a",
+      "tests/test_mlp_pipeline.py": "09c7ea95b394070f40a05c91472f417c65d2595ab850dc73a9bb9b92602b44d7",
+      "e17_train.py": "b2150ec6c095aa75881cbecf73e5401f9935559cc2444ce960c5fc494274fa97",
+      "e17_run_contract.py": "2672338b43854f84537beaa8ceec94d06538daf49d3821a94256ef3814ff8afc",
+      "e17_online_tasks.py": "d8b12e97c606f2738f74d96fa2bd08b13b4733ed3c146f2834cc13bb99c0760f",
+      "e15_metrics.py": "c031bb779e25a42ec3f7e9276b90a878a8a8f2515ea626012fc05c28537ea6ca",
+      "spark_infer_q/confidence_head.py": "e27c07808689e54f8660ef8068884be874c0fd5045ed2acfa04fc929b286ad28",
+      "spark_infer_q/regret_head.py": "ad23a257754d123d93feb805480e8d717192c9d99e83de5afbcdc0886bc647e0",
+      "spark_infer_q/budget_regret.py": "14477f3464091a5eaff1a9cbdb0df045b1c047570fe7a7a782b0c8e63076ba11",
+      "spark_infer_q/local_policy.py": "de7b204f92685dbf68d8769df9bf63608c74c96167aa8cb6a08057f39ff3222f",
+      "spark_infer_q/confidence_features.py": "6d40253da4dad1de1a6866767af154e3a3ce69647a80df0e2e931f5ab53f0fc1",
+      "spark_infer_q/draft_context.py": "c1a18d9bafd2a7071e05157c54dd6c36e6420e161e3f1859f0ff1cc182a222c0",
+      "spark_infer_q/draft_head.py": "cebeeaf86487f2487783fb0df5af465ce6a5a365f49565997d13bfff14a866a5",
+      "spark_infer_q/prompt.py": "6b997c3c6e6834666dfa0f7d13a7c950f6dc2e9b1d80818e5ee4b08a9b886f58",
+      "spark_infer_q/speculative.py": "ee1c2855cef1f31a868783d00f27cc88eef77f49ff95ff21dc2705d986f12045",
+      "spark_infer_q/verification_budget.py": "71f28552b8e83f682066edf9e9dd7267e3b54120c5d478949499a443f6eb5c50",
+      "spark_infer_q/draft_signals.py": "5f6a0ea0708498b2aad1ffaab3e913c22891981be4ee7702d553d9851edb9c3a",
+      "e3_target.py": "9fbd4d6edab3f148f894a09b82128012f460e02e1852ba1e7702b26357f584bb",
+      "e3_wide_target.py": "cb454e3fd741339552b15e7bdc168317e5fc013298fd3dc87d904f1bf12d6ace",
+      "e3_mechanism_checks.py": "32fb4e4c89afe7c38336333b26ef9a2900b9b5bf05fdc16ef14d015f7279596e",
+      "e17_new_tasks.json": "f37b9f717d417b54cce0045ec85c9b04f3732adc9621cb5879d83ef073f8e434"
+    },
+    "source_test_collection_files_present": 0,
+    "source_e17_evaluation_present": false,
+    "selection_test_policy": "fit stage opens only E17 train/calibration; tests may already exist but are not read until MLP selection is sealed"
+  },
+  "cpu-preflight": {
+    "status": "PASS_E19_CPU_PREFLIGHT",
+    "tests": 10,
+    "skipped": 0,
+    "failures": 0,
+    "errors": 0,
+    "started_unix": 1792671252.6949317,
+    "finished_unix": 1792671260.5056522,
+    "cpu_affinity": [
+      18,
+      19
+    ],
+    "scope": "isolated CPU subprocess; no model load or CUDA calls; official serialized resident smoke still required",
+    "log": "test_degenerate_late_depths_use_constant_prior (test_mlp_head.MLPFitTests.test_degenerate_late_depths_use_constant_prior) ... ok\ntest_equal_weights_and_constant_rescaling_produce_identical_model (test_mlp_head.MLPFitTests.test_equal_weights_and_constant_rescaling_produce_identical_model) ... ok\ntest_learns_nonlinear_signal_and_preserves_inference_mode (test_mlp_head.MLPFitTests.test_learns_nonlinear_signal_and_preserves_inference_mode) ... ok\ntest_normalization_uses_only_training_and_rejects_bad_weights (test_mlp_head.MLPFitTests.test_normalization_uses_only_training_and_rejects_bad_weights) ... ok\ntest_parameter_count_serialization_and_cumulative_probabilities (test_mlp_head.MLPModelTests.test_parameter_count_serialization_and_cumulative_probabilities) ... ok\ntest_rejects_truncated_weights_and_invalid_calibration (test_mlp_head.MLPModelTests.test_rejects_truncated_weights_and_invalid_calibration) ... ok\ntest_changed_source_stops_before_submission (test_mlp_pipeline.MLPPipelineTests.test_changed_source_stops_before_submission) ... ok\ntest_online_runs_only_after_fit_and_evaluation_pass (test_mlp_pipeline.MLPPipelineTests.test_online_runs_only_after_fit_and_evaluation_pass) ... ok\ntest_previous_chain_failure_stops_without_model_reload_or_jobs (test_mlp_pipeline.MLPPipelineTests.test_previous_chain_failure_stops_without_model_reload_or_jobs) ... ok\ntest_waits_for_previous_chain_and_failed_gate_prevents_online (test_mlp_pipeline.MLPPipelineTests.test_waits_for_previous_chain_and_failed_gate_prevents_online) ... ok\n\n----------------------------------------------------------------------\nRan 10 tests in 7.811s\n\nOK\n"
+  },
+  "pipeline": {
+    "status": "WAITING_FOR_E17",
+    "started_unix": 1792671447.7351983,
+    "source_seal_sha256": "095335b20ced154dfb84501bba19866c4abb1f3d06ea75df6212b3b3038a0c75",
+    "resident_pid": 319,
+    "load_count": 1,
+    "jobs": [],
+    "contract": {
+      "architecture": [
+        137,
+        64,
+        32,
+        7
+      ],
+      "activation": "tanh",
+      "parameter_count": 11157,
+      "seed": 20261022,
+      "l2": 0.005,
+      "max_iter": 80,
+      "cpu_threads": 2,
+      "candidates": [
+        "unweighted_f1",
+        "regret_weighted_f1"
+      ],
+      "selection": "maximum calibration replay policy tokens/ms, including measured scalar CPU inference",
+      "weighting": "exact E17 train-only regret weights, normalized separately within each conditional depth",
+      "calibration": "independent unweighted positive-slope Platt, same as E17",
+      "bootstrap_samples": 2000,
+      "gate_capture": 0.3,
+      "online_modes": [
+        "selected",
+        "paired_linear",
+        "e17_selected",
+        "target_only"
+      ],
+      "online_repetitions": 3,
+      "gate": "E17-style fixed-control gate plus positive grouped gain lower bounds against matched F1 and E17 selected",
+      "limits": [
+        "same E17 split and 20 test roots reused for a prespecified architecture comparison; not a fresh external test",
+        "only calibration selects between two fixed MLP candidates; no test-driven architecture, seed or hyperparameter tuning",
+        "same F1 features, frozen hidden projection, draft/target, greedy arithmetic and costs",
+        "scalar CPU inference is the timed deployment backend; no GPU model batch claim",
+        "offline replay rates are estimates, not measured online throughput"
+      ]
+    }
+  }
+}

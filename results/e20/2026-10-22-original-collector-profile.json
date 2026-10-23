@@ -1,0 +1,30 @@
+{
+  "shards": 10,
+  "prompts": 510,
+  "completion_tokens": 175825,
+  "wall_ms": 12126214.06674385,
+  "serial_ms": 11265567.106318928,
+  "native_draft_ms": 324532.34254647396,
+  "feature_draft_ms": 329355.4103889037,
+  "cost_trial_ms": 123954.4490313856,
+  "positions": 32128,
+  "source_datasets": {
+    "e17-learning-00-rows.jsonl": "dfb7f4e892d5edb89f6aa37e170bd1870ac1d3064c8653d67c7ea6f5d07b5116",
+    "e17-learning-01-rows.jsonl": "04c5b413fbc4dd0efd7b7dc872c74cb4233db066baea8e9a8c49e195ae6de572",
+    "e17-learning-02-rows.jsonl": "edcab08d74da49f143198abad3022c67f25622fd042c1d58c87d61b9b1b43917",
+    "e17-learning-03-rows.jsonl": "bd5b8e9a4acc13f795c65e0b3b31474ea448b830655ff72d84908abbb55d10c5",
+    "e17-learning-04-rows.jsonl": "cb860bfc10c0ee92eb62c366989c16f71c2cfbf45226dfbbdafb67a6326d8dd9",
+    "e17-learning-05-rows.jsonl": "61acc052b327635ce7366ff00add0b8a923ddf49e3d5280ceb6b481eb90e0e1b",
+    "e17-learning-06-rows.jsonl": "e82b5d8c3f1afe7f4520d133c02aab585d6be68f265eeae09c5e21d08e84bf82",
+    "e17-learning-07-rows.jsonl": "7abbe321775c5173d556397d95c18acf7efa6a6a3ff88a21d6e57207d8bc1061",
+    "e17-learning-08-rows.jsonl": "a9b8bba244a159419eff4b9f2df43d18e93379c2f80be0301efb2077a7f51caa",
+    "e17-learning-09-rows.jsonl": "af647532b0a6ca6064dc197acf8ee522fe4c6918acb37c82efd19eb4af5a9e25"
+  },
+  "serial_fraction": 0.9290259139672252,
+  "unattributed_ms": 82804.75845815986,
+  "snapshot_unix": 1792673290.2921903,
+  "limits": [
+    "E17 original learning collector profile, not paired new-collector speed evidence",
+    "serial_ms includes tokenizer and prompt processing; residual includes warmup/checks/IO/gaps"
+  ]
+}

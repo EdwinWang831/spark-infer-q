@@ -1,0 +1,55 @@
+{
+  "status": "PASS_COLLECTION_SOURCE_INPUT_AUDIT",
+  "experiment": "e21",
+  "auditor_sha256": "ff31e008a7299739315fca7f8c1ce3bc94c68b06ee40e4f5e030f1ba233df83c",
+  "archive_sha256": "edbbcc2aa01bfc756565838434ef80db013a66df9f8f68ed96999116b3a87065",
+  "source_files_verified": 23,
+  "current_repo_matches": [
+    "e21_validate.py",
+    "e21_tasks.py",
+    "e21_collect.py",
+    "spark_infer_q/collection_budget.py",
+    "e20_tasks.py",
+    "spark_infer_q/verification_budget.py",
+    "spark_infer_q/local_policy.py",
+    "spark_infer_q/collection_trajectory.py",
+    "spark_infer_q/collector.py",
+    "spark_infer_q/confidence_features.py",
+    "spark_infer_q/confidence_head.py",
+    "spark_infer_q/draft_head.py",
+    "spark_infer_q/prompt.py",
+    "spark_infer_q/speculative.py",
+    "e3_target.py",
+    "e3_wide_target.py",
+    "e16_tasks.py",
+    "e17_run_contract.py"
+  ],
+  "canonical_legacy_sources": [
+    {
+      "file": "spark_infer_q/draft_fidelity.py",
+      "canonical_git_source": "a3d0534:spark_infer_q/draft_fidelity.py",
+      "current_worktree_difference": "only random import and independent step_outcome/paired_ratio helpers added; runtime kept unchanged"
+    },
+    {
+      "file": "spark_infer_q/draft_context.py",
+      "canonical_git_source": "ee7a725:spark_infer_q/draft_context.py",
+      "current_worktree_difference": "trailing newline only; runtime kept unchanged"
+    }
+  ],
+  "archived_inputs": [
+    "artifacts/e16-selected-model.json",
+    "calibration.json",
+    "e17_new_tasks.json"
+  ],
+  "task_manifest_sha256": "fb365d2c2b3ced5d1aeca5024ff688c256b3c6f765335010d814b2618bcb30b7",
+  "prompts": 6,
+  "independent_training_roots": 6,
+  "languages": {
+    "en": 2,
+    "zh": 3,
+    "mixed": 1
+  },
+  "resident_load_count": 1,
+  "same_target_and_draft_objects": true,
+  "limits": "checks declared sources/input manifest/transport/resident identity; tensor equality is established by GPU oracles, not recreated on CPU"
+}

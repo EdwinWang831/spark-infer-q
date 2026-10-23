@@ -192,6 +192,34 @@ Never commit raw user prompts, API keys, identifying machine reports, model weig
 
 Verified 2026-10-22; executed 2026-10-21: [frozen plan](E16_BILINGUAL_EXPANSION_PLAN.md), [report](E16_BILINGUAL_EXPANSION_REPORT.md), [evidence](../results/e16/2026-10-21-bilingual-expansion.json), [model](../results/e16/e16-selected-model.json). 600 authored synthetic prompts (240 en/240 zh/120 mixed), 120 grouped semantic scenarios, 36,846 sampled serial positions, 463 natural EOS; train/cal/test/OOD 300/100/100/100. Both small heads fitted; F1 selected on calibration. Independent CPU replay reproduces test/OOD metrics and verifies all source/data/model hashes. Final 20-task online300 timings/100 oracles/31,540 committed logit rows pass: F1 44.078, lagged40.215, old F1 42.721, new F0 43.946 tok/s. F1 +9.61% vs lagged, +3.18% vs old F1; time-reduction family-bootstrap intervals7.38%–10.46% /1.36%–4.32%. English +7.60%, Chinese +10.75% vs lagged. 15 natural EOS; selected 1K/1.5K inputs and up-to-1K outputs. Two old-predictor regressions retained; F1/F0 +0.30% inconclusive. Preceding 12-task144-timing ablation also passes. Same resident PID/load_count1/READY, failures unchanged; default remains opt-in. No 4K+, sampling, GPU batching, real-user generalization or new native TensorFold ranking.
 
+## E17 — Targeted retraining preparation
+
+2026-10-22: [plan](E17_TARGETED_RETRAINING_PLAN.md), [preparation report](E17_TARGETED_RETRAINING_REPORT.md). Training-only regret weights over18,567 E16 train positions and512 diverse hard positions prepared; no old test/cal/OOD rows enter the pool. Frozen approximate-cost Dinkelbach action regret is not recoverable wall time. OASST1 pinned Apache-2.0 source:480 reviewed human roots plus120 grouped mixed derivatives; en240/zh240/mixed120, new420/90/90 split, actual tokenizer capacity maximum970. At preparation time, new Target labels and four-way unweighted/weighted F0/F1 fit had not started; selection/gates frozen in recipe. Observed width-cost bias motivates paired training-prefix cost checks before attributing errors.
+
+## E18 — True short-draft and skip-draft feasibility
+
+2026-10-22: [plan](E18_PREDRAFT_COMPUTE_PLAN.md), [report](E18_PREDRAFT_COMPUTE_REPORT.md), [data](../results/e18/2026-10-22-draft-probe.json). Same resident weights; true block4 backbone/head3 versus block8/head7 plus no-draft action. 12 train tasks /48 prefixes /1,872 formal action checks /624 warmups /4,449 formal committed logit rows pass, new Q4 M3 arithmetic passes. Warm draft summed time reduction only0.74%; first-three proposals match38/48. Hindsight aggregate prefix oracle skip-or8 +3.06% vs only8; adding4 gives only0.38% marginal, no online throughput claim. Prefix-only, simulated append8 cache, block4-before8 order limits retained. Same PID/load_count1/READY, failures unchanged; do not switch default to three drafts. Next test cheap causal skip/full gate and independently finish E17 cost-aware retraining preparation.
+
+### E17 formal execution — completed
+
+2026-10-22: [final report](E17_COMPLETED_TRAINING_REPORT.md), [completed evidence](../results/e17/completed/2026-10-22-targeted-training.json). All 512 cost positions, 510 learning prompts, calibration selection and 90 fresh test prompts complete. Selected ordinary F1 passes 360 formal online timings /120 oracle checks on20 roots:36.828 tok/s, +11.02% vs fixed, +0.09% vs E16 with an interval crossing zero. No confirmed added speed over the prior predictor; default unchanged. The startup snapshot above is historical.
+
+## E19 — MLP capacity comparison
+
+2026-10-22: [plan](E19_MLP_CAPACITY_PLAN.md), [final report](E19_MLP_CAPACITY_REPORT.md), [evidence](../results/e19/completed/2026-10-22-mlp-capacity.json). Same-data137→64→32→7 MLP,11,157 parameters; calibration-selected unweighted model has −0.55% offline efficiency vs matched linear, fails promotion. No online MLP TPS.
+
+## E20/E21 — Exact accelerated label collection
+
+2026-10-22: [fixed-width report](E20_FAST_COLLECTOR_REPORT.md), [adaptive report](E21_ADAPTIVE_COLLECTOR_REPORT.md), [usage](FAST_COLLECTOR_USAGE.md). Adaptive collection on6 roots/36 timed runs reduces summed task-median collection computation83.47→65.83s (21.13%); four fresh confirmation roots1.286×. All output/full committed hidden feature/logit/state/label checks pass, including actual entry smoke; known Chinese case still+2.15% time. Collection speed, not serving decode TPS.
+
+## E22 — Predictor diagnosis and optional CPU runtime
+
+2026-10-23 UTC: [report](E22_PREDICTOR_DIAGNOSIS_REPORT.md), [diagnosis](../results/e22/2026-10-23-predictor-diagnosis.json), [CPU results](../results/e22/2026-10-23-cpu-runtime.json). Post-test counterfactual attributes about77% of observed MLP deficit to extra scalar execution fees along the stated decomposition. NumPy scalar runtime0.3353→0.0118ms,28.38× head-only;56,227 positions match within8e−16 probability and unchanged actions at matched costs. Replayed new-fee model remains−0.06% vs linear; no online generation or default replacement.
+
+## E23/E24 — Sealed objective and coverage workflows
+
+2026-10-23 UTC: [dated execution snapshot](E23_E24_EXECUTION_STATUS.md), [objective plan](E23_OBJECTIVE_COMPARISON_PLAN.md), [coverage plan](E24_COVERAGE_EXPANSION_PLAN.md). E23 changes only the training objective on identical architecture/data/backend; calibration gain+0.040%, followed by72 fresh prompts/60 roots. The [fresh test report](E23_OBJECTIVE_COMPARISON_REPORT.md) finds +0.0128% vs matched BCE and +0.0195% vs linear with intervals crossing zero; the new gate failed, no online run. E24 fixes the calibration-selected recipe; all504 tokenization checks and six GPU producer scenarios passed. Learning collection is running before expanded-data fit and a conditional72-root test.504 new prompts cover QA/code/math/real roles/long inputs. No default switch or new online speed claim from startup evidence.
+
 ## Proposals without results yet
 
 These five plans are in main as proposals, not results. None has its own GPU run, and no conclusion should be cited from them. Each file opens with a PROPOSED status line. When one is scheduled, give it an E number, freeze its inputs and thresholds, record the run as a normal plan/report pair, and update its row here.
