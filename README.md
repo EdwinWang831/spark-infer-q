@@ -6,7 +6,7 @@ A research project on accelerating Qwen inference on a single NVIDIA DGX Spark (
 
 ## At a glance
 
-As of 2026-10-23, this repository includes E0–E28 implementations, tests and sanitized evidence (E26 cancelled at the user’s request). E28 quantizes five draft MLP blocks to INT8 weights with BF16 activations: actual fixed-budget decode 42.04→42.29 tok/s (+0.61%, 95% interval crosses zero); no default replacement.
+As of 2026-10-23, this repository includes E0–E29 implementations, tests and sanitized evidence (E26 cancelled at the user’s request). E29 adds target CUDA Graph execution: matched linear-budget decode 47.05→47.65 tok/s (+1.28%); Graph plus W8 draft reaches 48.01 (+2.04%). These are controlled results on eight reused roots; the default is unchanged.
 
 - **What it does**: Qwen3.8-Flash-Next (NVFP4, TensorFold kernels) runs speculative decoding with the DFlash2 drafter. DeepInfer's MTPVarlen decides how many drafts to verify at each step. The executor is a synchronous, single-request, greedy research prototype.
 - **Largest single decode gain**: a lightweight confidence predictor trained in E15/E16. On separately frozen new tasks it is about 10% faster than the default lagged budget (E16: 44.08 vs 40.21 tok/s). It is opt-in for now.
@@ -30,6 +30,7 @@ As of 2026-10-23, this repository includes E0–E28 implementations, tests and s
 | [E25](docs/E25_ONLINE_COMPARISON_REPORT.md) | Actual decode, 12 roots / 108 paired runs | New MLP 47.15, frozen MLP 47.28, linear 47.49 tok/s; both relative intervals cross zero | No confirmed online gain |
 | [E27](docs/E27_LINEAR_COST_REPORT.md) | Matched linear weights: NumPy execution and causal live cost control | Original 43.39, NumPy 43.65, live 43.42 tok/s; NumPy +0.60%, repetition-sensitive interval crosses zero | Default unchanged; MLP/hybrid deferred |
 | [E28](docs/DRAFT_BACKBONE_W8_REPORT.md) | Five draft MLP blocks, INT8 weights / BF16 activations | Draft-stage time −6.89%; fixed-budget decode 42.04→42.29 tok/s (+0.61%, interval −0.52%…+1.66%) | Correctness passes; no confirmed decode gain |
+| [E29](docs/E29_TARGET_VERIFICATION_REPORT.md) | Target CUDA Graph with unchanged DFlash feature taps | Matched linear budget: 47.05→47.65 tok/s (+1.28%); Graph＋W8 48.01 (+2.04%); both intervals positive | Controlled gain on 8 reused roots; default unchanged |
 | [E11](docs/E11_PROJECTION_REPORT.md) | MXFP8 split-K projections | decode +0.62%, complete requests −0.64% | Opt-in, default unchanged |
 | [E10](docs/E10_TARGET_KERNEL_REPORT.md) | Expert-kernel warps and staging depth | +0.08% on holdout | Not adopted |
 | [E12](docs/E12_EXPERT_VERIFICATION_REPORT.md) | Verification cost from the routed-expert union | offline cost error −26.17%, but the union is only known after verifying; features available online gave −2.42% | Not adopted |
@@ -61,6 +62,8 @@ The remaining experiments laid groundwork or diagnosed:
 
 **E28 (2026-10-23 UTC):** [draft MLP W8A16](docs/DRAFT_BACKBONE_W8_REPORT.md) completed 8 reused engineering roots / 64 timings, with exact target tokens, committed logits and live state checks. Observed draft acceptance is 73.74%→73.58%; verification rounds increase by 16. BF16 controls remain resident, so packed-weight size is not a measured net memory saving. Fixed budget only; dynamic policy remains untested with this quantization.
 
+**E29 (2026-10-23 UTC):** [target verification](docs/E29_TARGET_VERIFICATION_REPORT.md) completed 32 calibration prefixes / 1,536 width timings, 96 three-arm decode timings and 32 contemporaneous budget-control timings. The existing linear budget reduces computed verification rows 36.72%, verification time 12.70%, and improves decode 42.32→47.31 tok/s (+11.78%) versus fixed seven drafts; this revalidates the existing policy, not a new predictor gain. Pure Graph +1.28% is the new execution result with exactly matched decision/commit traces. The W8/cost change adds +0.75% over Graph alone, but that interval crosses zero. Tokens/logits/features/live state pass; weights stayed resident.
+
 ## How it works
 
 Each decode step has three parts:
@@ -82,7 +85,7 @@ The complete executor is [`scripts/e8_ours.py`](scripts/e8_ours.py), which serve
 
 ## Next steps
 
-- Isolate W8 draft proposal changes and acceptance loss before testing sensitive-layer precision or dynamic-policy integration.
+- Keep the E29 Graph path as an opt-in research candidate. Prioritize target data movement/fusion and real shared GPU compute; isolated W8 benefit beyond Graph is still unconfirmed.
 - Rerun the native TensorFold comparison after E8.
 - Keep MLP/hybrid deferred. Diagnose whether linear budget changes reduce actual verification work before further training; retain independent tests and actual decode gates.
 - 4K+ context: handle DFlash's 2048-token sliding window and absolute positions first.
