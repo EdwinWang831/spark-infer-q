@@ -48,7 +48,8 @@ class SchedulerBridge:
                  eos_ids, capacity=128, max_requests=2, token_budget=32):
         if os.environ.get('DEEPINFER_USE_NEXTN_DECODE') != '0':
             raise BridgeError('target-only bridge requires native nextn=0 before construction')
-        if not (capacity >= 16 and max_requests >= 1 and token_budget >= 16):
+        if (any(type(v) is not int for v in (capacity, max_requests, token_budget)) or
+                not (capacity >= 16 and max_requests >= 1 and token_budget >= 16)):
             raise ValueError('unsupported scheduler capacity')
         self.core, self.torch, self.sampling_class, self.backend = core, torch, sampling_class, backend
         self.vocab_size, self.eos_ids = vocab_size, frozenset(eos_ids)
@@ -90,7 +91,7 @@ class SchedulerBridge:
         import numpy as np
         self._ready()
         ids = tuple(prompt_ids)
-        if not request_id or request_id in self.requests:
+        if not isinstance(request_id, str) or not request_id or request_id in self.requests:
             raise BridgeError('empty or duplicate request ID')
         if (not ids or any(type(t) is not int or not 0 <= t < self.vocab_size for t in ids)
                 or type(max_tokens) is not int or max_tokens < 1 or len(ids)+max_tokens > self.capacity):
@@ -106,7 +107,14 @@ class SchedulerBridge:
         seq = self.core.Sequence(self.sequence_id, prompt, prompt, None, 16,
             request_id, 'e5', params, time.time()*1000, None)
         state = self.backend.create(handle)
-        self.native.add_sequence(seq)
+        try:
+            self.native.add_sequence(seq)
+        except Exception:
+            # Admission may have partly changed native accounting. Never reuse
+            # this scheduler after a failed native call, even before dispatch.
+            self.poisoned = True
+            self.backend.release(handle, state)
+            raise
         self.requests[request_id] = dict(handle=handle, seq=seq, state=state,
             cancelled=False, prompt_length=len(ids))
         self.slots[slot] = handle

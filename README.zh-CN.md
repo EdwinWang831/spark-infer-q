@@ -46,6 +46,7 @@
 | [E3](docs/E3_WIDE_BLOCK_REPORT.md) | 接入 DFlash2 和 DeepInfer 原生动态预算，8 行 / 最多 7 个草稿 | 状态正确；按深度先验的动态预算与合适的固定长度打平（42.21 vs 42.20 tok/s） |
 | [E4](docs/E4_MATCHED_REPORT.md) | 短上下文同机对照 | 动态比固定六草稿 +2.12%；没有领先原生 TensorFold MTP |
 | [E5](docs/E5_ENGINE_BRIDGE_REPORT.md) | 让 DeepInfer C++ Scheduler 驱动 Qwen target-only 请求 | 七组 GPU 场景通过；GPU 仍逐个请求执行 |
+| [K1](docs/K1_RUNTIME_REPORT.md) | 在 E5 上实现可调用的 Target-only 运行时、流式事件与取消 | 七组真实 GPU 场景通过：233 行 logits、91 次有效状态检查；推测解码尚未接入此运行时 |
 | [E7](docs/E7_TENSORFOLD_MATCH_REPORT.md) | 充分预热后对照原生 TensorFold | 整体 45.62 vs 49.18 tok/s；8 个自然完成的任务 45.57 vs 43.58 |
 | [E9](docs/E9_DECODE_PROFILE_REPORT.md) | 用 Nsight 剖析 decode | target 验证占 83.81%，草稿占 14.39% |
 
@@ -71,6 +72,8 @@
 | 调度桥接（E5） | DeepInfer C++ Scheduler | `spark_infer_q/deepinfer_bridge.py`、`executor.py` |
 
 完整执行器是 [`scripts/e8_ours.py`](scripts/e8_ours.py)，提供 SSE 接口。它需要准备好的研究环境、外部依赖和检查点，见[用法说明](docs/PROMPT_USAGE.md)。实验之间由[常驻 worker](docs/RESIDENT_RESEARCH_WORKER.md) 保持权重加载。
+
+[K1 运行时](docs/K1_RUNTIME_USAGE.md)另提供原生 Scheduler 驱动的 Target-only API 和 loopback SSE 入口；同进程支持两请求交错，HTTP 一次一请求。它尚未与上述 DFlash2 路径统一。
 
 ## 下一步
 

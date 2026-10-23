@@ -109,6 +109,8 @@ class KaifraEngine(Protocol):
 
 ### K1 — 基于 DeepInfer 的 Target-only Runtime
 
+2026-10-23 实施进展：[Target-only 运行时](K1_RUNTIME_REPORT.md)已实现并通过七组真实 GPU 生命周期检查；[API/用法](K1_RUNTIME_USAGE.md)。DFlash2 仍在原研究执行器中，后续按 K2 接入；K3/K4 等仍为计划。
+
 **交付：**沿用 E5 已证明可用的原生 DeepInfer C++ Scheduler / BlockManager 逻辑，构建由 Kaifra 维护的 `KaifraEngine` Qwen 请求状态机/Target KernelAdapter、bounded chunked Prefill、serial Decode、stream、EOS/max_tokens、cancel、权重加载与清理。
 
 **验收：**同路径目标 Serial 逐 row logits、有效 GDN/QSA/PLE state 连贯；输入长度上限、非空响应、请求取消/复用、错误和资源回收正确。**运行时继续使用原生 DeepInfer C++ Scheduler，但不依赖 TensorFold 的 HTTP server 或原版 DeepSeek 专用 DeepInfer Worker 常驻。**

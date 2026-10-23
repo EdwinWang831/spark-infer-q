@@ -46,6 +46,7 @@ The remaining experiments laid groundwork or diagnosed:
 | [E3](docs/E3_WIDE_BLOCK_REPORT.md) | DFlash2 with DeepInfer's native dynamic budget, eight rows / up to seven drafts | State checks pass; with a depth-only prior the dynamic budget ties a suitable fixed length (42.21 vs 42.20 tok/s) |
 | [E4](docs/E4_MATCHED_REPORT.md) | Short-context same-machine comparison | Dynamic +2.12% over fixed six drafts; no lead over native TensorFold MTP |
 | [E5](docs/E5_ENGINE_BRIDGE_REPORT.md) | DeepInfer C++ Scheduler driving Qwen target-only requests | Seven GPU scenario groups pass; GPU requests still run one at a time |
+| [K1](docs/K1_RUNTIME_REPORT.md) | Reusable target-only runtime, output events and cancellation on E5 | Seven real GPU groups pass: 233 full-logit rows and 91 live-state checks; speculative decoding remains separate |
 | [E7](docs/E7_TENSORFOLD_MATCH_REPORT.md) | Warmed comparison with native TensorFold | 45.62 vs 49.18 tok/s overall; 45.57 vs 43.58 on eight natural-completion tasks |
 | [E9](docs/E9_DECODE_PROFILE_REPORT.md) | Nsight profile of decode | Target verification 83.81%, drafting 14.39% |
 
@@ -71,6 +72,8 @@ Each decode step has three parts:
 | Scheduler bridge (E5) | DeepInfer C++ Scheduler | `spark_infer_q/deepinfer_bridge.py`, `executor.py` |
 
 The complete executor is [`scripts/e8_ours.py`](scripts/e8_ours.py), which serves SSE. It needs a prepared research environment, external dependencies and checkpoints; see [usage](docs/PROMPT_USAGE.md). A [resident worker](docs/RESIDENT_RESEARCH_WORKER.md) keeps the weights loaded between experiments.
+
+The [K1 runtime](docs/K1_RUNTIME_USAGE.md) separately exposes a native-scheduler target-only API and loopback SSE entry point. Its in-process API interleaves two requests; HTTP admits one generation at a time. The DFlash2 path has not been integrated into this runtime yet.
 
 ## Next steps
 
