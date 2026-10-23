@@ -6,7 +6,7 @@ A research project on accelerating Qwen inference on a single NVIDIA DGX Spark (
 
 ## At a glance
 
-As of 2026-10-23, this repository includes E0–E33 implementations, tests and sanitized evidence (E26 cancelled at the user’s request). E33 preserves the original BF16 target decision through an INT8-assisted head screen: matched W8/linear/Graph decode 46.91→48.51 tok/s (+3.41%, root95% +2.39%…+4.12%) on eight reused engineering roots /64 timings. Tokens, committed logits/features/live state and budget traces match. This remains a research path; E30–E32 candidates were not promoted.
+As of 2026-10-23, this repository includes E0–E34 implementations, tests and sanitized evidence (E26 cancelled at the user’s request). E33 preserves the original BF16 target decision through an INT8-assisted head screen: matched W8/linear/Graph decode 46.91→48.51 tok/s (+3.41%, root95% +2.39%…+4.12%) on eight reused engineering roots /64 timings. Tokens, committed logits/features/live state and budget traces match. This remains a research path; E30–E32 and E34 candidates were not promoted.
 
 - **What it does**: Qwen3.8-Flash-Next (NVFP4, TensorFold kernels) runs speculative decoding with the DFlash2 drafter. DeepInfer's MTPVarlen decides how many drafts to verify at each step. The executor is a synchronous, single-request, greedy research prototype.
 - **Largest single decode gain**: a lightweight confidence predictor trained in E15/E16. On separately frozen new tasks it is about 10% faster than the default lagged budget (E16: 44.08 vs 40.21 tok/s). It is opt-in for now.
@@ -35,6 +35,7 @@ As of 2026-10-23, this repository includes E0–E33 implementations, tests and s
 | [E31](docs/E31_EXPERT_SCALE_REPORT.md) | Packed FP8 expert-scale conversion, unchanged precision | Conversion instructions halved; expert pair +0.23% warm / −0.18% cache-perturbed, both intervals cross zero | Exact checks pass; candidate rejected, no decode promotion |
 | [E32](docs/E32_COMPACT_STAGING_REPORT.md) | Compact activation staging in MXFP8 projections | Shared memory/CTA −16%…−31%; real projection replay −1.06% warm / −0.92% cache-perturbed | 224 preflight +96 real checks pass; candidate rejected |
 | [E33](docs/E33_EXACT_HEAD_SCREEN_REPORT.md) | INT8-assisted head screening + directed FP64 bounds + original BF16 subset | Complete head time −36.24%; actual decode 46.91→48.51 tok/s (+3.41%, positive interval) | 8 roots /64 runs, exact checks pass; research only, default unchanged |
+| [E34](docs/E34_DEVICE_SCREEN_REPORT.md) | Stable GPU candidate compaction and fixed-capacity exact-head Graph | Complete head time −3.78% versus E33 on32 real windows; exact checks pass after captured-input lifetime repair | Below prespecified5% component gate; no full decode run or promotion |
 | [E11](docs/E11_PROJECTION_REPORT.md) | MXFP8 split-K projections | decode +0.62%, complete requests −0.64% | Opt-in, default unchanged |
 | [E10](docs/E10_TARGET_KERNEL_REPORT.md) | Expert-kernel warps and staging depth | +0.08% on holdout | Not adopted |
 | [E12](docs/E12_EXPERT_VERIFICATION_REPORT.md) | Verification cost from the routed-expert union | offline cost error −26.17%, but the union is only known after verifying; features available online gave −2.42% | Not adopted |
