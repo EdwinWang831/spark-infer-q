@@ -1,0 +1,2525 @@
+{
+  "status": "PASS_SOURCE_AND_TRANSFER_AUDIT",
+  "source_bindings": 499,
+  "declared_sources": [
+    {
+      "artifact": "e17-learning-08.json",
+      "source": "e17_collect.py",
+      "sha256": "fa70e6f9881816c59acf64191c704f0134ac9eb50244745f422d46c60f822249"
+    },
+    {
+      "artifact": "e17-learning-08.json",
+      "source": "e17_run_contract.py",
+      "sha256": "2672338b43854f84537beaa8ceec94d06538daf49d3821a94256ef3814ff8afc"
+    },
+    {
+      "artifact": "e17-learning-08.json",
+      "source": "e16_tasks.py",
+      "sha256": "ed611380156c8f458a21635fd11f7280f55e4d178a9d23cbd6b7234a56711567"
+    },
+    {
+      "artifact": "e17-learning-08.json",
+      "source": "e3_target.py",
+      "sha256": "9fbd4d6edab3f148f894a09b82128012f460e02e1852ba1e7702b26357f584bb"
+    },
+    {
+      "artifact": "e17-learning-08.json",
+      "source": "e3_wide_target.py",
+      "sha256": "cb454e3fd741339552b15e7bdc168317e5fc013298fd3dc87d904f1bf12d6ace"
+    },
+    {
+      "artifact": "e17-learning-08.json",
+      "source": "spark_infer_q/confidence_features.py",
+      "sha256": "6d40253da4dad1de1a6866767af154e3a3ce69647a80df0e2e931f5ab53f0fc1"
+    },
+    {
+      "artifact": "e17-learning-08.json",
+      "source": "spark_infer_q/confidence_head.py",
+      "sha256": "e27c07808689e54f8660ef8068884be874c0fd5045ed2acfa04fc929b286ad28"
+    },
+    {
+      "artifact": "e17-learning-08.json",
+      "source": "spark_infer_q/draft_fidelity.py",
+      "sha256": "035e6e75b62ec0d9a305f49717fa2c14346d4c93546e73b4a87c1ea05a972e5e"
+    },
+    {
+      "artifact": "e17-learning-08.json",
+      "source": "spark_infer_q/draft_context.py",
+      "sha256": "c1a18d9bafd2a7071e05157c54dd6c36e6420e161e3f1859f0ff1cc182a222c0"
+    },
+    {
+      "artifact": "e17-learning-08.json",
+      "source": "spark_infer_q/draft_head.py",
+      "sha256": "cebeeaf86487f2487783fb0df5af465ce6a5a365f49565997d13bfff14a866a5"
+    },
+    {
+      "artifact": "e17-learning-08.json",
+      "source": "spark_infer_q/prompt.py",
+      "sha256": "6b997c3c6e6834666dfa0f7d13a7c950f6dc2e9b1d80818e5ee4b08a9b886f58"
+    },
+    {
+      "artifact": "e17-learning-08.json",
+      "source": "spark_infer_q/speculative.py",
+      "sha256": "ee1c2855cef1f31a868783d00f27cc88eef77f49ff95ff21dc2705d986f12045"
+    },
+    {
+      "artifact": "e17-learning-08.json",
+      "source": "e17_new_tasks.json",
+      "sha256": "f37b9f717d417b54cce0045ec85c9b04f3732adc9621cb5879d83ef073f8e434"
+    },
+    {
+      "artifact": "e17-cost-07.json",
+      "source": "e17_cost_audit.py",
+      "sha256": "76aa5e01f20d504a0758913cfba2b7ad30eb6402478f8d9e95c30fc88f72ad8b"
+    },
+    {
+      "artifact": "e17-cost-07.json",
+      "source": "e17_run_contract.py",
+      "sha256": "2672338b43854f84537beaa8ceec94d06538daf49d3821a94256ef3814ff8afc"
+    },
+    {
+      "artifact": "e17-cost-07.json",
+      "source": "e16_tasks.py",
+      "sha256": "ed611380156c8f458a21635fd11f7280f55e4d178a9d23cbd6b7234a56711567"
+    },
+    {
+      "artifact": "e17-cost-07.json",
+      "source": "e3_target.py",
+      "sha256": "9fbd4d6edab3f148f894a09b82128012f460e02e1852ba1e7702b26357f584bb"
+    },
+    {
+      "artifact": "e17-cost-07.json",
+      "source": "e3_wide_target.py",
+      "sha256": "cb454e3fd741339552b15e7bdc168317e5fc013298fd3dc87d904f1bf12d6ace"
+    },
+    {
+      "artifact": "e17-cost-07.json",
+      "source": "spark_infer_q/confidence_features.py",
+      "sha256": "6d40253da4dad1de1a6866767af154e3a3ce69647a80df0e2e931f5ab53f0fc1"
+    },
+    {
+      "artifact": "e17-cost-07.json",
+      "source": "spark_infer_q/confidence_head.py",
+      "sha256": "e27c07808689e54f8660ef8068884be874c0fd5045ed2acfa04fc929b286ad28"
+    },
+    {
+      "artifact": "e17-cost-07.json",
+      "source": "spark_infer_q/budget_regret.py",
+      "sha256": "14477f3464091a5eaff1a9cbdb0df045b1c047570fe7a7a782b0c8e63076ba11"
+    },
+    {
+      "artifact": "e17-cost-07.json",
+      "source": "spark_infer_q/draft_context.py",
+      "sha256": "c1a18d9bafd2a7071e05157c54dd6c36e6420e161e3f1859f0ff1cc182a222c0"
+    },
+    {
+      "artifact": "e17-cost-07.json",
+      "source": "spark_infer_q/draft_head.py",
+      "sha256": "cebeeaf86487f2487783fb0df5af465ce6a5a365f49565997d13bfff14a866a5"
+    },
+    {
+      "artifact": "e17-cost-07.json",
+      "source": "spark_infer_q/prompt.py",
+      "sha256": "6b997c3c6e6834666dfa0f7d13a7c950f6dc2e9b1d80818e5ee4b08a9b886f58"
+    },
+    {
+      "artifact": "e17-cost-07.json",
+      "source": "spark_infer_q/speculative.py",
+      "sha256": "ee1c2855cef1f31a868783d00f27cc88eef77f49ff95ff21dc2705d986f12045"
+    },
+    {
+      "artifact": "e17-cost-07.json",
+      "source": "spark_infer_q/local_policy.py",
+      "sha256": "de7b204f92685dbf68d8769df9bf63608c74c96167aa8cb6a08057f39ff3222f"
+    },
+    {
+      "artifact": "e16-collection-09.json",
+      "source": "e16_collect.py",
+      "sha256": "1a19aee3e3ece090a0212de95de321a434123639b6b8307a85f51b63a13ac0c3"
+    },
+    {
+      "artifact": "e16-collection-09.json",
+      "source": "e16_tasks.py",
+      "sha256": "ed611380156c8f458a21635fd11f7280f55e4d178a9d23cbd6b7234a56711567"
+    },
+    {
+      "artifact": "e16-collection-09.json",
+      "source": "e3_target.py",
+      "sha256": "9fbd4d6edab3f148f894a09b82128012f460e02e1852ba1e7702b26357f584bb"
+    },
+    {
+      "artifact": "e16-collection-09.json",
+      "source": "e3_wide_target.py",
+      "sha256": "cb454e3fd741339552b15e7bdc168317e5fc013298fd3dc87d904f1bf12d6ace"
+    },
+    {
+      "artifact": "e16-collection-09.json",
+      "source": "spark_infer_q/confidence_features.py",
+      "sha256": "6d40253da4dad1de1a6866767af154e3a3ce69647a80df0e2e931f5ab53f0fc1"
+    },
+    {
+      "artifact": "e16-collection-09.json",
+      "source": "spark_infer_q/confidence_head.py",
+      "sha256": "e27c07808689e54f8660ef8068884be874c0fd5045ed2acfa04fc929b286ad28"
+    },
+    {
+      "artifact": "e16-collection-09.json",
+      "source": "spark_infer_q/draft_fidelity.py",
+      "sha256": "035e6e75b62ec0d9a305f49717fa2c14346d4c93546e73b4a87c1ea05a972e5e"
+    },
+    {
+      "artifact": "e16-collection-09.json",
+      "source": "spark_infer_q/draft_context.py",
+      "sha256": "c1a18d9bafd2a7071e05157c54dd6c36e6420e161e3f1859f0ff1cc182a222c0"
+    },
+    {
+      "artifact": "e16-collection-09.json",
+      "source": "spark_infer_q/draft_head.py",
+      "sha256": "cebeeaf86487f2487783fb0df5af465ce6a5a365f49565997d13bfff14a866a5"
+    },
+    {
+      "artifact": "e16-collection-09.json",
+      "source": "spark_infer_q/prompt.py",
+      "sha256": "6b997c3c6e6834666dfa0f7d13a7c950f6dc2e9b1d80818e5ee4b08a9b886f58"
+    },
+    {
+      "artifact": "e16-collection-09.json",
+      "source": "spark_infer_q/speculative.py",
+      "sha256": "ee1c2855cef1f31a868783d00f27cc88eef77f49ff95ff21dc2705d986f12045"
+    },
+    {
+      "artifact": "e17-learning-04.json",
+      "source": "e17_collect.py",
+      "sha256": "fa70e6f9881816c59acf64191c704f0134ac9eb50244745f422d46c60f822249"
+    },
+    {
+      "artifact": "e17-learning-04.json",
+      "source": "e17_run_contract.py",
+      "sha256": "2672338b43854f84537beaa8ceec94d06538daf49d3821a94256ef3814ff8afc"
+    },
+    {
+      "artifact": "e17-learning-04.json",
+      "source": "e16_tasks.py",
+      "sha256": "ed611380156c8f458a21635fd11f7280f55e4d178a9d23cbd6b7234a56711567"
+    },
+    {
+      "artifact": "e17-learning-04.json",
+      "source": "e3_target.py",
+      "sha256": "9fbd4d6edab3f148f894a09b82128012f460e02e1852ba1e7702b26357f584bb"
+    },
+    {
+      "artifact": "e17-learning-04.json",
+      "source": "e3_wide_target.py",
+      "sha256": "cb454e3fd741339552b15e7bdc168317e5fc013298fd3dc87d904f1bf12d6ace"
+    },
+    {
+      "artifact": "e17-learning-04.json",
+      "source": "spark_infer_q/confidence_features.py",
+      "sha256": "6d40253da4dad1de1a6866767af154e3a3ce69647a80df0e2e931f5ab53f0fc1"
+    },
+    {
+      "artifact": "e17-learning-04.json",
+      "source": "spark_infer_q/confidence_head.py",
+      "sha256": "e27c07808689e54f8660ef8068884be874c0fd5045ed2acfa04fc929b286ad28"
+    },
+    {
+      "artifact": "e17-learning-04.json",
+      "source": "spark_infer_q/draft_fidelity.py",
+      "sha256": "035e6e75b62ec0d9a305f49717fa2c14346d4c93546e73b4a87c1ea05a972e5e"
+    },
+    {
+      "artifact": "e17-learning-04.json",
+      "source": "spark_infer_q/draft_context.py",
+      "sha256": "c1a18d9bafd2a7071e05157c54dd6c36e6420e161e3f1859f0ff1cc182a222c0"
+    },
+    {
+      "artifact": "e17-learning-04.json",
+      "source": "spark_infer_q/draft_head.py",
+      "sha256": "cebeeaf86487f2487783fb0df5af465ce6a5a365f49565997d13bfff14a866a5"
+    },
+    {
+      "artifact": "e17-learning-04.json",
+      "source": "spark_infer_q/prompt.py",
+      "sha256": "6b997c3c6e6834666dfa0f7d13a7c950f6dc2e9b1d80818e5ee4b08a9b886f58"
+    },
+    {
+      "artifact": "e17-learning-04.json",
+      "source": "spark_infer_q/speculative.py",
+      "sha256": "ee1c2855cef1f31a868783d00f27cc88eef77f49ff95ff21dc2705d986f12045"
+    },
+    {
+      "artifact": "e17-learning-04.json",
+      "source": "e17_new_tasks.json",
+      "sha256": "f37b9f717d417b54cce0045ec85c9b04f3732adc9621cb5879d83ef073f8e434"
+    },
+    {
+      "artifact": "e16-collection-05.json",
+      "source": "e16_collect.py",
+      "sha256": "1a19aee3e3ece090a0212de95de321a434123639b6b8307a85f51b63a13ac0c3"
+    },
+    {
+      "artifact": "e16-collection-05.json",
+      "source": "e16_tasks.py",
+      "sha256": "ed611380156c8f458a21635fd11f7280f55e4d178a9d23cbd6b7234a56711567"
+    },
+    {
+      "artifact": "e16-collection-05.json",
+      "source": "e3_target.py",
+      "sha256": "9fbd4d6edab3f148f894a09b82128012f460e02e1852ba1e7702b26357f584bb"
+    },
+    {
+      "artifact": "e16-collection-05.json",
+      "source": "e3_wide_target.py",
+      "sha256": "cb454e3fd741339552b15e7bdc168317e5fc013298fd3dc87d904f1bf12d6ace"
+    },
+    {
+      "artifact": "e16-collection-05.json",
+      "source": "spark_infer_q/confidence_features.py",
+      "sha256": "6d40253da4dad1de1a6866767af154e3a3ce69647a80df0e2e931f5ab53f0fc1"
+    },
+    {
+      "artifact": "e16-collection-05.json",
+      "source": "spark_infer_q/confidence_head.py",
+      "sha256": "e27c07808689e54f8660ef8068884be874c0fd5045ed2acfa04fc929b286ad28"
+    },
+    {
+      "artifact": "e16-collection-05.json",
+      "source": "spark_infer_q/draft_fidelity.py",
+      "sha256": "035e6e75b62ec0d9a305f49717fa2c14346d4c93546e73b4a87c1ea05a972e5e"
+    },
+    {
+      "artifact": "e16-collection-05.json",
+      "source": "spark_infer_q/draft_context.py",
+      "sha256": "c1a18d9bafd2a7071e05157c54dd6c36e6420e161e3f1859f0ff1cc182a222c0"
+    },
+    {
+      "artifact": "e16-collection-05.json",
+      "source": "spark_infer_q/draft_head.py",
+      "sha256": "cebeeaf86487f2487783fb0df5af465ce6a5a365f49565997d13bfff14a866a5"
+    },
+    {
+      "artifact": "e16-collection-05.json",
+      "source": "spark_infer_q/prompt.py",
+      "sha256": "6b997c3c6e6834666dfa0f7d13a7c950f6dc2e9b1d80818e5ee4b08a9b886f58"
+    },
+    {
+      "artifact": "e16-collection-05.json",
+      "source": "spark_infer_q/speculative.py",
+      "sha256": "ee1c2855cef1f31a868783d00f27cc88eef77f49ff95ff21dc2705d986f12045"
+    },
+    {
+      "artifact": "e16-collection-04.json",
+      "source": "e16_collect.py",
+      "sha256": "1a19aee3e3ece090a0212de95de321a434123639b6b8307a85f51b63a13ac0c3"
+    },
+    {
+      "artifact": "e16-collection-04.json",
+      "source": "e16_tasks.py",
+      "sha256": "ed611380156c8f458a21635fd11f7280f55e4d178a9d23cbd6b7234a56711567"
+    },
+    {
+      "artifact": "e16-collection-04.json",
+      "source": "e3_target.py",
+      "sha256": "9fbd4d6edab3f148f894a09b82128012f460e02e1852ba1e7702b26357f584bb"
+    },
+    {
+      "artifact": "e16-collection-04.json",
+      "source": "e3_wide_target.py",
+      "sha256": "cb454e3fd741339552b15e7bdc168317e5fc013298fd3dc87d904f1bf12d6ace"
+    },
+    {
+      "artifact": "e16-collection-04.json",
+      "source": "spark_infer_q/confidence_features.py",
+      "sha256": "6d40253da4dad1de1a6866767af154e3a3ce69647a80df0e2e931f5ab53f0fc1"
+    },
+    {
+      "artifact": "e16-collection-04.json",
+      "source": "spark_infer_q/confidence_head.py",
+      "sha256": "e27c07808689e54f8660ef8068884be874c0fd5045ed2acfa04fc929b286ad28"
+    },
+    {
+      "artifact": "e16-collection-04.json",
+      "source": "spark_infer_q/draft_fidelity.py",
+      "sha256": "035e6e75b62ec0d9a305f49717fa2c14346d4c93546e73b4a87c1ea05a972e5e"
+    },
+    {
+      "artifact": "e16-collection-04.json",
+      "source": "spark_infer_q/draft_context.py",
+      "sha256": "c1a18d9bafd2a7071e05157c54dd6c36e6420e161e3f1859f0ff1cc182a222c0"
+    },
+    {
+      "artifact": "e16-collection-04.json",
+      "source": "spark_infer_q/draft_head.py",
+      "sha256": "cebeeaf86487f2487783fb0df5af465ce6a5a365f49565997d13bfff14a866a5"
+    },
+    {
+      "artifact": "e16-collection-04.json",
+      "source": "spark_infer_q/prompt.py",
+      "sha256": "6b997c3c6e6834666dfa0f7d13a7c950f6dc2e9b1d80818e5ee4b08a9b886f58"
+    },
+    {
+      "artifact": "e16-collection-04.json",
+      "source": "spark_infer_q/speculative.py",
+      "sha256": "ee1c2855cef1f31a868783d00f27cc88eef77f49ff95ff21dc2705d986f12045"
+    },
+    {
+      "artifact": "e17-cost-smoke.json",
+      "source": "e17_cost_audit.py",
+      "sha256": "76aa5e01f20d504a0758913cfba2b7ad30eb6402478f8d9e95c30fc88f72ad8b"
+    },
+    {
+      "artifact": "e17-cost-smoke.json",
+      "source": "e17_run_contract.py",
+      "sha256": "2672338b43854f84537beaa8ceec94d06538daf49d3821a94256ef3814ff8afc"
+    },
+    {
+      "artifact": "e17-cost-smoke.json",
+      "source": "e16_tasks.py",
+      "sha256": "ed611380156c8f458a21635fd11f7280f55e4d178a9d23cbd6b7234a56711567"
+    },
+    {
+      "artifact": "e17-cost-smoke.json",
+      "source": "e3_target.py",
+      "sha256": "9fbd4d6edab3f148f894a09b82128012f460e02e1852ba1e7702b26357f584bb"
+    },
+    {
+      "artifact": "e17-cost-smoke.json",
+      "source": "e3_wide_target.py",
+      "sha256": "cb454e3fd741339552b15e7bdc168317e5fc013298fd3dc87d904f1bf12d6ace"
+    },
+    {
+      "artifact": "e17-cost-smoke.json",
+      "source": "spark_infer_q/confidence_features.py",
+      "sha256": "6d40253da4dad1de1a6866767af154e3a3ce69647a80df0e2e931f5ab53f0fc1"
+    },
+    {
+      "artifact": "e17-cost-smoke.json",
+      "source": "spark_infer_q/confidence_head.py",
+      "sha256": "e27c07808689e54f8660ef8068884be874c0fd5045ed2acfa04fc929b286ad28"
+    },
+    {
+      "artifact": "e17-cost-smoke.json",
+      "source": "spark_infer_q/budget_regret.py",
+      "sha256": "14477f3464091a5eaff1a9cbdb0df045b1c047570fe7a7a782b0c8e63076ba11"
+    },
+    {
+      "artifact": "e17-cost-smoke.json",
+      "source": "spark_infer_q/draft_context.py",
+      "sha256": "c1a18d9bafd2a7071e05157c54dd6c36e6420e161e3f1859f0ff1cc182a222c0"
+    },
+    {
+      "artifact": "e17-cost-smoke.json",
+      "source": "spark_infer_q/draft_head.py",
+      "sha256": "cebeeaf86487f2487783fb0df5af465ce6a5a365f49565997d13bfff14a866a5"
+    },
+    {
+      "artifact": "e17-cost-smoke.json",
+      "source": "spark_infer_q/prompt.py",
+      "sha256": "6b997c3c6e6834666dfa0f7d13a7c950f6dc2e9b1d80818e5ee4b08a9b886f58"
+    },
+    {
+      "artifact": "e17-cost-smoke.json",
+      "source": "spark_infer_q/speculative.py",
+      "sha256": "ee1c2855cef1f31a868783d00f27cc88eef77f49ff95ff21dc2705d986f12045"
+    },
+    {
+      "artifact": "e17-cost-smoke.json",
+      "source": "spark_infer_q/local_policy.py",
+      "sha256": "de7b204f92685dbf68d8769df9bf63608c74c96167aa8cb6a08057f39ff3222f"
+    },
+    {
+      "artifact": "e19-source-seal.json",
+      "source": "e19_run_contract.py",
+      "sha256": "6691b9b8366258c3da1ac612ef9fb0287a33d1d0c12a4a05b4350df7f93085ec"
+    },
+    {
+      "artifact": "e19-source-seal.json",
+      "source": "e19_train.py",
+      "sha256": "646038092a18f6072001c13bf3f6f642ef93df21b4e3e0b9a5f1074534b50344"
+    },
+    {
+      "artifact": "e19-source-seal.json",
+      "source": "e19_online.py",
+      "sha256": "34bc0796069ed1d074cc6c28b66ae6950b13e718b978e5fe6e8f5d409cfef701"
+    },
+    {
+      "artifact": "e19-source-seal.json",
+      "source": "e19_pipeline.py",
+      "sha256": "c61de58bb285193c42b4b2e21393ca3d68aa05ba0f83c1e293baf06097d74911"
+    },
+    {
+      "artifact": "e19-source-seal.json",
+      "source": "spark_infer_q/mlp_head.py",
+      "sha256": "52e378708572736c18e0d0cc10090b454209b5ac7fc1b5cd9fd689549b960020"
+    },
+    {
+      "artifact": "e19-source-seal.json",
+      "source": "tests/test_mlp_head.py",
+      "sha256": "67b171745761252579f78bc370271914e2959699f0977a6a491d97eb2e39131a"
+    },
+    {
+      "artifact": "e19-source-seal.json",
+      "source": "tests/test_mlp_pipeline.py",
+      "sha256": "09c7ea95b394070f40a05c91472f417c65d2595ab850dc73a9bb9b92602b44d7"
+    },
+    {
+      "artifact": "e19-source-seal.json",
+      "source": "e17_train.py",
+      "sha256": "b2150ec6c095aa75881cbecf73e5401f9935559cc2444ce960c5fc494274fa97"
+    },
+    {
+      "artifact": "e19-source-seal.json",
+      "source": "e17_run_contract.py",
+      "sha256": "2672338b43854f84537beaa8ceec94d06538daf49d3821a94256ef3814ff8afc"
+    },
+    {
+      "artifact": "e19-source-seal.json",
+      "source": "e17_online_tasks.py",
+      "sha256": "d8b12e97c606f2738f74d96fa2bd08b13b4733ed3c146f2834cc13bb99c0760f"
+    },
+    {
+      "artifact": "e19-source-seal.json",
+      "source": "e15_metrics.py",
+      "sha256": "c031bb779e25a42ec3f7e9276b90a878a8a8f2515ea626012fc05c28537ea6ca"
+    },
+    {
+      "artifact": "e19-source-seal.json",
+      "source": "spark_infer_q/confidence_head.py",
+      "sha256": "e27c07808689e54f8660ef8068884be874c0fd5045ed2acfa04fc929b286ad28"
+    },
+    {
+      "artifact": "e19-source-seal.json",
+      "source": "spark_infer_q/regret_head.py",
+      "sha256": "ad23a257754d123d93feb805480e8d717192c9d99e83de5afbcdc0886bc647e0"
+    },
+    {
+      "artifact": "e19-source-seal.json",
+      "source": "spark_infer_q/budget_regret.py",
+      "sha256": "14477f3464091a5eaff1a9cbdb0df045b1c047570fe7a7a782b0c8e63076ba11"
+    },
+    {
+      "artifact": "e19-source-seal.json",
+      "source": "spark_infer_q/local_policy.py",
+      "sha256": "de7b204f92685dbf68d8769df9bf63608c74c96167aa8cb6a08057f39ff3222f"
+    },
+    {
+      "artifact": "e19-source-seal.json",
+      "source": "spark_infer_q/confidence_features.py",
+      "sha256": "6d40253da4dad1de1a6866767af154e3a3ce69647a80df0e2e931f5ab53f0fc1"
+    },
+    {
+      "artifact": "e19-source-seal.json",
+      "source": "spark_infer_q/draft_context.py",
+      "sha256": "c1a18d9bafd2a7071e05157c54dd6c36e6420e161e3f1859f0ff1cc182a222c0"
+    },
+    {
+      "artifact": "e19-source-seal.json",
+      "source": "spark_infer_q/draft_head.py",
+      "sha256": "cebeeaf86487f2487783fb0df5af465ce6a5a365f49565997d13bfff14a866a5"
+    },
+    {
+      "artifact": "e19-source-seal.json",
+      "source": "spark_infer_q/prompt.py",
+      "sha256": "6b997c3c6e6834666dfa0f7d13a7c950f6dc2e9b1d80818e5ee4b08a9b886f58"
+    },
+    {
+      "artifact": "e19-source-seal.json",
+      "source": "spark_infer_q/speculative.py",
+      "sha256": "ee1c2855cef1f31a868783d00f27cc88eef77f49ff95ff21dc2705d986f12045"
+    },
+    {
+      "artifact": "e19-source-seal.json",
+      "source": "spark_infer_q/verification_budget.py",
+      "sha256": "71f28552b8e83f682066edf9e9dd7267e3b54120c5d478949499a443f6eb5c50"
+    },
+    {
+      "artifact": "e19-source-seal.json",
+      "source": "spark_infer_q/draft_signals.py",
+      "sha256": "5f6a0ea0708498b2aad1ffaab3e913c22891981be4ee7702d553d9851edb9c3a"
+    },
+    {
+      "artifact": "e19-source-seal.json",
+      "source": "e3_target.py",
+      "sha256": "9fbd4d6edab3f148f894a09b82128012f460e02e1852ba1e7702b26357f584bb"
+    },
+    {
+      "artifact": "e19-source-seal.json",
+      "source": "e3_wide_target.py",
+      "sha256": "cb454e3fd741339552b15e7bdc168317e5fc013298fd3dc87d904f1bf12d6ace"
+    },
+    {
+      "artifact": "e19-source-seal.json",
+      "source": "e3_mechanism_checks.py",
+      "sha256": "32fb4e4c89afe7c38336333b26ef9a2900b9b5bf05fdc16ef14d015f7279596e"
+    },
+    {
+      "artifact": "e19-source-seal.json",
+      "source": "e17_new_tasks.json",
+      "sha256": "f37b9f717d417b54cce0045ec85c9b04f3732adc9621cb5879d83ef073f8e434"
+    },
+    {
+      "artifact": "e17-learning-05.json",
+      "source": "e17_collect.py",
+      "sha256": "fa70e6f9881816c59acf64191c704f0134ac9eb50244745f422d46c60f822249"
+    },
+    {
+      "artifact": "e17-learning-05.json",
+      "source": "e17_run_contract.py",
+      "sha256": "2672338b43854f84537beaa8ceec94d06538daf49d3821a94256ef3814ff8afc"
+    },
+    {
+      "artifact": "e17-learning-05.json",
+      "source": "e16_tasks.py",
+      "sha256": "ed611380156c8f458a21635fd11f7280f55e4d178a9d23cbd6b7234a56711567"
+    },
+    {
+      "artifact": "e17-learning-05.json",
+      "source": "e3_target.py",
+      "sha256": "9fbd4d6edab3f148f894a09b82128012f460e02e1852ba1e7702b26357f584bb"
+    },
+    {
+      "artifact": "e17-learning-05.json",
+      "source": "e3_wide_target.py",
+      "sha256": "cb454e3fd741339552b15e7bdc168317e5fc013298fd3dc87d904f1bf12d6ace"
+    },
+    {
+      "artifact": "e17-learning-05.json",
+      "source": "spark_infer_q/confidence_features.py",
+      "sha256": "6d40253da4dad1de1a6866767af154e3a3ce69647a80df0e2e931f5ab53f0fc1"
+    },
+    {
+      "artifact": "e17-learning-05.json",
+      "source": "spark_infer_q/confidence_head.py",
+      "sha256": "e27c07808689e54f8660ef8068884be874c0fd5045ed2acfa04fc929b286ad28"
+    },
+    {
+      "artifact": "e17-learning-05.json",
+      "source": "spark_infer_q/draft_fidelity.py",
+      "sha256": "035e6e75b62ec0d9a305f49717fa2c14346d4c93546e73b4a87c1ea05a972e5e"
+    },
+    {
+      "artifact": "e17-learning-05.json",
+      "source": "spark_infer_q/draft_context.py",
+      "sha256": "c1a18d9bafd2a7071e05157c54dd6c36e6420e161e3f1859f0ff1cc182a222c0"
+    },
+    {
+      "artifact": "e17-learning-05.json",
+      "source": "spark_infer_q/draft_head.py",
+      "sha256": "cebeeaf86487f2487783fb0df5af465ce6a5a365f49565997d13bfff14a866a5"
+    },
+    {
+      "artifact": "e17-learning-05.json",
+      "source": "spark_infer_q/prompt.py",
+      "sha256": "6b997c3c6e6834666dfa0f7d13a7c950f6dc2e9b1d80818e5ee4b08a9b886f58"
+    },
+    {
+      "artifact": "e17-learning-05.json",
+      "source": "spark_infer_q/speculative.py",
+      "sha256": "ee1c2855cef1f31a868783d00f27cc88eef77f49ff95ff21dc2705d986f12045"
+    },
+    {
+      "artifact": "e17-learning-05.json",
+      "source": "e17_new_tasks.json",
+      "sha256": "f37b9f717d417b54cce0045ec85c9b04f3732adc9621cb5879d83ef073f8e434"
+    },
+    {
+      "artifact": "e16-collection-08.json",
+      "source": "e16_collect.py",
+      "sha256": "1a19aee3e3ece090a0212de95de321a434123639b6b8307a85f51b63a13ac0c3"
+    },
+    {
+      "artifact": "e16-collection-08.json",
+      "source": "e16_tasks.py",
+      "sha256": "ed611380156c8f458a21635fd11f7280f55e4d178a9d23cbd6b7234a56711567"
+    },
+    {
+      "artifact": "e16-collection-08.json",
+      "source": "e3_target.py",
+      "sha256": "9fbd4d6edab3f148f894a09b82128012f460e02e1852ba1e7702b26357f584bb"
+    },
+    {
+      "artifact": "e16-collection-08.json",
+      "source": "e3_wide_target.py",
+      "sha256": "cb454e3fd741339552b15e7bdc168317e5fc013298fd3dc87d904f1bf12d6ace"
+    },
+    {
+      "artifact": "e16-collection-08.json",
+      "source": "spark_infer_q/confidence_features.py",
+      "sha256": "6d40253da4dad1de1a6866767af154e3a3ce69647a80df0e2e931f5ab53f0fc1"
+    },
+    {
+      "artifact": "e16-collection-08.json",
+      "source": "spark_infer_q/confidence_head.py",
+      "sha256": "e27c07808689e54f8660ef8068884be874c0fd5045ed2acfa04fc929b286ad28"
+    },
+    {
+      "artifact": "e16-collection-08.json",
+      "source": "spark_infer_q/draft_fidelity.py",
+      "sha256": "035e6e75b62ec0d9a305f49717fa2c14346d4c93546e73b4a87c1ea05a972e5e"
+    },
+    {
+      "artifact": "e16-collection-08.json",
+      "source": "spark_infer_q/draft_context.py",
+      "sha256": "c1a18d9bafd2a7071e05157c54dd6c36e6420e161e3f1859f0ff1cc182a222c0"
+    },
+    {
+      "artifact": "e16-collection-08.json",
+      "source": "spark_infer_q/draft_head.py",
+      "sha256": "cebeeaf86487f2487783fb0df5af465ce6a5a365f49565997d13bfff14a866a5"
+    },
+    {
+      "artifact": "e16-collection-08.json",
+      "source": "spark_infer_q/prompt.py",
+      "sha256": "6b997c3c6e6834666dfa0f7d13a7c950f6dc2e9b1d80818e5ee4b08a9b886f58"
+    },
+    {
+      "artifact": "e16-collection-08.json",
+      "source": "spark_infer_q/speculative.py",
+      "sha256": "ee1c2855cef1f31a868783d00f27cc88eef77f49ff95ff21dc2705d986f12045"
+    },
+    {
+      "artifact": "e17-cost-06.json",
+      "source": "e17_cost_audit.py",
+      "sha256": "76aa5e01f20d504a0758913cfba2b7ad30eb6402478f8d9e95c30fc88f72ad8b"
+    },
+    {
+      "artifact": "e17-cost-06.json",
+      "source": "e17_run_contract.py",
+      "sha256": "2672338b43854f84537beaa8ceec94d06538daf49d3821a94256ef3814ff8afc"
+    },
+    {
+      "artifact": "e17-cost-06.json",
+      "source": "e16_tasks.py",
+      "sha256": "ed611380156c8f458a21635fd11f7280f55e4d178a9d23cbd6b7234a56711567"
+    },
+    {
+      "artifact": "e17-cost-06.json",
+      "source": "e3_target.py",
+      "sha256": "9fbd4d6edab3f148f894a09b82128012f460e02e1852ba1e7702b26357f584bb"
+    },
+    {
+      "artifact": "e17-cost-06.json",
+      "source": "e3_wide_target.py",
+      "sha256": "cb454e3fd741339552b15e7bdc168317e5fc013298fd3dc87d904f1bf12d6ace"
+    },
+    {
+      "artifact": "e17-cost-06.json",
+      "source": "spark_infer_q/confidence_features.py",
+      "sha256": "6d40253da4dad1de1a6866767af154e3a3ce69647a80df0e2e931f5ab53f0fc1"
+    },
+    {
+      "artifact": "e17-cost-06.json",
+      "source": "spark_infer_q/confidence_head.py",
+      "sha256": "e27c07808689e54f8660ef8068884be874c0fd5045ed2acfa04fc929b286ad28"
+    },
+    {
+      "artifact": "e17-cost-06.json",
+      "source": "spark_infer_q/budget_regret.py",
+      "sha256": "14477f3464091a5eaff1a9cbdb0df045b1c047570fe7a7a782b0c8e63076ba11"
+    },
+    {
+      "artifact": "e17-cost-06.json",
+      "source": "spark_infer_q/draft_context.py",
+      "sha256": "c1a18d9bafd2a7071e05157c54dd6c36e6420e161e3f1859f0ff1cc182a222c0"
+    },
+    {
+      "artifact": "e17-cost-06.json",
+      "source": "spark_infer_q/draft_head.py",
+      "sha256": "cebeeaf86487f2487783fb0df5af465ce6a5a365f49565997d13bfff14a866a5"
+    },
+    {
+      "artifact": "e17-cost-06.json",
+      "source": "spark_infer_q/prompt.py",
+      "sha256": "6b997c3c6e6834666dfa0f7d13a7c950f6dc2e9b1d80818e5ee4b08a9b886f58"
+    },
+    {
+      "artifact": "e17-cost-06.json",
+      "source": "spark_infer_q/speculative.py",
+      "sha256": "ee1c2855cef1f31a868783d00f27cc88eef77f49ff95ff21dc2705d986f12045"
+    },
+    {
+      "artifact": "e17-cost-06.json",
+      "source": "spark_infer_q/local_policy.py",
+      "sha256": "de7b204f92685dbf68d8769df9bf63608c74c96167aa8cb6a08057f39ff3222f"
+    },
+    {
+      "artifact": "e17-learning-09.json",
+      "source": "e17_collect.py",
+      "sha256": "fa70e6f9881816c59acf64191c704f0134ac9eb50244745f422d46c60f822249"
+    },
+    {
+      "artifact": "e17-learning-09.json",
+      "source": "e17_run_contract.py",
+      "sha256": "2672338b43854f84537beaa8ceec94d06538daf49d3821a94256ef3814ff8afc"
+    },
+    {
+      "artifact": "e17-learning-09.json",
+      "source": "e16_tasks.py",
+      "sha256": "ed611380156c8f458a21635fd11f7280f55e4d178a9d23cbd6b7234a56711567"
+    },
+    {
+      "artifact": "e17-learning-09.json",
+      "source": "e3_target.py",
+      "sha256": "9fbd4d6edab3f148f894a09b82128012f460e02e1852ba1e7702b26357f584bb"
+    },
+    {
+      "artifact": "e17-learning-09.json",
+      "source": "e3_wide_target.py",
+      "sha256": "cb454e3fd741339552b15e7bdc168317e5fc013298fd3dc87d904f1bf12d6ace"
+    },
+    {
+      "artifact": "e17-learning-09.json",
+      "source": "spark_infer_q/confidence_features.py",
+      "sha256": "6d40253da4dad1de1a6866767af154e3a3ce69647a80df0e2e931f5ab53f0fc1"
+    },
+    {
+      "artifact": "e17-learning-09.json",
+      "source": "spark_infer_q/confidence_head.py",
+      "sha256": "e27c07808689e54f8660ef8068884be874c0fd5045ed2acfa04fc929b286ad28"
+    },
+    {
+      "artifact": "e17-learning-09.json",
+      "source": "spark_infer_q/draft_fidelity.py",
+      "sha256": "035e6e75b62ec0d9a305f49717fa2c14346d4c93546e73b4a87c1ea05a972e5e"
+    },
+    {
+      "artifact": "e17-learning-09.json",
+      "source": "spark_infer_q/draft_context.py",
+      "sha256": "c1a18d9bafd2a7071e05157c54dd6c36e6420e161e3f1859f0ff1cc182a222c0"
+    },
+    {
+      "artifact": "e17-learning-09.json",
+      "source": "spark_infer_q/draft_head.py",
+      "sha256": "cebeeaf86487f2487783fb0df5af465ce6a5a365f49565997d13bfff14a866a5"
+    },
+    {
+      "artifact": "e17-learning-09.json",
+      "source": "spark_infer_q/prompt.py",
+      "sha256": "6b997c3c6e6834666dfa0f7d13a7c950f6dc2e9b1d80818e5ee4b08a9b886f58"
+    },
+    {
+      "artifact": "e17-learning-09.json",
+      "source": "spark_infer_q/speculative.py",
+      "sha256": "ee1c2855cef1f31a868783d00f27cc88eef77f49ff95ff21dc2705d986f12045"
+    },
+    {
+      "artifact": "e17-learning-09.json",
+      "source": "e17_new_tasks.json",
+      "sha256": "f37b9f717d417b54cce0045ec85c9b04f3732adc9621cb5879d83ef073f8e434"
+    },
+    {
+      "artifact": "e17-learning-02.json",
+      "source": "e17_collect.py",
+      "sha256": "fa70e6f9881816c59acf64191c704f0134ac9eb50244745f422d46c60f822249"
+    },
+    {
+      "artifact": "e17-learning-02.json",
+      "source": "e17_run_contract.py",
+      "sha256": "2672338b43854f84537beaa8ceec94d06538daf49d3821a94256ef3814ff8afc"
+    },
+    {
+      "artifact": "e17-learning-02.json",
+      "source": "e16_tasks.py",
+      "sha256": "ed611380156c8f458a21635fd11f7280f55e4d178a9d23cbd6b7234a56711567"
+    },
+    {
+      "artifact": "e17-learning-02.json",
+      "source": "e3_target.py",
+      "sha256": "9fbd4d6edab3f148f894a09b82128012f460e02e1852ba1e7702b26357f584bb"
+    },
+    {
+      "artifact": "e17-learning-02.json",
+      "source": "e3_wide_target.py",
+      "sha256": "cb454e3fd741339552b15e7bdc168317e5fc013298fd3dc87d904f1bf12d6ace"
+    },
+    {
+      "artifact": "e17-learning-02.json",
+      "source": "spark_infer_q/confidence_features.py",
+      "sha256": "6d40253da4dad1de1a6866767af154e3a3ce69647a80df0e2e931f5ab53f0fc1"
+    },
+    {
+      "artifact": "e17-learning-02.json",
+      "source": "spark_infer_q/confidence_head.py",
+      "sha256": "e27c07808689e54f8660ef8068884be874c0fd5045ed2acfa04fc929b286ad28"
+    },
+    {
+      "artifact": "e17-learning-02.json",
+      "source": "spark_infer_q/draft_fidelity.py",
+      "sha256": "035e6e75b62ec0d9a305f49717fa2c14346d4c93546e73b4a87c1ea05a972e5e"
+    },
+    {
+      "artifact": "e17-learning-02.json",
+      "source": "spark_infer_q/draft_context.py",
+      "sha256": "c1a18d9bafd2a7071e05157c54dd6c36e6420e161e3f1859f0ff1cc182a222c0"
+    },
+    {
+      "artifact": "e17-learning-02.json",
+      "source": "spark_infer_q/draft_head.py",
+      "sha256": "cebeeaf86487f2487783fb0df5af465ce6a5a365f49565997d13bfff14a866a5"
+    },
+    {
+      "artifact": "e17-learning-02.json",
+      "source": "spark_infer_q/prompt.py",
+      "sha256": "6b997c3c6e6834666dfa0f7d13a7c950f6dc2e9b1d80818e5ee4b08a9b886f58"
+    },
+    {
+      "artifact": "e17-learning-02.json",
+      "source": "spark_infer_q/speculative.py",
+      "sha256": "ee1c2855cef1f31a868783d00f27cc88eef77f49ff95ff21dc2705d986f12045"
+    },
+    {
+      "artifact": "e17-learning-02.json",
+      "source": "e17_new_tasks.json",
+      "sha256": "f37b9f717d417b54cce0045ec85c9b04f3732adc9621cb5879d83ef073f8e434"
+    },
+    {
+      "artifact": "e16-collection-03.json",
+      "source": "e16_collect.py",
+      "sha256": "1a19aee3e3ece090a0212de95de321a434123639b6b8307a85f51b63a13ac0c3"
+    },
+    {
+      "artifact": "e16-collection-03.json",
+      "source": "e16_tasks.py",
+      "sha256": "ed611380156c8f458a21635fd11f7280f55e4d178a9d23cbd6b7234a56711567"
+    },
+    {
+      "artifact": "e16-collection-03.json",
+      "source": "e3_target.py",
+      "sha256": "9fbd4d6edab3f148f894a09b82128012f460e02e1852ba1e7702b26357f584bb"
+    },
+    {
+      "artifact": "e16-collection-03.json",
+      "source": "e3_wide_target.py",
+      "sha256": "cb454e3fd741339552b15e7bdc168317e5fc013298fd3dc87d904f1bf12d6ace"
+    },
+    {
+      "artifact": "e16-collection-03.json",
+      "source": "spark_infer_q/confidence_features.py",
+      "sha256": "6d40253da4dad1de1a6866767af154e3a3ce69647a80df0e2e931f5ab53f0fc1"
+    },
+    {
+      "artifact": "e16-collection-03.json",
+      "source": "spark_infer_q/confidence_head.py",
+      "sha256": "e27c07808689e54f8660ef8068884be874c0fd5045ed2acfa04fc929b286ad28"
+    },
+    {
+      "artifact": "e16-collection-03.json",
+      "source": "spark_infer_q/draft_fidelity.py",
+      "sha256": "035e6e75b62ec0d9a305f49717fa2c14346d4c93546e73b4a87c1ea05a972e5e"
+    },
+    {
+      "artifact": "e16-collection-03.json",
+      "source": "spark_infer_q/draft_context.py",
+      "sha256": "c1a18d9bafd2a7071e05157c54dd6c36e6420e161e3f1859f0ff1cc182a222c0"
+    },
+    {
+      "artifact": "e16-collection-03.json",
+      "source": "spark_infer_q/draft_head.py",
+      "sha256": "cebeeaf86487f2487783fb0df5af465ce6a5a365f49565997d13bfff14a866a5"
+    },
+    {
+      "artifact": "e16-collection-03.json",
+      "source": "spark_infer_q/prompt.py",
+      "sha256": "6b997c3c6e6834666dfa0f7d13a7c950f6dc2e9b1d80818e5ee4b08a9b886f58"
+    },
+    {
+      "artifact": "e16-collection-03.json",
+      "source": "spark_infer_q/speculative.py",
+      "sha256": "ee1c2855cef1f31a868783d00f27cc88eef77f49ff95ff21dc2705d986f12045"
+    },
+    {
+      "artifact": "e17-cost-01.json",
+      "source": "e17_cost_audit.py",
+      "sha256": "76aa5e01f20d504a0758913cfba2b7ad30eb6402478f8d9e95c30fc88f72ad8b"
+    },
+    {
+      "artifact": "e17-cost-01.json",
+      "source": "e17_run_contract.py",
+      "sha256": "2672338b43854f84537beaa8ceec94d06538daf49d3821a94256ef3814ff8afc"
+    },
+    {
+      "artifact": "e17-cost-01.json",
+      "source": "e16_tasks.py",
+      "sha256": "ed611380156c8f458a21635fd11f7280f55e4d178a9d23cbd6b7234a56711567"
+    },
+    {
+      "artifact": "e17-cost-01.json",
+      "source": "e3_target.py",
+      "sha256": "9fbd4d6edab3f148f894a09b82128012f460e02e1852ba1e7702b26357f584bb"
+    },
+    {
+      "artifact": "e17-cost-01.json",
+      "source": "e3_wide_target.py",
+      "sha256": "cb454e3fd741339552b15e7bdc168317e5fc013298fd3dc87d904f1bf12d6ace"
+    },
+    {
+      "artifact": "e17-cost-01.json",
+      "source": "spark_infer_q/confidence_features.py",
+      "sha256": "6d40253da4dad1de1a6866767af154e3a3ce69647a80df0e2e931f5ab53f0fc1"
+    },
+    {
+      "artifact": "e17-cost-01.json",
+      "source": "spark_infer_q/confidence_head.py",
+      "sha256": "e27c07808689e54f8660ef8068884be874c0fd5045ed2acfa04fc929b286ad28"
+    },
+    {
+      "artifact": "e17-cost-01.json",
+      "source": "spark_infer_q/budget_regret.py",
+      "sha256": "14477f3464091a5eaff1a9cbdb0df045b1c047570fe7a7a782b0c8e63076ba11"
+    },
+    {
+      "artifact": "e17-cost-01.json",
+      "source": "spark_infer_q/draft_context.py",
+      "sha256": "c1a18d9bafd2a7071e05157c54dd6c36e6420e161e3f1859f0ff1cc182a222c0"
+    },
+    {
+      "artifact": "e17-cost-01.json",
+      "source": "spark_infer_q/draft_head.py",
+      "sha256": "cebeeaf86487f2487783fb0df5af465ce6a5a365f49565997d13bfff14a866a5"
+    },
+    {
+      "artifact": "e17-cost-01.json",
+      "source": "spark_infer_q/prompt.py",
+      "sha256": "6b997c3c6e6834666dfa0f7d13a7c950f6dc2e9b1d80818e5ee4b08a9b886f58"
+    },
+    {
+      "artifact": "e17-cost-01.json",
+      "source": "spark_infer_q/speculative.py",
+      "sha256": "ee1c2855cef1f31a868783d00f27cc88eef77f49ff95ff21dc2705d986f12045"
+    },
+    {
+      "artifact": "e17-cost-01.json",
+      "source": "spark_infer_q/local_policy.py",
+      "sha256": "de7b204f92685dbf68d8769df9bf63608c74c96167aa8cb6a08057f39ff3222f"
+    },
+    {
+      "artifact": "e17-cost-00.json",
+      "source": "e17_cost_audit.py",
+      "sha256": "76aa5e01f20d504a0758913cfba2b7ad30eb6402478f8d9e95c30fc88f72ad8b"
+    },
+    {
+      "artifact": "e17-cost-00.json",
+      "source": "e17_run_contract.py",
+      "sha256": "2672338b43854f84537beaa8ceec94d06538daf49d3821a94256ef3814ff8afc"
+    },
+    {
+      "artifact": "e17-cost-00.json",
+      "source": "e16_tasks.py",
+      "sha256": "ed611380156c8f458a21635fd11f7280f55e4d178a9d23cbd6b7234a56711567"
+    },
+    {
+      "artifact": "e17-cost-00.json",
+      "source": "e3_target.py",
+      "sha256": "9fbd4d6edab3f148f894a09b82128012f460e02e1852ba1e7702b26357f584bb"
+    },
+    {
+      "artifact": "e17-cost-00.json",
+      "source": "e3_wide_target.py",
+      "sha256": "cb454e3fd741339552b15e7bdc168317e5fc013298fd3dc87d904f1bf12d6ace"
+    },
+    {
+      "artifact": "e17-cost-00.json",
+      "source": "spark_infer_q/confidence_features.py",
+      "sha256": "6d40253da4dad1de1a6866767af154e3a3ce69647a80df0e2e931f5ab53f0fc1"
+    },
+    {
+      "artifact": "e17-cost-00.json",
+      "source": "spark_infer_q/confidence_head.py",
+      "sha256": "e27c07808689e54f8660ef8068884be874c0fd5045ed2acfa04fc929b286ad28"
+    },
+    {
+      "artifact": "e17-cost-00.json",
+      "source": "spark_infer_q/budget_regret.py",
+      "sha256": "14477f3464091a5eaff1a9cbdb0df045b1c047570fe7a7a782b0c8e63076ba11"
+    },
+    {
+      "artifact": "e17-cost-00.json",
+      "source": "spark_infer_q/draft_context.py",
+      "sha256": "c1a18d9bafd2a7071e05157c54dd6c36e6420e161e3f1859f0ff1cc182a222c0"
+    },
+    {
+      "artifact": "e17-cost-00.json",
+      "source": "spark_infer_q/draft_head.py",
+      "sha256": "cebeeaf86487f2487783fb0df5af465ce6a5a365f49565997d13bfff14a866a5"
+    },
+    {
+      "artifact": "e17-cost-00.json",
+      "source": "spark_infer_q/prompt.py",
+      "sha256": "6b997c3c6e6834666dfa0f7d13a7c950f6dc2e9b1d80818e5ee4b08a9b886f58"
+    },
+    {
+      "artifact": "e17-cost-00.json",
+      "source": "spark_infer_q/speculative.py",
+      "sha256": "ee1c2855cef1f31a868783d00f27cc88eef77f49ff95ff21dc2705d986f12045"
+    },
+    {
+      "artifact": "e17-cost-00.json",
+      "source": "spark_infer_q/local_policy.py",
+      "sha256": "de7b204f92685dbf68d8769df9bf63608c74c96167aa8cb6a08057f39ff3222f"
+    },
+    {
+      "artifact": "e16-collection-02.json",
+      "source": "e16_collect.py",
+      "sha256": "1a19aee3e3ece090a0212de95de321a434123639b6b8307a85f51b63a13ac0c3"
+    },
+    {
+      "artifact": "e16-collection-02.json",
+      "source": "e16_tasks.py",
+      "sha256": "ed611380156c8f458a21635fd11f7280f55e4d178a9d23cbd6b7234a56711567"
+    },
+    {
+      "artifact": "e16-collection-02.json",
+      "source": "e3_target.py",
+      "sha256": "9fbd4d6edab3f148f894a09b82128012f460e02e1852ba1e7702b26357f584bb"
+    },
+    {
+      "artifact": "e16-collection-02.json",
+      "source": "e3_wide_target.py",
+      "sha256": "cb454e3fd741339552b15e7bdc168317e5fc013298fd3dc87d904f1bf12d6ace"
+    },
+    {
+      "artifact": "e16-collection-02.json",
+      "source": "spark_infer_q/confidence_features.py",
+      "sha256": "6d40253da4dad1de1a6866767af154e3a3ce69647a80df0e2e931f5ab53f0fc1"
+    },
+    {
+      "artifact": "e16-collection-02.json",
+      "source": "spark_infer_q/confidence_head.py",
+      "sha256": "e27c07808689e54f8660ef8068884be874c0fd5045ed2acfa04fc929b286ad28"
+    },
+    {
+      "artifact": "e16-collection-02.json",
+      "source": "spark_infer_q/draft_fidelity.py",
+      "sha256": "035e6e75b62ec0d9a305f49717fa2c14346d4c93546e73b4a87c1ea05a972e5e"
+    },
+    {
+      "artifact": "e16-collection-02.json",
+      "source": "spark_infer_q/draft_context.py",
+      "sha256": "c1a18d9bafd2a7071e05157c54dd6c36e6420e161e3f1859f0ff1cc182a222c0"
+    },
+    {
+      "artifact": "e16-collection-02.json",
+      "source": "spark_infer_q/draft_head.py",
+      "sha256": "cebeeaf86487f2487783fb0df5af465ce6a5a365f49565997d13bfff14a866a5"
+    },
+    {
+      "artifact": "e16-collection-02.json",
+      "source": "spark_infer_q/prompt.py",
+      "sha256": "6b997c3c6e6834666dfa0f7d13a7c950f6dc2e9b1d80818e5ee4b08a9b886f58"
+    },
+    {
+      "artifact": "e16-collection-02.json",
+      "source": "spark_infer_q/speculative.py",
+      "sha256": "ee1c2855cef1f31a868783d00f27cc88eef77f49ff95ff21dc2705d986f12045"
+    },
+    {
+      "artifact": "e17-learning-03.json",
+      "source": "e17_collect.py",
+      "sha256": "fa70e6f9881816c59acf64191c704f0134ac9eb50244745f422d46c60f822249"
+    },
+    {
+      "artifact": "e17-learning-03.json",
+      "source": "e17_run_contract.py",
+      "sha256": "2672338b43854f84537beaa8ceec94d06538daf49d3821a94256ef3814ff8afc"
+    },
+    {
+      "artifact": "e17-learning-03.json",
+      "source": "e16_tasks.py",
+      "sha256": "ed611380156c8f458a21635fd11f7280f55e4d178a9d23cbd6b7234a56711567"
+    },
+    {
+      "artifact": "e17-learning-03.json",
+      "source": "e3_target.py",
+      "sha256": "9fbd4d6edab3f148f894a09b82128012f460e02e1852ba1e7702b26357f584bb"
+    },
+    {
+      "artifact": "e17-learning-03.json",
+      "source": "e3_wide_target.py",
+      "sha256": "cb454e3fd741339552b15e7bdc168317e5fc013298fd3dc87d904f1bf12d6ace"
+    },
+    {
+      "artifact": "e17-learning-03.json",
+      "source": "spark_infer_q/confidence_features.py",
+      "sha256": "6d40253da4dad1de1a6866767af154e3a3ce69647a80df0e2e931f5ab53f0fc1"
+    },
+    {
+      "artifact": "e17-learning-03.json",
+      "source": "spark_infer_q/confidence_head.py",
+      "sha256": "e27c07808689e54f8660ef8068884be874c0fd5045ed2acfa04fc929b286ad28"
+    },
+    {
+      "artifact": "e17-learning-03.json",
+      "source": "spark_infer_q/draft_fidelity.py",
+      "sha256": "035e6e75b62ec0d9a305f49717fa2c14346d4c93546e73b4a87c1ea05a972e5e"
+    },
+    {
+      "artifact": "e17-learning-03.json",
+      "source": "spark_infer_q/draft_context.py",
+      "sha256": "c1a18d9bafd2a7071e05157c54dd6c36e6420e161e3f1859f0ff1cc182a222c0"
+    },
+    {
+      "artifact": "e17-learning-03.json",
+      "source": "spark_infer_q/draft_head.py",
+      "sha256": "cebeeaf86487f2487783fb0df5af465ce6a5a365f49565997d13bfff14a866a5"
+    },
+    {
+      "artifact": "e17-learning-03.json",
+      "source": "spark_infer_q/prompt.py",
+      "sha256": "6b997c3c6e6834666dfa0f7d13a7c950f6dc2e9b1d80818e5ee4b08a9b886f58"
+    },
+    {
+      "artifact": "e17-learning-03.json",
+      "source": "spark_infer_q/speculative.py",
+      "sha256": "ee1c2855cef1f31a868783d00f27cc88eef77f49ff95ff21dc2705d986f12045"
+    },
+    {
+      "artifact": "e17-learning-03.json",
+      "source": "e17_new_tasks.json",
+      "sha256": "f37b9f717d417b54cce0045ec85c9b04f3732adc9621cb5879d83ef073f8e434"
+    },
+    {
+      "artifact": "e16-collection-01.json",
+      "source": "e16_collect.py",
+      "sha256": "1a19aee3e3ece090a0212de95de321a434123639b6b8307a85f51b63a13ac0c3"
+    },
+    {
+      "artifact": "e16-collection-01.json",
+      "source": "e16_tasks.py",
+      "sha256": "ed611380156c8f458a21635fd11f7280f55e4d178a9d23cbd6b7234a56711567"
+    },
+    {
+      "artifact": "e16-collection-01.json",
+      "source": "e3_target.py",
+      "sha256": "9fbd4d6edab3f148f894a09b82128012f460e02e1852ba1e7702b26357f584bb"
+    },
+    {
+      "artifact": "e16-collection-01.json",
+      "source": "e3_wide_target.py",
+      "sha256": "cb454e3fd741339552b15e7bdc168317e5fc013298fd3dc87d904f1bf12d6ace"
+    },
+    {
+      "artifact": "e16-collection-01.json",
+      "source": "spark_infer_q/confidence_features.py",
+      "sha256": "6d40253da4dad1de1a6866767af154e3a3ce69647a80df0e2e931f5ab53f0fc1"
+    },
+    {
+      "artifact": "e16-collection-01.json",
+      "source": "spark_infer_q/confidence_head.py",
+      "sha256": "e27c07808689e54f8660ef8068884be874c0fd5045ed2acfa04fc929b286ad28"
+    },
+    {
+      "artifact": "e16-collection-01.json",
+      "source": "spark_infer_q/draft_fidelity.py",
+      "sha256": "035e6e75b62ec0d9a305f49717fa2c14346d4c93546e73b4a87c1ea05a972e5e"
+    },
+    {
+      "artifact": "e16-collection-01.json",
+      "source": "spark_infer_q/draft_context.py",
+      "sha256": "c1a18d9bafd2a7071e05157c54dd6c36e6420e161e3f1859f0ff1cc182a222c0"
+    },
+    {
+      "artifact": "e16-collection-01.json",
+      "source": "spark_infer_q/draft_head.py",
+      "sha256": "cebeeaf86487f2487783fb0df5af465ce6a5a365f49565997d13bfff14a866a5"
+    },
+    {
+      "artifact": "e16-collection-01.json",
+      "source": "spark_infer_q/prompt.py",
+      "sha256": "6b997c3c6e6834666dfa0f7d13a7c950f6dc2e9b1d80818e5ee4b08a9b886f58"
+    },
+    {
+      "artifact": "e16-collection-01.json",
+      "source": "spark_infer_q/speculative.py",
+      "sha256": "ee1c2855cef1f31a868783d00f27cc88eef77f49ff95ff21dc2705d986f12045"
+    },
+    {
+      "artifact": "e17-learning-00.json",
+      "source": "e17_collect.py",
+      "sha256": "fa70e6f9881816c59acf64191c704f0134ac9eb50244745f422d46c60f822249"
+    },
+    {
+      "artifact": "e17-learning-00.json",
+      "source": "e17_run_contract.py",
+      "sha256": "2672338b43854f84537beaa8ceec94d06538daf49d3821a94256ef3814ff8afc"
+    },
+    {
+      "artifact": "e17-learning-00.json",
+      "source": "e16_tasks.py",
+      "sha256": "ed611380156c8f458a21635fd11f7280f55e4d178a9d23cbd6b7234a56711567"
+    },
+    {
+      "artifact": "e17-learning-00.json",
+      "source": "e3_target.py",
+      "sha256": "9fbd4d6edab3f148f894a09b82128012f460e02e1852ba1e7702b26357f584bb"
+    },
+    {
+      "artifact": "e17-learning-00.json",
+      "source": "e3_wide_target.py",
+      "sha256": "cb454e3fd741339552b15e7bdc168317e5fc013298fd3dc87d904f1bf12d6ace"
+    },
+    {
+      "artifact": "e17-learning-00.json",
+      "source": "spark_infer_q/confidence_features.py",
+      "sha256": "6d40253da4dad1de1a6866767af154e3a3ce69647a80df0e2e931f5ab53f0fc1"
+    },
+    {
+      "artifact": "e17-learning-00.json",
+      "source": "spark_infer_q/confidence_head.py",
+      "sha256": "e27c07808689e54f8660ef8068884be874c0fd5045ed2acfa04fc929b286ad28"
+    },
+    {
+      "artifact": "e17-learning-00.json",
+      "source": "spark_infer_q/draft_fidelity.py",
+      "sha256": "035e6e75b62ec0d9a305f49717fa2c14346d4c93546e73b4a87c1ea05a972e5e"
+    },
+    {
+      "artifact": "e17-learning-00.json",
+      "source": "spark_infer_q/draft_context.py",
+      "sha256": "c1a18d9bafd2a7071e05157c54dd6c36e6420e161e3f1859f0ff1cc182a222c0"
+    },
+    {
+      "artifact": "e17-learning-00.json",
+      "source": "spark_infer_q/draft_head.py",
+      "sha256": "cebeeaf86487f2487783fb0df5af465ce6a5a365f49565997d13bfff14a866a5"
+    },
+    {
+      "artifact": "e17-learning-00.json",
+      "source": "spark_infer_q/prompt.py",
+      "sha256": "6b997c3c6e6834666dfa0f7d13a7c950f6dc2e9b1d80818e5ee4b08a9b886f58"
+    },
+    {
+      "artifact": "e17-learning-00.json",
+      "source": "spark_infer_q/speculative.py",
+      "sha256": "ee1c2855cef1f31a868783d00f27cc88eef77f49ff95ff21dc2705d986f12045"
+    },
+    {
+      "artifact": "e17-learning-00.json",
+      "source": "e17_new_tasks.json",
+      "sha256": "f37b9f717d417b54cce0045ec85c9b04f3732adc9621cb5879d83ef073f8e434"
+    },
+    {
+      "artifact": "e17-test-00.json",
+      "source": "e17_collect.py",
+      "sha256": "fa70e6f9881816c59acf64191c704f0134ac9eb50244745f422d46c60f822249"
+    },
+    {
+      "artifact": "e17-test-00.json",
+      "source": "e17_run_contract.py",
+      "sha256": "2672338b43854f84537beaa8ceec94d06538daf49d3821a94256ef3814ff8afc"
+    },
+    {
+      "artifact": "e17-test-00.json",
+      "source": "e16_tasks.py",
+      "sha256": "ed611380156c8f458a21635fd11f7280f55e4d178a9d23cbd6b7234a56711567"
+    },
+    {
+      "artifact": "e17-test-00.json",
+      "source": "e3_target.py",
+      "sha256": "9fbd4d6edab3f148f894a09b82128012f460e02e1852ba1e7702b26357f584bb"
+    },
+    {
+      "artifact": "e17-test-00.json",
+      "source": "e3_wide_target.py",
+      "sha256": "cb454e3fd741339552b15e7bdc168317e5fc013298fd3dc87d904f1bf12d6ace"
+    },
+    {
+      "artifact": "e17-test-00.json",
+      "source": "spark_infer_q/confidence_features.py",
+      "sha256": "6d40253da4dad1de1a6866767af154e3a3ce69647a80df0e2e931f5ab53f0fc1"
+    },
+    {
+      "artifact": "e17-test-00.json",
+      "source": "spark_infer_q/confidence_head.py",
+      "sha256": "e27c07808689e54f8660ef8068884be874c0fd5045ed2acfa04fc929b286ad28"
+    },
+    {
+      "artifact": "e17-test-00.json",
+      "source": "spark_infer_q/draft_fidelity.py",
+      "sha256": "035e6e75b62ec0d9a305f49717fa2c14346d4c93546e73b4a87c1ea05a972e5e"
+    },
+    {
+      "artifact": "e17-test-00.json",
+      "source": "spark_infer_q/draft_context.py",
+      "sha256": "c1a18d9bafd2a7071e05157c54dd6c36e6420e161e3f1859f0ff1cc182a222c0"
+    },
+    {
+      "artifact": "e17-test-00.json",
+      "source": "spark_infer_q/draft_head.py",
+      "sha256": "cebeeaf86487f2487783fb0df5af465ce6a5a365f49565997d13bfff14a866a5"
+    },
+    {
+      "artifact": "e17-test-00.json",
+      "source": "spark_infer_q/prompt.py",
+      "sha256": "6b997c3c6e6834666dfa0f7d13a7c950f6dc2e9b1d80818e5ee4b08a9b886f58"
+    },
+    {
+      "artifact": "e17-test-00.json",
+      "source": "spark_infer_q/speculative.py",
+      "sha256": "ee1c2855cef1f31a868783d00f27cc88eef77f49ff95ff21dc2705d986f12045"
+    },
+    {
+      "artifact": "e17-test-00.json",
+      "source": "e17_new_tasks.json",
+      "sha256": "f37b9f717d417b54cce0045ec85c9b04f3732adc9621cb5879d83ef073f8e434"
+    },
+    {
+      "artifact": "e17-evaluation.json",
+      "source": "e17_train.py",
+      "sha256": "b2150ec6c095aa75881cbecf73e5401f9935559cc2444ce960c5fc494274fa97"
+    },
+    {
+      "artifact": "e17-evaluation.json",
+      "source": "e17_run_contract.py",
+      "sha256": "2672338b43854f84537beaa8ceec94d06538daf49d3821a94256ef3814ff8afc"
+    },
+    {
+      "artifact": "e17-evaluation.json",
+      "source": "e15_metrics.py",
+      "sha256": "c031bb779e25a42ec3f7e9276b90a878a8a8f2515ea626012fc05c28537ea6ca"
+    },
+    {
+      "artifact": "e17-evaluation.json",
+      "source": "spark_infer_q/regret_head.py",
+      "sha256": "ad23a257754d123d93feb805480e8d717192c9d99e83de5afbcdc0886bc647e0"
+    },
+    {
+      "artifact": "e17-evaluation.json",
+      "source": "spark_infer_q/confidence_head.py",
+      "sha256": "e27c07808689e54f8660ef8068884be874c0fd5045ed2acfa04fc929b286ad28"
+    },
+    {
+      "artifact": "e17-evaluation.json",
+      "source": "spark_infer_q/confidence_features.py",
+      "sha256": "6d40253da4dad1de1a6866767af154e3a3ce69647a80df0e2e931f5ab53f0fc1"
+    },
+    {
+      "artifact": "e17-evaluation.json",
+      "source": "spark_infer_q/budget_regret.py",
+      "sha256": "14477f3464091a5eaff1a9cbdb0df045b1c047570fe7a7a782b0c8e63076ba11"
+    },
+    {
+      "artifact": "e17-evaluation.json",
+      "source": "spark_infer_q/local_policy.py",
+      "sha256": "de7b204f92685dbf68d8769df9bf63608c74c96167aa8cb6a08057f39ff3222f"
+    },
+    {
+      "artifact": "e17-evaluation.json",
+      "source": "e17_new_tasks.json",
+      "sha256": "f37b9f717d417b54cce0045ec85c9b04f3732adc9621cb5879d83ef073f8e434"
+    },
+    {
+      "artifact": "e17-cost-03.json",
+      "source": "e17_cost_audit.py",
+      "sha256": "76aa5e01f20d504a0758913cfba2b7ad30eb6402478f8d9e95c30fc88f72ad8b"
+    },
+    {
+      "artifact": "e17-cost-03.json",
+      "source": "e17_run_contract.py",
+      "sha256": "2672338b43854f84537beaa8ceec94d06538daf49d3821a94256ef3814ff8afc"
+    },
+    {
+      "artifact": "e17-cost-03.json",
+      "source": "e16_tasks.py",
+      "sha256": "ed611380156c8f458a21635fd11f7280f55e4d178a9d23cbd6b7234a56711567"
+    },
+    {
+      "artifact": "e17-cost-03.json",
+      "source": "e3_target.py",
+      "sha256": "9fbd4d6edab3f148f894a09b82128012f460e02e1852ba1e7702b26357f584bb"
+    },
+    {
+      "artifact": "e17-cost-03.json",
+      "source": "e3_wide_target.py",
+      "sha256": "cb454e3fd741339552b15e7bdc168317e5fc013298fd3dc87d904f1bf12d6ace"
+    },
+    {
+      "artifact": "e17-cost-03.json",
+      "source": "spark_infer_q/confidence_features.py",
+      "sha256": "6d40253da4dad1de1a6866767af154e3a3ce69647a80df0e2e931f5ab53f0fc1"
+    },
+    {
+      "artifact": "e17-cost-03.json",
+      "source": "spark_infer_q/confidence_head.py",
+      "sha256": "e27c07808689e54f8660ef8068884be874c0fd5045ed2acfa04fc929b286ad28"
+    },
+    {
+      "artifact": "e17-cost-03.json",
+      "source": "spark_infer_q/budget_regret.py",
+      "sha256": "14477f3464091a5eaff1a9cbdb0df045b1c047570fe7a7a782b0c8e63076ba11"
+    },
+    {
+      "artifact": "e17-cost-03.json",
+      "source": "spark_infer_q/draft_context.py",
+      "sha256": "c1a18d9bafd2a7071e05157c54dd6c36e6420e161e3f1859f0ff1cc182a222c0"
+    },
+    {
+      "artifact": "e17-cost-03.json",
+      "source": "spark_infer_q/draft_head.py",
+      "sha256": "cebeeaf86487f2487783fb0df5af465ce6a5a365f49565997d13bfff14a866a5"
+    },
+    {
+      "artifact": "e17-cost-03.json",
+      "source": "spark_infer_q/prompt.py",
+      "sha256": "6b997c3c6e6834666dfa0f7d13a7c950f6dc2e9b1d80818e5ee4b08a9b886f58"
+    },
+    {
+      "artifact": "e17-cost-03.json",
+      "source": "spark_infer_q/speculative.py",
+      "sha256": "ee1c2855cef1f31a868783d00f27cc88eef77f49ff95ff21dc2705d986f12045"
+    },
+    {
+      "artifact": "e17-cost-03.json",
+      "source": "spark_infer_q/local_policy.py",
+      "sha256": "de7b204f92685dbf68d8769df9bf63608c74c96167aa8cb6a08057f39ff3222f"
+    },
+    {
+      "artifact": "e17-cost-02.json",
+      "source": "e17_cost_audit.py",
+      "sha256": "76aa5e01f20d504a0758913cfba2b7ad30eb6402478f8d9e95c30fc88f72ad8b"
+    },
+    {
+      "artifact": "e17-cost-02.json",
+      "source": "e17_run_contract.py",
+      "sha256": "2672338b43854f84537beaa8ceec94d06538daf49d3821a94256ef3814ff8afc"
+    },
+    {
+      "artifact": "e17-cost-02.json",
+      "source": "e16_tasks.py",
+      "sha256": "ed611380156c8f458a21635fd11f7280f55e4d178a9d23cbd6b7234a56711567"
+    },
+    {
+      "artifact": "e17-cost-02.json",
+      "source": "e3_target.py",
+      "sha256": "9fbd4d6edab3f148f894a09b82128012f460e02e1852ba1e7702b26357f584bb"
+    },
+    {
+      "artifact": "e17-cost-02.json",
+      "source": "e3_wide_target.py",
+      "sha256": "cb454e3fd741339552b15e7bdc168317e5fc013298fd3dc87d904f1bf12d6ace"
+    },
+    {
+      "artifact": "e17-cost-02.json",
+      "source": "spark_infer_q/confidence_features.py",
+      "sha256": "6d40253da4dad1de1a6866767af154e3a3ce69647a80df0e2e931f5ab53f0fc1"
+    },
+    {
+      "artifact": "e17-cost-02.json",
+      "source": "spark_infer_q/confidence_head.py",
+      "sha256": "e27c07808689e54f8660ef8068884be874c0fd5045ed2acfa04fc929b286ad28"
+    },
+    {
+      "artifact": "e17-cost-02.json",
+      "source": "spark_infer_q/budget_regret.py",
+      "sha256": "14477f3464091a5eaff1a9cbdb0df045b1c047570fe7a7a782b0c8e63076ba11"
+    },
+    {
+      "artifact": "e17-cost-02.json",
+      "source": "spark_infer_q/draft_context.py",
+      "sha256": "c1a18d9bafd2a7071e05157c54dd6c36e6420e161e3f1859f0ff1cc182a222c0"
+    },
+    {
+      "artifact": "e17-cost-02.json",
+      "source": "spark_infer_q/draft_head.py",
+      "sha256": "cebeeaf86487f2487783fb0df5af465ce6a5a365f49565997d13bfff14a866a5"
+    },
+    {
+      "artifact": "e17-cost-02.json",
+      "source": "spark_infer_q/prompt.py",
+      "sha256": "6b997c3c6e6834666dfa0f7d13a7c950f6dc2e9b1d80818e5ee4b08a9b886f58"
+    },
+    {
+      "artifact": "e17-cost-02.json",
+      "source": "spark_infer_q/speculative.py",
+      "sha256": "ee1c2855cef1f31a868783d00f27cc88eef77f49ff95ff21dc2705d986f12045"
+    },
+    {
+      "artifact": "e17-cost-02.json",
+      "source": "spark_infer_q/local_policy.py",
+      "sha256": "de7b204f92685dbf68d8769df9bf63608c74c96167aa8cb6a08057f39ff3222f"
+    },
+    {
+      "artifact": "e17-test-01.json",
+      "source": "e17_collect.py",
+      "sha256": "fa70e6f9881816c59acf64191c704f0134ac9eb50244745f422d46c60f822249"
+    },
+    {
+      "artifact": "e17-test-01.json",
+      "source": "e17_run_contract.py",
+      "sha256": "2672338b43854f84537beaa8ceec94d06538daf49d3821a94256ef3814ff8afc"
+    },
+    {
+      "artifact": "e17-test-01.json",
+      "source": "e16_tasks.py",
+      "sha256": "ed611380156c8f458a21635fd11f7280f55e4d178a9d23cbd6b7234a56711567"
+    },
+    {
+      "artifact": "e17-test-01.json",
+      "source": "e3_target.py",
+      "sha256": "9fbd4d6edab3f148f894a09b82128012f460e02e1852ba1e7702b26357f584bb"
+    },
+    {
+      "artifact": "e17-test-01.json",
+      "source": "e3_wide_target.py",
+      "sha256": "cb454e3fd741339552b15e7bdc168317e5fc013298fd3dc87d904f1bf12d6ace"
+    },
+    {
+      "artifact": "e17-test-01.json",
+      "source": "spark_infer_q/confidence_features.py",
+      "sha256": "6d40253da4dad1de1a6866767af154e3a3ce69647a80df0e2e931f5ab53f0fc1"
+    },
+    {
+      "artifact": "e17-test-01.json",
+      "source": "spark_infer_q/confidence_head.py",
+      "sha256": "e27c07808689e54f8660ef8068884be874c0fd5045ed2acfa04fc929b286ad28"
+    },
+    {
+      "artifact": "e17-test-01.json",
+      "source": "spark_infer_q/draft_fidelity.py",
+      "sha256": "035e6e75b62ec0d9a305f49717fa2c14346d4c93546e73b4a87c1ea05a972e5e"
+    },
+    {
+      "artifact": "e17-test-01.json",
+      "source": "spark_infer_q/draft_context.py",
+      "sha256": "c1a18d9bafd2a7071e05157c54dd6c36e6420e161e3f1859f0ff1cc182a222c0"
+    },
+    {
+      "artifact": "e17-test-01.json",
+      "source": "spark_infer_q/draft_head.py",
+      "sha256": "cebeeaf86487f2487783fb0df5af465ce6a5a365f49565997d13bfff14a866a5"
+    },
+    {
+      "artifact": "e17-test-01.json",
+      "source": "spark_infer_q/prompt.py",
+      "sha256": "6b997c3c6e6834666dfa0f7d13a7c950f6dc2e9b1d80818e5ee4b08a9b886f58"
+    },
+    {
+      "artifact": "e17-test-01.json",
+      "source": "spark_infer_q/speculative.py",
+      "sha256": "ee1c2855cef1f31a868783d00f27cc88eef77f49ff95ff21dc2705d986f12045"
+    },
+    {
+      "artifact": "e17-test-01.json",
+      "source": "e17_new_tasks.json",
+      "sha256": "f37b9f717d417b54cce0045ec85c9b04f3732adc9621cb5879d83ef073f8e434"
+    },
+    {
+      "artifact": "e17-learning-01.json",
+      "source": "e17_collect.py",
+      "sha256": "fa70e6f9881816c59acf64191c704f0134ac9eb50244745f422d46c60f822249"
+    },
+    {
+      "artifact": "e17-learning-01.json",
+      "source": "e17_run_contract.py",
+      "sha256": "2672338b43854f84537beaa8ceec94d06538daf49d3821a94256ef3814ff8afc"
+    },
+    {
+      "artifact": "e17-learning-01.json",
+      "source": "e16_tasks.py",
+      "sha256": "ed611380156c8f458a21635fd11f7280f55e4d178a9d23cbd6b7234a56711567"
+    },
+    {
+      "artifact": "e17-learning-01.json",
+      "source": "e3_target.py",
+      "sha256": "9fbd4d6edab3f148f894a09b82128012f460e02e1852ba1e7702b26357f584bb"
+    },
+    {
+      "artifact": "e17-learning-01.json",
+      "source": "e3_wide_target.py",
+      "sha256": "cb454e3fd741339552b15e7bdc168317e5fc013298fd3dc87d904f1bf12d6ace"
+    },
+    {
+      "artifact": "e17-learning-01.json",
+      "source": "spark_infer_q/confidence_features.py",
+      "sha256": "6d40253da4dad1de1a6866767af154e3a3ce69647a80df0e2e931f5ab53f0fc1"
+    },
+    {
+      "artifact": "e17-learning-01.json",
+      "source": "spark_infer_q/confidence_head.py",
+      "sha256": "e27c07808689e54f8660ef8068884be874c0fd5045ed2acfa04fc929b286ad28"
+    },
+    {
+      "artifact": "e17-learning-01.json",
+      "source": "spark_infer_q/draft_fidelity.py",
+      "sha256": "035e6e75b62ec0d9a305f49717fa2c14346d4c93546e73b4a87c1ea05a972e5e"
+    },
+    {
+      "artifact": "e17-learning-01.json",
+      "source": "spark_infer_q/draft_context.py",
+      "sha256": "c1a18d9bafd2a7071e05157c54dd6c36e6420e161e3f1859f0ff1cc182a222c0"
+    },
+    {
+      "artifact": "e17-learning-01.json",
+      "source": "spark_infer_q/draft_head.py",
+      "sha256": "cebeeaf86487f2487783fb0df5af465ce6a5a365f49565997d13bfff14a866a5"
+    },
+    {
+      "artifact": "e17-learning-01.json",
+      "source": "spark_infer_q/prompt.py",
+      "sha256": "6b997c3c6e6834666dfa0f7d13a7c950f6dc2e9b1d80818e5ee4b08a9b886f58"
+    },
+    {
+      "artifact": "e17-learning-01.json",
+      "source": "spark_infer_q/speculative.py",
+      "sha256": "ee1c2855cef1f31a868783d00f27cc88eef77f49ff95ff21dc2705d986f12045"
+    },
+    {
+      "artifact": "e17-learning-01.json",
+      "source": "e17_new_tasks.json",
+      "sha256": "f37b9f717d417b54cce0045ec85c9b04f3732adc9621cb5879d83ef073f8e434"
+    },
+    {
+      "artifact": "e16-collection-00.json",
+      "source": "e16_collect.py",
+      "sha256": "1a19aee3e3ece090a0212de95de321a434123639b6b8307a85f51b63a13ac0c3"
+    },
+    {
+      "artifact": "e16-collection-00.json",
+      "source": "e16_tasks.py",
+      "sha256": "ed611380156c8f458a21635fd11f7280f55e4d178a9d23cbd6b7234a56711567"
+    },
+    {
+      "artifact": "e16-collection-00.json",
+      "source": "e3_target.py",
+      "sha256": "9fbd4d6edab3f148f894a09b82128012f460e02e1852ba1e7702b26357f584bb"
+    },
+    {
+      "artifact": "e16-collection-00.json",
+      "source": "e3_wide_target.py",
+      "sha256": "cb454e3fd741339552b15e7bdc168317e5fc013298fd3dc87d904f1bf12d6ace"
+    },
+    {
+      "artifact": "e16-collection-00.json",
+      "source": "spark_infer_q/confidence_features.py",
+      "sha256": "6d40253da4dad1de1a6866767af154e3a3ce69647a80df0e2e931f5ab53f0fc1"
+    },
+    {
+      "artifact": "e16-collection-00.json",
+      "source": "spark_infer_q/confidence_head.py",
+      "sha256": "e27c07808689e54f8660ef8068884be874c0fd5045ed2acfa04fc929b286ad28"
+    },
+    {
+      "artifact": "e16-collection-00.json",
+      "source": "spark_infer_q/draft_fidelity.py",
+      "sha256": "035e6e75b62ec0d9a305f49717fa2c14346d4c93546e73b4a87c1ea05a972e5e"
+    },
+    {
+      "artifact": "e16-collection-00.json",
+      "source": "spark_infer_q/draft_context.py",
+      "sha256": "c1a18d9bafd2a7071e05157c54dd6c36e6420e161e3f1859f0ff1cc182a222c0"
+    },
+    {
+      "artifact": "e16-collection-00.json",
+      "source": "spark_infer_q/draft_head.py",
+      "sha256": "cebeeaf86487f2487783fb0df5af465ce6a5a365f49565997d13bfff14a866a5"
+    },
+    {
+      "artifact": "e16-collection-00.json",
+      "source": "spark_infer_q/prompt.py",
+      "sha256": "6b997c3c6e6834666dfa0f7d13a7c950f6dc2e9b1d80818e5ee4b08a9b886f58"
+    },
+    {
+      "artifact": "e16-collection-00.json",
+      "source": "spark_infer_q/speculative.py",
+      "sha256": "ee1c2855cef1f31a868783d00f27cc88eef77f49ff95ff21dc2705d986f12045"
+    },
+    {
+      "artifact": "e17-cost-05.json",
+      "source": "e17_cost_audit.py",
+      "sha256": "76aa5e01f20d504a0758913cfba2b7ad30eb6402478f8d9e95c30fc88f72ad8b"
+    },
+    {
+      "artifact": "e17-cost-05.json",
+      "source": "e17_run_contract.py",
+      "sha256": "2672338b43854f84537beaa8ceec94d06538daf49d3821a94256ef3814ff8afc"
+    },
+    {
+      "artifact": "e17-cost-05.json",
+      "source": "e16_tasks.py",
+      "sha256": "ed611380156c8f458a21635fd11f7280f55e4d178a9d23cbd6b7234a56711567"
+    },
+    {
+      "artifact": "e17-cost-05.json",
+      "source": "e3_target.py",
+      "sha256": "9fbd4d6edab3f148f894a09b82128012f460e02e1852ba1e7702b26357f584bb"
+    },
+    {
+      "artifact": "e17-cost-05.json",
+      "source": "e3_wide_target.py",
+      "sha256": "cb454e3fd741339552b15e7bdc168317e5fc013298fd3dc87d904f1bf12d6ace"
+    },
+    {
+      "artifact": "e17-cost-05.json",
+      "source": "spark_infer_q/confidence_features.py",
+      "sha256": "6d40253da4dad1de1a6866767af154e3a3ce69647a80df0e2e931f5ab53f0fc1"
+    },
+    {
+      "artifact": "e17-cost-05.json",
+      "source": "spark_infer_q/confidence_head.py",
+      "sha256": "e27c07808689e54f8660ef8068884be874c0fd5045ed2acfa04fc929b286ad28"
+    },
+    {
+      "artifact": "e17-cost-05.json",
+      "source": "spark_infer_q/budget_regret.py",
+      "sha256": "14477f3464091a5eaff1a9cbdb0df045b1c047570fe7a7a782b0c8e63076ba11"
+    },
+    {
+      "artifact": "e17-cost-05.json",
+      "source": "spark_infer_q/draft_context.py",
+      "sha256": "c1a18d9bafd2a7071e05157c54dd6c36e6420e161e3f1859f0ff1cc182a222c0"
+    },
+    {
+      "artifact": "e17-cost-05.json",
+      "source": "spark_infer_q/draft_head.py",
+      "sha256": "cebeeaf86487f2487783fb0df5af465ce6a5a365f49565997d13bfff14a866a5"
+    },
+    {
+      "artifact": "e17-cost-05.json",
+      "source": "spark_infer_q/prompt.py",
+      "sha256": "6b997c3c6e6834666dfa0f7d13a7c950f6dc2e9b1d80818e5ee4b08a9b886f58"
+    },
+    {
+      "artifact": "e17-cost-05.json",
+      "source": "spark_infer_q/speculative.py",
+      "sha256": "ee1c2855cef1f31a868783d00f27cc88eef77f49ff95ff21dc2705d986f12045"
+    },
+    {
+      "artifact": "e17-cost-05.json",
+      "source": "spark_infer_q/local_policy.py",
+      "sha256": "de7b204f92685dbf68d8769df9bf63608c74c96167aa8cb6a08057f39ff3222f"
+    },
+    {
+      "artifact": "e16-collection-07.json",
+      "source": "e16_collect.py",
+      "sha256": "1a19aee3e3ece090a0212de95de321a434123639b6b8307a85f51b63a13ac0c3"
+    },
+    {
+      "artifact": "e16-collection-07.json",
+      "source": "e16_tasks.py",
+      "sha256": "ed611380156c8f458a21635fd11f7280f55e4d178a9d23cbd6b7234a56711567"
+    },
+    {
+      "artifact": "e16-collection-07.json",
+      "source": "e3_target.py",
+      "sha256": "9fbd4d6edab3f148f894a09b82128012f460e02e1852ba1e7702b26357f584bb"
+    },
+    {
+      "artifact": "e16-collection-07.json",
+      "source": "e3_wide_target.py",
+      "sha256": "cb454e3fd741339552b15e7bdc168317e5fc013298fd3dc87d904f1bf12d6ace"
+    },
+    {
+      "artifact": "e16-collection-07.json",
+      "source": "spark_infer_q/confidence_features.py",
+      "sha256": "6d40253da4dad1de1a6866767af154e3a3ce69647a80df0e2e931f5ab53f0fc1"
+    },
+    {
+      "artifact": "e16-collection-07.json",
+      "source": "spark_infer_q/confidence_head.py",
+      "sha256": "e27c07808689e54f8660ef8068884be874c0fd5045ed2acfa04fc929b286ad28"
+    },
+    {
+      "artifact": "e16-collection-07.json",
+      "source": "spark_infer_q/draft_fidelity.py",
+      "sha256": "035e6e75b62ec0d9a305f49717fa2c14346d4c93546e73b4a87c1ea05a972e5e"
+    },
+    {
+      "artifact": "e16-collection-07.json",
+      "source": "spark_infer_q/draft_context.py",
+      "sha256": "c1a18d9bafd2a7071e05157c54dd6c36e6420e161e3f1859f0ff1cc182a222c0"
+    },
+    {
+      "artifact": "e16-collection-07.json",
+      "source": "spark_infer_q/draft_head.py",
+      "sha256": "cebeeaf86487f2487783fb0df5af465ce6a5a365f49565997d13bfff14a866a5"
+    },
+    {
+      "artifact": "e16-collection-07.json",
+      "source": "spark_infer_q/prompt.py",
+      "sha256": "6b997c3c6e6834666dfa0f7d13a7c950f6dc2e9b1d80818e5ee4b08a9b886f58"
+    },
+    {
+      "artifact": "e16-collection-07.json",
+      "source": "spark_infer_q/speculative.py",
+      "sha256": "ee1c2855cef1f31a868783d00f27cc88eef77f49ff95ff21dc2705d986f12045"
+    },
+    {
+      "artifact": "e16-collection-11.json",
+      "source": "e16_collect.py",
+      "sha256": "1a19aee3e3ece090a0212de95de321a434123639b6b8307a85f51b63a13ac0c3"
+    },
+    {
+      "artifact": "e16-collection-11.json",
+      "source": "e16_tasks.py",
+      "sha256": "ed611380156c8f458a21635fd11f7280f55e4d178a9d23cbd6b7234a56711567"
+    },
+    {
+      "artifact": "e16-collection-11.json",
+      "source": "e3_target.py",
+      "sha256": "9fbd4d6edab3f148f894a09b82128012f460e02e1852ba1e7702b26357f584bb"
+    },
+    {
+      "artifact": "e16-collection-11.json",
+      "source": "e3_wide_target.py",
+      "sha256": "cb454e3fd741339552b15e7bdc168317e5fc013298fd3dc87d904f1bf12d6ace"
+    },
+    {
+      "artifact": "e16-collection-11.json",
+      "source": "spark_infer_q/confidence_features.py",
+      "sha256": "6d40253da4dad1de1a6866767af154e3a3ce69647a80df0e2e931f5ab53f0fc1"
+    },
+    {
+      "artifact": "e16-collection-11.json",
+      "source": "spark_infer_q/confidence_head.py",
+      "sha256": "e27c07808689e54f8660ef8068884be874c0fd5045ed2acfa04fc929b286ad28"
+    },
+    {
+      "artifact": "e16-collection-11.json",
+      "source": "spark_infer_q/draft_fidelity.py",
+      "sha256": "035e6e75b62ec0d9a305f49717fa2c14346d4c93546e73b4a87c1ea05a972e5e"
+    },
+    {
+      "artifact": "e16-collection-11.json",
+      "source": "spark_infer_q/draft_context.py",
+      "sha256": "c1a18d9bafd2a7071e05157c54dd6c36e6420e161e3f1859f0ff1cc182a222c0"
+    },
+    {
+      "artifact": "e16-collection-11.json",
+      "source": "spark_infer_q/draft_head.py",
+      "sha256": "cebeeaf86487f2487783fb0df5af465ce6a5a365f49565997d13bfff14a866a5"
+    },
+    {
+      "artifact": "e16-collection-11.json",
+      "source": "spark_infer_q/prompt.py",
+      "sha256": "6b997c3c6e6834666dfa0f7d13a7c950f6dc2e9b1d80818e5ee4b08a9b886f58"
+    },
+    {
+      "artifact": "e16-collection-11.json",
+      "source": "spark_infer_q/speculative.py",
+      "sha256": "ee1c2855cef1f31a868783d00f27cc88eef77f49ff95ff21dc2705d986f12045"
+    },
+    {
+      "artifact": "e17-learning-06.json",
+      "source": "e17_collect.py",
+      "sha256": "fa70e6f9881816c59acf64191c704f0134ac9eb50244745f422d46c60f822249"
+    },
+    {
+      "artifact": "e17-learning-06.json",
+      "source": "e17_run_contract.py",
+      "sha256": "2672338b43854f84537beaa8ceec94d06538daf49d3821a94256ef3814ff8afc"
+    },
+    {
+      "artifact": "e17-learning-06.json",
+      "source": "e16_tasks.py",
+      "sha256": "ed611380156c8f458a21635fd11f7280f55e4d178a9d23cbd6b7234a56711567"
+    },
+    {
+      "artifact": "e17-learning-06.json",
+      "source": "e3_target.py",
+      "sha256": "9fbd4d6edab3f148f894a09b82128012f460e02e1852ba1e7702b26357f584bb"
+    },
+    {
+      "artifact": "e17-learning-06.json",
+      "source": "e3_wide_target.py",
+      "sha256": "cb454e3fd741339552b15e7bdc168317e5fc013298fd3dc87d904f1bf12d6ace"
+    },
+    {
+      "artifact": "e17-learning-06.json",
+      "source": "spark_infer_q/confidence_features.py",
+      "sha256": "6d40253da4dad1de1a6866767af154e3a3ce69647a80df0e2e931f5ab53f0fc1"
+    },
+    {
+      "artifact": "e17-learning-06.json",
+      "source": "spark_infer_q/confidence_head.py",
+      "sha256": "e27c07808689e54f8660ef8068884be874c0fd5045ed2acfa04fc929b286ad28"
+    },
+    {
+      "artifact": "e17-learning-06.json",
+      "source": "spark_infer_q/draft_fidelity.py",
+      "sha256": "035e6e75b62ec0d9a305f49717fa2c14346d4c93546e73b4a87c1ea05a972e5e"
+    },
+    {
+      "artifact": "e17-learning-06.json",
+      "source": "spark_infer_q/draft_context.py",
+      "sha256": "c1a18d9bafd2a7071e05157c54dd6c36e6420e161e3f1859f0ff1cc182a222c0"
+    },
+    {
+      "artifact": "e17-learning-06.json",
+      "source": "spark_infer_q/draft_head.py",
+      "sha256": "cebeeaf86487f2487783fb0df5af465ce6a5a365f49565997d13bfff14a866a5"
+    },
+    {
+      "artifact": "e17-learning-06.json",
+      "source": "spark_infer_q/prompt.py",
+      "sha256": "6b997c3c6e6834666dfa0f7d13a7c950f6dc2e9b1d80818e5ee4b08a9b886f58"
+    },
+    {
+      "artifact": "e17-learning-06.json",
+      "source": "spark_infer_q/speculative.py",
+      "sha256": "ee1c2855cef1f31a868783d00f27cc88eef77f49ff95ff21dc2705d986f12045"
+    },
+    {
+      "artifact": "e17-learning-06.json",
+      "source": "e17_new_tasks.json",
+      "sha256": "f37b9f717d417b54cce0045ec85c9b04f3732adc9621cb5879d83ef073f8e434"
+    },
+    {
+      "artifact": "e17-label-smoke.json",
+      "source": "e17_collect.py",
+      "sha256": "fa70e6f9881816c59acf64191c704f0134ac9eb50244745f422d46c60f822249"
+    },
+    {
+      "artifact": "e17-label-smoke.json",
+      "source": "e17_run_contract.py",
+      "sha256": "2672338b43854f84537beaa8ceec94d06538daf49d3821a94256ef3814ff8afc"
+    },
+    {
+      "artifact": "e17-label-smoke.json",
+      "source": "e16_tasks.py",
+      "sha256": "ed611380156c8f458a21635fd11f7280f55e4d178a9d23cbd6b7234a56711567"
+    },
+    {
+      "artifact": "e17-label-smoke.json",
+      "source": "e3_target.py",
+      "sha256": "9fbd4d6edab3f148f894a09b82128012f460e02e1852ba1e7702b26357f584bb"
+    },
+    {
+      "artifact": "e17-label-smoke.json",
+      "source": "e3_wide_target.py",
+      "sha256": "cb454e3fd741339552b15e7bdc168317e5fc013298fd3dc87d904f1bf12d6ace"
+    },
+    {
+      "artifact": "e17-label-smoke.json",
+      "source": "spark_infer_q/confidence_features.py",
+      "sha256": "6d40253da4dad1de1a6866767af154e3a3ce69647a80df0e2e931f5ab53f0fc1"
+    },
+    {
+      "artifact": "e17-label-smoke.json",
+      "source": "spark_infer_q/confidence_head.py",
+      "sha256": "e27c07808689e54f8660ef8068884be874c0fd5045ed2acfa04fc929b286ad28"
+    },
+    {
+      "artifact": "e17-label-smoke.json",
+      "source": "spark_infer_q/draft_fidelity.py",
+      "sha256": "035e6e75b62ec0d9a305f49717fa2c14346d4c93546e73b4a87c1ea05a972e5e"
+    },
+    {
+      "artifact": "e17-label-smoke.json",
+      "source": "spark_infer_q/draft_context.py",
+      "sha256": "c1a18d9bafd2a7071e05157c54dd6c36e6420e161e3f1859f0ff1cc182a222c0"
+    },
+    {
+      "artifact": "e17-label-smoke.json",
+      "source": "spark_infer_q/draft_head.py",
+      "sha256": "cebeeaf86487f2487783fb0df5af465ce6a5a365f49565997d13bfff14a866a5"
+    },
+    {
+      "artifact": "e17-label-smoke.json",
+      "source": "spark_infer_q/prompt.py",
+      "sha256": "6b997c3c6e6834666dfa0f7d13a7c950f6dc2e9b1d80818e5ee4b08a9b886f58"
+    },
+    {
+      "artifact": "e17-label-smoke.json",
+      "source": "spark_infer_q/speculative.py",
+      "sha256": "ee1c2855cef1f31a868783d00f27cc88eef77f49ff95ff21dc2705d986f12045"
+    },
+    {
+      "artifact": "e17-label-smoke.json",
+      "source": "e17_new_tasks.json",
+      "sha256": "f37b9f717d417b54cce0045ec85c9b04f3732adc9621cb5879d83ef073f8e434"
+    },
+    {
+      "artifact": "e17-learning-07.json",
+      "source": "e17_collect.py",
+      "sha256": "fa70e6f9881816c59acf64191c704f0134ac9eb50244745f422d46c60f822249"
+    },
+    {
+      "artifact": "e17-learning-07.json",
+      "source": "e17_run_contract.py",
+      "sha256": "2672338b43854f84537beaa8ceec94d06538daf49d3821a94256ef3814ff8afc"
+    },
+    {
+      "artifact": "e17-learning-07.json",
+      "source": "e16_tasks.py",
+      "sha256": "ed611380156c8f458a21635fd11f7280f55e4d178a9d23cbd6b7234a56711567"
+    },
+    {
+      "artifact": "e17-learning-07.json",
+      "source": "e3_target.py",
+      "sha256": "9fbd4d6edab3f148f894a09b82128012f460e02e1852ba1e7702b26357f584bb"
+    },
+    {
+      "artifact": "e17-learning-07.json",
+      "source": "e3_wide_target.py",
+      "sha256": "cb454e3fd741339552b15e7bdc168317e5fc013298fd3dc87d904f1bf12d6ace"
+    },
+    {
+      "artifact": "e17-learning-07.json",
+      "source": "spark_infer_q/confidence_features.py",
+      "sha256": "6d40253da4dad1de1a6866767af154e3a3ce69647a80df0e2e931f5ab53f0fc1"
+    },
+    {
+      "artifact": "e17-learning-07.json",
+      "source": "spark_infer_q/confidence_head.py",
+      "sha256": "e27c07808689e54f8660ef8068884be874c0fd5045ed2acfa04fc929b286ad28"
+    },
+    {
+      "artifact": "e17-learning-07.json",
+      "source": "spark_infer_q/draft_fidelity.py",
+      "sha256": "035e6e75b62ec0d9a305f49717fa2c14346d4c93546e73b4a87c1ea05a972e5e"
+    },
+    {
+      "artifact": "e17-learning-07.json",
+      "source": "spark_infer_q/draft_context.py",
+      "sha256": "c1a18d9bafd2a7071e05157c54dd6c36e6420e161e3f1859f0ff1cc182a222c0"
+    },
+    {
+      "artifact": "e17-learning-07.json",
+      "source": "spark_infer_q/draft_head.py",
+      "sha256": "cebeeaf86487f2487783fb0df5af465ce6a5a365f49565997d13bfff14a866a5"
+    },
+    {
+      "artifact": "e17-learning-07.json",
+      "source": "spark_infer_q/prompt.py",
+      "sha256": "6b997c3c6e6834666dfa0f7d13a7c950f6dc2e9b1d80818e5ee4b08a9b886f58"
+    },
+    {
+      "artifact": "e17-learning-07.json",
+      "source": "spark_infer_q/speculative.py",
+      "sha256": "ee1c2855cef1f31a868783d00f27cc88eef77f49ff95ff21dc2705d986f12045"
+    },
+    {
+      "artifact": "e17-learning-07.json",
+      "source": "e17_new_tasks.json",
+      "sha256": "f37b9f717d417b54cce0045ec85c9b04f3732adc9621cb5879d83ef073f8e434"
+    },
+    {
+      "artifact": "e17-fit.json",
+      "source": "e17_train.py",
+      "sha256": "b2150ec6c095aa75881cbecf73e5401f9935559cc2444ce960c5fc494274fa97"
+    },
+    {
+      "artifact": "e17-fit.json",
+      "source": "e17_run_contract.py",
+      "sha256": "2672338b43854f84537beaa8ceec94d06538daf49d3821a94256ef3814ff8afc"
+    },
+    {
+      "artifact": "e17-fit.json",
+      "source": "e15_metrics.py",
+      "sha256": "c031bb779e25a42ec3f7e9276b90a878a8a8f2515ea626012fc05c28537ea6ca"
+    },
+    {
+      "artifact": "e17-fit.json",
+      "source": "spark_infer_q/regret_head.py",
+      "sha256": "ad23a257754d123d93feb805480e8d717192c9d99e83de5afbcdc0886bc647e0"
+    },
+    {
+      "artifact": "e17-fit.json",
+      "source": "spark_infer_q/confidence_head.py",
+      "sha256": "e27c07808689e54f8660ef8068884be874c0fd5045ed2acfa04fc929b286ad28"
+    },
+    {
+      "artifact": "e17-fit.json",
+      "source": "spark_infer_q/confidence_features.py",
+      "sha256": "6d40253da4dad1de1a6866767af154e3a3ce69647a80df0e2e931f5ab53f0fc1"
+    },
+    {
+      "artifact": "e17-fit.json",
+      "source": "spark_infer_q/budget_regret.py",
+      "sha256": "14477f3464091a5eaff1a9cbdb0df045b1c047570fe7a7a782b0c8e63076ba11"
+    },
+    {
+      "artifact": "e17-fit.json",
+      "source": "spark_infer_q/local_policy.py",
+      "sha256": "de7b204f92685dbf68d8769df9bf63608c74c96167aa8cb6a08057f39ff3222f"
+    },
+    {
+      "artifact": "e17-fit.json",
+      "source": "e17_new_tasks.json",
+      "sha256": "f37b9f717d417b54cce0045ec85c9b04f3732adc9621cb5879d83ef073f8e434"
+    },
+    {
+      "artifact": "e16-collection-10.json",
+      "source": "e16_collect.py",
+      "sha256": "1a19aee3e3ece090a0212de95de321a434123639b6b8307a85f51b63a13ac0c3"
+    },
+    {
+      "artifact": "e16-collection-10.json",
+      "source": "e16_tasks.py",
+      "sha256": "ed611380156c8f458a21635fd11f7280f55e4d178a9d23cbd6b7234a56711567"
+    },
+    {
+      "artifact": "e16-collection-10.json",
+      "source": "e3_target.py",
+      "sha256": "9fbd4d6edab3f148f894a09b82128012f460e02e1852ba1e7702b26357f584bb"
+    },
+    {
+      "artifact": "e16-collection-10.json",
+      "source": "e3_wide_target.py",
+      "sha256": "cb454e3fd741339552b15e7bdc168317e5fc013298fd3dc87d904f1bf12d6ace"
+    },
+    {
+      "artifact": "e16-collection-10.json",
+      "source": "spark_infer_q/confidence_features.py",
+      "sha256": "6d40253da4dad1de1a6866767af154e3a3ce69647a80df0e2e931f5ab53f0fc1"
+    },
+    {
+      "artifact": "e16-collection-10.json",
+      "source": "spark_infer_q/confidence_head.py",
+      "sha256": "e27c07808689e54f8660ef8068884be874c0fd5045ed2acfa04fc929b286ad28"
+    },
+    {
+      "artifact": "e16-collection-10.json",
+      "source": "spark_infer_q/draft_fidelity.py",
+      "sha256": "035e6e75b62ec0d9a305f49717fa2c14346d4c93546e73b4a87c1ea05a972e5e"
+    },
+    {
+      "artifact": "e16-collection-10.json",
+      "source": "spark_infer_q/draft_context.py",
+      "sha256": "c1a18d9bafd2a7071e05157c54dd6c36e6420e161e3f1859f0ff1cc182a222c0"
+    },
+    {
+      "artifact": "e16-collection-10.json",
+      "source": "spark_infer_q/draft_head.py",
+      "sha256": "cebeeaf86487f2487783fb0df5af465ce6a5a365f49565997d13bfff14a866a5"
+    },
+    {
+      "artifact": "e16-collection-10.json",
+      "source": "spark_infer_q/prompt.py",
+      "sha256": "6b997c3c6e6834666dfa0f7d13a7c950f6dc2e9b1d80818e5ee4b08a9b886f58"
+    },
+    {
+      "artifact": "e16-collection-10.json",
+      "source": "spark_infer_q/speculative.py",
+      "sha256": "ee1c2855cef1f31a868783d00f27cc88eef77f49ff95ff21dc2705d986f12045"
+    },
+    {
+      "artifact": "e16-collection-06.json",
+      "source": "e16_collect.py",
+      "sha256": "1a19aee3e3ece090a0212de95de321a434123639b6b8307a85f51b63a13ac0c3"
+    },
+    {
+      "artifact": "e16-collection-06.json",
+      "source": "e16_tasks.py",
+      "sha256": "ed611380156c8f458a21635fd11f7280f55e4d178a9d23cbd6b7234a56711567"
+    },
+    {
+      "artifact": "e16-collection-06.json",
+      "source": "e3_target.py",
+      "sha256": "9fbd4d6edab3f148f894a09b82128012f460e02e1852ba1e7702b26357f584bb"
+    },
+    {
+      "artifact": "e16-collection-06.json",
+      "source": "e3_wide_target.py",
+      "sha256": "cb454e3fd741339552b15e7bdc168317e5fc013298fd3dc87d904f1bf12d6ace"
+    },
+    {
+      "artifact": "e16-collection-06.json",
+      "source": "spark_infer_q/confidence_features.py",
+      "sha256": "6d40253da4dad1de1a6866767af154e3a3ce69647a80df0e2e931f5ab53f0fc1"
+    },
+    {
+      "artifact": "e16-collection-06.json",
+      "source": "spark_infer_q/confidence_head.py",
+      "sha256": "e27c07808689e54f8660ef8068884be874c0fd5045ed2acfa04fc929b286ad28"
+    },
+    {
+      "artifact": "e16-collection-06.json",
+      "source": "spark_infer_q/draft_fidelity.py",
+      "sha256": "035e6e75b62ec0d9a305f49717fa2c14346d4c93546e73b4a87c1ea05a972e5e"
+    },
+    {
+      "artifact": "e16-collection-06.json",
+      "source": "spark_infer_q/draft_context.py",
+      "sha256": "c1a18d9bafd2a7071e05157c54dd6c36e6420e161e3f1859f0ff1cc182a222c0"
+    },
+    {
+      "artifact": "e16-collection-06.json",
+      "source": "spark_infer_q/draft_head.py",
+      "sha256": "cebeeaf86487f2487783fb0df5af465ce6a5a365f49565997d13bfff14a866a5"
+    },
+    {
+      "artifact": "e16-collection-06.json",
+      "source": "spark_infer_q/prompt.py",
+      "sha256": "6b997c3c6e6834666dfa0f7d13a7c950f6dc2e9b1d80818e5ee4b08a9b886f58"
+    },
+    {
+      "artifact": "e16-collection-06.json",
+      "source": "spark_infer_q/speculative.py",
+      "sha256": "ee1c2855cef1f31a868783d00f27cc88eef77f49ff95ff21dc2705d986f12045"
+    },
+    {
+      "artifact": "e17-pipeline.json",
+      "source": "e17_pipeline.py",
+      "sha256": "0cc9a0fa5001b5e7c0cb0777cdfa6c0d58b0774ffcd27b9d276ab9de58a39d10"
+    },
+    {
+      "artifact": "e17-pipeline.json",
+      "source": "e17_run_contract.py",
+      "sha256": "2672338b43854f84537beaa8ceec94d06538daf49d3821a94256ef3814ff8afc"
+    },
+    {
+      "artifact": "e17-pipeline.json",
+      "source": "e17_cost_audit.py",
+      "sha256": "76aa5e01f20d504a0758913cfba2b7ad30eb6402478f8d9e95c30fc88f72ad8b"
+    },
+    {
+      "artifact": "e17-pipeline.json",
+      "source": "e17_collect.py",
+      "sha256": "fa70e6f9881816c59acf64191c704f0134ac9eb50244745f422d46c60f822249"
+    },
+    {
+      "artifact": "e17-pipeline.json",
+      "source": "e17_train.py",
+      "sha256": "b2150ec6c095aa75881cbecf73e5401f9935559cc2444ce960c5fc494274fa97"
+    },
+    {
+      "artifact": "e17-pipeline.json",
+      "source": "e17_online.py",
+      "sha256": "32bbef223564a9b14ffa6ec811f4100e11148b6727adfa9bb113104c53aeb896"
+    },
+    {
+      "artifact": "e17-pipeline.json",
+      "source": "e17_online_tasks.py",
+      "sha256": "d8b12e97c606f2738f74d96fa2bd08b13b4733ed3c146f2834cc13bb99c0760f"
+    },
+    {
+      "artifact": "e17-pipeline.json",
+      "source": "e16_tasks.py",
+      "sha256": "ed611380156c8f458a21635fd11f7280f55e4d178a9d23cbd6b7234a56711567"
+    },
+    {
+      "artifact": "e17-pipeline.json",
+      "source": "e15_metrics.py",
+      "sha256": "c031bb779e25a42ec3f7e9276b90a878a8a8f2515ea626012fc05c28537ea6ca"
+    },
+    {
+      "artifact": "e17-pipeline.json",
+      "source": "spark_infer_q/regret_head.py",
+      "sha256": "ad23a257754d123d93feb805480e8d717192c9d99e83de5afbcdc0886bc647e0"
+    },
+    {
+      "artifact": "e17-pipeline.json",
+      "source": "spark_infer_q/budget_regret.py",
+      "sha256": "14477f3464091a5eaff1a9cbdb0df045b1c047570fe7a7a782b0c8e63076ba11"
+    },
+    {
+      "artifact": "e17-pipeline.json",
+      "source": "spark_infer_q/confidence_head.py",
+      "sha256": "e27c07808689e54f8660ef8068884be874c0fd5045ed2acfa04fc929b286ad28"
+    },
+    {
+      "artifact": "e17-pipeline.json",
+      "source": "spark_infer_q/confidence_features.py",
+      "sha256": "6d40253da4dad1de1a6866767af154e3a3ce69647a80df0e2e931f5ab53f0fc1"
+    },
+    {
+      "artifact": "e17-pipeline.json",
+      "source": "spark_infer_q/local_policy.py",
+      "sha256": "de7b204f92685dbf68d8769df9bf63608c74c96167aa8cb6a08057f39ff3222f"
+    },
+    {
+      "artifact": "e17-pipeline.json",
+      "source": "spark_infer_q/draft_context.py",
+      "sha256": "c1a18d9bafd2a7071e05157c54dd6c36e6420e161e3f1859f0ff1cc182a222c0"
+    },
+    {
+      "artifact": "e17-pipeline.json",
+      "source": "spark_infer_q/draft_head.py",
+      "sha256": "cebeeaf86487f2487783fb0df5af465ce6a5a365f49565997d13bfff14a866a5"
+    },
+    {
+      "artifact": "e17-pipeline.json",
+      "source": "spark_infer_q/prompt.py",
+      "sha256": "6b997c3c6e6834666dfa0f7d13a7c950f6dc2e9b1d80818e5ee4b08a9b886f58"
+    },
+    {
+      "artifact": "e17-pipeline.json",
+      "source": "spark_infer_q/speculative.py",
+      "sha256": "ee1c2855cef1f31a868783d00f27cc88eef77f49ff95ff21dc2705d986f12045"
+    },
+    {
+      "artifact": "e17-pipeline.json",
+      "source": "spark_infer_q/verification_budget.py",
+      "sha256": "71f28552b8e83f682066edf9e9dd7267e3b54120c5d478949499a443f6eb5c50"
+    },
+    {
+      "artifact": "e17-pipeline.json",
+      "source": "e3_target.py",
+      "sha256": "9fbd4d6edab3f148f894a09b82128012f460e02e1852ba1e7702b26357f584bb"
+    },
+    {
+      "artifact": "e17-pipeline.json",
+      "source": "e3_wide_target.py",
+      "sha256": "cb454e3fd741339552b15e7bdc168317e5fc013298fd3dc87d904f1bf12d6ace"
+    },
+    {
+      "artifact": "e17-pipeline.json",
+      "source": "e3_mechanism_checks.py",
+      "sha256": "32fb4e4c89afe7c38336333b26ef9a2900b9b5bf05fdc16ef14d015f7279596e"
+    },
+    {
+      "artifact": "e17-pipeline.json",
+      "source": "e17_new_tasks.json",
+      "sha256": "f37b9f717d417b54cce0045ec85c9b04f3732adc9621cb5879d83ef073f8e434"
+    },
+    {
+      "artifact": "e17-pipeline.json",
+      "source": "e17_hard_pool.json",
+      "sha256": "cf80eb26f88c1fb875017d31dc8d6836e2563b95b95747292b9200499327c3ab"
+    },
+    {
+      "artifact": "e17-cost-04.json",
+      "source": "e17_cost_audit.py",
+      "sha256": "76aa5e01f20d504a0758913cfba2b7ad30eb6402478f8d9e95c30fc88f72ad8b"
+    },
+    {
+      "artifact": "e17-cost-04.json",
+      "source": "e17_run_contract.py",
+      "sha256": "2672338b43854f84537beaa8ceec94d06538daf49d3821a94256ef3814ff8afc"
+    },
+    {
+      "artifact": "e17-cost-04.json",
+      "source": "e16_tasks.py",
+      "sha256": "ed611380156c8f458a21635fd11f7280f55e4d178a9d23cbd6b7234a56711567"
+    },
+    {
+      "artifact": "e17-cost-04.json",
+      "source": "e3_target.py",
+      "sha256": "9fbd4d6edab3f148f894a09b82128012f460e02e1852ba1e7702b26357f584bb"
+    },
+    {
+      "artifact": "e17-cost-04.json",
+      "source": "e3_wide_target.py",
+      "sha256": "cb454e3fd741339552b15e7bdc168317e5fc013298fd3dc87d904f1bf12d6ace"
+    },
+    {
+      "artifact": "e17-cost-04.json",
+      "source": "spark_infer_q/confidence_features.py",
+      "sha256": "6d40253da4dad1de1a6866767af154e3a3ce69647a80df0e2e931f5ab53f0fc1"
+    },
+    {
+      "artifact": "e17-cost-04.json",
+      "source": "spark_infer_q/confidence_head.py",
+      "sha256": "e27c07808689e54f8660ef8068884be874c0fd5045ed2acfa04fc929b286ad28"
+    },
+    {
+      "artifact": "e17-cost-04.json",
+      "source": "spark_infer_q/budget_regret.py",
+      "sha256": "14477f3464091a5eaff1a9cbdb0df045b1c047570fe7a7a782b0c8e63076ba11"
+    },
+    {
+      "artifact": "e17-cost-04.json",
+      "source": "spark_infer_q/draft_context.py",
+      "sha256": "c1a18d9bafd2a7071e05157c54dd6c36e6420e161e3f1859f0ff1cc182a222c0"
+    },
+    {
+      "artifact": "e17-cost-04.json",
+      "source": "spark_infer_q/draft_head.py",
+      "sha256": "cebeeaf86487f2487783fb0df5af465ce6a5a365f49565997d13bfff14a866a5"
+    },
+    {
+      "artifact": "e17-cost-04.json",
+      "source": "spark_infer_q/prompt.py",
+      "sha256": "6b997c3c6e6834666dfa0f7d13a7c950f6dc2e9b1d80818e5ee4b08a9b886f58"
+    },
+    {
+      "artifact": "e17-cost-04.json",
+      "source": "spark_infer_q/speculative.py",
+      "sha256": "ee1c2855cef1f31a868783d00f27cc88eef77f49ff95ff21dc2705d986f12045"
+    },
+    {
+      "artifact": "e17-cost-04.json",
+      "source": "spark_infer_q/local_policy.py",
+      "sha256": "de7b204f92685dbf68d8769df9bf63608c74c96167aa8cb6a08057f39ff3222f"
+    },
+    {
+      "artifact": "e17-online.json",
+      "source": "e17_online.py",
+      "sha256": "32bbef223564a9b14ffa6ec811f4100e11148b6727adfa9bb113104c53aeb896"
+    },
+    {
+      "artifact": "e17-online.json",
+      "source": "e17_online_tasks.py",
+      "sha256": "d8b12e97c606f2738f74d96fa2bd08b13b4733ed3c146f2834cc13bb99c0760f"
+    },
+    {
+      "artifact": "e17-online.json",
+      "source": "e17_run_contract.py",
+      "sha256": "2672338b43854f84537beaa8ceec94d06538daf49d3821a94256ef3814ff8afc"
+    },
+    {
+      "artifact": "e17-online.json",
+      "source": "spark_infer_q/confidence_features.py",
+      "sha256": "6d40253da4dad1de1a6866767af154e3a3ce69647a80df0e2e931f5ab53f0fc1"
+    },
+    {
+      "artifact": "e17-online.json",
+      "source": "spark_infer_q/confidence_head.py",
+      "sha256": "e27c07808689e54f8660ef8068884be874c0fd5045ed2acfa04fc929b286ad28"
+    },
+    {
+      "artifact": "e17-online.json",
+      "source": "spark_infer_q/local_policy.py",
+      "sha256": "de7b204f92685dbf68d8769df9bf63608c74c96167aa8cb6a08057f39ff3222f"
+    },
+    {
+      "artifact": "e17-online.json",
+      "source": "spark_infer_q/draft_context.py",
+      "sha256": "c1a18d9bafd2a7071e05157c54dd6c36e6420e161e3f1859f0ff1cc182a222c0"
+    },
+    {
+      "artifact": "e17-online.json",
+      "source": "spark_infer_q/verification_budget.py",
+      "sha256": "71f28552b8e83f682066edf9e9dd7267e3b54120c5d478949499a443f6eb5c50"
+    },
+    {
+      "artifact": "e17-online.json",
+      "source": "spark_infer_q/speculative.py",
+      "sha256": "ee1c2855cef1f31a868783d00f27cc88eef77f49ff95ff21dc2705d986f12045"
+    },
+    {
+      "artifact": "e17-online.json",
+      "source": "e3_target.py",
+      "sha256": "9fbd4d6edab3f148f894a09b82128012f460e02e1852ba1e7702b26357f584bb"
+    },
+    {
+      "artifact": "e17-online.json",
+      "source": "e3_wide_target.py",
+      "sha256": "cb454e3fd741339552b15e7bdc168317e5fc013298fd3dc87d904f1bf12d6ace"
+    },
+    {
+      "artifact": "e17-online.json",
+      "source": "e3_mechanism_checks.py",
+      "sha256": "32fb4e4c89afe7c38336333b26ef9a2900b9b5bf05fdc16ef14d015f7279596e"
+    },
+    {
+      "artifact": "e17-online.json",
+      "source": "e17_new_tasks.json",
+      "sha256": "f37b9f717d417b54cce0045ec85c9b04f3732adc9621cb5879d83ef073f8e434"
+    }
+  ],
+  "archive": {
+    "archive_sha256": "989dd40164199b415f8a44dfa8173d8bebddc7c3bc5ba93b6b692f5fdd61fb50",
+    "files": 143,
+    "archive_bytes": 88745782,
+    "all_transfer_hashes_exact": true,
+    "recovery": "Initial stream ended inside last manifest member. All data members recovered and independently matched fresh remote hashes; additional sources fetched as JSON; local archive rebuilt and fully read."
+  },
+  "known_runtime_source_difference": {
+    "path": "spark_infer_q/draft_context.py",
+    "git_object": "ee7a725:spark_infer_q/draft_context.py",
+    "exact": true
+  },
+  "worker_snapshot": {
+    "status": "READY",
+    "pid": 319,
+    "load_count": 1,
+    "completed_jobs": 63,
+    "failed_jobs": 2,
+    "started_unix": 1792598860.217514,
+    "ready_unix": 1792599149.4385123,
+    "last_job": "063-e19-evaluation.json",
+    "allocated_bytes": 77359853568,
+    "reserved_bytes": 83873497088
+  }
+}
