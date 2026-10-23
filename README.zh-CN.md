@@ -48,6 +48,7 @@
 | [E5](docs/E5_ENGINE_BRIDGE_REPORT.md) | 让 DeepInfer C++ Scheduler 驱动 Qwen target-only 请求 | 七组 GPU 场景通过；GPU 仍逐个请求执行 |
 | [K1](docs/K1_RUNTIME_REPORT.md) | 在 E5 上实现可调用的 Target-only 运行时、流式事件与取消 | 七组真实 GPU 场景通过：233 行 logits、91 次有效状态检查；推测解码尚未接入此运行时 |
 | [K2](docs/K2_DFLASH_SCHEDULER_REPORT.md) | 原生 Scheduler 接入 Q4 DFlash2 与动态预算 | 现有 E17 本轮动态预算，保留原生滞后/E16 动态对照；同步执行 |
+| [K3](docs/K3_GRAPH_RUNTIME_REPORT.md) | 动态解码接入 Target CUDA Graph | 显式执行选项、静态工作区及 eager 回退；保留主机完成同步 |
 | [E7](docs/E7_TENSORFOLD_MATCH_REPORT.md) | 充分预热后对照原生 TensorFold | 整体 45.62 vs 49.18 tok/s；8 个自然完成的任务 45.57 vs 43.58 |
 | [E9](docs/E9_DECODE_PROFILE_REPORT.md) | 用 Nsight 剖析 decode | target 验证占 83.81%，草稿占 14.39% |
 

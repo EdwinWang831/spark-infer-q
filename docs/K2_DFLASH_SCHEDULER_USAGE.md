@@ -64,3 +64,8 @@ python3 -m unittest discover -s tests -p 'test_kaifra*.py' -v
 ```
 
 封存源码目录和 manifest.json 交给既有 worker：`k2_native_validate.run` 做真实 C++ / CPU 契约检查，`k2_gpu_validate.run` 做整模输出/logits/state 检查，`k2_online_validate.run` 做小规模计时和真实 loopback SSE 检查。三者都只接收 `source_root`，不重载 session。受控 oracle 草稿只用于拒绝/提交边界，不进入速度或自然接受率结果。
+
+
+## Graph 执行候选
+
+保持同一个 `adaptive` 预算，可通过 `--execution graph` 使用 K3；默认 `eager`。Graph 在READY前预热，当前只覆盖单请求decode，prompt和完成同步保留。见[K3用法](K3_GRAPH_RUNTIME_USAGE.md)。

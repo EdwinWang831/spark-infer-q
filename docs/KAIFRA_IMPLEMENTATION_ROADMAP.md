@@ -125,13 +125,15 @@ class KaifraEngine(Protocol):
 
 ### K3 — CUDA Graph 与逐 token 同步去除
 
+2026-10-23：开始将 E29 的验证过的 Target Graph 接入 K2 动态运行时；新增单请求静态 workspace、预热 bucket、eager fallback 和执行能力报告。见[K3方案](K3_GRAPH_RUNTIME_PLAN.md)、[用法](K3_GRAPH_RUNTIME_USAGE.md)及[接入报告](K3_GRAPH_RUNTIME_REPORT.md)。Graph 接线与主机同步精简分开验收，当前保留必要的 host fence，不将 Graph 等同于全异步。
+
 **交付：**静态工作区、可验证的 CUDA Graph bucket、减少 `.tolist()` / `.cpu()` / host fence 的执行路径；适配器公开实际的 capture 支持状态。
 
 **验收：**每个允许的 bucket 的 logits/状态/输出回归；被禁止的形状能可靠走 eager fallback；明确区分首次图 capture 和稳定 replay、批次变化。避免在未覆盖的 GDN/QSA 稀疏分支上强启 Graph。
 
 ### K4 — 真正双请求 GPU 联合验证（通向全局调度的硬门槛）
 
-**交付：**两个请求的一次 Target batch forward，正确持有各自 GDN/QSA/PLE 和拒绝后 rollback；先无草稿，再相同 K，最后不同 K 的 ragged/合法 bucket。
+**交付：**两个请求的一次 Target batch forward，正确持有各自 GDN/QSA/PLE 和拒绝后 rollback；先无草稿，再相同动态验证宽度，最后不同动态验证宽度的 ragged/合法 bucket。
 
 **验收：**同请求 solo vs mixed token + logits + 有效状态对照；EOS / cancelled / slot reuse / graph padding / 低高接受混合无污染；报告总吞吐与 per-request TPOT p50/p95。仅两个请求交错但逐个 GPU forward **不算完成**。
 

@@ -48,6 +48,7 @@ The remaining experiments laid groundwork or diagnosed:
 | [E5](docs/E5_ENGINE_BRIDGE_REPORT.md) | DeepInfer C++ Scheduler driving Qwen target-only requests | Seven GPU scenario groups pass; GPU requests still run one at a time |
 | [K1](docs/K1_RUNTIME_REPORT.md) | Reusable target-only runtime, output events and cancellation on E5 | Seven real GPU groups pass: 233 full-logit rows and 91 live-state checks; speculative decoding remains separate |
 | [K2](docs/K2_DFLASH_SCHEDULER_REPORT.md) | Q4 DFlash2 and native dynamic budgets on the Scheduler | Current E17 post-draft budget, with native lagged/E16 controls; synchronous execution |
+| [K3](docs/K3_GRAPH_RUNTIME_REPORT.md) | Target CUDA Graph execution for dynamic decoding | Explicit execution option, static workspace and eager fallback; host fences remain |
 | [E7](docs/E7_TENSORFOLD_MATCH_REPORT.md) | Warmed comparison with native TensorFold | 45.62 vs 49.18 tok/s overall; 45.57 vs 43.58 on eight natural-completion tasks |
 | [E9](docs/E9_DECODE_PROFILE_REPORT.md) | Nsight profile of decode | Target verification 83.81%, drafting 14.39% |
 

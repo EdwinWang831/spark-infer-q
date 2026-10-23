@@ -131,6 +131,9 @@ class SpeculativeBackend:
     def release(self, handle, state):
         if self.states.get(handle) is not state:
             raise BridgeError('foreign or released speculative state')
+        release=getattr(self.target,'release_state',None)
+        if release is not None:
+            release(state.target)
         del self.states[handle]
         state.context = None
 
@@ -351,6 +354,7 @@ def speculative_engine(native, target, provider, *, eos_ids, prior, mode='adapti
     engine.capabilities=dict(engine.capabilities,target_only=False,speculative=True,
                             draft_depth=depth,verification_budget=('current_postdraft_e17' if mode=='adaptive' else
                                 'native_mtp_varlen'))
+    engine.capabilities.update(getattr(target,'capabilities',{}))
     return engine
 
 

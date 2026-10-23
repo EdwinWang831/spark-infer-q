@@ -171,6 +171,10 @@ class KaifraEngine:
             try:
                 plan = self.bridge.step()
                 self.last_step_metrics = getattr(plan, 'metrics', ())
+                target=getattr(self.bridge.backend,'target',None)
+                target_capabilities=getattr(target,'capabilities',{})
+                if target_capabilities:
+                    self.capabilities=dict(self.capabilities,**target_capabilities)
                 now, events = self.clock(), []
                 for handle, record in list(self._requests.items()):
                     done = self.bridge.completed.get(handle)
