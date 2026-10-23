@@ -6,7 +6,7 @@ A research project on accelerating Qwen inference on a single NVIDIA DGX Spark (
 
 ## At a glance
 
-As of 2026-10-23, this repository includes E0–E22 implementations, tests and sanitized evidence, plus source-sealed E23/E24 research workflows. Ongoing workflows are not completed performance results.
+As of 2026-10-23, this repository includes E0–E25 implementations, tests and sanitized evidence. E24's small offline retraining gain did not produce a confirmed online decode gain in E25.
 
 - **What it does**: Qwen3.8-Flash-Next (NVFP4, TensorFold kernels) runs speculative decoding with the DFlash2 drafter. DeepInfer's MTPVarlen decides how many drafts to verify at each step. The executor is a synchronous, single-request, greedy research prototype.
 - **Largest single decode gain**: a lightweight confidence predictor trained in E15/E16. On separately frozen new tasks it is about 10% faster than the default lagged budget (E16: 44.08 vs 40.21 tok/s). It is opt-in for now.
@@ -23,9 +23,11 @@ As of 2026-10-23, this repository includes E0–E22 implementations, tests and s
 | [E15](docs/E15_CONFIDENCE_TRAINING_REPORT.md) | Trained seven-depth confidence predictor | +10.00% over the lagged budget and +10.88% over fixed seven drafts, on 6 new tasks | Opt-in |
 | [E16](docs/E16_BILINGUAL_EXPANSION_REPORT.md) | Retrained on 600 English/Chinese prompts | +9.61% over the lagged budget and +3.18% over the E15 predictor (2 tasks slower), on 20 new tasks; English +7.60%, Chinese +10.75% | Opt-in |
 | [E17](docs/E17_COMPLETED_TRAINING_REPORT.md) | Targeted bilingual predictor retraining | 36.83 tok/s; +11.02% vs fixed budget, only +0.09% vs E16 (interval crosses zero), on 20 roots | No confirmed gain over E16 |
-| [E19](docs/E19_MLP_CAPACITY_REPORT.md) | Same-data 11,157-parameter MLP | Offline efficiency −0.55% vs linear; promotion gate failed | No online MLP timing |
+| [E19](docs/E19_MLP_CAPACITY_REPORT.md) | Same-data 11,157-parameter MLP | Offline efficiency −0.55% vs linear; promotion gate failed | E19 candidate not promoted |
 | [E21](docs/E21_ADAPTIVE_COLLECTOR_REPORT.md) | Adaptive training-label collector | Collection computation 21.13% less time on six roots; known Chinese case 2.15% slower | Validated collection entry, not serving TPS |
 | [E22](docs/E22_PREDICTOR_DIAGNOSIS_REPORT.md) | Optional NumPy scalar MLP runtime | Head-only 0.3353→0.0118 ms (28.38×); diagnostic replay still −0.06% vs linear | CPU prototype, no new decode TPS |
+| [E24](docs/E24_COVERAGE_EXPANSION_REPORT.md) | Retrain on 504 new QA/code/math/dialogue/long-input roots | Offline +0.252% vs frozen MLP, +0.212% vs linear; positive intervals | Offline gate passed |
+| [E25](docs/E25_ONLINE_COMPARISON_REPORT.md) | Actual decode, 12 roots / 108 paired runs | New MLP 47.15, frozen MLP 47.28, linear 47.49 tok/s; both relative intervals cross zero | No confirmed online gain |
 | [E11](docs/E11_PROJECTION_REPORT.md) | MXFP8 split-K projections | decode +0.62%, complete requests −0.64% | Opt-in, default unchanged |
 | [E10](docs/E10_TARGET_KERNEL_REPORT.md) | Expert-kernel warps and staging depth | +0.08% on holdout | Not adopted |
 | [E12](docs/E12_EXPERT_VERIFICATION_REPORT.md) | Verification cost from the routed-expert union | offline cost error −26.17%, but the union is only known after verifying; features available online gave −2.42% | Not adopted |
@@ -51,7 +53,7 @@ The remaining experiments laid groundwork or diagnosed:
 
 [E20 fixed-width collection](docs/E20_FAST_COLLECTOR_REPORT.md) remains a research control; the adaptive [collector usage](docs/FAST_COLLECTOR_USAGE.md) is the recommended validated entry. [E18 short drafting](docs/E18_PREDRAFT_COMPUTE_REPORT.md) reduced draft-only time by 0.74% and did not establish an online win.
 
-**E23/E24 execution (2026-10-23 UTC):** the fixed-data action-regret objective [finished its fresh 60-root test](docs/E23_OBJECTIVE_COMPARISON_REPORT.md): +0.013% vs matched BCE and +0.019% vs linear, both intervals crossing zero, so no online promotion. The separate 504-prompt [coverage workflow](docs/E24_COVERAGE_EXPANSION_PLAN.md) passed tokenization and six GPU producer checks and is collecting learning data. Its expanded-data fit/test remain pending; see the [dated status](docs/E23_E24_EXECUTION_STATUS.md).
+**E23–E25 (2026-10-23 UTC):** the fixed-data action-regret objective [failed its fresh gate](docs/E23_OBJECTIVE_COMPARISON_REPORT.md). The subsequent [504-prompt coverage retraining](docs/E24_COVERAGE_EXPANSION_REPORT.md) finished and passed its 72-root offline gate. Its [actual decode comparison](docs/E25_ONLINE_COMPARISON_REPORT.md) found −0.263% vs frozen MLP and −0.717% vs linear, with both intervals crossing zero. No confirmed online improvement or policy replacement; offline estimates remain distinct from measured decode.
 
 ## How it works
 
@@ -75,7 +77,7 @@ The complete executor is [`scripts/e8_ours.py`](scripts/e8_ours.py), which serve
 ## Next steps
 
 - Rerun the native TensorFold comparison after E8.
-- Complete the sealed E23/E24 objective and coverage experiments; require independent test and complete online A/B evidence before replacing the current policy.
+- Diagnose the gap between sampled offline replay and closed-loop decode decisions/costs before expanding predictor training further; retain independent tests and online A/B gates.
 - 4K+ context: handle DFlash's 2048-token sliding window and absolute positions first.
 - Let two requests share one target forward, starting from the E5 scheduler bridge. The overall multi-request design is in the [global scheduler RFC](docs/GLOBAL_COST_AWARE_SCHEDULER_RFC.md) (Chinese; design only).
 - Five written but unrun proposals (prefill numerics reference, expert-footprint rate, the online stages of the expert-aware budget, draft fidelity, exact head screening) are listed under [proposals without results](docs/EXPERIMENTS.md#proposals-without-results-yet).

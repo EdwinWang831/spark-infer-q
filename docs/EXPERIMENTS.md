@@ -218,7 +218,11 @@ Verified 2026-10-22; executed 2026-10-21: [frozen plan](E16_BILINGUAL_EXPANSION_
 
 ## E23/E24 — Sealed objective and coverage workflows
 
-2026-10-23 UTC: [dated execution snapshot](E23_E24_EXECUTION_STATUS.md), [objective plan](E23_OBJECTIVE_COMPARISON_PLAN.md), [coverage plan](E24_COVERAGE_EXPANSION_PLAN.md). E23 changes only the training objective on identical architecture/data/backend; calibration gain+0.040%, followed by72 fresh prompts/60 roots. The [fresh test report](E23_OBJECTIVE_COMPARISON_REPORT.md) finds +0.0128% vs matched BCE and +0.0195% vs linear with intervals crossing zero; the new gate failed, no online run. E24 fixes the calibration-selected recipe; all504 tokenization checks and six GPU producer scenarios passed. Learning collection is running before expanded-data fit and a conditional72-root test.504 new prompts cover QA/code/math/real roles/long inputs. No default switch or new online speed claim from startup evidence.
+2026-10-23 UTC: [dated execution snapshot](E23_E24_EXECUTION_STATUS.md), [objective plan](E23_OBJECTIVE_COMPARISON_PLAN.md), [coverage plan](E24_COVERAGE_EXPANSION_PLAN.md). E23 changes only the training objective on identical architecture/data/backend; calibration gain+0.040%, followed by72 fresh prompts/60 roots. The [fresh test report](E23_OBJECTIVE_COMPARISON_REPORT.md) finds +0.0128% vs matched BCE and +0.0195% vs linear with intervals crossing zero; the new gate failed, no online run. E24 fixes the calibration-selected recipe and completes504 new roots covering QA/code/math/real roles/long inputs. Its [final report](E24_COVERAGE_EXPANSION_REPORT.md) finds +0.252% offline vs frozen MLP and +0.212% vs linear on72 test roots, with positive intervals; 67,277 train and10,054 calibration positions. This is offline evidence, not measured decode.
+
+## E25 — Actual decode after coverage retraining
+
+2026-10-23 UTC: [plan](E25_ONLINE_COMPARISON_PLAN.md), [report](E25_ONLINE_COMPARISON_REPORT.md), [timings](../results/e25/2026-10-23-online-comparison.json). Twelve manifest-selected E24 test roots, three arms, three repetitions,108 timed runs; exact tokens/committed logits/live state checks pass. Actual decode47.153 tok/s new MLP,47.277 frozen MLP,47.493 linear; −0.263%/−0.717%, both prompt-bootstrap intervals cross zero. No confirmed online gain, no policy replacement or weight reload. Full timed traces and CPU replay scope audit retained; 12-root controlled evidence does not establish general workload performance.
 
 ## Proposals without results yet
 
