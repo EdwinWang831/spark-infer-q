@@ -6,7 +6,7 @@ A research project on accelerating Qwen inference on a single NVIDIA DGX Spark (
 
 ## At a glance
 
-As of 2026-10-23, this repository includes E0–E25 implementations, tests and sanitized evidence. E24's small offline retraining gain did not produce a confirmed online decode gain in E25.
+As of 2026-10-23, this repository includes E0–E27 implementations, tests and sanitized evidence (E26 cancelled at the user’s request). E27 returns to linear: execution-only optimization estimates +0.60%, sensitive to repetition variability; live cost adaptation gives no confirmed decode gain.
 
 - **What it does**: Qwen3.8-Flash-Next (NVFP4, TensorFold kernels) runs speculative decoding with the DFlash2 drafter. DeepInfer's MTPVarlen decides how many drafts to verify at each step. The executor is a synchronous, single-request, greedy research prototype.
 - **Largest single decode gain**: a lightweight confidence predictor trained in E15/E16. On separately frozen new tasks it is about 10% faster than the default lagged budget (E16: 44.08 vs 40.21 tok/s). It is opt-in for now.
@@ -28,6 +28,7 @@ As of 2026-10-23, this repository includes E0–E25 implementations, tests and s
 | [E22](docs/E22_PREDICTOR_DIAGNOSIS_REPORT.md) | Optional NumPy scalar MLP runtime | Head-only 0.3353→0.0118 ms (28.38×); diagnostic replay still −0.06% vs linear | CPU prototype, no new decode TPS |
 | [E24](docs/E24_COVERAGE_EXPANSION_REPORT.md) | Retrain on 504 new QA/code/math/dialogue/long-input roots | Offline +0.252% vs frozen MLP, +0.212% vs linear; positive intervals | Offline gate passed |
 | [E25](docs/E25_ONLINE_COMPARISON_REPORT.md) | Actual decode, 12 roots / 108 paired runs | New MLP 47.15, frozen MLP 47.28, linear 47.49 tok/s; both relative intervals cross zero | No confirmed online gain |
+| [E27](docs/E27_LINEAR_COST_REPORT.md) | Matched linear weights: NumPy execution and causal live cost control | Original 43.39, NumPy 43.65, live 43.42 tok/s; NumPy +0.60%, repetition-sensitive interval crosses zero | Default unchanged; MLP/hybrid deferred |
 | [E11](docs/E11_PROJECTION_REPORT.md) | MXFP8 split-K projections | decode +0.62%, complete requests −0.64% | Opt-in, default unchanged |
 | [E10](docs/E10_TARGET_KERNEL_REPORT.md) | Expert-kernel warps and staging depth | +0.08% on holdout | Not adopted |
 | [E12](docs/E12_EXPERT_VERIFICATION_REPORT.md) | Verification cost from the routed-expert union | offline cost error −26.17%, but the union is only known after verifying; features available online gave −2.42% | Not adopted |
@@ -55,6 +56,8 @@ The remaining experiments laid groundwork or diagnosed:
 
 **E23–E25 (2026-10-23 UTC):** the fixed-data action-regret objective [failed its fresh gate](docs/E23_OBJECTIVE_COMPARISON_REPORT.md). The subsequent [504-prompt coverage retraining](docs/E24_COVERAGE_EXPANSION_REPORT.md) finished and passed its 72-root offline gate. Its [actual decode comparison](docs/E25_ONLINE_COMPARISON_REPORT.md) found −0.263% vs frozen MLP and −0.717% vs linear, with both intervals crossing zero. No confirmed online improvement or policy replacement; offline estimates remain distinct from measured decode.
 
+**E26–E27 (2026-10-23 UTC):** the [hybrid study](docs/E26_RESIDUAL_HYBRID_PLAN.md) was cancelled at the user’s request after 18/108 timings, with no performance conclusion. The [linear online comparison](docs/E27_LINEAR_COST_REPORT.md) completed 12 new roots / 108 timings: live cost control +0.07% vs original and −0.53% vs frozen-cost NumPy; NumPy-only +0.60%, with a repetition-sensitive interval crossing zero. All correctness checks pass; resident weights were retained and the default is unchanged.
+
 ## How it works
 
 Each decode step has three parts:
@@ -77,7 +80,7 @@ The complete executor is [`scripts/e8_ours.py`](scripts/e8_ours.py), which serve
 ## Next steps
 
 - Rerun the native TensorFold comparison after E8.
-- Diagnose the gap between sampled offline replay and closed-loop decode decisions/costs before expanding predictor training further; retain independent tests and online A/B gates.
+- Keep MLP/hybrid deferred. Diagnose whether linear budget changes reduce actual verification work before further training; retain independent tests and actual decode gates.
 - 4K+ context: handle DFlash's 2048-token sliding window and absolute positions first.
 - Let two requests share one target forward, starting from the E5 scheduler bridge. The overall multi-request design is in the [global scheduler RFC](docs/GLOBAL_COST_AWARE_SCHEDULER_RFC.md) (Chinese; design only).
 - Five written but unrun proposals (prefill numerics reference, expert-footprint rate, the online stages of the expert-aware budget, draft fidelity, exact head screening) are listed under [proposals without results](docs/EXPERIMENTS.md#proposals-without-results-yet).

@@ -224,6 +224,15 @@ Verified 2026-10-22; executed 2026-10-21: [frozen plan](E16_BILINGUAL_EXPANSION_
 
 2026-10-23 UTC: [plan](E25_ONLINE_COMPARISON_PLAN.md), [report](E25_ONLINE_COMPARISON_REPORT.md), [timings](../results/e25/2026-10-23-online-comparison.json). Twelve manifest-selected E24 test roots, three arms, three repetitions,108 timed runs; exact tokens/committed logits/live state checks pass. Actual decode47.153 tok/s new MLP,47.277 frozen MLP,47.493 linear; −0.263%/−0.717%, both prompt-bootstrap intervals cross zero. No confirmed online gain, no policy replacement or weight reload. Full timed traces and CPU replay scope audit retained; 12-root controlled evidence does not establish general workload performance.
 
+## E26 — Residual hybrid deferred by the user
+
+2026-10-23 UTC: [preserved plan and cancellation status](E26_RESIDUAL_HYBRID_PLAN.md). Fitting completed, but the user stopped the online experiment after two prompts /18 timings and chose linear-only work. Cancellation preserved the resident model and partial evidence; no hybrid performance conclusion or continued MLP execution.
+
+## E27 — Linear runtime and causal live cost control
+
+2026-10-23 UTC: [plan](E27_LINEAR_COST_PLAN.md), [report](E27_LINEAR_COST_REPORT.md), [complete timings](../results/e27/2026-10-23-linear-cost-comparison.json). Twelve new controlled roots,108 timings,10,419 decode tokens per arm; original43.3869, NumPy43.6478, live-cost43.4166 tok/s. Live cost vs original+0.0685% (−0.5295%…+0.7868%), vs frozen NumPy−0.5297%. NumPy-only+0.6013% has a positive prompt interval but a repetition-sensitive interval crossing zero; most observed time difference is target verification timing. All correctness, causal forecast replay and resident reuse checks pass. No confirmed live-cost benefit, policy replacement or model reload; MLP/hybrid remain deferred.
+
+
 ## Proposals without results yet
 
 These five plans are in main as proposals, not results. None has its own GPU run, and no conclusion should be cited from them. Each file opens with a PROPOSED status line. When one is scheduled, give it an E number, freeze its inputs and thresholds, record the run as a normal plan/report pair, and update its row here.

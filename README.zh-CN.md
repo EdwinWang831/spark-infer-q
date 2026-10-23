@@ -6,7 +6,7 @@
 
 ## 现状一览
 
-截至 2026-10-23，仓库包含 E0–E25 的实现、测试和脱敏证据。E24补训的小幅离线增益，在E25中尚未转成已确认的实际decode提速。
+截至 2026-10-23，仓库包含 E0–E27 的实现、测试和脱敏证据（E26依用户要求中止）。最新E27回到线性：纯执行优化点估计+0.60%，对重复波动敏感；实时费用修正未确认decode收益。
 
 - **做什么**：Qwen3.8-Flash-Next（NVFP4，TensorFold 内核）用 DFlash2 草稿模型做推测解码，由 DeepInfer 的 MTPVarlen 决定每一步验证多少个草稿。执行器是同步、单请求、greedy 的研究原型。
 - **最大的单项 decode 改进**：E15/E16 训练的轻量置信度预测器。在另行冻结的新任务上，它比默认的滞后预算快约 10%（E16：44.08 vs 40.21 tok/s），目前是可选路径。
@@ -28,6 +28,7 @@
 | [E22](docs/E22_PREDICTOR_DIAGNOSIS_REPORT.md) | 可选NumPy标量MLP运行时 | 小头0.3353→0.0118毫秒（28.38×）；诊断回放仍比线性低0.06% | CPU原型，没有新增decode TPS |
 | [E24](docs/E24_COVERAGE_EXPANSION_REPORT.md) | 504条新root覆盖问答/代码/数学/多轮/长输入后补训 | 离线比冻结MLP高0.252%、比线性高0.212%，区间均为正 | 离线门槛通过 |
 | [E25](docs/E25_ONLINE_COMPARISON_REPORT.md) | 12个root、108次实际decode配对计时 | 新MLP 47.15、冻结MLP 47.28、线性47.49 token/s；两个相对区间均跨零 | 未确认实际提速 |
+| [E27](docs/E27_LINEAR_COST_REPORT.md) | 相同线性权重的NumPy执行＋因果实时费用对照 | 原版43.39、NumPy43.65、实时修正43.42 token/s；NumPy +0.60%，重复敏感性区间跨零 | 不替换默认；MLP/混合暂停 |
 | [E11](docs/E11_PROJECTION_REPORT.md) | 投影改用 MXFP8 split-K | decode +0.62%，完整请求 −0.64% | 可选，默认不变 |
 | [E10](docs/E10_TARGET_KERNEL_REPORT.md) | 调专家核的 warp 数和预取深度 | holdout 上 +0.08% | 未采用 |
 | [E12](docs/E12_EXPERT_VERIFICATION_REPORT.md) | 按路由专家并集估计验证成本 | 离线成本误差降 26.17%，但专家并集要验证后才知道；能在线用的特征只降 2.42% | 未采用 |
@@ -55,6 +56,8 @@
 
 **E23–E25（2026-10-23 UTC）：** 固定数据的新机会损失目标[未通过独立门槛](docs/E23_OBJECTIVE_COMPARISON_REPORT.md)。随后[504条新root的覆盖补训](docs/E24_COVERAGE_EXPANSION_REPORT.md)已完成，并通过72个root的离线测试；但[实际decode对照](docs/E25_ONLINE_COMPARISON_REPORT.md)比冻结MLP低0.263%、比线性低0.717%，区间均跨零。没有确认实际提速，不替换当前策略；离线估算和实测decode仍分开报告。
 
+**E26–E27（2026-10-23 UTC）：** [混合路线](docs/E26_RESIDUAL_HYBRID_PLAN.md)依用户要求在18/108次计时后取消，不作性能结论。[线性实际对照](docs/E27_LINEAR_COST_REPORT.md)完成12条新root、108次计时：实时费用修正比原版+0.07%、比冻结费用NumPy−0.53%；纯NumPy比原版+0.60%，纳入重复波动的区间仍跨零。全部正确性通过，常驻模型未重载，默认不变。
+
 ## 工作原理
 
 每个 decode 步分三步：
@@ -77,7 +80,7 @@
 ## 下一步
 
 - E8 之后重新对照原生 TensorFold。
-- 先排查离线采样回放与闭环decode决策/成本之间的偏差，再扩大预测器训练；保留独立测试和实际在线A/B门槛。
+- 暂缓MLP/混合路线。先检查线性预算改变能否减少实际验证工作，再决定是否继续训练；保留独立测试与实际decode门槛。
 - 4K 以上上下文：先处理 DFlash 的 2048 滑窗和绝对位置。
 - 让两个请求共享一次 target forward，从 E5 的调度桥接出发。多请求调度的整体设计见[全局调度 RFC](docs/GLOBAL_COST_AWARE_SCHEDULER_RFC.md)（仅为设计提案）。
 - 五份已写好、还没执行的方案（prefill 数值参考、专家占用速率、专家感知预算的在线阶段、草稿 fidelity、精确输出头筛选），见[未执行方案列表](docs/EXPERIMENTS.md#proposals-without-results-yet)。
