@@ -51,7 +51,7 @@
 | [K3](docs/K3_GRAPH_RUNTIME_REPORT.md) | 动态解码接入 Target CUDA Graph | 显式执行选项、静态工作区及 eager 回退；保留主机完成同步 |
 | [K3 + E33](docs/K3_E33_RUNTIME_REPORT.md) | 辅助头/W8/NumPy/Graph 完整迁入原生运行时 | 47.459 vs 同期 E33 48.378 tok/s；约1.90%接入开销，显式profile |
 | [运行时开销](docs/K4_RUNTIME_OVERHEAD.md) | 减少单请求轮询、token 历史复制和 CPU 元数据分配 | 47.282 → 47.994 tok/s（+1.51%）；同期 E33 差距 2.36% → 0.89% |
-| [K4 batch](docs/K4_BATCH_RUNTIME_REPORT.md) | 双请求联合 Target、E17 动态预算与异步 SSE owner | 功能通过；同负载相对原优化单流回退（38.16→33.65 tok/s），见[复核](docs/K4_MATCHED_SCALING_DIAGNOSIS.md) |
+| [K4 batch](docs/K4_BATCH_RUNTIME_REPORT.md) | 双请求联合 Target、E17 动态预算与异步 SSE owner | 功能通过；固定轮询提交损失已修复，同期短组SSE32.57→45.00 tok/s，见[证据与边界](docs/K4_WAIT_FIX_REPORT.md) |
 | [E7](docs/E7_TENSORFOLD_MATCH_REPORT.md) | 充分预热后对照原生 TensorFold | 整体 45.62 vs 49.18 tok/s；8 个自然完成的任务 45.57 vs 43.58 |
 | [E9](docs/E9_DECODE_PROFILE_REPORT.md) | 用 Nsight 剖析 decode | target 验证占 83.81%，草稿占 14.39% |
 
@@ -85,7 +85,7 @@
 - E8 之后重新对照原生 TensorFold。
 - 完成已封存的E23/E24目标与覆盖实验；独立测试和完整在线A/B通过后，才考虑替换当前策略。
 - 4K 以上上下文：先处理 DFlash 的 2048 滑窗和绝对位置。
-- 先修 K4 单请求/长尾接入开销；同负载混合请求目前慢于原优化单流，再考虑跨请求成本优化。多请求调度的整体设计见[全局调度 RFC](docs/GLOBAL_COST_AWARE_SCHEDULER_RFC.md)（仅为设计提案）。
+- K4 事件等待已修复主要轮询提交损失；草稿串行、补齐与单请求长尾仍限制扩展。先补广泛负载/延迟验收，再晋升默认或考虑跨请求成本优化。多请求调度的整体设计见[全局调度 RFC](docs/GLOBAL_COST_AWARE_SCHEDULER_RFC.md)（仅为设计提案）。
 - 五份已写好、还没执行的方案（prefill 数值参考、专家占用速率、专家感知预算的在线阶段、草稿 fidelity、精确输出头筛选），见[未执行方案列表](docs/EXPERIMENTS.md#proposals-without-results-yet)。
 
 ## 快速开始（不需要 GPU，不下载权重）

@@ -51,7 +51,7 @@ The remaining experiments laid groundwork or diagnosed:
 | [K3](docs/K3_GRAPH_RUNTIME_REPORT.md) | Target CUDA Graph execution for dynamic decoding | Explicit execution option, static workspace and eager fallback; host fences remain |
 | [K3 + E33](docs/K3_E33_RUNTIME_REPORT.md) | Full screened-head/W8/NumPy/Graph profile in native runtime | 47.459 vs contemporaneous E33 48.378 tok/s; 1.90% runtime cost, explicit profile |
 | [Runtime overhead](docs/K4_RUNTIME_OVERHEAD.md) | Reduce single-slot polling, token-history copies and CPU metadata allocations | 47.282 → 47.994 tok/s (+1.51%); contemporaneous E33 gap 2.36% → 0.89% |
-| [K4 batch](docs/K4_BATCH_RUNTIME_REPORT.md) | Two-request joint Target forward, E17 dynamic budgets and asynchronous SSE owner | Functional checks pass; matched mixed workload scaling regresses vs optimized single (38.16→33.65 tok/s); [diagnosis](docs/K4_MATCHED_SCALING_DIAGNOSIS.md) |
+| [K4 batch](docs/K4_BATCH_RUNTIME_REPORT.md) | Two-request joint Target forward, E17 dynamic budgets and asynchronous SSE owner | Functional checks pass; sleep-poll dispatch regression fixed, matched short SSE 32.57→45.00 tok/s; [evidence and limits](docs/K4_WAIT_FIX_REPORT.md) |
 | [E7](docs/E7_TENSORFOLD_MATCH_REPORT.md) | Warmed comparison with native TensorFold | 45.62 vs 49.18 tok/s overall; 45.57 vs 43.58 on eight natural-completion tasks |
 | [E9](docs/E9_DECODE_PROFILE_REPORT.md) | Nsight profile of decode | Target verification 83.81%, drafting 14.39% |
 
@@ -85,7 +85,7 @@ The [K1 runtime](docs/K1_RUNTIME_USAGE.md) exposes a native-scheduler target-onl
 - Rerun the native TensorFold comparison after E8.
 - Complete the sealed E23/E24 objective and coverage experiments; require independent test and complete online A/B evidence before replacing the current policy.
 - 4K+ context: handle DFlash's 2048-token sliding window and absolute positions first.
-- Repair K4 single-request/tail overhead before cross-request cost optimization; matched mixed workloads currently regress against the optimized single baseline. The overall multi-request design is in the [global scheduler RFC](docs/GLOBAL_COST_AWARE_SCHEDULER_RFC.md) (Chinese; design only).
+- K4 event waits repair the major sleep-poll dispatch loss; serial DFlash, padding and singleton tails still limit scaling. Broader workload/latency validation remains before promotion and cross-request cost optimization. The overall multi-request design is in the [global scheduler RFC](docs/GLOBAL_COST_AWARE_SCHEDULER_RFC.md) (Chinese; design only).
 - Five written but unrun proposals (prefill numerics reference, expert-footprint rate, the online stages of the expert-aware budget, draft fidelity, exact head screening) are listed under [proposals without results](docs/EXPERIMENTS.md#proposals-without-results-yet).
 
 ## Getting started (no GPU, no weights downloaded)

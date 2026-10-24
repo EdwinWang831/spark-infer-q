@@ -110,5 +110,37 @@ class WorkerTests(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError,'live worker'):native.close()
         native._worker_thread=SimpleNamespace(is_alive=lambda:False);native.close()
 
+    def test_device_wait_releases_command_lock_and_retains_shutdown_fence(self):
+        class WaitingBridge(DeferredBridge):
+            def __init__(self):super().__init__();self.waiting=Event()
+            def wait_for_device(self,plan):
+                if plan is not self.pending:raise RuntimeError('foreign wait')
+                self.waiting.set();self.gate.wait();return True
+        bridge=WaitingBridge();worker=AsyncWorker(lambda:KaifraEngine(bridge)).start()
+        self.addCleanup(self.clean,worker,bridge)
+        sub=worker.submit_tokens('device-wait',[1],max_tokens=9)
+        self.assertTrue(bridge.waiting.wait(2))
+        # Registration must finish while the owner is blocked in the device
+        # wait, without exposing output or freeing its native generation.
+        with ThreadPoolExecutor(1) as pool:self.assertTrue(pool.submit(sub.cancel).result(1))
+        self.assertEqual(bridge.released,[])
+        with self.assertRaises(TimeoutError):worker.close(.02)
+        self.assertTrue(worker.thread.is_alive());self.assertEqual(bridge.released,[])
+        bridge.gate.set();worker.close(3)
+        events=list(sub);self.assertFalse(any(e.token_ids for e in events))
+        self.assertEqual(events[-1].finish_reason,'cancelled');self.assertEqual(len(bridge.released),1)
+
+    def test_device_wait_failure_quarantines_and_fences_before_releasing(self):
+        class BrokenWaitBridge(DeferredBridge):
+            def wait_for_device(self,plan):raise RuntimeError('injected event wait failure')
+        bridge=BrokenWaitBridge();fences=[]
+        bridge.backend.synchronize=lambda:fences.append('fenced')
+        worker=AsyncWorker(lambda:KaifraEngine(bridge)).start();self.addCleanup(self.clean,worker,bridge)
+        sub=worker.submit_tokens('wait-failure',[1],max_tokens=4)
+        with self.assertRaisesRegex(WorkerFailed,'event wait failure'):sub.receive(2)
+        self.wait_for(lambda:not worker.thread.is_alive())
+        self.assertEqual(worker.snapshot()['status'],'failed');self.assertEqual(fences,['fenced'])
+        self.assertEqual(bridge.released,[sub.handle]);self.assertTrue(worker.engine.closed)
+
 
 if __name__=='__main__':unittest.main()

@@ -1,6 +1,6 @@
 # K4 双请求异步服务
 
-该入口的功能链路通过，但[同负载扩展性能复核](K4_MATCHED_SCALING_DIAGNOSIS.md)发现混合请求回退，性能尚未达标。它是显式启用的双请求研究服务，沿用 E33 精确 greedy 辅助头、W8 草稿、E17 NumPy 预测器和当前草稿后动态预算。每个请求独立持有 Target 状态、DFlash 投影缓存、输出和 generation；联合 Decode 使用一次 48 层 Target forward。预填充仍按请求执行八行块。
+该入口功能链路通过；[修复前复核](K4_MATCHED_SCALING_DIAGNOSIS.md)发现的主要轮询损失已修复，[同期SSE短组32.57→45.00 token/s](K4_WAIT_FIX_REPORT.md)。目前仍缺广泛负载和长期性能验收。它是显式启用的双请求研究服务，沿用 E33 精确 greedy 辅助头、W8 草稿、E17 NumPy 预测器和当前草稿后动态预算。每个请求独立持有 Target 状态、DFlash 投影缓存、输出和 generation；联合 Decode 使用一次 48 层 Target forward。预填充仍按请求执行八行块。
 
 在已准备好的研究环境中启动：
 

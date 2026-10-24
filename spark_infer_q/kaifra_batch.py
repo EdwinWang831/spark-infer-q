@@ -180,7 +180,31 @@ class AsyncBatchMixin:
 
     def execute(self,plan):
         self.execute_async(plan)
-        while not self.poll(plan):time.sleep(.0005)
+        while not self.poll(plan):
+            if not self.wait_for_device(plan):time.sleep(.0005)
+
+    def wait_for_device(self,plan):
+        """Wait only for this plan's next event; poll still validates/publishes.
+
+        Fixed sleeps between GPU phases delayed the following eager DFlash
+        submission on Spark. Event completion retains the same fences without
+        a process-wide CUDA synchronize or a Python busy-poll loop.
+        """
+        self._plan(plan)
+        if plan.executed:return False
+        execution=getattr(plan,'execution',None)
+        while isinstance(execution,SplitExecution):execution=execution.current
+        if execution is None or execution.phase=='done':return False
+        if execution.phase=='verify':
+            ticket=execution.target_ticket
+            event=None if ticket is None else ticket.event
+        elif execution.phase=='commit':event=execution.event
+        else:raise BridgeError('unknown device wait phase')
+        if event is None:return False
+        try:event.synchronize()
+        except Exception:
+            self.poisoned=True;raise
+        return True
 
 
 class BatchSpeculativeBridge(AsyncBatchMixin,SpeculativeSchedulerBridge):

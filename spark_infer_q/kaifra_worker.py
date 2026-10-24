@@ -237,7 +237,14 @@ class AsyncWorker:
                                 self.capabilities=dict(self.engine.capabilities)
                             else:self.phase=getattr(getattr(plan,'execution',None),'phase','inflight')
                             self.active_count=self.engine.active_requests;self.condition.notify_all()
-                            if not ready:self.condition.wait(self.poll_seconds)
+                        if not ready:
+                            # Never hold command/publication ownership while a
+                            # CUDA event waits. Other threads can register cancel
+                            # or close; the next poll still gates publication.
+                            wait=getattr(self.engine.bridge,'wait_for_device',None)
+                            waited=wait is not None and wait(plan)
+                            if not waited:
+                                with self.condition:self.condition.wait(self.poll_seconds)
                 except Exception:
                     self.engine.bridge.poisoned=True
                     raise

@@ -9,7 +9,7 @@ def run(session,arguments):
     for n,h in manifest.items():assert hashlib.sha256((root/n).read_bytes()).hexdigest()==h,n
     tag='_k4_scale_'+hashlib.sha256((root/'manifest.json').read_bytes()).hexdigest()[:16]
     pkg=ModuleType(tag);pkg.__path__=[str(root/'spark_infer_q')];sys.modules[tag]=pkg
-    target=solo=None;gold={};policy={}
+    target=solo=None;gold={};policy={};baseline_tag=None
     report=dict(status='RUNNING',checks=[],timings=[],profiles=[],source_sha256=manifest,model_reloaded=False,
         contract=dict(modes=['optimized_single','batch_single','split_pair','joint_pair'],
             timing='token API wall from after both first tokens to terminal/native retirement, includes first draft, excludes prefill/capture/diagnostics',
@@ -25,6 +25,16 @@ def run(session,arguments):
         spec=importlib.import_module(tag+'.kaifra_speculative');nm=importlib.import_module(tag+'.native_scheduler')
         tm=importlib.import_module(tag+'.kaifra_joint_target');hm=importlib.import_module(tag+'.screened_head_fused')
         from e3_wide_target import WideTarget
+        old_batch=None
+        if arguments.get('wait_fix'):
+            baseline=Path('/workspace/e1/k4batch-20261023-wait-v1')
+            seal=json.loads((baseline/'manifest.json').read_text())
+            for n,h in seal.items():assert hashlib.sha256((baseline/n).read_bytes()).hexdigest()==h,n
+            assert seal['spark_infer_q/kaifra_batch.py']=='80cce3008dc4ddcb7c8bdb1efa9a81c93d599f47d1f45f94b1993c0ef04611b9'
+            baseline_tag=tag+'_before';old_pkg=ModuleType(baseline_tag);old_pkg.__path__=[str(baseline/'spark_infer_q')];sys.modules[baseline_tag]=old_pkg
+            old_batch=importlib.import_module(baseline_tag+'.kaifra_batch')
+            report['baseline_source_sha256']=seal
+            report['contract']['modes']=['optimized_single','old_batch_single','fixed_batch_single','old_joint_pair','fixed_joint_pair']
         torch=session.torch;provider,metadata=opt.optimized_provider(session);report['profile_metadata']=metadata
         solo=opt.optimized_target(session);solo.warmup()
         target=tm.JointTarget(WideTarget(session.weights,capacity=2048),hm.FusedScreenedHead(session.weights.head));target.warmup()
@@ -41,7 +51,8 @@ def run(session,arguments):
         with nm.NativeScheduler(session.root.parent/'DeepInfer',session.root.parent/'build-release/lib/deepinfer',max_drafts=7) as native:
             def make(mode):
                 if mode=='optimized_single':return spec.speculative_engine(native,solo,provider,eos_ids=session.eos,prior=prior,capacity=768,mode='adaptive')
-                return batch.batch_engine(native,target,provider,eos_ids=session.eos,prior=prior,capacity=768,joint_decode=mode!='split_pair')
+                implementation=old_batch if mode.startswith('old_') else batch
+                return implementation.batch_engine(native,target,provider,eos_ids=session.eos,prior=prior,capacity=768,joint_decode=mode!='split_pair')
             def generate(mode,group,profile=False,reference=False):
                 parts=[];all_profile=[];all_stages=[];all_device=[]
                 subsets=[[i] for i in range(2)] if mode.endswith('single') else [[0,1]]
@@ -170,4 +181,4 @@ def run(session,arguments):
                 elif execution.leased:execution.release_state(execution.workspace)
                 execution.close()
         for n in list(sys.modules):
-            if n==tag or n.startswith(tag+'.'):sys.modules.pop(n,None)
+            if n==tag or n.startswith(tag+'.') or (baseline_tag is not None and (n==baseline_tag or n.startswith(baseline_tag+'.'))):sys.modules.pop(n,None)

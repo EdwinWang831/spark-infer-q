@@ -1,6 +1,6 @@
 # K4：双请求 GPU 联合验证与异步服务
 
-**后续同负载复核发现性能回退，尚未达到性能目标。** 原优化单流顺序处理原短组为38.16 token/s，新 joint 为33.65；cap128混合组38.50→30.55。下文功能证据仍有效，后面的+24.1%只针对新 backend 内部 split/joint，不能代表超过原优化引擎。见[同负载性能复核](K4_MATCHED_SCALING_DIAGNOSIS.md)。
+**2026-10-24更新：固定sleep轮询导致CPU草稿提交变慢，已改为当前事件等待并通过真实GPU复测。** 同一短组SSE32.57→45.00 token/s；cap128混合30.78→38.04。见[原因与修复报告](K4_WAIT_FIX_REPORT.md)。下文保留最初功能及split/joint证据；其中+24.1%仅比较新backend内部，不代表超过原优化引擎。修复前[同负载回退复核](K4_MATCHED_SCALING_DIAGNOSIS.md)同样保留，广泛性能晋升仍未完成。
 
 路线图 K4 的双请求链路已实现并通过受控功能检查：两个请求共享一次完整 48 层 Target forward，E17 当前草稿后动态预算、W8 草稿与 E33 精确筛选保持不变，异步 owner 驱动 DeepInfer 原生调度器，服务支持两个独立 SSE 流。入口与限制见[使用说明](K4_BATCH_RUNTIME_USAGE.md)，[公开证据](../results/k4/2026-10-23-batch-runtime.json)由导出器重新校验。
 

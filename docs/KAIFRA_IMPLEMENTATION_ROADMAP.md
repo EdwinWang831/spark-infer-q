@@ -139,7 +139,7 @@ class KaifraEngine(Protocol):
 
 **验收：**同请求 solo vs mixed token + logits + 有效状态对照；EOS / cancelled / slot reuse / graph padding / 低高接受混合无污染；报告总吞吐与 per-request TPOT p50/p95。仅两个请求交错但逐个 GPU forward **不算完成**。
 
-2026-10-23 实施：两个请求联合 48 层 Target forward、80 个预备 Graph、独立 E17 当前预算与异步 owner/SSE 已通过受控检查。最初两组服务内部对照31.09→38.58 token/s缺少原优化单流基线；补充同负载后原短组38.16→33.65、较长混合组38.50→30.55，性能仍未达标。先修新 backend 的 singleton/长尾开销，详见[复核](K4_MATCHED_SCALING_DIAGNOSIS.md)。详见[报告](K4_BATCH_RUNTIME_REPORT.md)、[入口](K4_BATCH_RUNTIME_USAGE.md)。原 `K4_RUNTIME_OVERHEAD.md` 只记录单流开销优化，不代替本阶段验收。全局预算仍待 K5。
+2026-10-24实施更新：两个请求联合48层Target forward、80个预备Graph、独立E17当前预算与异步owner/SSE功能通过。修复前同负载回退已追到固定sleep引发的CPU提交损失，改为当前事件等待后，短组direct原优化single40.30/修复joint45.75，cap128组37.78/39.00；SSE旧/修复短组32.57/45.00、cap128组30.78/38.04。每组每模式仅两次，长短组joint仍比优化single低约1.1%，不是广泛晋升证据。14项真实GPU生命周期复测与230项本地测试（12跳过）通过。下一步量化草稿串行和singleton/补齐损失，补延迟与广泛负载；全局预算仍待K5。见[原因与修复](K4_WAIT_FIX_REPORT.md)、[修复前诊断](K4_MATCHED_SCALING_DIAGNOSIS.md)、[功能报告](K4_BATCH_RUNTIME_REPORT.md)、[入口](K4_BATCH_RUNTIME_USAGE.md)。原`K4_RUNTIME_OVERHEAD.md`仅为单流开销实验，不代替本阶段验收。
 
 ### K5 — 成本感知的跨请求调度
 
