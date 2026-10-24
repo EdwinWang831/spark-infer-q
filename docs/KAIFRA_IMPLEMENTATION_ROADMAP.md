@@ -6,6 +6,9 @@
 加载器、State/Buffers、多个前向操作和 CUDA 算子仍来自 TensorFold。原始设计提议及其
 历史阶段记录如下；E40 不代表已实现所有提议或已经独立替换整个执行底座。
 
+后续 [E41](E41_PREFILL_GRAPH_REPORT.md) 已验证完整 Graph/E33/W8 链路、1,536-token输入、
+部分提交、取消复用与本机 HTTP 功能。收益来自 prefill；decode 未新增提速，4K仍未验证。
+
 > **状态：设计提议，不包含任何实际实现或新的 GPU 运行结果。**  
 > **基础路线：基于 DeepInfer 原生 C++ Scheduler / MTPVarlen 进行 Qwen 与 Spark 深度适配，不从零实现新的 Scheduler；TensorFold 组件作为可替换执行后端，DFlash2 作为草稿提供者。**  
 > 此文档与 [Kaifra Vision RFC](KAIFRA_VISION_RFC.md) 同 PR，落实“怎样才算自己的引擎”。  

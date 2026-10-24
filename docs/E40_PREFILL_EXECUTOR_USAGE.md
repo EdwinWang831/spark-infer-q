@@ -60,8 +60,13 @@ eager prompt execution, up to 512 rows per chunk and capacity up to 2048. The
 E40 study uses capacity 1024, prefixes up to 512 and a 129-row continuation test.
 Neither the constructor's capacity bound nor multi-chunk support establishes
 4K+, vision, random sampling, cross-request GPU batching or HTTP performance.
-The request performance study uses the eager target and existing K2 adaptive
-provider; it is not a comparison against the optimized Graph/E33 configuration.
+The historical E40 request performance study uses the eager target and existing
+K2 adaptive provider. [E41](E41_PREFILL_GRAPH_REPORT.md) separately validates
+the unchanged module with optimized Graph/E33/W8 decode, prefixes up to 1,536
+tokens, partial commits, cancel/reuse and loopback HTTP functional checks. Both
+request arms use token_budget=512, physical capacity=2048 and logical capacity=1792.
+Prefill stays eager; Graph covers decode. E41 measures lower TTFT and complete
+request time against rows8, with no new residual decode gain or HTTP speed claim.
 
 External dependencies remain: weight loading, State/Buffers, input staging,
 attention/PLE/HC/MoE/commit and CUDA kernels. The first owned layer is execution

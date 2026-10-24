@@ -6,7 +6,7 @@
 
 ## 现状一览
 
-截至 2026-10-24，本分支包含 E0–E40 研究记录（E26 依用户要求中止）、已验证的 K1–K3 原生调度运行时、单请求开销优化和双请求 target-only API。实验候选保留各自的验证范围，默认路径不变。
+截至 2026-10-24，本分支包含 E0–E41 研究记录（E26 依用户要求中止）、已验证的 K1–K3 原生调度运行时、单请求开销优化和双请求 target-only API。实验候选保留各自的验证范围，默认路径不变。
 
 已汇总的 main 与独立的 K4/服务、自演化设计路线，见[仓库导航](docs/REPOSITORY_STATUS.md)。
 
@@ -19,6 +19,7 @@ E33 用 INT8 辅助筛选、原 BF16 头最终裁决，在相同 W8 草稿/线�
 - **大块 prefill（E36）**：保留现有 decode 算术的候选，在七条前缀上通过 logits、全部草稿特征、有效状态和 8 步交接的精确对照；prompt 本体从 110.87 提升到 889.22 tok/s（8.02倍）。目前是研究适配器，尚无完整请求或 HTTP 收益，见[报告](docs/E36_PREFILL_NUMERICS_REPORT.md)。
 - **Prefill 剖析（E37）**：两个 512-token 样本中，路由专家占 GPU 内核累计耗时 52.5%–54.9%。GDN scratch 复用使配对 prompt wall 增加 1.02%，未采用，继续保留 E36，见[报告](docs/E37_PREFILL_PROFILE_REPORT.md)。
 - **自主 Prefill 模块（E40）**：由引擎管理分块、工作区与特征捕获，显式接入 target-only/DFlash，仍复用 TensorFold 算子。七条前缀和56步 decode 交接精确通过；eager token API配对实测中，受控512-token输入/24-token输出的DFlash请求耗时4.839→0.684秒，对照为旧rows8，不是最新原生引擎或Graph/E33。[报告](docs/E40_PREFILL_EXECUTOR_REPORT.md) · [用法](docs/E40_PREFILL_EXECUTOR_USAGE.md)。
+- **完整优化链路验证（E41）**：自主 prefill 已通过 Graph/E33/W8 交接、部分提交、取消复用及本机 HTTP 功能检查，输入覆盖至1,536 tokens。相同配置的 token API 请求中，code513 总耗时5.464→1.202秒，mixed1536 为15.347→2.131秒，对照为rows8；残差 decode 为54.63→54.41 tok/s，没有新增 decode 收益。[报告](docs/E41_PREFILL_GRAPH_REPORT.md)。
 - **还没做到**：整体速度没有超过原生 TensorFold（E7 时 45.62 vs 49.18 tok/s，E8 之后没有重测）；多请求 DFlash、4K 以上上下文和随机采样仍待推进。
 
 ## 主要结果
@@ -30,6 +31,7 @@ E33 用 INT8 辅助筛选、原 BF16 头最终裁决，在相同 W8 草稿/线�
 | [E37](docs/E37_PREFILL_PROFILE_REPORT.md) | Prefill 剖析与单变量 GDN scratch 复用 | 48 次配对 prompt 中复用 wall +1.02%；独立 GPU 剖析显示专家是最大成本 | 不采用复用；没有新增速度收益或默认变更 |
 | [E38](docs/E38_PREFILL_EXPERT_REPORT.md) | 两组输入共享专家权重加载与解包 | 路由估算少23.02%权重阶段，但完整MoE设备区间成本+3.93% | 组件精确通过，成本不通过；未进入完整prompt A/B |
 | [E39](docs/E39_PREFILL_CTA_REPORT.md) | CTA共享压缩权重，每warp保持16行累加器 | 寄存器占用降低，但完整MoE设备区间成本+3.11% | 不采用；没有新增prompt/decode收益或默认变更 |
+| [E41](docs/E41_PREFILL_GRAPH_REPORT.md) | 自主512行 prefill 接入 Graph/E33/W8 完整路径 | code513总耗时5.464→1.202秒；mixed1536为15.347→2.131秒；残差decode −0.41% | 精确性与生命周期通过；显式启用，输入≤1,536 tokens；无4K/HTTP测速结论 |
 | [E6](docs/E6_DRAFT_HEAD_REPORT.md) | 草稿输出头换成完整词表 Q4 | decode 41.70 → 45.54 tok/s（+9.23%） | 默认 |
 | [E8](docs/E8_INTEGRATION_REPORT.md) | prompt 按 8 行分块，沿用 decode 算术 | 完整请求快 1.67 倍；decode −1.14% | 默认 |
 | [E13](docs/E13_DRAFT_CACHE_CONFIDENCE_REPORT.md) | 增量缓存 DFlash 的历史投影 | 1K–2K 输入 +6.27%；短输入 −0.31% | 可选 |
