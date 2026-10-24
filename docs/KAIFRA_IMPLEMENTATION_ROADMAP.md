@@ -1,9 +1,11 @@
 # Kaifra 实施路线图：从 SparkInfer-Q 实验原型到自主推理引擎
 
 > **状态：设计提议，不包含任何实际实现或新的 GPU 运行结果。**  
-> **基础路线：基于 DeepInfer 原生 C++ Scheduler / MTPVarlen 进行 Qwen 与 Spark 深度适配，不从零实现新的 Scheduler；TensorFold 组件作为可替换执行后端，DFlash2 作为草稿提供者。**  
+> **基础路线：基于 DeepInfer 原生 C++ Scheduler / MTPVarlen 进行 Qwen 与 Spark 深度适配，不从零实现新的 Scheduler；建设自有 Qwen/SM121 执行后端，DFlash2 作为草稿提供者。TensorFold 用作迁移期间的适配器与验证参考。**
 > 此文档与 [Kaifra Vision RFC](KAIFRA_VISION_RFC.md) 同 PR，落实“怎样才算自己的引擎”。  
 > 先保留 `spark-infer-q` 仓库与包名，不启用自动迁移或重命名。
+
+2026-10-24 用户方向更新：学习 TensorFold 的批处理、状态和 Graph 机制，优先落在 DeepInfer 与自有实现中，进一步包装 TensorFold 不作为最终目标。[自有后端实施计划](DEEPINFER_OWN_BACKEND_PLAN.md)明确迁移顺序；其后已接通[自有批量 DFlash 研究后端](K4_OWN_BATCH_DRAFT_REPORT.md)，四请求草稿组件和两请求服务通过限定检查，数值等价/性能晋升未通过，默认不变。Target 自有后端尚待实现。下文已完成阶段保留其实际依赖与历史证据。
 
 ## 1. 工程目标与不做什么
 
@@ -32,7 +34,7 @@ flowchart TD
     AD --> CP["DeepInfer MTPVarlen + Kaifra Cost / SLO Policy"]
     CP --> BP["Batch & Phase Planner"]
     BP --> EX["Kaifra Executor"]
-    EX --> KP["Kernel Adapter: TensorFold-derived, later alternatives"]
+    EX --> KP["Own Qwen/SM121 backend + verified kernel providers"]
     EX --> DP["Draft Providers: none / native MTP / Q4 DFlash2"]
     KP --> ST["Qwen GDN + QSA state manager"]
     DP --> ST
@@ -109,7 +111,7 @@ class KaifraEngine(Protocol):
 
 ### K1 — 基于 DeepInfer 的 Target-only Runtime
 
-2026-10-23 实施进展：[Target-only 运行时](K1_RUNTIME_REPORT.md)已实现并通过七组真实 GPU 生命周期检查；[API/用法](K1_RUNTIME_USAGE.md)。DFlash2 与 E17 本轮动态预算按下述 K2 接入；K3/K4 等仍为计划。
+2026-10-23 实施进展：[Target-only 运行时](K1_RUNTIME_REPORT.md)已实现并通过七组真实 GPU 生命周期检查；[API/用法](K1_RUNTIME_USAGE.md)。DFlash2 与 E17 本轮动态预算按下述 K2 接入；K3 Graph 与 K4 双请求 batch 已有独立验收，见各阶段的实施记录。
 
 **交付：**沿用 E5 已证明可用的原生 DeepInfer C++ Scheduler / BlockManager 逻辑，构建由 Kaifra 维护的 `KaifraEngine` Qwen 请求状态机/Target KernelAdapter、bounded chunked Prefill、serial Decode、stream、EOS/max_tokens、cancel、权重加载与清理。
 
@@ -139,11 +141,15 @@ class KaifraEngine(Protocol):
 
 **验收：**同请求 solo vs mixed token + logits + 有效状态对照；EOS / cancelled / slot reuse / graph padding / 低高接受混合无污染；报告总吞吐与 per-request TPOT p50/p95。仅两个请求交错但逐个 GPU forward **不算完成**。
 
+2026-10-24实施更新：两个请求联合48层Target forward、80个预备Graph、独立E17当前预算与异步owner/SSE功能通过。修复前同负载回退已追到固定sleep引发的CPU提交损失，改为当前事件等待后，短组direct原优化single40.30/修复joint45.75，cap128组37.78/39.00；SSE旧/修复短组32.57/45.00、cap128组30.78/38.04。每组每模式仅两次，长短组joint仍比优化single低约1.1%，不是广泛晋升证据。14项真实GPU生命周期复测与230项本地测试（12跳过）通过。下一步量化草稿串行和singleton/补齐损失，补延迟与广泛负载；全局预算仍待K5。见[原因与修复](K4_WAIT_FIX_REPORT.md)、[修复前诊断](K4_MATCHED_SCALING_DIAGNOSIS.md)、[功能报告](K4_BATCH_RUNTIME_REPORT.md)、[入口](K4_BATCH_RUNTIME_USAGE.md)。原`K4_RUNTIME_OVERHEAD.md`仅为单流开销实验，不代替本阶段验收。
+
 ### K5 — 成本感知的跨请求调度
 
 **交付：**测过的 batch bucket 成本、按请求的置信头接受率（E14 显示只按深度的历史先验几乎不随输入变化，E15/E16 的置信头在单请求上快约 10%）、内存准入与公平性限制；比较 TensorFold 已有成本策略、DeepInfer `MTPVarlen`（滞后先验和置信头两种）、Kaifra 候选。
 
 **验收：**新冻结 2/4/5 请求混合负载中至少存在可复现的完整任务/吞吐优势，不得显著恶化交互 TTFT/TPOT p95 或状态正确性。否则保留简单策略为默认，复杂策略撤到研究模式。
+
+2026-10-24预算子步骤：已接通[实测批次成本与联合E17预算](K4_JOINT_BUDGET_REPORT.md)，80种费用配置、三种预算对照、14项真实GPU生命周期与236项本地测试（12跳过）通过。正式SSE未过性能门槛，原预算继续默认；仅完成当前2请求批次的候选预算器，未增加4请求执行、准入/公平性或完整K5。
 
 ### K6 — Speculative Mode Portfolio + Spark Resource Policy
 

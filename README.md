@@ -11,7 +11,7 @@ As of 2026-10-23, this repository includes E0–E22 implementations, tests and s
 - **What it does**: Qwen3.8-Flash-Next (NVFP4, TensorFold kernels) runs speculative decoding with the DFlash2 drafter. DeepInfer's MTPVarlen decides how many drafts to verify at each step. Performance studies and the K2 dynamic-budget runtime use synchronous single-request greedy execution.
 - **Largest single decode gain**: a lightweight confidence predictor trained in E15/E16. On separately frozen new tasks it is about 10% faster than the default lagged budget (E16: 44.08 vs 40.21 tok/s). It is opt-in for now.
 - **Prompt processing**: eight-row prompt chunks make complete requests 1.67× faster, cutting summed time to first token from 19.69 s to 4.23 s; decode speed is essentially unchanged (E8).
-- **Not there yet**: no overall lead over native TensorFold (45.62 vs 49.18 tok/s in E7; not rerun since E8). No multi-request GPU batching, 4K+ context or random sampling yet.
+- **Not there yet**: no overall lead over native TensorFold (45.62 vs 49.18 tok/s in E7; not rerun since E8). 4K+ context and random sampling remain unvalidated. The explicit K4 service now supports two-request GPU batching and an asynchronous owner.
 
 ## Key results
 
@@ -34,7 +34,7 @@ As of 2026-10-23, this repository includes E0–E22 implementations, tests and s
 **How to read these numbers**
 
 - Each experiment uses its own task set, so tok/s values in different rows are not comparable, and gains must not be multiplied.
-- All results are single Spark, single request, greedy decoding. Most tasks are synthetic prompts with context up to about 2K tokens.
+- All generation results are single Spark and greedy; the research experiments use one request, while K4 reports a separate two-request service cohort. Most tasks are synthetic prompts with context up to about 2K tokens.
 - Generation experiments check output tokens, committed logits and GDN/QSA state against serial execution. CPU-only and collection studies describe their separate validation scope in the linked reports.
 - Feature extraction, CPU transfers and prediction are included in the timings.
 
@@ -50,7 +50,9 @@ The remaining experiments laid groundwork or diagnosed:
 | [K2](docs/K2_DFLASH_SCHEDULER_REPORT.md) | Q4 DFlash2 and native dynamic budgets on the Scheduler | Current E17 post-draft budget, with native lagged/E16 controls; synchronous execution |
 | [K3](docs/K3_GRAPH_RUNTIME_REPORT.md) | Target CUDA Graph execution for dynamic decoding | Explicit execution option, static workspace and eager fallback; host fences remain |
 | [K3 + E33](docs/K3_E33_RUNTIME_REPORT.md) | Full screened-head/W8/NumPy/Graph profile in native runtime | 47.459 vs contemporaneous E33 48.378 tok/s; 1.90% runtime cost, explicit profile |
-| [K4](docs/K4_RUNTIME_OVERHEAD.md) | Reduce single-slot polling, token-history copies and CPU metadata allocations | 47.282 → 47.994 tok/s (+1.51%); contemporaneous E33 gap 2.36% → 0.89% |
+| [Runtime overhead](docs/K4_RUNTIME_OVERHEAD.md) | Reduce single-slot polling, token-history copies and CPU metadata allocations | 47.282 → 47.994 tok/s (+1.51%); contemporaneous E33 gap 2.36% → 0.89% |
+| [K4 batch](docs/K4_BATCH_RUNTIME_REPORT.md) | Two-request joint Target forward, E17 dynamic budgets and asynchronous SSE owner | Functional checks pass; sleep-poll dispatch regression fixed, matched short SSE 32.57→45.00 tok/s; [evidence and limits](docs/K4_WAIT_FIX_REPORT.md) |
+| [K4 joint budget](docs/K4_JOINT_BUDGET_REPORT.md) | Frozen measured batch costs with unchanged E17 probabilities | Correctness passes; formal SSE regresses, so joint budgets remain opt-in and independent budgets stay default |
 | [E7](docs/E7_TENSORFOLD_MATCH_REPORT.md) | Warmed comparison with native TensorFold | 45.62 vs 49.18 tok/s overall; 45.57 vs 43.58 on eight natural-completion tasks |
 | [E9](docs/E9_DECODE_PROFILE_REPORT.md) | Nsight profile of decode | Target verification 83.81%, drafting 14.39% |
 
@@ -77,14 +79,18 @@ Each decode step has three parts:
 
 The complete executor is [`scripts/e8_ours.py`](scripts/e8_ours.py), which serves SSE. It needs a prepared research environment, external dependencies and checkpoints; see [usage](docs/PROMPT_USAGE.md). A [resident worker](docs/RESIDENT_RESEARCH_WORKER.md) keeps the weights loaded between experiments.
 
-The [K1 runtime](docs/K1_RUNTIME_USAGE.md) exposes a native-scheduler target-only API and loopback SSE entry point. [K2](docs/K2_DFLASH_SCHEDULER_USAGE.md) adds DFlash2 and native dynamic budgets to that runtime. K2 admits one request with dynamic verification budgets, and HTTP admits one generation at a time. Joint GPU batching remains future work.
+The [K1 runtime](docs/K1_RUNTIME_USAGE.md) exposes a native-scheduler target-only API and loopback SSE entry point. [K2](docs/K2_DFLASH_SCHEDULER_USAGE.md) adds DFlash2 and native dynamic budgets to that runtime. K2 admits one request with dynamic verification budgets, and HTTP admits one generation at a time. The separate [K4 entry](docs/K4_BATCH_RUNTIME_USAGE.md) supports two-request joint GPU decode and asynchronous SSE; per-request E17 budgets remain unchanged.
+
+2026-10-24: opt-in [owned batched DFlash](docs/K4_OWN_BATCH_DRAFT_REPORT.md) and [compact Target](docs/K4_OWN_TARGET_REPORT.md) backends are available. Target owns fixed-capacity state, layer orchestration, batched GDN recurrence/commit, dense-budget QSA, PLE convolution and bounded adaptive Graphs. Two-request numerical/lifecycle checks pass; four requests are validated only in the draft component. Draft numerics still differ from the earlier sequential path. The final Target A/B improves short direct decode 44.37→47.27 token/s, but SSE is 38.98→38.06; performance promotion fails and legacy Target/sequential draft remain default. Loading, eager prefill, remaining primitive/workspace providers and draft Q4 matmul still depend on TensorFold.
+
+A separate [prefill-progress change](docs/K4_PREFILL_PROGRESS_REPORT.md) adds native ready-decode interleaving and the committed E40 executor. In five controlled two-request cohorts, short-request maximum output stalls shrink from about 3s to 0.28–0.31s; full-request throughput improves 11.54→25.60 token/s for a short stream followed by a long prompt, and 33.40→37.76 for short inputs. This is a prompt/scheduling improvement, not a pure decode-kernel claim. A separate five-repeat CPU-placement A/B improves cap128 full requests 36.45→39.12 token/s with the same fast prefill; final SSE cohort rates are 44.00 short and 39.73 cap128. Placement changes only the owner thread within its existing allowed CPU mask. Defaults remain unchanged; see [usage](docs/K4_BATCH_RUNTIME_USAGE.md).
 
 ## Next steps
 
 - Rerun the native TensorFold comparison after E8.
 - Complete the sealed E23/E24 objective and coverage experiments; require independent test and complete online A/B evidence before replacing the current policy.
 - 4K+ context: handle DFlash's 2048-token sliding window and absolute positions first.
-- Let two requests share one target forward, starting from the E5 scheduler bridge. The overall multi-request design is in the [global scheduler RFC](docs/GLOBAL_COST_AWARE_SCHEDULER_RFC.md) (Chinese; design only).
+- K4 compact Target removes per-request padding and batches GDN/QSA. Opt-in prefill interleaving/E40 execution addresses the measured multi-second output stall. Continue remaining provider work, batch-cost calibration and four-request service under the [owned-backend plan](docs/DEEPINFER_OWN_BACKEND_PLAN.md).
 - Five written but unrun proposals (prefill numerics reference, expert-footprint rate, the online stages of the expert-aware budget, draft fidelity, exact head screening) are listed under [proposals without results](docs/EXPERIMENTS.md#proposals-without-results-yet).
 
 ## Getting started (no GPU, no weights downloaded)
