@@ -119,15 +119,18 @@ class DFlashProvider:
 
 class SpeculativeBackend:
     def __init__(self, target, provider, *, eos_ids, depth, prior,
-                 prefill_rows=8, observer=None):
+                 prefill_rows=8, observer=None, prefill_executor=None):
         if prefill_rows not in (1,2,4,8) or any(r not in target.buffers for r in range(1,9)):
             raise ValueError('K2 requires validated eight-row target buffers')
+        if prefill_executor is not None and observer is not None:
+            raise ValueError('per-row prompt observers require the rows8 path')
         self.target, self.provider, self.depth = target, provider, depth
         self.eos_ids, self.prior = frozenset(eos_ids), tuple(prior)
         if len(self.prior) != 7:
             raise ValueError('seven-depth conditional prior required')
         LaggedAcceptance(self.prior)
         self.prefill_rows, self.observer, self.states = prefill_rows, observer, {}
+        self.prefill_executor = prefill_executor
 
     def create(self, handle):
         with self.target.torch.inference_mode():
@@ -159,7 +162,14 @@ class SpeculativeBackend:
         accepted=observed=0
         with torch.inference_mode():
             if row.prompt:
-                for begin in range(0,len(row.token_ids),self.prefill_rows):
+                if self.prefill_executor is not None:
+                    t = time.perf_counter()
+                    result = self.prefill_executor.advance(state.target, row.token_ids, capture=True)
+                    logits, features = result.logits, result.features
+                    state.context = features if state.context is None else torch.cat([state.context,features])
+                    verify_ms += (time.perf_counter()-t)*1000
+                for begin in (() if self.prefill_executor is not None else
+                              range(0,len(row.token_ids),self.prefill_rows)):
                     ids = list(row.token_ids[begin:begin+self.prefill_rows])
                     t = time.perf_counter()
                     logits, features = target.step(state.target, ids, capture=True)
@@ -396,7 +406,7 @@ class SpeculativeSchedulerBridge(SchedulerBridge):
 
 def speculative_engine(native, target, provider, *, eos_ids, prior, mode='adaptive',
                        capacity=256,max_requests=1,token_budget=32,prefill_rows=8,
-                       tokenizer=None,curve=None,observer=None):
+                       tokenizer=None,curve=None,observer=None,prefill_executor=None):
     if getattr(native,'max_drafts',None)!=7:
         raise ValueError('speculation requires a native max_drafts=7 context')
     if mode not in ('lagged','confidence','adaptive'):
@@ -412,7 +422,7 @@ def speculative_engine(native, target, provider, *, eos_ids, prior, mode='adapti
         raise ValueError('dynamic mode requires an explicit measured cost curve')
     depth = 7
     backend=SpeculativeBackend(target,provider,eos_ids=eos_ids,depth=depth,prior=prior,
-                               prefill_rows=prefill_rows,observer=observer)
+                               prefill_rows=prefill_rows,observer=observer,prefill_executor=prefill_executor)
     bridge=SpeculativeSchedulerBridge(native.core,native.torch,native.group,native.sampling_class,
         backend,vocab_size=int(target.w.head.b.weight.shape[0]),eos_ids=eos_ids,capacity=capacity,
         max_requests=max_requests,token_budget=token_budget,curve=curve if dynamic else None,postdraft=mode=='adaptive')
@@ -421,6 +431,8 @@ def speculative_engine(native, target, provider, *, eos_ids, prior, mode='adapti
                             draft_depth=depth,verification_budget=('current_postdraft_e17' if mode=='adaptive' else
                                 'native_mtp_varlen'))
     engine.capabilities.update(getattr(target,'capabilities',{}))
+    if prefill_executor is not None:
+        engine.capabilities.update(prefill_executor.capabilities)
     return engine
 
 

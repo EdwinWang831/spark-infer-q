@@ -180,5 +180,26 @@ class BackendTests(unittest.TestCase):
         target = self.target(); target.buffers.pop(8)
         with self.assertRaises(ValueError): QwenTargetBackend(target)
 
+    def test_owned_prefill_routes_prompt_only_and_preserves_observer_contract(self):
+        target = self.target()
+        calls = []
+        class Logit:
+            def __getitem__(self, key): return self
+            def argmax(self): return 11
+        def advance(state, ids, capture):
+            calls.append((tuple(ids),capture)); state.pos += len(ids)
+            return SimpleNamespace(logits=Logit())
+        executor = SimpleNamespace(advance=advance)
+        backend = QwenTargetBackend(target, prefill_executor=executor)
+        h = RequestHandle('x',0,1,'a'); s = backend.create(h)
+        self.assertEqual(backend.advance(WorkRow(h,0,tuple(range(17)),True,True),s),11)
+        self.assertEqual(calls,[(tuple(range(17)),False)])
+        self.assertEqual(self.calls,[])
+        self.assertEqual(backend.advance(WorkRow(h,17,(2,),False,False),s),7)
+        self.assertEqual(len(self.calls),1)
+        backend.release(h,s)
+        with self.assertRaisesRegex(ValueError,'observers'):
+            QwenTargetBackend(target,observer=object(),prefill_executor=executor)
+
 
 if __name__ == '__main__': unittest.main()

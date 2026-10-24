@@ -6,7 +6,7 @@ A research project on accelerating Qwen inference on a single NVIDIA DGX Spark (
 
 ## At a glance
 
-As of 2026-10-24, this branch includes E0–E39 research records (E26 cancelled at the user’s request), the validated K1–K3 native-scheduler runtime, single-request overhead improvements and a two-request target-only API. Experimental candidates retain their individual scope; defaults are unchanged.
+As of 2026-10-24, this branch includes E0–E40 research records (E26 cancelled at the user’s request), the validated K1–K3 native-scheduler runtime, single-request overhead improvements and a two-request target-only API. Experimental candidates retain their individual scope; defaults are unchanged.
 
 See the [repository map](docs/REPOSITORY_STATUS.md) for the consolidated main branch and independent K4/service and self-evolution workstreams.
 
@@ -18,6 +18,7 @@ E33 preserves the original BF16 target decision through an INT8-assisted head sc
 - **Two-request GPU batching**: the native DeepInfer scheduler can now send two requests through one target forward. In a controlled target-only test, aggregate decode throughput rose from 23.64 to 38.63 tok/s (+63.4%); this is an explicit synchronous API, without batched DFlash or HTTP validation. See the [report](docs/JOINT_TARGET_EXECUTION_REPORT.md).
 - **Large-chunk prefill (E36)**: a candidate preserving decode arithmetic passed exact logits, all draft features, live-state and eight-step handoff checks on seven prefixes. Prompt-only throughput rose from 110.87 to 889.22 tok/s (8.02×); this is a research adapter, with no full-request or HTTP result yet. See the [report](docs/E36_PREFILL_NUMERICS_REPORT.md).
 - **Prefill profiling (E37)**: routed experts account for 52.5–54.9% of cumulative GPU kernel time on two 512-token probes. GDN scratch reuse increased matched prompt wall by 1.02% and was rejected; E36 remains unchanged. See the [report](docs/E37_PREFILL_PROFILE_REPORT.md).
+- **Owned prefill module (E40)**: the engine owns prompt chunking, workspace lifetime and feature capture, with opt-in target-only/DFlash integration over TensorFold operators. Seven prefixes and 56 decode handoff steps pass exact checks. In matched eager-token-API tests, a controlled 512-token prompt/24-token reply takes 4.839→0.684 s with DFlash; this is against rows8, not the latest native engine or Graph/E33. [Report](docs/E40_PREFILL_EXECUTOR_REPORT.md) · [Usage](docs/E40_PREFILL_EXECUTOR_USAGE.md).
 - **Not there yet**: no overall lead over native TensorFold (45.62 vs 49.18 tok/s in E7; not rerun since E8). Multi-request DFlash, 4K+ context and random sampling remain open.
 
 ## Key results

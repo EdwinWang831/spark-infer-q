@@ -1,5 +1,11 @@
 # Kaifra 实施路线图：从 SparkInfer-Q 实验原型到自主推理引擎
 
+2026-10-24 执行层进展：[E40 PrefillExecutor](E40_PREFILL_EXECUTOR_USAGE.md)将 E36
+策略整理为引擎模块，拥有分块、工作区、特征捕获与失败隔离，并显式接入现有请求后端。
+投影通过只读浅拷贝视图选择已验证算术；不再克隆执行上游前向源码或修改上游全局函数。
+加载器、State/Buffers、多个前向操作和 CUDA 算子仍来自 TensorFold。原始设计提议及其
+历史阶段记录如下；E40 不代表已实现所有提议或已经独立替换整个执行底座。
+
 > **状态：设计提议，不包含任何实际实现或新的 GPU 运行结果。**  
 > **基础路线：基于 DeepInfer 原生 C++ Scheduler / MTPVarlen 进行 Qwen 与 Spark 深度适配，不从零实现新的 Scheduler；TensorFold 组件作为可替换执行后端，DFlash2 作为草稿提供者。**  
 > 此文档与 [Kaifra Vision RFC](KAIFRA_VISION_RFC.md) 同 PR，落实“怎样才算自己的引擎”。  

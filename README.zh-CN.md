@@ -6,7 +6,7 @@
 
 ## 现状一览
 
-截至 2026-10-24，本分支包含 E0–E39 研究记录（E26 依用户要求中止）、已验证的 K1–K3 原生调度运行时、单请求开销优化和双请求 target-only API。实验候选保留各自的验证范围，默认路径不变。
+截至 2026-10-24，本分支包含 E0–E40 研究记录（E26 依用户要求中止）、已验证的 K1–K3 原生调度运行时、单请求开销优化和双请求 target-only API。实验候选保留各自的验证范围，默认路径不变。
 
 已汇总的 main 与独立的 K4/服务、自演化设计路线，见[仓库导航](docs/REPOSITORY_STATUS.md)。
 
@@ -18,6 +18,7 @@ E33 用 INT8 辅助筛选、原 BF16 头最终裁决，在相同 W8 草稿/线�
 - **双请求 GPU batch**：DeepInfer 原生调度器已能让两个请求共享一次 target 前向。受控 target-only 对照中，decode 总吞吐从 23.64 升至 38.63 tok/s（+63.4%）；目前是显式同步 API，尚未验证联合 DFlash 和 HTTP，见[报告](docs/JOINT_TARGET_EXECUTION_REPORT.md)。
 - **大块 prefill（E36）**：保留现有 decode 算术的候选，在七条前缀上通过 logits、全部草稿特征、有效状态和 8 步交接的精确对照；prompt 本体从 110.87 提升到 889.22 tok/s（8.02倍）。目前是研究适配器，尚无完整请求或 HTTP 收益，见[报告](docs/E36_PREFILL_NUMERICS_REPORT.md)。
 - **Prefill 剖析（E37）**：两个 512-token 样本中，路由专家占 GPU 内核累计耗时 52.5%–54.9%。GDN scratch 复用使配对 prompt wall 增加 1.02%，未采用，继续保留 E36，见[报告](docs/E37_PREFILL_PROFILE_REPORT.md)。
+- **自主 Prefill 模块（E40）**：由引擎管理分块、工作区与特征捕获，显式接入 target-only/DFlash，仍复用 TensorFold 算子。七条前缀和56步 decode 交接精确通过；eager token API配对实测中，受控512-token输入/24-token输出的DFlash请求耗时4.839→0.684秒，对照为旧rows8，不是最新原生引擎或Graph/E33。[报告](docs/E40_PREFILL_EXECUTOR_REPORT.md) · [用法](docs/E40_PREFILL_EXECUTOR_USAGE.md)。
 - **还没做到**：整体速度没有超过原生 TensorFold（E7 时 45.62 vs 49.18 tok/s，E8 之后没有重测）；多请求 DFlash、4K 以上上下文和随机采样仍待推进。
 
 ## 主要结果

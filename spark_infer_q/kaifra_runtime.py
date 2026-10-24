@@ -40,12 +40,15 @@ class QwenTargetBackend:
     Each scheduled request still executes separately. Prefill may use the E8
     validated row chunks; those chunks are not cross-request GPU batching.
     """
-    def __init__(self, target, *, prefill_rows=8, observer=None):
+    def __init__(self, target, *, prefill_rows=8, observer=None, prefill_executor=None):
         if type(prefill_rows) is not int or prefill_rows not in (1, 2, 4, 8):
             raise ValueError('prefill_rows must be 1, 2, 4 or 8')
         if any(n not in target.buffers for n in range(1, prefill_rows+1)):
             raise ValueError('target lacks requested row buffers')
+        if prefill_executor is not None and observer is not None:
+            raise ValueError('per-row prompt observers require the rows8 path')
         self.target, self.prefill_rows, self.observer = target, prefill_rows, observer
+        self.prefill_executor = prefill_executor
         self.states = {}
 
     def create(self, handle):
@@ -64,6 +67,9 @@ class QwenTargetBackend:
             raise BridgeError('device state ownership or position mismatch')
         size = self.prefill_rows if row.prompt else 1
         with self.target.torch.inference_mode():
+            if row.prompt and self.prefill_executor is not None:
+                result = self.prefill_executor.advance(state, row.token_ids, capture=False)
+                return int(result.logits[-1].argmax())
             for begin in range(0, len(row.token_ids), size):
                 ids = list(row.token_ids[begin:begin+size])
                 logits, _ = self.target.step(state, ids, capture=False)
@@ -101,15 +107,19 @@ class KaifraEngine:
     @classmethod
     def from_native(cls, native, target, *, eos_ids, capacity=1024,
                     max_requests=2, token_budget=32, prefill_rows=8,
-                    tokenizer=None, observer=None):
+                    tokenizer=None, observer=None, prefill_executor=None):
         if capacity > target.capacity:
             raise ValueError('scheduler capacity exceeds target capacity')
-        backend = QwenTargetBackend(target, prefill_rows=prefill_rows, observer=observer)
+        backend = QwenTargetBackend(target, prefill_rows=prefill_rows, observer=observer,
+                                   prefill_executor=prefill_executor)
         bridge = SchedulerBridge(native.core, native.torch, native.group,
             native.sampling_class, backend, vocab_size=int(target.w.head.b.weight.shape[0]),
             eos_ids=eos_ids, capacity=capacity, max_requests=max_requests,
             token_budget=token_budget)
-        return cls(bridge, tokenizer=tokenizer)
+        engine = cls(bridge, tokenizer=tokenizer)
+        if prefill_executor is not None:
+            engine.capabilities = dict(engine.capabilities, **prefill_executor.capabilities)
+        return engine
 
     def _ready(self):
         if self.closed:
