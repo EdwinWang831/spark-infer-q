@@ -1,9 +1,11 @@
 # Kaifra 实施路线图：从 SparkInfer-Q 实验原型到自主推理引擎
 
 > **状态：设计提议，不包含任何实际实现或新的 GPU 运行结果。**  
-> **基础路线：基于 DeepInfer 原生 C++ Scheduler / MTPVarlen 进行 Qwen 与 Spark 深度适配，不从零实现新的 Scheduler；TensorFold 组件作为可替换执行后端，DFlash2 作为草稿提供者。**  
+> **基础路线：基于 DeepInfer 原生 C++ Scheduler / MTPVarlen 进行 Qwen 与 Spark 深度适配，不从零实现新的 Scheduler；建设自有 Qwen/SM121 执行后端，DFlash2 作为草稿提供者。TensorFold 用作迁移期间的适配器与验证参考。**
 > 此文档与 [Kaifra Vision RFC](KAIFRA_VISION_RFC.md) 同 PR，落实“怎样才算自己的引擎”。  
 > 先保留 `spark-infer-q` 仓库与包名，不启用自动迁移或重命名。
+
+2026-10-24 用户方向更新：学习 TensorFold 的批处理、状态和 Graph 机制，优先落在 DeepInfer 与自有实现中，进一步包装 TensorFold 不作为最终目标。[自有后端实施计划](DEEPINFER_OWN_BACKEND_PLAN.md)明确当前依赖、批量 DFlash、紧凑 GDN/QSA、四请求和逐模块替换的顺序；这是计划，尚无新增后端或性能结果。下文已完成阶段保留其实际依赖与历史证据。
 
 ## 1. 工程目标与不做什么
 
@@ -32,7 +34,7 @@ flowchart TD
     AD --> CP["DeepInfer MTPVarlen + Kaifra Cost / SLO Policy"]
     CP --> BP["Batch & Phase Planner"]
     BP --> EX["Kaifra Executor"]
-    EX --> KP["Kernel Adapter: TensorFold-derived, later alternatives"]
+    EX --> KP["Own Qwen/SM121 backend + verified kernel providers"]
     EX --> DP["Draft Providers: none / native MTP / Q4 DFlash2"]
     KP --> ST["Qwen GDN + QSA state manager"]
     DP --> ST
