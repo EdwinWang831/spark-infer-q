@@ -265,9 +265,33 @@ class SpeculativeSchedulerBridge(SchedulerBridge):
             # the admission token count remains a conservative reservation.
             try:
                 plan.draft_ms=[0.]*len(plan.rows)
-                for i,row in enumerate(plan.rows):
-                    entry=self._entry(row.handle)
-                    if getattr(self.backend.provider,'deferred_draft',False) and not entry['cancelled']:
+                batch_propose=getattr(self.backend.provider,'propose_batch',None)
+                if batch_propose is not None:
+                    active=[];requests=[]
+                    for i,row in enumerate(plan.rows):
+                        entry=self._entry(row.handle)
+                        if entry['cancelled']:continue
+                        state=entry['state'];active.append(i)
+                        requests.append((row.handle,state,row.token_ids[0],
+                            entry['seq'].sampling_params.max_tokens-state.output_tokens))
+                    t=time.perf_counter()
+                    with self.torch.inference_mode():
+                        results=batch_propose(requests)
+                        self.torch.cuda.synchronize()
+                    if len(results)!=len(requests):raise BridgeError('batch drafter returned wrong request count')
+                    elapsed=(time.perf_counter()-t)*1000
+                    drafted=sum(r[3]>1 for r in requests)
+                    plan.draft_batch_ms=elapsed;plan.draft_batch_size=drafted
+                    for i,request,(proposed,rates) in zip(active,requests,results,strict=True):
+                        if len(proposed)!=7:raise BridgeError('batch drafter returned wrong proposal count')
+                        request[1].current_drafts=tuple(proposed)
+                        # Additive attribution of one shared wall interval; never
+                        # charge the entire batch time to each request.
+                        plan.draft_ms[i]=elapsed/max(1,drafted) if request[3]>1 else 0.
+                else:
+                    for i,row in enumerate(plan.rows):
+                        entry=self._entry(row.handle)
+                        if not getattr(self.backend.provider,'deferred_draft',False) or entry['cancelled']:continue
                         state=entry['state']
                         remaining=entry['seq'].sampling_params.max_tokens-state.output_tokens
                         t=time.perf_counter()
@@ -362,6 +386,9 @@ class SpeculativeSchedulerBridge(SchedulerBridge):
                     head_fallback=result.head_fallback if live else False,
                     head_union_count=result.head_union_count if live else None,
                     draft_ms=(result.draft_ms+getattr(plan,'draft_ms',[0.]*len(plan.rows))[i]) if live else 0.0,
+                    draft_batch_ms=getattr(plan,'draft_batch_ms',None),
+                    draft_batch_size=getattr(plan,'draft_batch_size',None),
+                    draft_ms_is_amortized=hasattr(plan,'draft_batch_ms'),
                     verify_ms=result.verify_ms if live else 0.0,
                     commit_ms=result.commit_ms if live else 0.0))
             # Publish the new draft while native bookkeeping still describes the

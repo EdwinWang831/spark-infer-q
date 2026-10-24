@@ -3,14 +3,18 @@ import argparse,hashlib,io,json,pathlib,re,shlex,subprocess,tarfile
 
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('version');p.add_argument('job');p.add_argument('runner');p.add_argument('--graphs',action='store_true');a=p.parse_args()
+    p=argparse.ArgumentParser();p.add_argument('version');p.add_argument('job');p.add_argument('runner');p.add_argument('--graphs',action='store_true')
+    p.add_argument('--component-root',help='absolute remote path of the sealed draft component result');a=p.parse_args()
     if not re.fullmatch(r'[a-z0-9][a-z0-9-]*',a.version):p.error('version must be lowercase letters, digits and hyphens')
     if not re.fullmatch(r'[a-z0-9][a-z0-9-]*\.json',a.job):p.error('job must be a simple unique JSON basename')
     if not re.fullmatch(r'k4batch_[a-z_]+\.py',a.runner):p.error('runner must be a K4 batch script basename')
+    if a.component_root and not a.component_root.startswith('/'):p.error('component root must be absolute')
     root=pathlib.Path(__file__).resolve().parents[1]
     names=[str(f.relative_to(root)) for f in sorted((root/'spark_infer_q').glob('*.py'))]
     names += [str(f.relative_to(root)) for f in sorted((root/'scripts').glob('k4batch*.py'))]
-    names += ['scripts/k2_native_validate.py','docs/K4_BATCH_RUNTIME_PLAN.md']
+    names += [str(f.relative_to(root)) for f in sorted((root/'scripts').glob('k4batch*.cu'))]
+    names += ['scripts/k2_native_validate.py','docs/K4_BATCH_RUNTIME_PLAN.md','tests/test_draft_batch.py']
+    names += ['results/k4/2026-10-24-joint-costs.json']
     manifest={n:hashlib.sha256((root/n).read_bytes()).hexdigest() for n in names};buf=io.BytesIO()
     with tarfile.open(fileobj=buf,mode='w') as archive:
         for n in names:archive.add(root/n,arcname=n)
@@ -24,6 +28,7 @@ def main():
 r=pathlib.Path('/workspace/e1/resident-verification');src=pathlib.Path({(remote+'/scripts/'+a.runner)!r});dest=r/{(module+'.py')!r}
 assert not dest.exists();shutil.copyfile(src,dest)
 job=dict(module={module!r},sha256=hashlib.sha256(dest.read_bytes()).hexdigest(),arguments=dict(source_root={remote!r},graphs={a.graphs!r}))
+if {a.component_root!r} is not None:job['arguments']['component_root']={a.component_root!r}
 p=r/'jobs/pending'/{a.job!r};assert not any((r/'jobs'/s/p.name).exists() for s in ('pending','running','done'))
 tmp=p.with_suffix('.tmp');tmp.write_text(json.dumps(job));tmp.replace(p);print(p.name)
 '''

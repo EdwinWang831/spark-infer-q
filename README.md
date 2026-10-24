@@ -81,12 +81,14 @@ The complete executor is [`scripts/e8_ours.py`](scripts/e8_ours.py), which serve
 
 The [K1 runtime](docs/K1_RUNTIME_USAGE.md) exposes a native-scheduler target-only API and loopback SSE entry point. [K2](docs/K2_DFLASH_SCHEDULER_USAGE.md) adds DFlash2 and native dynamic budgets to that runtime. K2 admits one request with dynamic verification budgets, and HTTP admits one generation at a time. The separate [K4 entry](docs/K4_BATCH_RUNTIME_USAGE.md) supports two-request joint GPU decode and asynchronous SSE; per-request E17 budgets remain unchanged.
 
+2026-10-24: an opt-in [owned batched DFlash backend](docs/K4_OWN_BATCH_DRAFT_REPORT.md) now shares query-block computation across requests, with an owned 1–32-row W8 kernel. Four-request draft components and two-request service lifecycle checks pass. Final greedy/Target state checks match, but draft numerics differ; matched SSE gains remain below the performance target, so the default stays unchanged. Target execution and the injected draft Q4 matmul still depend on TensorFold.
+
 ## Next steps
 
 - Rerun the native TensorFold comparison after E8.
 - Complete the sealed E23/E24 objective and coverage experiments; require independent test and complete online A/B evidence before replacing the current policy.
 - 4K+ context: handle DFlash's 2048-token sliding window and absolute positions first.
-- K4 event waits repair the major sleep-poll dispatch loss; serial DFlash, padding and singleton tails still limit scaling. Broader workload/latency validation remains before promotion and cross-request cost optimization. The overall multi-request design is in the [global scheduler RFC](docs/GLOBAL_COST_AWARE_SCHEDULER_RFC.md) (Chinese; design only).
+- K4 event waits repair the major sleep-poll dispatch loss; optional batch drafting reduces draft cost, while Target padding, GDN/QSA execution and singleton tails still limit scaling. Follow the [DeepInfer and owned-backend plan](docs/DEEPINFER_OWN_BACKEND_PLAN.md) for the remaining Target migration and four-request service work.
 - Five written but unrun proposals (prefill numerics reference, expert-footprint rate, the online stages of the expert-aware budget, draft fidelity, exact head screening) are listed under [proposals without results](docs/EXPERIMENTS.md#proposals-without-results-yet).
 
 ## Getting started (no GPU, no weights downloaded)

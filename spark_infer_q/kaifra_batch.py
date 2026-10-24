@@ -37,6 +37,77 @@ class RequestDraftProvider:
         self.providers.pop(handle,None)
 
 
+class BatchedRequestDraftProvider(RequestDraftProvider):
+    """Owned batch backbone; keep frozen E17 and per-request budget semantics.
+
+    The caller supplies a verified 1..32-row W8 provider. Existing packed
+    weights and the resident worker remain unchanged. Opt-in until measured.
+    """
+    def __init__(self,provider,matmul,*,kernel_identity,max_requests=4):
+        from .draft_batch import BatchedDFlash
+        from .draft_backbone import PackedLinear
+        if not provider.deferred_draft or provider.model is None or provider.budget is None:
+            raise ValueError('batch draft requires current E17 post-draft policy')
+        self.base=provider;self.model=provider.model;self.budget=provider.budget
+        self.feature_group=provider.feature_group;self.max_context=provider.max_context
+        worker=copy.copy(provider.worker)
+        worker.weights=worker.weights.copy();worker.fused=worker.fused.copy();worker.used=set(worker.used)
+        for mapping in (worker.weights,worker.fused):
+            for name,weight in mapping.items():
+                if isinstance(weight,PackedLinear):
+                    mapping[name]=PackedLinear(weight.packed,matmul)
+        self.backend=BatchedDFlash(worker,max_requests=max_requests)
+        self.providers=self.backend.caches
+        self.profile_metadata=dict(getattr(provider,'profile_metadata',{}) or {},
+            draft_execution='owned_batch_v1',draft='batched W8 MLP / Q4 output head / BF16 attention and selector',
+            batch_w8_kernel=dict(kernel_identity),
+            budget_cost_status='legacy E29 control; batch draft costs not recalibrated')
+        # Old joint tables bind the original W8 binary/source. Extra metadata
+        # alone would not invalidate them: validate_runtime compares only the
+        # table's recorded keys. Replace those identities, never inherit them.
+        self.profile_metadata['w8_binary_sha256']=kernel_identity['binary_sha256']
+        self.profile_metadata.pop('w8_source_sha256',None)
+        if 'source_sha256' in kernel_identity:
+            self.profile_metadata['w8_source_sha256']=kernel_identity['source_sha256']
+
+    def release(self,handle):
+        self.backend.release(handle)
+
+    def propose(self,handle,state,anchor,remaining):
+        return self.propose_batch([(handle,state,anchor,remaining)])[0]
+
+    def propose_batch(self,requests):
+        from .draft_batch import DraftInput
+        from .confidence_features import feature_vector
+        from .kaifra_speculative import conditional_rates
+        requests=tuple(requests)
+        if not requests:return []
+        if len(requests)>self.backend.max_requests or len({r[0] for r in requests})!=len(requests):
+            raise ValueError('duplicate or excessive draft batch requests')
+        if any(type(r[3]) is not int or r[3]<1 for r in requests):
+            raise ValueError('invalid remaining output budget')
+        active=[i for i,r in enumerate(requests) if r[3]>1]
+        inputs=[DraftInput(requests[i][0],requests[i][1].context,requests[i][2]) for i in active]
+        outputs=self.backend.propose_batch(inputs) if inputs else []
+        decisions={}
+        for i,(tokens,info) in zip(active,outputs,strict=True):
+            handle,state,anchor,remaining=requests[i]
+            features=feature_vector(info['signals'],len(state.context),state.output_tokens,
+                remaining,False,self.feature_group)
+            cumulative=tuple(self.model.predict(features));rates=conditional_rates(cumulative)
+            width=self.budget.choose(cumulative,len(state.context),remaining)
+            if len(tokens)!=7 or not 1<=width<=min(8,remaining):
+                raise BridgeError('invalid batched draft result or budget')
+            decisions[i]=(tokens,rates,cumulative,width)
+        # Publish policy state only after validating every batch result.
+        result=[]
+        for i,(handle,state,anchor,remaining) in enumerate(requests):
+            tokens,rates,cumulative,width=decisions.get(i,([0]*7,[0.]*7,(),1))
+            state.cumulative=cumulative;state.next_width=width
+            result.append((tokens,rates))
+        return result
+
+
 @dataclass
 class Execution:
     rows: tuple
@@ -275,4 +346,7 @@ def batch_engine(native,target,provider,*,eos_ids,prior,capacity=1536,tokenizer=
         engine.capabilities.update(verification_budget='joint_current_e17',batch_cost_sha256=joint_budget.sha256)
     engine.capabilities.update(target.capabilities)
     engine.capabilities['joint_decode']=joint_decode
+    engine.capabilities.update(draft_gpu_batch=isinstance(provider,BatchedRequestDraftProvider),
+        draft_execution='owned_batch_v1' if isinstance(provider,BatchedRequestDraftProvider) else 'per_request',
+        draft_cost_calibrated=False if isinstance(provider,BatchedRequestDraftProvider) else None)
     return engine

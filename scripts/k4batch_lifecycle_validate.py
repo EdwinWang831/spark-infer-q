@@ -32,6 +32,10 @@ def run(session,arguments):
                 sha256='494337bd1dcfa027041e65d3d2669687d8b01fb26d4e36f458143670f842390a')
         for depth in (0,7):
             provider=opt.optimized_provider(session)[0] if depth else None
+            if depth and arguments.get('batch_draft_library'):
+                loader=importlib.import_module(tag+'.draft_batch_w8')
+                matmul,identity=loader.load_library(arguments['batch_draft_library'],arguments['batch_draft_sha256'])
+                provider=batch.BatchedRequestDraftProvider(provider,matmul,kernel_identity=identity)
             with nm.NativeScheduler(session.root.parent/'DeepInfer',session.root.parent/'build-release/lib/deepinfer',max_drafts=depth) as native:
                 def make():return batch.batch_engine(native,target,provider,eos_ids=session.eos,prior=prior,capacity=256,
                     target_only=not depth,joint_budget=joint_budget if depth else None)

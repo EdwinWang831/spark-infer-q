@@ -16,9 +16,11 @@ def run(session,arguments):
     tag='_k4_joint_validate_'+hashlib.sha256((root/'manifest.json').read_bytes()).hexdigest()[:16]
     pkg=ModuleType(tag);pkg.__path__=[str(root/'spark_infer_q')];sys.modules[tag]=pkg
     torch=session.torch;target=worker=server=server_thread=None
-    modes=('original','measured_singleton','joint')
+    draft_experiment=bool(arguments.get('batch_draft_library'))
+    modes=('original','batch_draft') if draft_experiment else ('original','measured_singleton','joint')
+    repetitions=5 if draft_experiment else 3
     report=dict(status='RUNNING',source_sha256=manifest,model_reloaded=False,cost_sha256=COST_SHA,
-        correctness=[],timings=[],service_timings=[],contract=dict(modes=list(modes),repetitions=3,
+        correctness=[],timings=[],service_timings=[],contract=dict(modes=list(modes),repetitions=repetitions,
             policy='same frozen E17/W8/E33; original E29 per-request vs measured singleton vs joint expected tokens / batch wall',
             direct='after both first tokens through terminal/native retirement; first draft included, prefill excluded',
             service='same default CUDA stream and SSE handler; cohort after both first outputs, full request separately',
@@ -26,7 +28,7 @@ def run(session,arguments):
             costs='frozen before evaluation; no fitting on evaluation outcomes; frozen paid W8 draft cost per actual drafted request'))
     def save(active=None):
         if active is not None:report['active']=active
-        p=root/'joint-result.json';tmp=p.with_suffix('.tmp');tmp.write_text(json.dumps(report,indent=2,allow_nan=False)+'\n');tmp.replace(p)
+        p=root/('batch-draft-service-result.json' if draft_experiment else 'joint-result.json');tmp=p.with_suffix('.tmp');tmp.write_text(json.dumps(report,indent=2,allow_nan=False)+'\n');tmp.replace(p)
     try:
         opt=importlib.import_module(tag+'.kaifra_optimized');batch=importlib.import_module(tag+'.kaifra_batch')
         nm=importlib.import_module(tag+'.native_scheduler');tm=importlib.import_module(tag+'.kaifra_joint_target')
@@ -36,13 +38,23 @@ def run(session,arguments):
         probe=arguments.get('service_probe',False)
         getcpu=ctypes.CDLL(None).sched_getcpu;getcpu.restype=ctypes.c_int
         provider,metadata=opt.optimized_provider(session);report['profile_metadata']=metadata
-        policy=jb.JointBudget.load(Path(COST_ROOT)/'joint-costs.json',sha256=COST_SHA)
-        class SingletonControl:
-            sha256=policy.sha256
-            validate_runtime=policy.validate_runtime
-            def choose(self,requests):
-                return dict(widths=tuple(policy.choose([r])['widths'][0] for r in requests),
-                    independent_widths=tuple(r.independent_width for r in requests),scope='measured-singleton control')
+        batch_matmul=batch_identity=None
+        if draft_experiment:
+            loader=importlib.import_module(tag+'.draft_batch_w8')
+            batch_matmul,batch_identity=loader.load_library(arguments['batch_draft_library'],arguments['batch_draft_sha256'])
+            report['contract'].update(policy='same frozen E17/Q4/W8 weights and legacy E29 objective; only draft execution changes',
+                service='first cohort output through both terminations; exclude exactly one initial token per request',
+                costs='legacy E29 per-request control, not calibrated for batched draft',
+                comparison='greedy Target outputs and state must match; draft signals/decisions may differ and are recorded')
+            report['kernel']=batch_identity
+        if not draft_experiment:
+            policy=jb.JointBudget.load(Path(COST_ROOT)/'joint-costs.json',sha256=COST_SHA)
+            class SingletonControl:
+                sha256=policy.sha256
+                validate_runtime=policy.validate_runtime
+                def choose(self,requests):
+                    return dict(widths=tuple(policy.choose([r])['widths'][0] for r in requests),
+                        independent_widths=tuple(r.independent_width for r in requests),scope='measured-singleton control')
         target=tm.JointTarget(WideTarget(session.weights,capacity=2048),hm.FusedScreenedHead(session.weights.head));save('graphs');target.warmup()
         eager=WideTarget(session.weights,capacity=2048)
         texts=['Write a Python function to remove duplicates while preserving order. Return only code.','请用三点解释缓存与队列的区别。',
@@ -54,9 +66,10 @@ def run(session,arguments):
         gold={};probabilities={};counters=dict(logits_rows=0,feature_rows=0,state_checks=0,shared_position_rate_checks=0)
         with nm.NativeScheduler(session.root.parent/'DeepInfer',session.root.parent/'build-release/lib/deepinfer',max_drafts=7) as native:
             def make(mode,observer=None):
-                engine=batch.batch_engine(native,target,provider,eos_ids=session.eos,prior=session.calibration['conditional_prior'],
+                chosen=provider if mode!='batch_draft' else batch.BatchedRequestDraftProvider(provider,batch_matmul,kernel_identity=batch_identity)
+                engine=batch.batch_engine(native,target,chosen,eos_ids=session.eos,prior=session.calibration['conditional_prior'],
                     capacity=768,tokenizer=session.tokenizer,observer=observer,
-                    joint_budget=None if mode=='original' else (policy if mode=='joint' else SingletonControl()))
+                    joint_budget=None if mode in ('original','batch_draft') else (policy if mode=='joint' else SingletonControl()))
                 engine.validation_metrics=[];engine.budget_decisions=[];collect=engine._collect_events
                 def traced(plan):
                     result=collect(plan);engine.validation_metrics.extend(engine.last_step_metrics)
@@ -100,7 +113,11 @@ def run(session,arguments):
                         if m['prompt']:continue
                         key=(group['name'],int(m['request_id']),m['context_rows'])
                         if key in probabilities:
-                            assert m['rates']==probabilities[key],('same-position E17 changed',key)
+                            if draft_experiment:
+                                difference=max((abs(a-b) for a,b in zip(m['rates'],probabilities[key])),default=0.)
+                                counters['max_e17_abs_difference']=max(counters.get('max_e17_abs_difference',0.),difference)
+                                counters['changed_e17_positions']=counters.get('changed_e17_positions',0)+int(difference>0)
+                            else:assert m['rates']==probabilities[key],('same-position E17 changed',key)
                             counters['shared_position_rate_checks']+=1
                         else:probabilities[key]=m['rates']
                     assert not engine.bridge.backend.states and not engine.bridge.backend.provider.providers
@@ -125,8 +142,9 @@ def run(session,arguments):
                         row=direct(mode,group)
                         if not row['new_jit_shapes']:break
                     else:raise AssertionError('direct JIT did not stabilize')
-            for rep in range(0 if probe else 3):
-                for mode in modes[rep:]+modes[:rep]:
+            for rep in range(0 if probe else repetitions):
+                shift=rep%len(modes)
+                for mode in modes[shift:]+modes[:shift]:
                     for group in groups:
                         save(dict(phase='direct',mode=mode,rep=rep,group=group['name']))
                         row=direct(mode,group);assert not row['new_jit_shapes'];row['repetition']=rep;report['timings'].append(row);save()
@@ -161,17 +179,20 @@ def run(session,arguments):
             def pair(mode,group):
                 barrier=Barrier(2);kernels=set(target.screen.kernel_sha256);worker.engine.budget_decisions.clear();worker.engine.probe_stages.clear()
                 with ThreadPoolExecutor(2) as pool:rows=list(pool.map(lambda slot:client(group,slot,barrier),range(2)))
-                worker.wait_idle(60);cohort=max(r['chunks'][0][0] for r in rows);end=max(r['end'] for r in rows)
+                worker.wait_idle(60);cohort=(min if draft_experiment else max)(r['chunks'][0][0] for r in rows);end=max(r['end'] for r in rows)
                 tpot=[(b[0]-a[0])*1000/len(b[1]) for r in rows for a,b in zip(r['chunks'],r['chunks'][1:]) for _ in b[1]]
                 decisions=worker.engine.budget_decisions
                 return dict(mode=mode,group=group['name'],decode_ms=(end-cohort)*1000,full_ms=(end-min(r['begin'] for r in rows))*1000,
-                    decode_tokens=sum(len(v) for r in rows for t,v in r['chunks'] if t>cohort),completion_tokens=sum(len(v) for r in rows for _,v in r['chunks']),
+                    decode_tokens=(sum(len(v) for r in rows for _,v in r['chunks'])-len(rows)) if draft_experiment else sum(len(v) for r in rows for t,v in r['chunks'] if t>cohort),completion_tokens=sum(len(v) for r in rows for _,v in r['chunks']),
                     ttft_ms=[(r['chunks'][0][0]-r['begin'])*1000 for r in rows],tpot_amortized_ms=tpot,
+                    chunk_gap_ms=[(b[0]-a[0])*1000 for r in rows for a,b in zip(r['chunks'],r['chunks'][1:])],
+                    request_tpot_ms=[(r['chunks'][-1][0]-r['chunks'][0][0])*1000/
+                        max(1,sum(len(v) for _,v in r['chunks'])-1) for r in rows],
                     decision_count=len(decisions),changed_decisions=sum(tuple(d['widths'])!=tuple(d['independent_widths']) for d in decisions),
                     probe_stages=list(worker.engine.probe_stages),
                     new_jit_shapes=sorted(set(target.screen.kernel_sha256)-kernels),outputs_exact=True)
-            for rep in range(4 if probe else 3):
-                order=modes[rep%3:]+modes[:rep%3] if probe else (('original','joint') if rep%2==0 else ('joint','original'))
+            for rep in range(4 if probe else repetitions):
+                order=(modes if rep%2==0 else modes[::-1]) if draft_experiment else (modes[rep%3:]+modes[:rep%3] if probe else (('original','joint') if rep%2==0 else ('joint','original')))
                 for mode in order:
                     start(mode)
                     try:
@@ -188,7 +209,7 @@ def run(session,arguments):
             return {g['name']:{mode:sum(r['decode_tokens'] for r in rows if r['group']==g['name'] and r['mode']==mode)*1000/
                 sum(r['decode_ms'] for r in rows if r['group']==g['name'] and r['mode']==mode) for mode in sorted({r['mode'] for r in rows})} for g in groups}
         assert not any(target.leased) and target.inflight is None and not target.fallbacks
-        report.update(status='PASS_K4_JOINT_BUDGET',summary=summarize(report['timings']),service_summary=summarize(report['service_timings']),
+        report.update(status='PASS_K4_BATCH_DRAFT_SERVICE' if draft_experiment else 'PASS_K4_JOINT_BUDGET',summary=summarize(report['timings']),service_summary=summarize(report['service_timings']),
             correctness_counts=counters,capabilities=target.capabilities,gloo_released=not torch.distributed.is_initialized())
         report.pop('active',None);save();return report
     finally:

@@ -11,6 +11,9 @@ def main():
     parser.add_argument('--checkpoint',type=Path,required=True);parser.add_argument('--mode',choices=('none','adaptive'),default='adaptive')
     parser.add_argument('--capacity',type=int,default=1536);parser.add_argument('--port',type=int,default=18084)
     parser.add_argument('--execution',choices=('graph','eager'),default='graph')
+    parser.add_argument('--draft-execution',choices=('sequential','batch'),default='sequential')
+    parser.add_argument('--draft-w8-batch-library',type=Path)
+    parser.add_argument('--draft-w8-batch-sha256')
     parser.add_argument('--batch-costs',type=Path)
     parser.add_argument('--batch-costs-sha256')
     args=parser.parse_args()
@@ -18,11 +21,17 @@ def main():
     if bool(args.batch_costs)!=bool(args.batch_costs_sha256):parser.error('batch costs and their SHA256 must be supplied together')
     if args.batch_costs and (args.mode!='adaptive' or args.execution!='graph'):
         parser.error('joint budgets require adaptive Graph execution')
+    if args.draft_execution=='batch' and (args.mode!='adaptive' or args.batch_costs):
+        parser.error('batch draft requires adaptive mode and recalibrated batch costs; old joint costs are unsupported')
+    if args.draft_execution=='batch' and not (args.draft_w8_batch_library and args.draft_w8_batch_sha256):
+        parser.error('batch draft requires an explicitly fingerprinted W8 batch library')
+    if args.draft_execution!='batch' and (args.draft_w8_batch_library or args.draft_w8_batch_sha256):
+        parser.error('W8 batch library requires --draft-execution batch')
     root=args.root.resolve();checkout=Path(__file__).resolve().parents[1]
     sys.path[:0]=[str(checkout),str(checkout/'scripts'),str(root/'followup-deps'),str(root/'python-deps')]
     from spark_infer_q.native_scheduler import NativeScheduler
     from spark_infer_q.kaifra_optimized import optimized_provider
-    from spark_infer_q.kaifra_batch import batch_engine
+    from spark_infer_q.kaifra_batch import batch_engine,BatchedRequestDraftProvider
     from spark_infer_q.kaifra_batch_target import BatchTarget
     from spark_infer_q.kaifra_worker import AsyncWorker
     from spark_infer_q.kaifra_service import make_server
@@ -36,6 +45,11 @@ def main():
         with torch.inference_mode():
             session=load_session(root,args.checkpoint,lambda x:print(json.dumps(x),flush=True))
             provider,metadata=optimized_provider(session) if args.mode=='adaptive' else (None,{})
+            if args.draft_execution=='batch':
+                from spark_infer_q.draft_batch_w8 import load_library
+                matmul,identity=load_library(args.draft_w8_batch_library,args.draft_w8_batch_sha256)
+                provider=BatchedRequestDraftProvider(provider,matmul,kernel_identity=identity)
+                metadata=provider.profile_metadata
             screen=FusedScreenedHead(session.weights.head)
             if not screen.static_ok:raise ValueError('E33 head range gate failed')
             target=BatchTarget(WideTarget(session.weights,capacity=2048),screen,graphs=args.execution=='graph')

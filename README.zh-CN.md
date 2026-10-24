@@ -81,12 +81,14 @@
 
 [K1 运行时](docs/K1_RUNTIME_USAGE.md)提供原生 Scheduler 驱动的 Target-only API 和 loopback SSE 入口；[K2](docs/K2_DFLASH_SCHEDULER_USAGE.md)进一步接入 DFlash2 和原生动态预算。K2 动态预算限定单请求，HTTP 一次一请求；另有独立 [K4 入口](docs/K4_BATCH_RUNTIME_USAGE.md)支持双请求联合 GPU decode 与异步 SSE，保留每请求 E17 动态预算。
 
+2026-10-24：新增显式启用的[自有批量 DFlash 后端](docs/K4_OWN_BATCH_DRAFT_REPORT.md)，共享跨请求 query-block 计算，并实现自有 1～32 行 W8 内核。四请求草稿组件和两请求服务生命周期通过检查；本轮最终 greedy 输出/Target 状态一致，草稿数值仍有差异。同期 SSE 收益未达到性能目标，默认不变；Target 和注入的草稿 Q4 matmul 仍依赖 TensorFold。
+
 ## 下一步
 
 - E8 之后重新对照原生 TensorFold。
 - 完成已封存的E23/E24目标与覆盖实验；独立测试和完整在线A/B通过后，才考虑替换当前策略。
 - 4K 以上上下文：先处理 DFlash 的 2048 滑窗和绝对位置。
-- K4 事件等待已修复主要轮询提交损失；草稿串行、补齐与单请求长尾仍限制扩展。先补广泛负载/延迟验收，再晋升默认或考虑跨请求成本优化。多请求调度的整体设计见[全局调度 RFC](docs/GLOBAL_COST_AWARE_SCHEDULER_RFC.md)（仅为设计提案）。
+- K4 事件等待已修复主要轮询提交损失；可选批量草稿已降低草稿开销，Target 补齐、GDN/QSA 执行和单请求长尾仍限制扩展。后续按[DeepInfer 与自有后端计划](docs/DEEPINFER_OWN_BACKEND_PLAN.md)推进 Target 迁移和四请求完整服务。
 - 五份已写好、还没执行的方案（prefill 数值参考、专家占用速率、专家感知预算的在线阶段、草稿 fidelity、精确输出头筛选），见[未执行方案列表](docs/EXPERIMENTS.md#proposals-without-results-yet)。
 
 ## 快速开始（不需要 GPU，不下载权重）

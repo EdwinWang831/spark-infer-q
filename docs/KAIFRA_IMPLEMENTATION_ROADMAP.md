@@ -5,7 +5,7 @@
 > 此文档与 [Kaifra Vision RFC](KAIFRA_VISION_RFC.md) 同 PR，落实“怎样才算自己的引擎”。  
 > 先保留 `spark-infer-q` 仓库与包名，不启用自动迁移或重命名。
 
-2026-10-24 用户方向更新：学习 TensorFold 的批处理、状态和 Graph 机制，优先落在 DeepInfer 与自有实现中，进一步包装 TensorFold 不作为最终目标。[自有后端实施计划](DEEPINFER_OWN_BACKEND_PLAN.md)明确当前依赖、批量 DFlash、紧凑 GDN/QSA、四请求和逐模块替换的顺序；这是计划，尚无新增后端或性能结果。下文已完成阶段保留其实际依赖与历史证据。
+2026-10-24 用户方向更新：学习 TensorFold 的批处理、状态和 Graph 机制，优先落在 DeepInfer 与自有实现中，进一步包装 TensorFold 不作为最终目标。[自有后端实施计划](DEEPINFER_OWN_BACKEND_PLAN.md)明确迁移顺序；其后已接通[自有批量 DFlash 研究后端](K4_OWN_BATCH_DRAFT_REPORT.md)，四请求草稿组件和两请求服务通过限定检查，数值等价/性能晋升未通过，默认不变。Target 自有后端尚待实现。下文已完成阶段保留其实际依赖与历史证据。
 
 ## 1. 工程目标与不做什么
 

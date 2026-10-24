@@ -1,6 +1,6 @@
 # DeepInfer 与自有 Qwen/Spark 执行后端
 
-2026-10-24 方向更新。本文是后续实现与验收计划，**没有新增执行后端、GPU 结果或性能提升**。当前运行证据仍以 [K4 功能报告](K4_BATCH_RUNTIME_REPORT.md)、[等待修复](K4_WAIT_FIX_REPORT.md)和[联合预算实验](K4_JOINT_BUDGET_REPORT.md)为准。
+2026-10-24 方向更新。本文定义后续实现与验收计划；其后已接通[自有批量 DFlash 研究后端](K4_OWN_BATCH_DRAFT_REPORT.md)，四请求草稿组件与两请求服务通过限定运行检查，草稿数值等价和服务性能晋升尚未通过。Target 自有后端仍待实现。此前证据见 [K4 功能报告](K4_BATCH_RUNTIME_REPORT.md)、[等待修复](K4_WAIT_FIX_REPORT.md)和[联合预算实验](K4_JOINT_BUDGET_REPORT.md)。
 
 用户明确要求：学习 TensorFold 的技术思路，更多使用 DeepInfer 和我们自己的实现。最终架构以 **DeepInfer 调度底座 + 自有 Qwen/SM121 执行后端**为目标；TensorFold 是迁移期间的参考和可替换适配器。增加对 TensorFold 内部执行器的接线，不作为自主后端的完成标准。
 
@@ -14,11 +14,11 @@
 | 内存配额 | DeepInfer BlockManager，仅逻辑记账 | 调度配额继续复用；设备 KV/GDN 存储由自有 Qwen StateManager 管理 |
 | 动态预算 | E17 本轮预测；已有 MTPVarlen 接线；当前双请求联合成本选择器为自有 Python 实验实现 | 保留 E17 与动态预算，适配真实批次成本，再推进 DeepInfer 跨请求预算集成 |
 | 请求、异步 owner、取消、SSE、验证发布 | 自有 Kaifra runtime | 继续使用，扩展到四请求生命周期 |
-| 草稿 | 自有 DFlash2/Q4/W8 接入和特征/预测器；逐请求调用 | 自有 batched DFlash 执行，保持当前模型和预算语义 |
+| 草稿 | 自有 DFlash2/Q4/W8 接入和特征/预测器；默认逐请求，另有自有 batch 研究开关 | 验收 batched DFlash 数值变化、成本校准和稳定服务收益 |
 | Target joint forward、Graph/event 编排 | 自有编排，调用 TensorFold stage/layer_forward/commit | 自有批计划、执行循环和 GraphManager |
 | 权重读取、GDN/QSA/PLE 状态、主要 Target 算子 | TensorFold 模型执行与存储实现 | 逐模块替换为自有 Qwen/Spark 后端；算子按适配、正确性和性能证据选用 |
 
-当前 `JointTarget` 虽合并了 dense/MoE 行，仍不能等同于完整的跨请求 GDN/QSA 融合执行。草稿也尚未批量执行，最大请求数仍为 2。不能据此宣布 DeepInfer 已提供完整 Qwen 模型后端。
+当前 `JointTarget` 虽合并了 dense/MoE 行，仍不能等同于完整的跨请求 GDN/QSA 融合执行。自有草稿 batch 已有四请求组件与两请求服务检查；默认服务草稿仍逐请求，完整服务最大请求数仍为 2。不能据此宣布 DeepInfer 已提供完整 Qwen 模型后端。
 
 DeepInfer 已核对的模型实现以 DeepSeek 为主，没有现成的本模型 GDN/QSA 后端。GB10/SM121 上通用 RMSNorm 与选定 cuBLASLt 路径有执行证据，但固定 DeepGEMM 原生 BF16 dispatch 报 Unsupported architecture。单专家的 native NVFP4 测试使用 TensorFold 原版 CUDA 源码，不能记作自研内核或全模型 DeepInfer 兼容。详见 [E0](E0_REPORT.md)、[E1](E1_GPU_REPORT.md)、[E2 native](E2_NATIVE_REPORT.md)。
 

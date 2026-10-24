@@ -45,4 +45,6 @@ curl http://127.0.0.1:18084/cancel -H 'Content-Type: application/json' \
 
 两个参数必须同时提供，且要求adaptive与Graph模式。加载时核对文件SHA、E17/W8成本指纹和Target源码；不匹配会明确失败。启用时`verification_budget=joint_current_e17`、`global_budget_optimized=true`，这里的联合优化仅指当前已调度decode批次，不包含公平性、准入或完整K5。E17权重和预测特征不变，q仍动态选择。
 
-本入口仍限定单卡双请求；4请求执行、4K+、随机采样、跨卡、生产压力和公网部署尚未验证。
+新增[自有批量 DFlash 研究开关](K4_OWN_BATCH_DRAFT_REPORT.md)：`--draft-execution batch`，配合显式 W8 batch library/SHA。它保留 E17 与原动态预算，拒绝旧联合成本表；草稿数值与部分候选会改变，性能未达到晋升目标，因此默认仍为 sequential。四请求仅在草稿组件检查，服务仍只有两个 slot。
+
+本入口仍限定单卡双请求；4请求完整服务、4K+、随机采样、跨卡、生产压力和公网部署尚未验证。
