@@ -45,10 +45,15 @@ class Plan:
 
 class SchedulerBridge:
     def __init__(self, core, torch, group, sampling_class, backend, *, vocab_size,
-                 eos_ids, capacity=128, max_requests=2, token_budget=32):
-        if os.environ.get('DEEPINFER_USE_NEXTN_DECODE') != '0':
-            raise BridgeError('target-only bridge requires native nextn=0 before construction')
-        if not (capacity >= 16 and max_requests >= 1 and token_budget >= 16):
+                 eos_ids, capacity=128, max_requests=2, token_budget=32,
+                 max_drafts=0):
+        if type(max_drafts) is not int or not 0 <= max_drafts <= 7:
+            raise ValueError('max_drafts must be 0..7')
+        if os.environ.get('DEEPINFER_USE_NEXTN_DECODE') != str(max_drafts):
+            raise BridgeError('native NEXTN setting does not match bridge')
+        self.max_drafts = max_drafts
+        if (any(type(v) is not int for v in (capacity, max_requests, token_budget)) or
+                not (capacity >= 16 and max_requests >= 1 and token_budget >= 16)):
             raise ValueError('unsupported scheduler capacity')
         self.core, self.torch, self.sampling_class, self.backend = core, torch, sampling_class, backend
         self.vocab_size, self.eos_ids = vocab_size, frozenset(eos_ids)
@@ -63,10 +68,17 @@ class SchedulerBridge:
         self.block_count = 1 + max_requests*((capacity+15)//16+2)
         self.blocks = core.BlockManager(self.block_count)
         self.pool = core.SequenceMetadataPool()
-        config = SimpleNamespace(max_model_len=capacity, runtime_max_model_len=capacity,
+        # With one rank and one admitted slot there cannot be a second waiting
+        # prompt during decode. Polling Gloo for that impossible work every step
+        # only adds host latency. Native prefill resets decode_step to zero;
+        # restarting this polling phase at admission also makes reuse immediate.
+        # This counter is separate from native MTP schedule_cnt/process_cnt.
+        self.single_slot = max_requests == 1 and group.size() == 1
+        prefill_interval = capacity+1 if self.single_slot else 1
+        config = SimpleNamespace(max_model_len=capacity, runtime_max_model_len=capacity+2*max_drafts,
             max_num_batched_tokens=token_budget, max_num_seqs=max_requests,
             stop_preempted_request=True, chunked_prefill=True, engine_type=0,
-            prefill_attempt_interval=1, prefill_any_attempt_interval=1)
+            prefill_attempt_interval=prefill_interval, prefill_any_attempt_interval=prefill_interval)
         self.native = core.Scheduler(16, self.blocks, None, min(self.eos_ids), group,
             config, 0, 0, capacity*max_requests, None, [], 1, vocab_size, False)
 
@@ -90,7 +102,7 @@ class SchedulerBridge:
         import numpy as np
         self._ready()
         ids = tuple(prompt_ids)
-        if not request_id or request_id in self.requests:
+        if not isinstance(request_id, str) or not request_id or request_id in self.requests:
             raise BridgeError('empty or duplicate request ID')
         if (not ids or any(type(t) is not int or not 0 <= t < self.vocab_size for t in ids)
                 or type(max_tokens) is not int or max_tokens < 1 or len(ids)+max_tokens > self.capacity):
@@ -106,7 +118,16 @@ class SchedulerBridge:
         seq = self.core.Sequence(self.sequence_id, prompt, prompt, None, 16,
             request_id, 'e5', params, time.time()*1000, None)
         state = self.backend.create(handle)
-        self.native.add_sequence(seq)
+        try:
+            self.native.add_sequence(seq)
+            if self.single_slot:
+                self.native.decode_step = 0
+        except Exception:
+            # Admission may have partly changed native accounting. Never reuse
+            # this scheduler after a failed native call, even before dispatch.
+            self.poisoned = True
+            self.backend.release(handle, state)
+            raise
         self.requests[request_id] = dict(handle=handle, seq=seq, state=state,
             cancelled=False, prompt_length=len(ids))
         self.slots[slot] = handle
@@ -148,19 +169,24 @@ class SchedulerBridge:
         for meta, seq in zip(metadata, output.scheduled_seqs, strict=True):
             entry = self.requests[meta.request_id]
             start = seq.num_cached_tokens
-            ids = tuple(seq.data.get_token_ids()[start:start+meta.seqlen_q])
-            if (len(ids) != meta.seqlen_q or meta.seqlen_k != start+len(ids)
-                    or (not meta.is_prompt and len(ids) != 1)):
-                self.poisoned = True
-                raise BridgeError('native token/position metadata mismatch')
+            row = self._work_row(meta, seq, entry)
             if self.backend.position(entry['state']) != start:
                 self.poisoned = True
                 raise BridgeError('native/device committed position mismatch')
-            rows.append(WorkRow(entry['handle'], start, ids, meta.is_prompt, meta.is_last_prompt_chunk))
+            rows.append(row)
         self.serial += 1
         plan = Plan(self.owner, self.serial, tuple(rows), metadata, output)
         self.pending = plan
         return plan
+
+    def _work_row(self, meta, seq, entry):
+        start = seq.num_cached_tokens
+        ids = tuple(seq.data.get_token_ids()[start:start+meta.seqlen_q])
+        if (len(ids) != meta.seqlen_q or meta.seqlen_k != start+len(ids)
+                or (not meta.is_prompt and len(ids) != 1)):
+            self.poisoned = True
+            raise BridgeError('native token/position metadata mismatch')
+        return WorkRow(entry['handle'], start, ids, meta.is_prompt, meta.is_last_prompt_chunk)
 
     def _plan(self, plan):
         self._ready()
