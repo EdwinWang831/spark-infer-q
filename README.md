@@ -8,6 +8,8 @@ A research project on accelerating Qwen inference on a single NVIDIA DGX Spark (
 
 As of 2026-10-24, this repository includes E0–E37 research records (E26 cancelled at the user’s request), the validated K1–K3 native-scheduler runtime, single-request overhead improvements and a two-request target-only API. Experimental candidates retain their individual scope; defaults are unchanged.
 
+See the [repository map](docs/REPOSITORY_STATUS.md) for the consolidated main branch and independent K4/service and self-evolution workstreams.
+
 E33 preserves the original BF16 target decision through an INT8-assisted head screen: matched W8/linear/Graph decode 46.91→48.51 tok/s (+3.41%, root95% +2.39%…+4.12%) on eight reused engineering roots /64 timings. Tokens, committed logits/features/live state and budget traces match. This remains a research path; E30–E32 and E34–E35 candidates were not promoted.
 
 - **What it does**: Qwen3.8-Flash-Next (NVFP4, TensorFold kernels) runs speculative decoding with the DFlash2 drafter. DeepInfer's MTPVarlen decides how many drafts to verify at each step. Performance studies and the K2 dynamic-budget runtime use synchronous single-request greedy execution.
@@ -120,7 +122,7 @@ The [K1 runtime](docs/K1_RUNTIME_USAGE.md) exposes a native-scheduler target-onl
 - Keep MLP/hybrid deferred. Diagnose whether linear budget changes reduce actual verification work before further training; retain independent tests and actual decode gates.
 - 4K+ context: handle DFlash's 2048-token sliding window and absolute positions first.
 - Extend the validated joint target path to multi-request dynamic DFlash, then asynchronous serving and broader workloads. The overall multi-request design is in the [global scheduler RFC](docs/GLOBAL_COST_AWARE_SCHEDULER_RFC.md) (Chinese; design only).
-- Five written but unrun proposals (prefill numerics reference, expert-footprint rate, the online stages of the expert-aware budget, draft fidelity, exact head screening) are listed under [proposals without results](docs/EXPERIMENTS.md#proposals-without-results-yet).
+- The [proposal status table](docs/EXPERIMENTS.md#proposals-without-results-yet) distinguishes unrun or partly evaluated ideas from the later completed experiments.
 
 ## Getting started (no GPU, no weights downloaded)
 

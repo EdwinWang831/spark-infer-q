@@ -8,6 +8,8 @@
 
 截至 2026-10-24，仓库包含 E0–E37 研究记录（E26 依用户要求中止）、已验证的 K1–K3 原生调度运行时、单请求开销优化和双请求 target-only API。实验候选保留各自的验证范围，默认路径不变。
 
+已汇总的 main 与独立的 K4/服务、自演化设计路线，见[仓库导航](docs/REPOSITORY_STATUS.md)。
+
 E33 用 INT8 辅助筛选、原 BF16 头最终裁决，在相同 W8 草稿/线性预算/Graph 基线上，实际 decode 46.91→48.51 token/s（+3.41%，root95% +2.39%～+4.12%）；8 条旧工程 root、64 次计时，输出、提交 logits/特征/状态及预算轨迹一致。当前仍为研究路径；E30–E32 及 E34–E35 候选均未晋升。
 
 - **做什么**：Qwen3.8-Flash-Next（NVFP4，TensorFold 内核）用 DFlash2 草稿模型做推测解码，由 DeepInfer 的 MTPVarlen 决定每一步验证多少个草稿。性能实验及 K2 动态预算运行时采用同步、单请求、greedy 执行。
@@ -120,7 +122,7 @@ E33 用 INT8 辅助筛选、原 BF16 头最终裁决，在相同 W8 草稿/线�
 - 暂缓MLP/混合路线。先检查线性预算改变能否减少实际验证工作，再决定是否继续训练；保留独立测试与实际decode门槛。
 - 4K 以上上下文：先处理 DFlash 的 2048 滑窗和绝对位置。
 - 将已验证的联合 Target 接入多请求动态 DFlash，再推进异步服务和更广任务覆盖。多请求调度的整体设计见[全局调度 RFC](docs/GLOBAL_COST_AWARE_SCHEDULER_RFC.md)（仅为设计提案）。
-- 五份已写好、还没执行的方案（prefill 数值参考、专家占用速率、专家感知预算的在线阶段、草稿 fidelity、精确输出头筛选），见[未执行方案列表](docs/EXPERIMENTS.md#proposals-without-results-yet)。
+- [提案状态表](docs/EXPERIMENTS.md#proposals-without-results-yet)区分尚未执行、部分验证的想法与后续已完成实验。
 
 ## 快速开始（不需要 GPU，不下载权重）
 
