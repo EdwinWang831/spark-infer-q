@@ -119,7 +119,7 @@ class DFlashProvider:
 
 class SpeculativeBackend:
     def __init__(self, target, provider, *, eos_ids, depth, prior,
-                 prefill_rows=8, observer=None):
+                 prefill_rows=8, observer=None, prefill_executor=None):
         if prefill_rows not in (1,2,4,8) or any(r not in target.buffers for r in range(1,9)):
             raise ValueError('K2 requires validated eight-row target buffers')
         self.target, self.provider, self.depth = target, provider, depth
@@ -128,6 +128,9 @@ class SpeculativeBackend:
             raise ValueError('seven-depth conditional prior required')
         LaggedAcceptance(self.prior)
         self.prefill_rows, self.observer, self.states = prefill_rows, observer, {}
+        if prefill_executor is not None and observer is not None:
+            raise ValueError('per-row prompt observers require the rows8 path')
+        self.prefill_executor=prefill_executor
 
     def create(self, handle):
         with self.target.torch.inference_mode():
@@ -159,7 +162,13 @@ class SpeculativeBackend:
         accepted=observed=0
         with torch.inference_mode():
             if row.prompt:
-                for begin in range(0,len(row.token_ids),self.prefill_rows):
+                if self.prefill_executor is not None:
+                    t=time.perf_counter()
+                    result=self.prefill_executor.advance(state.target,row.token_ids,capture=True)
+                    logits,features=result.logits,result.features
+                    state.context=features if state.context is None else torch.cat([state.context,features])
+                    verify_ms+=(time.perf_counter()-t)*1000
+                for begin in (() if self.prefill_executor is not None else range(0,len(row.token_ids),self.prefill_rows)):
                     ids = list(row.token_ids[begin:begin+self.prefill_rows])
                     t = time.perf_counter()
                     logits, features = target.step(state.target, ids, capture=True)

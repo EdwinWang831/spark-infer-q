@@ -59,4 +59,20 @@ curl http://127.0.0.1:18084/cancel -H 'Content-Type: application/json' \
 
 compact 仅支持当前 TP1 文本、BF16 KV、2048 内 dense-budget QSA。按实际总验证行压紧，不为每个请求单独补到 bucket；自有状态和 GPU 指针表隔离请求。Graph 按实际行数/context 复用，默认最多 32 张，第二次遇到形状才捕获并执行，满额按 LRU 驱逐。未知形状可在请求中触发 eager、捕获或头部 JIT；READY 不表示这些冷开销已经支付。正式性能对照先预热，并要求计时期间没有新增 capture/JIT。prefill 与部分算子仍通过 TensorFold provider。
 
+后续[Prefill 推进修复与服务测量](K4_PREFILL_PROGRESS_REPORT.md)增加以下显式选项，可在上述 compact/batch 参数上追加：
+
+```bash
+--interleave-prefill \
+--prefill-execution owned \
+--prefill-chunk-rows 128 \
+--prompt-token-budget 128 \
+--worker-cpu performance
+```
+
+`--interleave-prefill` 在长 prompt 分块之间给已 ready 的 decode 留出轮次，仍使用 DeepInfer 原生计划/记账，仅支持双 slot 单 rank。owned prefill 使用已提交的 E40 executor，保留当前模型的精确 logits/features/state 交接；底层权重/算子依赖仍显式存在。当前完整服务测试的 prompt quantum 为128；允许参数范围不等于所有长度都已经验收。
+
+`--worker-cpu performance` 仅在 Linux 将 owner 线程限制到其现有允许集合中 `cpuinfo_max_freq` 最高的一组 CPU，退出时恢复旧 mask；不改进程其他线程、频率或 governor。在本轮 Spark 上选择 CPU5～9/15～19。默认 `--worker-cpu default` 不触碰 affinity。无法读取拓扑或设置 mask 会明确失败。该开关的收益与异构 CPU/系统放置有关，不是通用 GPU kernel 加速承诺。
+
+默认仍为 rows8、prompt budget32、原 prompt 优先和系统 CPU 放置；上述方案按可选研究配置提供，E17 与动态预算不变。完整请求/SSE cohort 的口径、固定到达顺序与五轮数据见报告，不与单流 decode 数字混用。
+
 本入口仍限定单卡双请求；4请求完整服务、4K+、随机采样、跨卡、生产压力和公网部署尚未验证。

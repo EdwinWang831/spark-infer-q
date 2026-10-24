@@ -83,12 +83,14 @@ The [K1 runtime](docs/K1_RUNTIME_USAGE.md) exposes a native-scheduler target-onl
 
 2026-10-24: opt-in [owned batched DFlash](docs/K4_OWN_BATCH_DRAFT_REPORT.md) and [compact Target](docs/K4_OWN_TARGET_REPORT.md) backends are available. Target owns fixed-capacity state, layer orchestration, batched GDN recurrence/commit, dense-budget QSA, PLE convolution and bounded adaptive Graphs. Two-request numerical/lifecycle checks pass; four requests are validated only in the draft component. Draft numerics still differ from the earlier sequential path. The final Target A/B improves short direct decode 44.37→47.27 token/s, but SSE is 38.98→38.06; performance promotion fails and legacy Target/sequential draft remain default. Loading, eager prefill, remaining primitive/workspace providers and draft Q4 matmul still depend on TensorFold.
 
+A separate [prefill-progress change](docs/K4_PREFILL_PROGRESS_REPORT.md) adds native ready-decode interleaving and the committed E40 executor. In five controlled two-request cohorts, short-request maximum output stalls shrink from about 3s to 0.28–0.31s; full-request throughput improves 11.54→25.60 token/s for a short stream followed by a long prompt, and 33.40→37.76 for short inputs. This is a prompt/scheduling improvement, not a pure decode-kernel claim. A separate five-repeat CPU-placement A/B improves cap128 full requests 36.45→39.12 token/s with the same fast prefill; final SSE cohort rates are 44.00 short and 39.73 cap128. Placement changes only the owner thread within its existing allowed CPU mask. Defaults remain unchanged; see [usage](docs/K4_BATCH_RUNTIME_USAGE.md).
+
 ## Next steps
 
 - Rerun the native TensorFold comparison after E8.
 - Complete the sealed E23/E24 objective and coverage experiments; require independent test and complete online A/B evidence before replacing the current policy.
 - 4K+ context: handle DFlash's 2048-token sliding window and absolute positions first.
-- K4 event waits repair the major sleep-poll dispatch loss. Compact Target removes per-request padding and batches GDN/QSA, but most measured long-output rounds still have one survivor and service draft wall time offsets Target savings. Investigate long-prefill/decode progress and remaining provider costs, then complete four-request service under the [owned-backend plan](docs/DEEPINFER_OWN_BACKEND_PLAN.md).
+- K4 compact Target removes per-request padding and batches GDN/QSA. Opt-in prefill interleaving/E40 execution addresses the measured multi-second output stall. Continue remaining provider work, batch-cost calibration and four-request service under the [owned-backend plan](docs/DEEPINFER_OWN_BACKEND_PLAN.md).
 - Five written but unrun proposals (prefill numerics reference, expert-footprint rate, the online stages of the expert-aware budget, draft fidelity, exact head screening) are listed under [proposals without results](docs/EXPERIMENTS.md#proposals-without-results-yet).
 
 ## Getting started (no GPU, no weights downloaded)

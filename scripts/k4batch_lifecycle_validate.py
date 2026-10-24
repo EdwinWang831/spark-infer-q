@@ -43,8 +43,21 @@ def run(session,arguments):
                 matmul,identity=loader.load_library(arguments['batch_draft_library'],arguments['batch_draft_sha256'])
                 provider=batch.BatchedRequestDraftProvider(provider,matmul,kernel_identity=identity)
             with nm.NativeScheduler(session.root.parent/'DeepInfer',session.root.parent/'build-release/lib/deepinfer',max_drafts=depth) as native:
-                def make():return batch.batch_engine(native,target,provider,eos_ids=session.eos,prior=prior,capacity=256,
-                    target_only=not depth,joint_budget=joint_budget if depth else None)
+                def make():
+                    executor=None
+                    if arguments.get('owned_prefill'):
+                        pm=importlib.import_module(tag+'.prefill');po=importlib.import_module(tag+'.prefill_tensorfold')
+                        executor=pm.PrefillExecutor(po.TensorFoldPrefillProvider(session.weights,torch,capacity=2048),chunk_rows=128)
+                    engine=batch.batch_engine(native,target,provider,eos_ids=session.eos,prior=prior,capacity=256,
+                        target_only=not depth,joint_budget=joint_budget if depth else None,
+                        prefill_executor=executor,prompt_token_budget=128 if executor else 32,
+                        interleave_prefill=bool(arguments.get('interleave_prefill')))
+                    if executor is not None:
+                        close=engine.close
+                        def close_with_prefill():
+                            close();executor.close()
+                        engine.close=close_with_prefill
+                    return engine
                 def audit(engine):
                     assert not any(target.leased) and target.inflight is None
                     assert not engine.bridge.backend.states and not engine.bridge.native.has_unfinished_seqs()
@@ -86,9 +99,14 @@ def run(session,arguments):
                         cases.append(dict(case='cancel_survivor_reuse',depth=depth,phase=phase,exact=True))
                 if not depth:continue
                 stream=torch.cuda.Stream();stream.wait_stream(torch.cuda.current_stream())
+                affinity_before=os.sched_getaffinity(0) if arguments.get('performance_cpu') else None
                 @contextmanager
                 def context():
-                    with torch.inference_mode(),torch.cuda.stream(stream):yield
+                    if arguments.get('performance_cpu'):
+                        cpu=importlib.import_module(tag+'.worker_cpu')
+                        with cpu.worker_cpu('performance'),torch.inference_mode(),torch.cuda.stream(stream):yield
+                    else:
+                        with torch.inference_mode(),torch.cuda.stream(stream):yield
                 def start():
                     nonlocal worker
                     worker=wm.AsyncWorker(make,context_factory=context).start();native.bind_worker(worker.thread);return worker.engine.bridge
@@ -161,6 +179,7 @@ def run(session,arguments):
                     assert [t for ev in a for t in ev.token_ids]==gold[0][:4];worker.wait_idle(60);audit(worker.engine)
                     cases.append(dict(case='new_owner_after_fault',exact=True))
                 finally:stop()
+                if affinity_before is not None:assert os.sched_getaffinity(0)==affinity_before
         assert env=={k:os.environ.get(k) for k in env} and not torch.distributed.is_initialized()
         assert (len(target.graphs)<=target.max_graphs if arguments.get('target_state_library') else len(target.graphs)==80) and not target.fallbacks
         save('PASS')

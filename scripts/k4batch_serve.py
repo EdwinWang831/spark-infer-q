@@ -11,6 +11,11 @@ def main():
     parser.add_argument('--checkpoint',type=Path,required=True);parser.add_argument('--mode',choices=('none','adaptive'),default='adaptive')
     parser.add_argument('--capacity',type=int,default=1536);parser.add_argument('--port',type=int,default=18084)
     parser.add_argument('--execution',choices=('graph','eager'),default='graph')
+    parser.add_argument('--prefill-execution',choices=('rows8','owned'),default='rows8')
+    parser.add_argument('--prompt-token-budget',type=int,default=32)
+    parser.add_argument('--prefill-chunk-rows',type=int,default=128)
+    parser.add_argument('--interleave-prefill',action='store_true')
+    parser.add_argument('--worker-cpu',choices=('default','performance'),default='default')
     parser.add_argument('--target-backend',choices=('legacy','compact'),default='legacy')
     parser.add_argument('--target-state-library',type=Path)
     parser.add_argument('--target-state-sha256')
@@ -20,6 +25,8 @@ def main():
     parser.add_argument('--batch-costs',type=Path)
     parser.add_argument('--batch-costs-sha256')
     args=parser.parse_args()
+    if not 16<=args.prompt_token_budget<=512:parser.error('prompt token budget must be 16..512')
+    if not 1<=args.prefill_chunk_rows<=512:parser.error('prefill chunk rows must be 1..512')
     if not 16<=args.capacity<=1536:parser.error('capacity must be 16..1536')
     if bool(args.batch_costs)!=bool(args.batch_costs_sha256):parser.error('batch costs and their SHA256 must be supplied together')
     if args.batch_costs and (args.mode!='adaptive' or args.execution!='graph'):
@@ -68,11 +75,24 @@ def main():
                 target=CompactTarget(WideTarget(session.weights,capacity=2048),screen,state_kernel,graphs=args.execution=='graph')
             else:target=BatchTarget(WideTarget(session.weights,capacity=2048),screen,graphs=args.execution=='graph')
             target.warmup();stream=torch.cuda.Stream();stream.wait_stream(torch.cuda.current_stream())
+            prefill=None
+            if args.prefill_execution=='owned':
+                from spark_infer_q.prefill import PrefillExecutor
+                from spark_infer_q.prefill_tensorfold import TensorFoldPrefillProvider
+                with torch.cuda.stream(stream):
+                    prefill=PrefillExecutor(TensorFoldPrefillProvider(session.weights,torch,capacity=2048),chunk_rows=args.prefill_chunk_rows)
+        placement={}
         @contextmanager
         def context():
-            with torch.inference_mode(),torch.cuda.stream(stream):yield
-        worker=AsyncWorker(lambda:batch_engine(native,target,provider,eos_ids=session.eos,prior=session.calibration['conditional_prior'],
-            capacity=args.capacity,tokenizer=session.tokenizer,target_only=args.mode=='none',joint_budget=joint_budget),context_factory=context)
+            from spark_infer_q.worker_cpu import worker_cpu
+            with worker_cpu(args.worker_cpu) as metadata,torch.inference_mode(),torch.cuda.stream(stream):
+                placement.update(metadata);yield
+        def make():
+            engine=batch_engine(native,target,provider,eos_ids=session.eos,prior=session.calibration['conditional_prior'],
+                capacity=args.capacity,tokenizer=session.tokenizer,target_only=args.mode=='none',joint_budget=joint_budget,
+                prefill_executor=prefill,prompt_token_budget=args.prompt_token_budget,interleave_prefill=args.interleave_prefill)
+            engine.capabilities.update(placement);return engine
+        worker=AsyncWorker(make,context_factory=context)
         try:
             worker.start();native.bind_worker(worker.thread);server=make_server(worker,('127.0.0.1',args.port))
             print(json.dumps(dict(status='READY',mode=args.mode,metadata=metadata,**{'worker':worker.snapshot()})),flush=True)
@@ -84,6 +104,7 @@ def main():
             # A failed/unfinished fence is explicit: target.close refuses live
             # leases rather than freeing device state beneath the owner thread.
             if worker.thread is not None and worker.thread.is_alive():worker.close()
+            if prefill is not None:prefill.close()
             target.close()
 
 

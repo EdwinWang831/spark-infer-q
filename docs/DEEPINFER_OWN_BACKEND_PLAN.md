@@ -2,6 +2,8 @@
 
 2026-10-24 方向更新。本文定义实现与验收计划；已接通[自有批量 DFlash 研究后端](K4_OWN_BATCH_DRAFT_REPORT.md)和[紧凑 Target 研究后端](K4_OWN_TARGET_REPORT.md)。自有 Target 覆盖状态、完整层编排、批量 GDN recurrence/commit、dense-budget QSA 和 PLE 卷积；仍经显式 provider 使用未迁移算子及 eager prefill。四请求完整服务和性能晋升尚未通过。此前证据见 [K4 功能报告](K4_BATCH_RUNTIME_REPORT.md)、[等待修复](K4_WAIT_FIX_REPORT.md)和[联合预算实验](K4_JOINT_BUDGET_REPORT.md)。
 
+后续已接通[E40 prefill 与 ready-decode 交错](K4_PREFILL_PROGRESS_REPORT.md)：选定两请求场景的长输出停顿明显缩短，短/长输入混合的完整服务吞吐改善。另增加调用线程内的可选 performance CPU 放置；两部分分别对照，不与先前 Target 迁移结果相乘。仍需要更广请求/到达率和四请求完整链路验收。
+
 用户明确要求：学习 TensorFold 的技术思路，更多使用 DeepInfer 和我们自己的实现。最终架构以 **DeepInfer 调度底座 + 自有 Qwen/SM121 执行后端**为目标；TensorFold 是迁移期间的参考和可替换适配器。增加对 TensorFold 内部执行器的接线，不作为自主后端的完成标准。
 
 用户进一步要求“做得更好”：自主实现和性能优势分别验收。目标是在真实混合并发、尾延迟和资源可控性上建立优势，并利用 E17 与 DeepInfer 调度作出适合我们负载的决策。
@@ -17,7 +19,7 @@
 | 草稿 | 自有 DFlash2/Q4/W8 接入和特征/预测器；默认逐请求，另有自有 batch 研究开关 | 验收 batched DFlash 数值变化、成本校准和稳定服务收益 |
 | Target joint forward、Graph/event 编排 | 默认 legacy；可选 compact 自有 stage/层循环/commit 与有界 Graph | 四请求完整服务及冷 Graph 成本验收 |
 | GDN/QSA/PLE 状态及执行 | compact 使用自有固定容量 State、GDN recurrence/批量 commit、dense-budget QSA、PLE 卷积 | 稀疏 QSA、长上下文和更多模型配置 |
-| 权重读取、prefill、dense/MoE/HC/GDN IO/PLE embed-gate | TensorFold 加载、eager prefill 和显式 kernel/workspace provider | 按整模 profile 继续迁移并独立验收 |
+| 权重读取、prefill、dense/MoE/HC/GDN IO/PLE embed-gate | TensorFold 加载；可选 E40 自有 prefill executor/兼容 provider；显式 kernel/workspace provider | 按整模 profile 继续迁移并独立验收 |
 
 默认 `JointTarget` 虽合并了 dense/MoE 行，仍不等同于完整的跨请求 GDN/QSA 融合执行。可选 `CompactTarget` 已在这些部分使用自有设备元数据和批量内核。自有草稿 batch 有四请求组件证据；完整服务最大请求数仍为 2，默认仍是 legacy Target/逐请求草稿。不能据此宣布 DeepInfer 已提供完整 Qwen 模型后端。
 

@@ -325,7 +325,8 @@ class BatchTargetBridge(AsyncBatchMixin,SchedulerBridge):
         else:super().execute_async(plan)
 
 
-def batch_engine(native,target,provider,*,eos_ids,prior,capacity=1536,tokenizer=None,observer=None,target_only=False,joint_decode=True,joint_budget=None):
+def batch_engine(native,target,provider,*,eos_ids,prior,capacity=1536,tokenizer=None,observer=None,target_only=False,joint_decode=True,joint_budget=None,
+                 prefill_executor=None,prompt_token_budget=32,interleave_prefill=False):
     depth=0 if target_only else 7
     if native.max_drafts!=depth:raise ValueError('native NEXTN context differs from batch mode')
     if joint_budget is not None:
@@ -338,10 +339,13 @@ def batch_engine(native,target,provider,*,eos_ids,prior,capacity=1536,tokenizer=
         if capacity+8>provider.max_context:raise ValueError('insufficient draft context')
         if not isinstance(provider,RequestDraftProvider):provider=RequestDraftProvider(provider)
     else:provider=SimpleNamespace(deferred_draft=True)
-    backend=BatchBackend(target,provider,eos_ids=eos_ids,depth=depth,prior=prior,observer=observer)
+    if type(prompt_token_budget) is not int or not 16<=prompt_token_budget<=512:
+        raise ValueError('prompt token budget must be 16..512')
+    backend=BatchBackend(target,provider,eos_ids=eos_ids,depth=depth,prior=prior,observer=observer,prefill_executor=prefill_executor)
     backend.joint_decode=joint_decode
     args=(native.core,native.torch,native.group,native.sampling_class,backend)
-    kwargs=dict(vocab_size=int(target.w.head.b.weight.shape[0]),eos_ids=eos_ids,capacity=capacity,max_requests=2,token_budget=32)
+    kwargs=dict(vocab_size=int(target.w.head.b.weight.shape[0]),eos_ids=eos_ids,capacity=capacity,max_requests=2,
+        token_budget=prompt_token_budget,interleave_prefill=interleave_prefill)
     bridge=BatchTargetBridge(*args,**kwargs) if target_only else BatchSpeculativeBridge(*args,postdraft=True,independent_postdraft=True,joint_budget=joint_budget,**kwargs)
     engine=KaifraEngine(bridge,tokenizer=tokenizer)
     engine.capabilities=dict(engine.capabilities,gpu_batch=True,asynchronous=True,max_requests=2,
@@ -354,4 +358,6 @@ def batch_engine(native,target,provider,*,eos_ids,prior,capacity=1536,tokenizer=
     engine.capabilities.update(draft_gpu_batch=isinstance(provider,BatchedRequestDraftProvider),
         draft_execution='owned_batch_v1' if isinstance(provider,BatchedRequestDraftProvider) else 'per_request',
         draft_cost_calibrated=False if isinstance(provider,BatchedRequestDraftProvider) else None)
+    engine.capabilities.update(interleave_prefill=interleave_prefill,prompt_token_budget=prompt_token_budget)
+    if prefill_executor is not None:engine.capabilities.update(prefill_executor.capabilities)
     return engine

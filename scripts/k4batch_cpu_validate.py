@@ -59,7 +59,8 @@ def run(session,arguments):
             with nm.NativeScheduler(session.root.parent/'DeepInfer',session.root.parent/'build-release/lib/deepinfer',max_drafts=depth) as native:
                 for fault in ((None,) if not depth else (None,0,3,6)):
                     target=Target(native.torch);provider=Provider(fault)
-                    def make():return batch.batch_engine(native,target,provider,eos_ids=(99,),prior=[.7]*7,capacity=128,target_only=not depth)
+                    def make(interleave=False):return batch.batch_engine(native,target,provider,eos_ids=(99,),prior=[.7]*7,capacity=128,
+                        target_only=not depth,interleave_prefill=interleave)
                     with make() as engine:
                         hs=[engine.submit_tokens('a',[1],max_tokens=24),engine.submit_tokens('b',[11],max_tokens=17)];out={h:[] for h in hs}
                         traces=[]
@@ -96,6 +97,27 @@ def run(session,arguments):
                             events=list(engine.drain());assert [t for ev in events for t in ev.token_ids]==[98,99]
                             assert events[-1].finish_reason=='stop'
                             assert not target.leased and not target.inflight
+                    if arguments.get('trace_progress') and fault is None:
+                        progress=[]
+                        for interleave in (False,True):
+                            with make(interleave) as engine:
+                                a=engine.submit_tokens('short',[11],max_tokens=24);out={a:[]};trace=[]
+                                while not out[a]:
+                                    for ev in engine.step():out[ev.handle].extend(ev.token_ids)
+                                b=engine.submit_tokens('long',[1]*96,max_tokens=8);out[b]=[]
+                                while engine.active_requests:
+                                    plan=engine.bridge.prepare()
+                                    trace.append([dict(request=r.handle.request_id,prompt=r.prompt,rows=len(r.token_ids)) for r in plan.rows])
+                                    engine.bridge.execute_async(plan)
+                                    while not engine.bridge.poll(plan):pass
+                                    for ev in engine.finish_plan(plan):out[ev.handle].extend(ev.token_ids)
+                                assert out[a]==list(range(12,36)) and out[b]==list(range(2,10))
+                                assert not target.leased and target.inflight is None
+                                progress.append(dict(interleave=interleave,trace=trace,exact=True))
+                        legacy=progress[0]['trace'];fair=progress[1]['trace']
+                        assert all(rows and rows[0]['prompt'] for rows in legacy[:3]),legacy
+                        assert fair and fair[0] and not fair[0][0]['prompt'],fair
+                        cases.append(dict(case='ready_decode_vs_long_prefill',depth=depth,arms=progress))
                     print(json.dumps(cases[-1]),flush=True)
         return dict(status='PASS_K4_BATCH_NATIVE_CPU',cases=cases,source_sha256=manifest,cuda_forward=False,model_reloaded=False)
     finally:

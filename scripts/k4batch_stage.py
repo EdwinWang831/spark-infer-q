@@ -16,6 +16,7 @@ def main():
     names += [str(f.relative_to(root)) for f in sorted((root/'scripts').glob('k4batch*.cu'))]
     names += ['scripts/k2_native_validate.py','docs/K4_BATCH_RUNTIME_PLAN.md','tests/test_draft_batch.py',
               'tests/test_compact_target.py','tests/test_kaifra_batch_transactions.py']
+    names += ['tests/test_prefill_executor.py','tests/test_prefill_progress.py','tests/test_worker_cpu.py','THIRD_PARTY_NOTICES.md']
     names += ['results/k4/2026-10-24-joint-costs.json']
     manifest={n:hashlib.sha256((root/n).read_bytes()).hexdigest() for n in names};buf=io.BytesIO()
     with tarfile.open(fileobj=buf,mode='w') as archive:
@@ -23,17 +24,47 @@ def main():
         data=(json.dumps(manifest,indent=2)+'\n').encode();info=tarfile.TarInfo('manifest.json');info.size=len(data);archive.addfile(info,io.BytesIO(data))
     remote='/workspace/e1/k4batch-20261023-'+a.version
     ssh=['ssh','-o','BatchMode=yes','-o','ConnectTimeout=12','-o','ConnectionAttempts=3',
-         '-o','ControlMaster=auto','-o','ControlPersist=60','-o','ControlPath=/tmp/codex-deepinfer-%C','robo-dog-f236.local']
+         '-o','ControlMaster=auto','-o','ControlPersist=600','-o','ControlPath=/tmp/codex-deepinfer-%C','robo-dog-f236.local']
     if a.ssh_hostname:ssh[1:1]=['-o','ProxyCommand=none','-o','Hostname='+a.ssh_hostname]
-    subprocess.run(ssh+['docker exec -i spark-infer-q-e2-load sh -c '+shlex.quote('mkdir '+shlex.quote(remote)+' && tar -xf - -C '+shlex.quote(remote))],input=buf.getvalue(),check=True)
+    payload=buf.getvalue();payload_sha=hashlib.sha256(payload).hexdigest()
+    manifest_sha=hashlib.sha256((json.dumps(manifest,indent=2)+'\n').encode()).hexdigest()
+    upload=f'''import hashlib,io,json,pathlib,sys,tarfile
+r=pathlib.Path({remote!r});data=sys.stdin.buffer.read()
+assert hashlib.sha256(data).hexdigest()=={payload_sha!r},'incomplete transfer'
+if not r.exists():
+ t=r.with_name(r.name+'.staging');t.mkdir(exist_ok=True)
+ with tarfile.open(fileobj=io.BytesIO(data),mode='r') as archive:archive.extractall(t,filter='data')
+ assert hashlib.sha256((t/'manifest.json').read_bytes()).hexdigest()=={manifest_sha!r}
+ for n,h in json.loads((t/'manifest.json').read_text()).items():assert hashlib.sha256((t/n).read_bytes()).hexdigest()==h,n
+ t.rename(r)
+assert hashlib.sha256((r/'manifest.json').read_bytes()).hexdigest()=={manifest_sha!r},'sealed version already differs'
+for n,h in json.loads((r/'manifest.json').read_text()).items():assert hashlib.sha256((r/n).read_bytes()).hexdigest()==h,n
+'''
+    for attempt in range(3):
+        try:
+            subprocess.run(ssh+['docker exec -i spark-infer-q-e2-load python3 -c '+shlex.quote(upload)],input=payload,check=True)
+            break
+        except subprocess.CalledProcessError as exc:
+            if exc.returncode!=255 or attempt==2:raise
     out=root/'results/raw/k4-batch';out.mkdir(parents=True,exist_ok=True);(out/('manifest-'+a.version+'.json')).write_text(json.dumps(manifest,indent=2)+'\n')
     module='k4batch_job_'+a.version.replace('-','_')
     script=f'''import hashlib,json,pathlib,shutil
 r=pathlib.Path('/workspace/e1/resident-verification');src=pathlib.Path({(remote+'/scripts/'+a.runner)!r});dest=r/{(module+'.py')!r}
-assert not dest.exists();shutil.copyfile(src,dest)
+if not dest.exists():shutil.copyfile(src,dest)
+assert hashlib.sha256(dest.read_bytes()).hexdigest()==hashlib.sha256(src.read_bytes()).hexdigest()
 job=dict(module={module!r},sha256=hashlib.sha256(dest.read_bytes()).hexdigest(),arguments=dict(source_root={remote!r},graphs={a.graphs!r}))
 if {a.component_root!r} is not None:job['arguments']['component_root']={a.component_root!r}
-p=r/'jobs/pending'/{a.job!r};assert not any((r/'jobs'/s/p.name).exists() for s in ('pending','running','done'))
+p=r/'jobs/pending'/{a.job!r}
+definition=r/'jobs/submitted'/p.name;definition.parent.mkdir(exist_ok=True)
+if definition.exists():assert json.loads(definition.read_text())==job
+else:
+ assert not any((r/'jobs'/s/p.name).exists() for s in ('pending','running','done')),'job name already used'
+ t=definition.with_suffix('.tmp');t.write_text(json.dumps(job));t.replace(definition)
+for s in ('pending','running','done'):
+ if (r/'jobs'/s/p.name).exists():
+  if s!='done':assert json.loads((r/'jobs'/s/p.name).read_text())==job
+  else:assert json.loads((r/'jobs'/s/p.name).read_text())['job']==p.name
+  print('already enqueued: '+p.name);raise SystemExit(0)
 tmp=p.with_suffix('.tmp');tmp.write_text(json.dumps(job));tmp.replace(p);print(p.name)
 '''
     result=subprocess.run(ssh+['docker exec -i spark-infer-q-e2-load python3 -'],input=script,text=True,capture_output=True);print(result.stdout,end='');print(result.stderr,end='');result.check_returncode()
