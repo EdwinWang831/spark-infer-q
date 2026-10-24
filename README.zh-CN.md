@@ -8,7 +8,7 @@
 
 截至 2026-10-24，仓库包含 E0–E37 研究记录（E26 依用户要求中止）、已验证的 K1–K3 原生调度运行时、单请求开销优化和双请求 target-only API。实验候选保留各自的验证范围，默认路径不变。
 
-E33 用 INT8 辅助筛选、原 BF16 头最终裁决，在相同 W8 草稿/线性预算/Graph 基线上，实际 decode 46.91→48.51 token/s（+3.41%，root95% +2.39%～+4.12%）；8 条旧工程 root、64 次计时，输出、提交 logits/特征/状态及预算轨迹一致。当前仍为研究路径；E30–E32 候选均未晋升。
+E33 用 INT8 辅助筛选、原 BF16 头最终裁决，在相同 W8 草稿/线性预算/Graph 基线上，实际 decode 46.91→48.51 token/s（+3.41%，root95% +2.39%～+4.12%）；8 条旧工程 root、64 次计时，输出、提交 logits/特征/状态及预算轨迹一致。当前仍为研究路径；E30–E32 及 E34–E35 候选均未晋升。
 
 - **做什么**：Qwen3.8-Flash-Next（NVFP4，TensorFold 内核）用 DFlash2 草稿模型做推测解码，由 DeepInfer 的 MTPVarlen 决定每一步验证多少个草稿。性能实验及 K2 动态预算运行时采用同步、单请求、greedy 执行。
 - **最大的单项 decode 改进**：E15/E16 训练的轻量置信度预测器。在另行冻结的新任务上，它比默认的滞后预算快约 10%（E16：44.08 vs 40.21 tok/s），目前是可选路径。
@@ -43,6 +43,8 @@ E33 用 INT8 辅助筛选、原 BF16 头最终裁决，在相同 W8 草稿/线�
 | [E31](docs/E31_EXPERT_SCALE_REPORT.md) | FP8专家scale成对转换，保持精度 | 转换静态指令减半；专家pair热复用+0.23%、缓存扰动−0.18%，区间均跨零 | 数值检查通过，候选拒绝，不进入整模长测 |
 | [E32](docs/E32_COMPACT_STAGING_REPORT.md) | MXFP8投影有效输入行紧凑staging | 每CTA共享内存少16%～31%；真实回放热复用−1.06%、缓存扰动−0.92% | 224组筛查＋96份真实输入通过，性能拒绝 |
 | [E33](docs/E33_EXACT_HEAD_SCREEN_REPORT.md) | INT8辅助头筛选＋定向FP64误差界＋原BF16子集精算 | 完整头耗时−36.24%；实际decode 46.91→48.51 token/s（+3.41%，区间为正） | 8条root/64次对照、精确检查通过；研究路径，默认不变 |
+| [E34](docs/E34_DEVICE_SCREEN_REPORT.md) | GPU有序候选压缩＋固定容量精算Graph | 修复捕获输入生命周期后，32个真实窗口精确检查通过；相对E33完整头耗时−3.78% | 未过事前5%组件门槛，不做完整decode长测或晋升 |
+| [E35](docs/E35_MOE_OVERLAP_REPORT.md) | 共享/路由专家双stream fork/join | 完整MoE耗时热复用−3.04%、缓存扰动−0.50%（区间跨零）；时间线显示重核几乎不重叠 | 96项功能/24份真实输入检查通过，未进入完整decode |
 | [E11](docs/E11_PROJECTION_REPORT.md) | 投影改用 MXFP8 split-K | decode +0.62%，完整请求 −0.64% | 可选，默认不变 |
 | [E10](docs/E10_TARGET_KERNEL_REPORT.md) | 调专家核的 warp 数和预取深度 | holdout 上 +0.08% | 未采用 |
 | [E12](docs/E12_EXPERT_VERIFICATION_REPORT.md) | 按路由专家并集估计验证成本 | 离线成本误差降 26.17%，但专家并集要验证后才知道；能在线用的特征只降 2.42% | 未采用 |
