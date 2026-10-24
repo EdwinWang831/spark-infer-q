@@ -241,7 +241,7 @@ Verified 2026-10-22; executed 2026-10-21: [frozen plan](E16_BILINGUAL_EXPANSION_
 
 ## Proposals without results yet
 
-Four original proposals remain unexecuted or only partly evaluated, as stated in their rows below. The exact greedy head-screening proposal has now been executed as [E33](E33_EXACT_HEAD_SCREEN_REPORT.md) and is listed in the completed experiments. Future executions must freeze inputs and thresholds and preserve both failed and successful stages.
+Four original proposals remain unexecuted or only partly evaluated, as stated in their rows below. The use-time self-evolution plan below is a separate unexecuted proposal. The exact greedy head-screening proposal has now been executed as [E33](E33_EXACT_HEAD_SCREEN_REPORT.md) and is listed in the completed experiments. Future executions must freeze inputs and thresholds and preserve both failed and successful stages.
 
 | Plan | From | Status | Reference code |
 | --- | --- | --- | --- |
@@ -249,6 +249,7 @@ Four original proposals remain unexecuted or only partly evaluated, as stated in
 | [Expert-footprint accounting](ACHIEVED_BANDWIDTH_PLAN.md): turn per-step routed expert unions and E9 kernel times into a per-family expert-footprint rate | #1 | Not run. Footprint is not measured DRAM traffic (see E12), so without hardware counters the result would only indicate kernel headroom; [E10](#e10--target-expert-kernel-launch-and-staging)/[E11](#e11--target-projection-execution) tuning has meanwhile measured +0.08%/+0.62% | `spark_infer_q/moe_cost.py` |
 | [Expert-union-aware verification budget](MOE_AWARE_BUDGET_PLAN.md): predict step time from rows plus routed-expert union and swap only that model into MTPVarlen | #1 | Partly run. E12 ran the offline cost stage: the current step's true union cut held-out cost MAE 26.17%, a history-only union only 2.42%, and same-prefix budget diagnostics stayed at or below 1.28%. The online stages are on hold under the plan's stop rule | `spark_infer_q/moe_cost.py` |
 | [Draft-fidelity acceptance](DRAFT_FIDELITY_ACCEPTANCE_PLAN.md): check whether the BF16 drafter's arithmetic lowers acceptance compared with official stepwise BF16 and FP32 drafters on the same serial prefixes | #4 | Not run | `spark_infer_q/draft_fidelity.py` (`step_outcome`, `paired_ratio`; `emitted_by_width` there is also used by E15/E16) |
+| [Use-time lossless self-evolution](USE_TIME_SELF_EVOLUTION_PLAN.md): EV0–EV6 proposal; reproduce E16 historical replay, then validate and evolve against a frozen E33 stack with its screened-head path fixed | #15 | Not run. E33 is completed engineering evidence, not an RSI result; current-stack replay/data completion and temporal held-out validation remain required | `spark_infer_q/draft_fidelity.py`, `spark_infer_q/confidence_head.py`, `scripts/e33_online.py`, `scripts/resident_worker.py` |
 
 ## E28 — Draft MLP INT8 weights with BF16 activations
 
