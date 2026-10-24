@@ -6,7 +6,7 @@
 
 ## 现状一览
 
-截至 2026-10-24，仓库包含 E0–E37 研究记录（E26 依用户要求中止）、已验证的 K1–K3 原生调度运行时、单请求开销优化和双请求 target-only API。实验候选保留各自的验证范围，默认路径不变。
+截至 2026-10-24，本分支包含 E0–E38 研究记录（E26 依用户要求中止）、已验证的 K1–K3 原生调度运行时、单请求开销优化和双请求 target-only API。实验候选保留各自的验证范围，默认路径不变。
 
 已汇总的 main 与独立的 K4/服务、自演化设计路线，见[仓库导航](docs/REPOSITORY_STATUS.md)。
 
@@ -27,6 +27,7 @@ E33 用 INT8 辅助筛选、原 BF16 头最终裁决，在相同 W8 草稿/线�
 | [联合 Target](docs/JOINT_TARGET_EXECUTION_REPORT.md) | 原生调度下两个请求共享一次 target 前向 | 两组中英文请求对 × 四轮，decode 总吞吐 23.64 → 38.63 tok/s（+63.4%） | 可选、同步 target-only；尚未接双请求 DFlash |
 | [E36](docs/E36_PREFILL_NUMERICS_REPORT.md) | 大块 prefill，统一投影/递归/MoE 算术 | 七条4–512 token前缀、四轮，prompt本体 110.87 → 889.22 tok/s（8.02倍） | 研究适配器；精确门槛通过，默认引擎待接入 |
 | [E37](docs/E37_PREFILL_PROFILE_REPORT.md) | Prefill 剖析与单变量 GDN scratch 复用 | 48 次配对 prompt 中复用 wall +1.02%；独立 GPU 剖析显示专家是最大成本 | 不采用复用；没有新增速度收益或默认变更 |
+| [E38](docs/E38_PREFILL_EXPERT_REPORT.md) | 两组输入共享专家权重加载与解包 | 路由估算少23.02%权重阶段，但完整MoE设备区间成本+3.93% | 组件精确通过，成本不通过；未进入完整prompt A/B |
 | [E6](docs/E6_DRAFT_HEAD_REPORT.md) | 草稿输出头换成完整词表 Q4 | decode 41.70 → 45.54 tok/s（+9.23%） | 默认 |
 | [E8](docs/E8_INTEGRATION_REPORT.md) | prompt 按 8 行分块，沿用 decode 算术 | 完整请求快 1.67 倍；decode −1.14% | 默认 |
 | [E13](docs/E13_DRAFT_CACHE_CONFIDENCE_REPORT.md) | 增量缓存 DFlash 的历史投影 | 1K–2K 输入 +6.27%；短输入 −0.31% | 可选 |

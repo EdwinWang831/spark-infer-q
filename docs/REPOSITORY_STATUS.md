@@ -9,6 +9,7 @@
 | `main` | E0–E37 research records, including E26 cancellation; E33 exact screened head, E34/E35 rejected candidates, E36 exact prefill and E37 profile / 已完成研究与脱敏证据 | Consolidated; per-experiment limits still apply / 已汇总，沿用各实验边界 |
 | `main` | K1 target-only runtime → K2 dynamic DFlash → K3 Graph/E33 profile → single-request overhead reduction / 原生调度运行时演进 | Explicit opt-in APIs/profiles / 显式启用 |
 | `main` | Joint Target, two requests sharing one target forward / 双请求联合 Target | Target-only API; distinct from K4 DFlash service / 独立于 K4 服务研究 |
+| `codex/prefill-expert-reuse` | E38 paired expert reuse and ownership recovery / 专家复用及观测回调收尾 | Component cost gate failed; independent research record / 成本门槛失败，独立研究记录 |
 | [K4 research, PR #19](https://github.com/EdwinWang831/spark-infer-q/pull/19) | `codex/k4-batched-runtime`: joint verification, async SSE and dispatch wait fix / 双请求动态验证、异步服务及等待修正 | Independent draft; existing worktree retained / 保留现有工作区 |
 | [Self-evolution design, PR #15](https://github.com/EdwinWang831/spark-infer-q/pull/15) | `claude/magical-fermi-tc55jr`; local worktree branch `codex/pr15-e33-rsi-plan` / 自演化设计 | Design under review, not an implemented speed result / 设计评审中 |
 | `archive/pr6-confidence-proposal` tag | Original closed PR #6 branch tip / 已关闭预测器提案的原分支端点 | History retained; later E15–E25 results live on main / 归档保留，不将旧提案混入当前实现 |
