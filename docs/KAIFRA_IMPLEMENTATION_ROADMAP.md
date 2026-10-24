@@ -147,6 +147,8 @@ class KaifraEngine(Protocol):
 
 **验收：**新冻结 2/4/5 请求混合负载中至少存在可复现的完整任务/吞吐优势，不得显著恶化交互 TTFT/TPOT p95 或状态正确性。否则保留简单策略为默认，复杂策略撤到研究模式。
 
+2026-10-24预算子步骤：已接通[实测批次成本与联合E17预算](K4_JOINT_BUDGET_REPORT.md)，80种费用配置、三种预算对照、14项真实GPU生命周期与236项本地测试（12跳过）通过。正式SSE未过性能门槛，原预算继续默认；仅完成当前2请求批次的候选预算器，未增加4请求执行、准入/公平性或完整K5。
+
 ### K6 — Speculative Mode Portfolio + Spark Resource Policy
 
 **交付：**Native MTP / DFlash2 Q4 / no-draft 的受控低频选择；对切换时延、常驻、warmup、重建 state、图缓存收费；内存水位和前台/后台 SLO 的组合优化。

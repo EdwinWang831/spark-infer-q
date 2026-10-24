@@ -18,6 +18,7 @@ class RequestDraftProvider:
         if not provider.deferred_draft or provider.model is None or provider.budget is None:
             raise ValueError('batching requires current E17 post-draft policy')
         self.base=provider;self.model=provider.model;self.budget=provider.budget
+        self.profile_metadata=getattr(provider,'profile_metadata',None)
         self.max_context=provider.max_context;self.providers={}
 
     def propose(self,handle,state,anchor,remaining):
@@ -208,7 +209,27 @@ class AsyncBatchMixin:
 
 
 class BatchSpeculativeBridge(AsyncBatchMixin,SpeculativeSchedulerBridge):
-    pass
+    def __init__(self,*args,joint_budget=None,**kwargs):
+        super().__init__(*args,**kwargs)
+        self.joint_budget=joint_budget
+
+    def _postdraft_widths(self,plan):
+        widths=super()._postdraft_widths(plan)
+        if self.joint_budget is None:return widths
+        from .joint_budget import BudgetRequest
+        active=[];requests=[]
+        for i,row in enumerate(plan.rows):
+            entry=self._entry(row.handle)
+            if entry['cancelled']:continue
+            state=entry['state'];active.append(i)
+            requests.append(BudgetRequest(self.backend.target._slot(state.target),len(state.context),
+                entry['seq'].sampling_params.max_tokens-state.output_tokens,tuple(state.cumulative),
+                widths[i],len(row.token_ids)))
+        decision=self.joint_budget.choose(requests)
+        for i,q in zip(active,decision['widths'],strict=True):
+            widths[i]=q;self._entry(plan.rows[i].handle)['state'].next_width=q
+        plan.joint_budget=decision
+        return widths
 
 
 class BatchTargetBridge(AsyncBatchMixin,SchedulerBridge):
@@ -228,9 +249,14 @@ class BatchTargetBridge(AsyncBatchMixin,SchedulerBridge):
         else:super().execute_async(plan)
 
 
-def batch_engine(native,target,provider,*,eos_ids,prior,capacity=1536,tokenizer=None,observer=None,target_only=False,joint_decode=True):
+def batch_engine(native,target,provider,*,eos_ids,prior,capacity=1536,tokenizer=None,observer=None,target_only=False,joint_decode=True,joint_budget=None):
     depth=0 if target_only else 7
     if native.max_drafts!=depth:raise ValueError('native NEXTN context differs from batch mode')
+    if joint_budget is not None:
+        if target_only or not joint_decode:raise ValueError('joint budgets require adaptive joint execution')
+        metadata=getattr(provider,'profile_metadata',None)
+        if metadata is None:raise ValueError('joint budgets require a fingerprinted execution profile')
+        joint_budget.validate_runtime(metadata,target)
     if capacity+2*depth>target.capacity:raise ValueError('insufficient physical lookahead')
     if not target_only:
         if capacity+8>provider.max_context:raise ValueError('insufficient draft context')
@@ -240,11 +266,13 @@ def batch_engine(native,target,provider,*,eos_ids,prior,capacity=1536,tokenizer=
     backend.joint_decode=joint_decode
     args=(native.core,native.torch,native.group,native.sampling_class,backend)
     kwargs=dict(vocab_size=int(target.w.head.b.weight.shape[0]),eos_ids=eos_ids,capacity=capacity,max_requests=2,token_budget=32)
-    bridge=BatchTargetBridge(*args,**kwargs) if target_only else BatchSpeculativeBridge(*args,postdraft=True,independent_postdraft=True,**kwargs)
+    bridge=BatchTargetBridge(*args,**kwargs) if target_only else BatchSpeculativeBridge(*args,postdraft=True,independent_postdraft=True,joint_budget=joint_budget,**kwargs)
     engine=KaifraEngine(bridge,tokenizer=tokenizer)
     engine.capabilities=dict(engine.capabilities,gpu_batch=True,asynchronous=True,max_requests=2,
         speculative=not target_only,target_only=target_only,verification_budget='per_request_current_e17' if not target_only else 'none',
-        global_budget_optimized=False)
+        global_budget_optimized=joint_budget is not None)
+    if joint_budget is not None:
+        engine.capabilities.update(verification_budget='joint_current_e17',batch_cost_sha256=joint_budget.sha256)
     engine.capabilities.update(target.capabilities)
     engine.capabilities['joint_decode']=joint_decode
     return engine

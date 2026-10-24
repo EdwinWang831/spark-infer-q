@@ -52,6 +52,7 @@
 | [K3 + E33](docs/K3_E33_RUNTIME_REPORT.md) | 辅助头/W8/NumPy/Graph 完整迁入原生运行时 | 47.459 vs 同期 E33 48.378 tok/s；约1.90%接入开销，显式profile |
 | [运行时开销](docs/K4_RUNTIME_OVERHEAD.md) | 减少单请求轮询、token 历史复制和 CPU 元数据分配 | 47.282 → 47.994 tok/s（+1.51%）；同期 E33 差距 2.36% → 0.89% |
 | [K4 batch](docs/K4_BATCH_RUNTIME_REPORT.md) | 双请求联合 Target、E17 动态预算与异步 SSE owner | 功能通过；固定轮询提交损失已修复，同期短组SSE32.57→45.00 tok/s，见[证据与边界](docs/K4_WAIT_FIX_REPORT.md) |
+| [K4联合预算](docs/K4_JOINT_BUDGET_REPORT.md) | 实测批次费用与原E17接受率联合选宽度 | 正确性通过；正式SSE回退，联合预算仅显式启用，原预算继续默认 |
 | [E7](docs/E7_TENSORFOLD_MATCH_REPORT.md) | 充分预热后对照原生 TensorFold | 整体 45.62 vs 49.18 tok/s；8 个自然完成的任务 45.57 vs 43.58 |
 | [E9](docs/E9_DECODE_PROFILE_REPORT.md) | 用 Nsight 剖析 decode | target 验证占 83.81%，草稿占 14.39% |
 

@@ -36,4 +36,13 @@ curl http://127.0.0.1:18084/cancel -H 'Content-Type: application/json' \
 - API 的同 ID 重用受完整 handle/generation 保护。HTTP ID 由服务生成，`/cancel` 作用于该 ID 的当前流。
 - 停止服务时先停止 worker 并完成 fence，再回收 Target 和 native Gloo。关闭超时明确报错并保留在途状态；native owner guard 防止活跃 worker 的进程组被提前释放。worker 故障后隔离，需创建新 owner；不会自动重试旧请求。
 
-每请求预算保留原有单请求成本目标；`global_budget_optimized=false`。批次成本建模、公平性和全局行数分配属于 K5。本入口限定单卡双请求；4K+、随机采样、跨卡、生产压力和公网部署尚未验证。
+默认预算仍保留单请求成本目标，`global_budget_optimized=false`。新增的[实测批次联合预算](K4_JOINT_BUDGET_REPORT.md)已通过正确性检查，但正式SSE性能未过关，只作为显式实验选项：在上述启动命令追加以下参数。
+
+```bash
+--batch-costs /path/to/checkout/results/k4/2026-10-24-joint-costs.json \
+--batch-costs-sha256 494337bd1dcfa027041e65d3d2669687d8b01fb26d4e36f458143670f842390a
+```
+
+两个参数必须同时提供，且要求adaptive与Graph模式。加载时核对文件SHA、E17/W8成本指纹和Target源码；不匹配会明确失败。启用时`verification_budget=joint_current_e17`、`global_budget_optimized=true`，这里的联合优化仅指当前已调度decode批次，不包含公平性、准入或完整K5。E17权重和预测特征不变，q仍动态选择。
+
+本入口仍限定单卡双请求；4请求执行、4K+、随机采样、跨卡、生产压力和公网部署尚未验证。

@@ -11,8 +11,13 @@ def main():
     parser.add_argument('--checkpoint',type=Path,required=True);parser.add_argument('--mode',choices=('none','adaptive'),default='adaptive')
     parser.add_argument('--capacity',type=int,default=1536);parser.add_argument('--port',type=int,default=18084)
     parser.add_argument('--execution',choices=('graph','eager'),default='graph')
+    parser.add_argument('--batch-costs',type=Path)
+    parser.add_argument('--batch-costs-sha256')
     args=parser.parse_args()
     if not 16<=args.capacity<=1536:parser.error('capacity must be 16..1536')
+    if bool(args.batch_costs)!=bool(args.batch_costs_sha256):parser.error('batch costs and their SHA256 must be supplied together')
+    if args.batch_costs and (args.mode!='adaptive' or args.execution!='graph'):
+        parser.error('joint budgets require adaptive Graph execution')
     root=args.root.resolve();checkout=Path(__file__).resolve().parents[1]
     sys.path[:0]=[str(checkout),str(checkout/'scripts'),str(root/'followup-deps'),str(root/'python-deps')]
     from spark_infer_q.native_scheduler import NativeScheduler
@@ -24,6 +29,8 @@ def main():
     from spark_infer_q.screened_head_fused import FusedScreenedHead
     from e3_wide_target import WideTarget
     from e12_session import load_session
+    from spark_infer_q.joint_budget import JointBudget
+    joint_budget=None if args.batch_costs is None else JointBudget.load(args.batch_costs,sha256=args.batch_costs_sha256)
     with NativeScheduler(root.parent/'DeepInfer',root.parent/'build-release/lib/deepinfer',max_drafts=0 if args.mode=='none' else 7) as native:
         torch=native.torch
         with torch.inference_mode():
@@ -37,7 +44,7 @@ def main():
         def context():
             with torch.inference_mode(),torch.cuda.stream(stream):yield
         worker=AsyncWorker(lambda:batch_engine(native,target,provider,eos_ids=session.eos,prior=session.calibration['conditional_prior'],
-            capacity=args.capacity,tokenizer=session.tokenizer,target_only=args.mode=='none'),context_factory=context)
+            capacity=args.capacity,tokenizer=session.tokenizer,target_only=args.mode=='none',joint_budget=joint_budget),context_factory=context)
         try:
             worker.start();native.bind_worker(worker.thread);server=make_server(worker,('127.0.0.1',args.port))
             print(json.dumps(dict(status='READY',mode=args.mode,metadata=metadata,**{'worker':worker.snapshot()})),flush=True)

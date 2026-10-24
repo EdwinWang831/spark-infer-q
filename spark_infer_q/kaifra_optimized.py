@@ -60,6 +60,7 @@ def optimized_provider(session):
         draft='W8 MLP / Q4 output head / BF16 attention and selector',predictor='E17 NumPy float64',
         budget='E29 W8 frozen short/long, current post-draft single-request objective',
         first_draft='after first token, inside decode',packed_weights=worker.w8_manifest)
+    provider.profile_metadata=metadata
     return provider,metadata
 
 

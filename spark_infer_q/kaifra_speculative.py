@@ -276,7 +276,7 @@ class SpeculativeSchedulerBridge(SchedulerBridge):
                             state.current_drafts=tuple(proposed[:7])
                             self.torch.cuda.synchronize()
                         plan.draft_ms[i]=(time.perf_counter()-t)*1000
-                widths = [self._entry(r.handle)['state'].next_width for r in plan.rows]
+                widths = self._postdraft_widths(plan)
                 if any(not 1 <= q <= len(r.token_ids) for q,r in zip(widths,plan.rows)):
                     raise BridgeError('final post-draft width exceeds native reservation')
                 self._cpu_arrays['widths'][:len(widths)] = widths
@@ -289,6 +289,9 @@ class SpeculativeSchedulerBridge(SchedulerBridge):
                 self.poisoned = True
                 raise
         return plan
+
+    def _postdraft_widths(self,plan):
+        return [self._entry(r.handle)['state'].next_width for r in plan.rows]
 
     def _work_row(self, meta, seq, entry):
         if meta.is_prompt:

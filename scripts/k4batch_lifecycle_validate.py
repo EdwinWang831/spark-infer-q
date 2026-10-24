@@ -25,10 +25,16 @@ def run(session,arguments):
         texts=['What is 17 + 25? Answer with only the integer.','请用三点解释缓存与队列的区别。']
         ids=[session.tokenizer.apply_chat_template([dict(role='user',content=x)],tokenize=True,add_generation_prompt=True,enable_thinking=False,return_dict=False) for x in texts]
         prior=session.calibration['conditional_prior'];gold={}
+        joint_budget=None
+        if arguments.get('joint_budget'):
+            controller=importlib.import_module(tag+'.joint_budget')
+            joint_budget=controller.JointBudget.load('/workspace/e1/k4batch-20261023-joint-cost-v1/joint-costs.json',
+                sha256='494337bd1dcfa027041e65d3d2669687d8b01fb26d4e36f458143670f842390a')
         for depth in (0,7):
             provider=opt.optimized_provider(session)[0] if depth else None
             with nm.NativeScheduler(session.root.parent/'DeepInfer',session.root.parent/'build-release/lib/deepinfer',max_drafts=depth) as native:
-                def make():return batch.batch_engine(native,target,provider,eos_ids=session.eos,prior=prior,capacity=256,target_only=not depth)
+                def make():return batch.batch_engine(native,target,provider,eos_ids=session.eos,prior=prior,capacity=256,
+                    target_only=not depth,joint_budget=joint_budget if depth else None)
                 def audit(engine):
                     assert not any(target.leased) and target.inflight is None
                     assert not engine.bridge.backend.states and not engine.bridge.native.has_unfinished_seqs()
@@ -148,7 +154,7 @@ def run(session,arguments):
         assert env=={k:os.environ.get(k) for k in env} and not torch.distributed.is_initialized()
         assert len(target.graphs)==80 and not target.fallbacks
         save('PASS')
-        return dict(status='PASS_K4_BATCH_GPU_LIFECYCLE',cases=cases,capabilities=target.capabilities,
+        return dict(status='PASS_K4_BATCH_GPU_LIFECYCLE',cases=cases,capabilities=target.capabilities,joint_budget_enabled=joint_budget is not None,
             source_sha256=manifest,gloo_restored=True,environment_restored=True,model_reloaded=False)
     finally:
         if worker is not None:
