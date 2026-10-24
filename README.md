@@ -6,7 +6,7 @@ A research project on accelerating Qwen inference on a single NVIDIA DGX Spark (
 
 ## At a glance
 
-As of 2026-10-24, this branch includes E0–E38 research records (E26 cancelled at the user’s request), the validated K1–K3 native-scheduler runtime, single-request overhead improvements and a two-request target-only API. Experimental candidates retain their individual scope; defaults are unchanged.
+As of 2026-10-24, this branch includes E0–E39 research records (E26 cancelled at the user’s request), the validated K1–K3 native-scheduler runtime, single-request overhead improvements and a two-request target-only API. Experimental candidates retain their individual scope; defaults are unchanged.
 
 See the [repository map](docs/REPOSITORY_STATUS.md) for the consolidated main branch and independent K4/service and self-evolution workstreams.
 
@@ -28,6 +28,7 @@ E33 preserves the original BF16 target decision through an INT8-assisted head sc
 | [E36](docs/E36_PREFILL_NUMERICS_REPORT.md) | Large-chunk prefill with matched projection/recurrence/MoE arithmetic | prompt-only 110.87 → 889.22 tok/s (8.02×); seven 4–512-token prefixes, four repetitions | Research adapter; exact gates pass, default integration pending |
 | [E37](docs/E37_PREFILL_PROFILE_REPORT.md) | Prefill profiling and single-variable GDN scratch reuse | reuse wall +1.02% across 48 matched prompt runs; experts dominate two separate GPU profiles | Reuse rejected; no new speed gain or default change |
 | [E38](docs/E38_PREFILL_EXPERT_REPORT.md) | Two groups share packed expert-weight loads and decode | geometry predicts 23.02% fewer weight-load stages, but complete-MoE event cost +3.93% | Rejected before full prompt A/B; exact component gates pass |
+| [E39](docs/E39_PREFILL_CTA_REPORT.md) | CTA-shared packed weights with one 16-row accumulator per warp | lower register usage, but complete-MoE event cost +3.11% | Rejected; no prompt/decode gain or default change |
 | [E6](docs/E6_DRAFT_HEAD_REPORT.md) | Full-vocabulary Q4 draft output head | decode 41.70 → 45.54 tok/s (+9.23%) | Default |
 | [E8](docs/E8_INTEGRATION_REPORT.md) | Eight-row prompt chunks using the decode arithmetic | complete requests 1.67× faster; decode −1.14% | Default |
 | [E13](docs/E13_DRAFT_CACHE_CONFIDENCE_REPORT.md) | Incremental cache for DFlash context projections | +6.27% on 1K–2K inputs; −0.31% on short inputs | Opt-in |

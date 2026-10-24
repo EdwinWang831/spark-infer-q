@@ -4,6 +4,8 @@
 
 ## Current priorities
 
+2026-10-24 [E39 CTA loading](E39_PREFILL_CTA_REPORT.md): lower per-thread registers (gate/up96, down65), but complete-MoE CUDA-event cost +3.11%; all component/stream/Graph gates and independent cleanup pass. Candidate rejected before prompt A/B. Prioritize E36 actual-request integration and TTFT/state validation; do not infer a useful kernel gain from reduced registers or load-stage counts.
+
 2026-10-24 [E38 expert reuse](E38_PREFILL_EXPERT_REPORT.md): real-route geometry allows 23.02% fewer weight-load stages, but a two-accumulator candidate increases complete-MoE CUDA-event cost 3.93% and fails its 5% reduction gate. No full prompt candidate timing or default promotion. Both correctness and repaired observer cleanup pass; prioritize a distinct CTA-cooperative design that avoids increasing per-warp accumulator storage.
 
 2026-10-24 prefill evidence: [E36](E36_PREFILL_NUMERICS_REPORT.md) passed exact large-chunk prompt and decode-handoff gates. [E37](E37_PREFILL_PROFILE_REPORT.md) rejected GDN scratch reuse (matched wall +1.02%) and identified routed experts as 52.5–54.9% of cumulative GPU kernel time on two 512-token probes. Prioritize a measured prefill expert-compute candidate, preserving full logits/features/state checks; E36 default integration and complete-request timing remain separate gates. The other workspace owns K4 dynamic DFlash and service work.
