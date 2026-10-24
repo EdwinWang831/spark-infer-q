@@ -11,6 +11,9 @@ def main():
     parser.add_argument('--checkpoint',type=Path,required=True);parser.add_argument('--mode',choices=('none','adaptive'),default='adaptive')
     parser.add_argument('--capacity',type=int,default=1536);parser.add_argument('--port',type=int,default=18084)
     parser.add_argument('--execution',choices=('graph','eager'),default='graph')
+    parser.add_argument('--target-backend',choices=('legacy','compact'),default='legacy')
+    parser.add_argument('--target-state-library',type=Path)
+    parser.add_argument('--target-state-sha256')
     parser.add_argument('--draft-execution',choices=('sequential','batch'),default='sequential')
     parser.add_argument('--draft-w8-batch-library',type=Path)
     parser.add_argument('--draft-w8-batch-sha256')
@@ -27,6 +30,12 @@ def main():
         parser.error('batch draft requires an explicitly fingerprinted W8 batch library')
     if args.draft_execution!='batch' and (args.draft_w8_batch_library or args.draft_w8_batch_sha256):
         parser.error('W8 batch library requires --draft-execution batch')
+    if args.target_backend=='compact' and not (args.target_state_library and args.target_state_sha256):
+        parser.error('compact Target requires an explicitly fingerprinted state library')
+    if args.target_backend!='compact' and (args.target_state_library or args.target_state_sha256):
+        parser.error('Target state library requires --target-backend compact')
+    if args.target_backend=='compact' and args.batch_costs:
+        parser.error('compact Target requires recalibrated costs; old joint costs are unsupported')
     root=args.root.resolve();checkout=Path(__file__).resolve().parents[1]
     sys.path[:0]=[str(checkout),str(checkout/'scripts'),str(root/'followup-deps'),str(root/'python-deps')]
     from spark_infer_q.native_scheduler import NativeScheduler
@@ -52,7 +61,12 @@ def main():
                 metadata=provider.profile_metadata
             screen=FusedScreenedHead(session.weights.head)
             if not screen.static_ok:raise ValueError('E33 head range gate failed')
-            target=BatchTarget(WideTarget(session.weights,capacity=2048),screen,graphs=args.execution=='graph')
+            if args.target_backend=='compact':
+                from spark_infer_q.compact_target import CompactTarget
+                from spark_infer_q.qwen_state_kernel import load_state_kernel
+                state_kernel=load_state_kernel(args.target_state_library,args.target_state_sha256)
+                target=CompactTarget(WideTarget(session.weights,capacity=2048),screen,state_kernel,graphs=args.execution=='graph')
+            else:target=BatchTarget(WideTarget(session.weights,capacity=2048),screen,graphs=args.execution=='graph')
             target.warmup();stream=torch.cuda.Stream();stream.wait_stream(torch.cuda.current_stream())
         @contextmanager
         def context():

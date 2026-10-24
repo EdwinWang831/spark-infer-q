@@ -1,7 +1,7 @@
 """Native two-request batching with current per-request E17 post-draft budgets."""
 import copy
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass,replace
 from types import SimpleNamespace
 
 from .deepinfer_bridge import BridgeError,SchedulerBridge
@@ -205,6 +205,11 @@ class BatchBackend(SpeculativeBackend):
             if execution.phase=='commit':
                 if not execution.event.query():return False
                 target.retire(ticket)
+                # One commit wall interval is shared across this native batch.
+                # Previously this field stayed zero for asynchronous decode.
+                elapsed=(time.perf_counter()-execution.committed)*1000/len(execution.rows)
+                execution.results=tuple(None if result is None else replace(result,commit_ms=elapsed)
+                    for result in execution.results)
                 for row,entry,result in zip(execution.rows,execution.entries,execution.results,strict=True):
                     if result is None:continue
                     state=entry['state']

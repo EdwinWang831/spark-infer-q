@@ -12,7 +12,7 @@ E3_ROOT=/path/to/checkout/scripts bash /path/to/prepared/e3_run.sh \
 
 `--mode none` 是 NEXTN=0 Target-only；`--execution eager` 仅关闭 Target backbone Graph，精确筛选头仍使用自己的预备图。两种 mode 不在一个正在运行的服务中切换。没有固定草稿参数。`--capacity` 限制 prompt+output 准入，物理 Target/DFlash 为 2048；范围为 16～1536，正式 GPU 对照的最大提示/输出范围见[报告](K4_BATCH_RUNTIME_REPORT.md)。
 
-启动时加载一次模型，准备 W8、辅助头、两个固定 state slot 和 80 张 Target 图后才输出 READY。Graph 按每个 slot 的 1/2/4/8 行 bucket 与独立 GDN parity 预备。实际 q 仍为动态 1～8；padding 不进入有效状态。缺失/重分配的图走明确的 eager fallback，不在请求中 capture。精确候选子集的新大小可能触发 JIT；Graph READY 不代表所有未知输入的子集形状都已编译。
+默认 legacy Target 启动时加载一次模型，准备 W8、辅助头、两个固定 state slot 和 80 张 Target 图后才输出 READY。Graph 按每个 slot 的 1/2/4/8 行 bucket 与独立 GDN parity 预备。实际 q 仍为动态 1～8；padding 不进入有效状态。缺失/重分配的图走明确的 eager fallback，不在请求中 capture。精确候选子集的新大小可能触发 JIT；Graph READY 不代表所有未知输入的子集形状都已编译。
 
 服务仅监听回环地址。两个终端同时执行以下请求即可提交两个流：
 
@@ -46,5 +46,17 @@ curl http://127.0.0.1:18084/cancel -H 'Content-Type: application/json' \
 两个参数必须同时提供，且要求adaptive与Graph模式。加载时核对文件SHA、E17/W8成本指纹和Target源码；不匹配会明确失败。启用时`verification_budget=joint_current_e17`、`global_budget_optimized=true`，这里的联合优化仅指当前已调度decode批次，不包含公平性、准入或完整K5。E17权重和预测特征不变，q仍动态选择。
 
 新增[自有批量 DFlash 研究开关](K4_OWN_BATCH_DRAFT_REPORT.md)：`--draft-execution batch`，配合显式 W8 batch library/SHA。它保留 E17 与原动态预算，拒绝旧联合成本表；草稿数值与部分候选会改变，性能未达到晋升目标，因此默认仍为 sequential。四请求仅在草稿组件检查，服务仍只有两个 slot。
+
+新增[自有紧凑 Target 研究开关](K4_OWN_TARGET_REPORT.md)：
+
+```bash
+--target-backend compact \
+--target-state-library /path/to/spark_q_target_state_batch.so \
+--target-state-sha256 b63a8c527c56b2aec964fba81352bed9bb16b510db32cfe14b4d3f19ee2b64e2
+```
+
+该 SHA 是本轮已测二进制；重新构建必须传入实际新 SHA 并重新验收。默认仍为 `--target-backend legacy`；指定 compact 可与 batch draft 组合，E17/动态预算继续保留。旧 `--batch-costs` 表不适用于 compact，CLI 会拒绝。Target 状态库只能与 compact 一起提供。
+
+compact 仅支持当前 TP1 文本、BF16 KV、2048 内 dense-budget QSA。按实际总验证行压紧，不为每个请求单独补到 bucket；自有状态和 GPU 指针表隔离请求。Graph 按实际行数/context 复用，默认最多 32 张，第二次遇到形状才捕获并执行，满额按 LRU 驱逐。未知形状可在请求中触发 eager、捕获或头部 JIT；READY 不表示这些冷开销已经支付。正式性能对照先预热，并要求计时期间没有新增 capture/JIT。prefill 与部分算子仍通过 TensorFold provider。
 
 本入口仍限定单卡双请求；4请求完整服务、4K+、随机采样、跨卡、生产压力和公网部署尚未验证。

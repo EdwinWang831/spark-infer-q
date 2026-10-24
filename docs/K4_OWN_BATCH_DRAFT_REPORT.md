@@ -1,5 +1,7 @@
 # K4：自有批量 DFlash 后端
 
+本报告保留该阶段的 legacy Target 对照。后续[自有紧凑 Target 迁移](K4_OWN_TARGET_REPORT.md)已完成两请求研究实现及限定数值/生命周期检查，完整服务性能晋升仍失败；两阶段结果独立计量，不合并样本。
+
 **自有批量草稿已接通两请求异步服务；默认不变，性能晋升尚未通过。** 本轮实现了自有五层 query-block 执行、请求隔离的 attention/卷积、增量上下文 K/V 缓存、候选选择和 1～32 行 W8 内核。四请求只完成草稿组件验证，完整服务仍限制两个请求。Target 仍使用此前的 TensorFold 后端；草稿的 Q4 输出投影也是显式注入的 TensorFold provider，不能宣称已完全去依赖。
 
 公开结果：[2026-10-24-batch-draft.json](../results/k4/2026-10-24-batch-draft.json)，由 `scripts/k4batch_draft_export.py` 从封存结果重算。正式对照是最后一版的同期旧/新执行，不与此前约 48 tok/s 单请求、上游同 prompt 多流或早期 K4 结果拼接。

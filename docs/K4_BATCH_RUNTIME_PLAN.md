@@ -1,5 +1,7 @@
 # K4：双请求 GPU batch 与异步 worker
 
+历史初版方案如下。后续已有可选[自有紧凑 Target](K4_OWN_TARGET_REPORT.md)：stage/层编排/GDN-QSA/commit 与有界 Graph 已迁出原控制循环；默认 legacy 路径和其 80 张预备图仍保留。后续自主后端和四请求验收以[更新计划](DEEPINFER_OWN_BACKEND_PLAN.md)为准。
+
 本阶段承接 PR #18 的运行时，但按路线图 K4 的原始定义验收：两个请求必须共享一次完整 Target GPU forward。之前的 `K4_RUNTIME_OVERHEAD.md` 是开销实验，不代表该 batch 阶段完成。
 
 范围：单卡、两个并发请求、greedy、原 E33 辅助头/W8 草稿/E17 NumPy 当前草稿后预算。各请求独立 GDN/QSA/PLE、草稿投影缓存、pending anchor、输出和代次。每请求验证宽度仍为动态 1～8；不恢复固定草稿运行模式。先验证 no-draft，再相同/不同动态宽度、拒绝前缀与终止混合。

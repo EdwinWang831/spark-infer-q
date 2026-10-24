@@ -1,7 +1,11 @@
 """Accepted-prefix transactions must validate both slots before any state write."""
 from types import SimpleNamespace as NS
+from contextlib import nullcontext
 import unittest
+from unittest.mock import patch
 from spark_infer_q.kaifra_joint_target import JointTarget
+from spark_infer_q.kaifra_batch import BatchBackend,Execution
+from spark_infer_q.kaifra_speculative import VerifiedStep
 
 
 class Event:
@@ -39,6 +43,23 @@ class BatchTransactionTests(unittest.TestCase):
         target.discard(ticket)
         self.assertTrue(ticket.event.done);self.assertTrue(event.done);self.assertIsNone(target.inflight)
         target.release_state(a);self.assertFalse(target.leased[0])
+
+    def test_async_commit_metrics_wait_for_fence_and_charge_batch_wall_once(self):
+        backend=BatchBackend.__new__(BatchBackend);event=Event();retired=[]
+        backend.target=NS(torch=NS(inference_mode=nullcontext),retire=retired.append,_slot=lambda state:0)
+        backend.observer=None;ticket=object()
+        row=NS(position=3);state=NS(target=NS(pos=5),context=[0]*5)
+        result=VerifiedStep((1,2),2,(),(),0.,7.,0.)
+        execution=Execution((row,row),({'state':state},{'state':state}),ticket,
+            results=(result,result),event=event,phase='commit',committed=10.)
+        self.assertFalse(backend.poll(execution));self.assertEqual(retired,[])
+        self.assertEqual(execution.results[0].commit_ms,0.)
+        event.done=True
+        with patch('spark_infer_q.kaifra_batch.time.perf_counter',return_value=10.025):
+            self.assertTrue(backend.poll(execution))
+        self.assertEqual(retired,[ticket]);self.assertEqual(execution.phase,'done')
+        self.assertAlmostEqual(sum(r.commit_ms for r in execution.results),25.)
+        self.assertEqual(result.commit_ms,0.)
 
 
 if __name__=='__main__':unittest.main()

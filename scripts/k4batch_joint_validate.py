@@ -17,7 +17,8 @@ def run(session,arguments):
     pkg=ModuleType(tag);pkg.__path__=[str(root/'spark_infer_q')];sys.modules[tag]=pkg
     torch=session.torch;target=worker=server=server_thread=None
     draft_experiment=bool(arguments.get('batch_draft_library'))
-    modes=('original','batch_draft') if draft_experiment else ('original','measured_singleton','joint')
+    target_experiment=bool(arguments.get('target_state_library'))
+    modes=('legacy_target','compact_target') if target_experiment else (('original','batch_draft') if draft_experiment else ('original','measured_singleton','joint'))
     repetitions=5 if draft_experiment else 3
     report=dict(status='RUNNING',source_sha256=manifest,model_reloaded=False,cost_sha256=COST_SHA,
         correctness=[],timings=[],service_timings=[],contract=dict(modes=list(modes),repetitions=repetitions,
@@ -28,7 +29,7 @@ def run(session,arguments):
             costs='frozen before evaluation; no fitting on evaluation outcomes; frozen paid W8 draft cost per actual drafted request'))
     def save(active=None):
         if active is not None:report['active']=active
-        p=root/('batch-draft-service-result.json' if draft_experiment else 'joint-result.json');tmp=p.with_suffix('.tmp');tmp.write_text(json.dumps(report,indent=2,allow_nan=False)+'\n');tmp.replace(p)
+        p=root/('target-service-result.json' if target_experiment else ('batch-draft-service-result.json' if draft_experiment else 'joint-result.json'));tmp=p.with_suffix('.tmp');tmp.write_text(json.dumps(report,indent=2,allow_nan=False)+'\n');tmp.replace(p)
     try:
         opt=importlib.import_module(tag+'.kaifra_optimized');batch=importlib.import_module(tag+'.kaifra_batch')
         nm=importlib.import_module(tag+'.native_scheduler');tm=importlib.import_module(tag+'.kaifra_joint_target')
@@ -56,6 +57,15 @@ def run(session,arguments):
                     return dict(widths=tuple(policy.choose([r])['widths'][0] for r in requests),
                         independent_widths=tuple(r.independent_width for r in requests),scope='measured-singleton control')
         target=tm.JointTarget(WideTarget(session.weights,capacity=2048),hm.FusedScreenedHead(session.weights.head));save('graphs');target.warmup()
+        targets={}
+        if target_experiment:
+            compact=importlib.import_module(tag+'.compact_target');kernel=importlib.import_module(tag+'.qwen_state_kernel')
+            extension=kernel.load_state_kernel(arguments['target_state_library'],arguments['target_state_sha256'])
+            candidate=compact.CompactTarget(WideTarget(session.weights,capacity=2048),hm.FusedScreenedHead(session.weights.head),extension)
+            candidate.warmup();targets=dict(legacy_target=target,compact_target=candidate)
+            report['contract'].update(policy='same owned batch DFlash/E17/E29 control; legacy vs owned compact Target',
+                comparison='final greedy/logits/features/valid state exact; record widths, padding and graph capture separately',
+                costs='legacy E29 control, not calibrated for compact Target or batched draft')
         eager=WideTarget(session.weights,capacity=2048)
         texts=['Write a Python function to remove duplicates while preserving order. Return only code.','请用三点解释缓存与队列的区别。',
             'Read this context: '+('A cache stores recent values; a queue orders pending work. '*25)+' Explain the difference in one sentence.',
@@ -66,10 +76,10 @@ def run(session,arguments):
         gold={};probabilities={};counters=dict(logits_rows=0,feature_rows=0,state_checks=0,shared_position_rate_checks=0)
         with nm.NativeScheduler(session.root.parent/'DeepInfer',session.root.parent/'build-release/lib/deepinfer',max_drafts=7) as native:
             def make(mode,observer=None):
-                chosen=provider if mode!='batch_draft' else batch.BatchedRequestDraftProvider(provider,batch_matmul,kernel_identity=batch_identity)
-                engine=batch.batch_engine(native,target,chosen,eos_ids=session.eos,prior=session.calibration['conditional_prior'],
+                chosen=provider if mode!='batch_draft' and not target_experiment else batch.BatchedRequestDraftProvider(provider,batch_matmul,kernel_identity=batch_identity)
+                engine=batch.batch_engine(native,targets[mode] if target_experiment else target,chosen,eos_ids=session.eos,prior=session.calibration['conditional_prior'],
                     capacity=768,tokenizer=session.tokenizer,observer=observer,
-                    joint_budget=None if mode in ('original','batch_draft') else (policy if mode=='joint' else SingletonControl()))
+                    joint_budget=None if draft_experiment or mode=='original' else (policy if mode=='joint' else SingletonControl()))
                 engine.validation_metrics=[];engine.budget_decisions=[];collect=engine._collect_events
                 def traced(plan):
                     result=collect(plan);engine.validation_metrics.extend(engine.last_step_metrics)
@@ -88,6 +98,8 @@ def run(session,arguments):
                     wrap(engine.bridge.backend.provider,'propose')
                 return engine
             def direct(mode,group,diagnostic=False,reference=False):
+                nonlocal target
+                if target_experiment:target=targets[mode]
                 outputs={};shadows={};positions={};before=dict(target.counters);kernels=set(target.screen.kernel_sha256)
                 def observe(handle,pos,tokens,logits,keep,state):
                     ref=shadows.setdefault(handle,eager.state());assert ref.pos==pos
@@ -126,34 +138,38 @@ def run(session,arguments):
                     return dict(mode=mode,group=group['name'],decode_ms=(end-cohort)*1000,
                         decode_tokens=sum(len(v)-1 for v in outputs.values()),completion_tokens=sum(map(len,outputs.values())),
                         new_jit_shapes=sorted(set(target.screen.kernel_sha256)-kernels),outputs_exact=True,
+                        new_graph_captures=target.counters['captures']-before.get('captures',0),
                         widths=[m['verified_rows'] for m in engine.validation_metrics if not m['prompt']],
                         rounds=sum(not m['prompt'] for m in engine.validation_metrics),
                         accepted=sum(m.get('accepted',0) for m in engine.validation_metrics),
                         observed=sum(m.get('observed',0) for m in engine.validation_metrics),
+                        stage_ms={key:sum(m[key] for m in engine.validation_metrics if not m['prompt'])
+                            for key in ('draft_ms','verify_ms','commit_ms')},
                         decision_count=len(engine.budget_decisions),changed_decisions=sum(tuple(d['widths'])!=tuple(d['independent_widths']) for d in engine.budget_decisions),
                         counters={k:target.counters[k]-before.get(k,0) for k in target.counters})
             for group in groups:
                 for mode in modes:
                     if probe and mode!='original':continue
                     save(dict(phase='correctness',group=group['name'],mode=mode))
-                    report['correctness'].append(direct(mode,group,diagnostic=not probe,reference=mode=='original'));save()
+                    report['correctness'].append(direct(mode,group,diagnostic=not probe,reference=mode==modes[0]));save()
                     # Remove diagnostic full-head/observer effects from warmup.
                     for attempt in range(3):
                         row=direct(mode,group)
-                        if not row['new_jit_shapes']:break
+                        if not row['new_jit_shapes'] and not row['new_graph_captures']:break
                     else:raise AssertionError('direct JIT did not stabilize')
             for rep in range(0 if probe else repetitions):
                 shift=rep%len(modes)
                 for mode in modes[shift:]+modes[:shift]:
                     for group in groups:
                         save(dict(phase='direct',mode=mode,rep=rep,group=group['name']))
-                        row=direct(mode,group);assert not row['new_jit_shapes'];row['repetition']=rep;report['timings'].append(row);save()
+                        row=direct(mode,group);assert not row['new_jit_shapes'] and not row['new_graph_captures'];row['repetition']=rep;report['timings'].append(row);save()
             stream=torch.cuda.current_stream()
             @contextmanager
             def context():
                 with torch.inference_mode(),torch.cuda.stream(stream):yield
             def start(mode):
-                nonlocal worker,server,server_thread
+                nonlocal worker,server,server_thread,target
+                if target_experiment:target=targets[mode]
                 worker=wm.AsyncWorker(lambda:make(mode),context_factory=context).start();native.bind_worker(worker.thread)
                 server=sm.make_server(worker,('127.0.0.1',0));server_thread=Thread(target=server.serve_forever);server_thread.start()
             def stop():
@@ -178,6 +194,7 @@ def run(session,arguments):
                 finally:response.close();conn.close()
             def pair(mode,group):
                 barrier=Barrier(2);kernels=set(target.screen.kernel_sha256);worker.engine.budget_decisions.clear();worker.engine.probe_stages.clear()
+                before=dict(target.counters);worker.engine.validation_metrics.clear()
                 with ThreadPoolExecutor(2) as pool:rows=list(pool.map(lambda slot:client(group,slot,barrier),range(2)))
                 worker.wait_idle(60);cohort=(min if draft_experiment else max)(r['chunks'][0][0] for r in rows);end=max(r['end'] for r in rows)
                 tpot=[(b[0]-a[0])*1000/len(b[1]) for r in rows for a,b in zip(r['chunks'],r['chunks'][1:]) for _ in b[1]]
@@ -190,6 +207,10 @@ def run(session,arguments):
                         max(1,sum(len(v) for _,v in r['chunks'])-1) for r in rows],
                     decision_count=len(decisions),changed_decisions=sum(tuple(d['widths'])!=tuple(d['independent_widths']) for d in decisions),
                     probe_stages=list(worker.engine.probe_stages),
+                    new_graph_captures=target.counters['captures']-before.get('captures',0),
+                    counters={k:target.counters[k]-before.get(k,0) for k in target.counters},
+                    stage_ms={key:sum(m[key] for m in worker.engine.validation_metrics if not m['prompt'])
+                        for key in ('draft_ms','verify_ms','commit_ms')},
                     new_jit_shapes=sorted(set(target.screen.kernel_sha256)-kernels),outputs_exact=True)
             for rep in range(4 if probe else repetitions):
                 order=(modes if rep%2==0 else modes[::-1]) if draft_experiment else (modes[rep%3:]+modes[:rep%3] if probe else (('original','joint') if rep%2==0 else ('joint','original')))
@@ -200,7 +221,7 @@ def run(session,arguments):
                             save(dict(phase='SSE',mode=mode,rep=rep,group=group['name']))
                             for attempt in range(3):
                                 row=pair(mode,group)
-                                if not row['new_jit_shapes']:break
+                                if not row['new_jit_shapes'] and not row['new_graph_captures']:break
                                 report.setdefault('service_shape_warmups',[]).append(row)
                             else:raise AssertionError('SSE JIT did not stabilize')
                             row['repetition']=rep;report['service_timings'].append(row);save()
@@ -209,13 +230,14 @@ def run(session,arguments):
             return {g['name']:{mode:sum(r['decode_tokens'] for r in rows if r['group']==g['name'] and r['mode']==mode)*1000/
                 sum(r['decode_ms'] for r in rows if r['group']==g['name'] and r['mode']==mode) for mode in sorted({r['mode'] for r in rows})} for g in groups}
         assert not any(target.leased) and target.inflight is None and not target.fallbacks
-        report.update(status='PASS_K4_BATCH_DRAFT_SERVICE' if draft_experiment else 'PASS_K4_JOINT_BUDGET',summary=summarize(report['timings']),service_summary=summarize(report['service_timings']),
+        report.update(status='PASS_K4_OWN_TARGET_SERVICE' if target_experiment else ('PASS_K4_BATCH_DRAFT_SERVICE' if draft_experiment else 'PASS_K4_JOINT_BUDGET'),summary=summarize(report['timings']),service_summary=summarize(report['service_timings']),
             correctness_counts=counters,capabilities=target.capabilities,gloo_released=not torch.distributed.is_initialized())
+        if target_experiment:report['target_capabilities']={mode:obj.capabilities for mode,obj in targets.items()}
         report.pop('active',None);save();return report
     finally:
         if worker is not None:worker.close(60)
         if server is not None:server.shutdown();server.server_close();server_thread.join(5)
-        if target is not None:
+        for target in targets.values() if 'targets' in locals() and targets else ([target] if target is not None else []):
             torch.cuda.synchronize()
             if target.inflight is not None:target.discard(target.inflight)
             for st,leased in zip(target.states,target.leased):

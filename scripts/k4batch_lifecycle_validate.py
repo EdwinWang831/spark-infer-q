@@ -21,7 +21,13 @@ def run(session,arguments):
         opt=importlib.import_module(tag+'.kaifra_optimized');wm=importlib.import_module(tag+'.kaifra_worker')
         from e3_wide_target import WideTarget
         torch=session.torch;env={k:os.environ.get(k) for k in ('DEEPINFER_USE_NEXTN_DECODE','DEEPINFER_ACCELERATOR')}
-        save('warmup');target=tm.BatchTarget(WideTarget(session.weights,capacity=2048),hm.FusedScreenedHead(session.weights.head));target.warmup()
+        save('warmup')
+        if arguments.get('target_state_library'):
+            cm=importlib.import_module(tag+'.compact_target');loader=importlib.import_module(tag+'.qwen_state_kernel')
+            ext=loader.load_state_kernel(arguments['target_state_library'],arguments['target_state_sha256'])
+            target=cm.CompactTarget(WideTarget(session.weights,capacity=2048),hm.FusedScreenedHead(session.weights.head),ext)
+        else:target=tm.BatchTarget(WideTarget(session.weights,capacity=2048),hm.FusedScreenedHead(session.weights.head))
+        target.warmup()
         texts=['What is 17 + 25? Answer with only the integer.','请用三点解释缓存与队列的区别。']
         ids=[session.tokenizer.apply_chat_template([dict(role='user',content=x)],tokenize=True,add_generation_prompt=True,enable_thinking=False,return_dict=False) for x in texts]
         prior=session.calibration['conditional_prior'];gold={}
@@ -156,7 +162,7 @@ def run(session,arguments):
                     cases.append(dict(case='new_owner_after_fault',exact=True))
                 finally:stop()
         assert env=={k:os.environ.get(k) for k in env} and not torch.distributed.is_initialized()
-        assert len(target.graphs)==80 and not target.fallbacks
+        assert (len(target.graphs)<=target.max_graphs if arguments.get('target_state_library') else len(target.graphs)==80) and not target.fallbacks
         save('PASS')
         return dict(status='PASS_K4_BATCH_GPU_LIFECYCLE',cases=cases,capabilities=target.capabilities,joint_budget_enabled=joint_budget is not None,
             source_sha256=manifest,gloo_restored=True,environment_restored=True,model_reloaded=False)

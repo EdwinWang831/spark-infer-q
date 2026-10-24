@@ -1,6 +1,6 @@
 # DeepInfer 与自有 Qwen/Spark 执行后端
 
-2026-10-24 方向更新。本文定义后续实现与验收计划；其后已接通[自有批量 DFlash 研究后端](K4_OWN_BATCH_DRAFT_REPORT.md)，四请求草稿组件与两请求服务通过限定运行检查，草稿数值等价和服务性能晋升尚未通过。Target 自有后端仍待实现。此前证据见 [K4 功能报告](K4_BATCH_RUNTIME_REPORT.md)、[等待修复](K4_WAIT_FIX_REPORT.md)和[联合预算实验](K4_JOINT_BUDGET_REPORT.md)。
+2026-10-24 方向更新。本文定义实现与验收计划；已接通[自有批量 DFlash 研究后端](K4_OWN_BATCH_DRAFT_REPORT.md)和[紧凑 Target 研究后端](K4_OWN_TARGET_REPORT.md)。自有 Target 覆盖状态、完整层编排、批量 GDN recurrence/commit、dense-budget QSA 和 PLE 卷积；仍经显式 provider 使用未迁移算子及 eager prefill。四请求完整服务和性能晋升尚未通过。此前证据见 [K4 功能报告](K4_BATCH_RUNTIME_REPORT.md)、[等待修复](K4_WAIT_FIX_REPORT.md)和[联合预算实验](K4_JOINT_BUDGET_REPORT.md)。
 
 用户明确要求：学习 TensorFold 的技术思路，更多使用 DeepInfer 和我们自己的实现。最终架构以 **DeepInfer 调度底座 + 自有 Qwen/SM121 执行后端**为目标；TensorFold 是迁移期间的参考和可替换适配器。增加对 TensorFold 内部执行器的接线，不作为自主后端的完成标准。
 
@@ -15,10 +15,11 @@
 | 动态预算 | E17 本轮预测；已有 MTPVarlen 接线；当前双请求联合成本选择器为自有 Python 实验实现 | 保留 E17 与动态预算，适配真实批次成本，再推进 DeepInfer 跨请求预算集成 |
 | 请求、异步 owner、取消、SSE、验证发布 | 自有 Kaifra runtime | 继续使用，扩展到四请求生命周期 |
 | 草稿 | 自有 DFlash2/Q4/W8 接入和特征/预测器；默认逐请求，另有自有 batch 研究开关 | 验收 batched DFlash 数值变化、成本校准和稳定服务收益 |
-| Target joint forward、Graph/event 编排 | 自有编排，调用 TensorFold stage/layer_forward/commit | 自有批计划、执行循环和 GraphManager |
-| 权重读取、GDN/QSA/PLE 状态、主要 Target 算子 | TensorFold 模型执行与存储实现 | 逐模块替换为自有 Qwen/Spark 后端；算子按适配、正确性和性能证据选用 |
+| Target joint forward、Graph/event 编排 | 默认 legacy；可选 compact 自有 stage/层循环/commit 与有界 Graph | 四请求完整服务及冷 Graph 成本验收 |
+| GDN/QSA/PLE 状态及执行 | compact 使用自有固定容量 State、GDN recurrence/批量 commit、dense-budget QSA、PLE 卷积 | 稀疏 QSA、长上下文和更多模型配置 |
+| 权重读取、prefill、dense/MoE/HC/GDN IO/PLE embed-gate | TensorFold 加载、eager prefill 和显式 kernel/workspace provider | 按整模 profile 继续迁移并独立验收 |
 
-当前 `JointTarget` 虽合并了 dense/MoE 行，仍不能等同于完整的跨请求 GDN/QSA 融合执行。自有草稿 batch 已有四请求组件与两请求服务检查；默认服务草稿仍逐请求，完整服务最大请求数仍为 2。不能据此宣布 DeepInfer 已提供完整 Qwen 模型后端。
+默认 `JointTarget` 虽合并了 dense/MoE 行，仍不等同于完整的跨请求 GDN/QSA 融合执行。可选 `CompactTarget` 已在这些部分使用自有设备元数据和批量内核。自有草稿 batch 有四请求组件证据；完整服务最大请求数仍为 2，默认仍是 legacy Target/逐请求草稿。不能据此宣布 DeepInfer 已提供完整 Qwen 模型后端。
 
 DeepInfer 已核对的模型实现以 DeepSeek 为主，没有现成的本模型 GDN/QSA 后端。GB10/SM121 上通用 RMSNorm 与选定 cuBLASLt 路径有执行证据，但固定 DeepGEMM 原生 BF16 dispatch 报 Unsupported architecture。单专家的 native NVFP4 测试使用 TensorFold 原版 CUDA 源码，不能记作自研内核或全模型 DeepInfer 兼容。详见 [E0](E0_REPORT.md)、[E1](E1_GPU_REPORT.md)、[E2 native](E2_NATIVE_REPORT.md)。
 
@@ -32,7 +33,7 @@ DeepInfer 已核对的模型实现以 DeepSeek 为主，没有现成的本模型
 | 紧凑 ragged 行 | BatchPlan 显式记录有效区间、位置与状态句柄，按有效行压紧 | 不再为每请求分别补到 1/2/4/8；若算子/Graph 仍需物理 padding，单独计数并隔离 |
 | 多请求 GDN/QSA | 自有设备元数据和执行入口，覆盖不同位置、长度及 parity | 不能只挂接 TensorFold 的内部 tables 就宣称自有实现 |
 | GDN accepted-prefix 延迟归并 | StateManager 管理 committed/candidate 状态和 keep_rows | keep=0、拒绝后下一轮、取消、状态版本失效必须独立验证 |
-| 有界、按实际组合复用 Graph | 自有 GraphManager，限制数量和显存；稳定形状才捕获 | key 包括地址/存储版本、代次、行布局、parity、context 与后端配置；在途 graph 不驱逐 |
+| 有界、按实际组合复用 Graph | 自有 GraphManager，限制数量和显存；稳定形状才捕获 | 静态权重/工作区绑定执行器生命周期；state 地址、布局、parity、位置经设备表间接寻址，代次由 ticket 检查。key 为实际行数/context；在途 graph 不驱逐 |
 | 短暂合批窗口 | DeepInfer 准入与 worker 联动，作为单独可测策略 | 按 TTFT/TPOT 收费；不照搬 3ms 为默认 |
 
 参考位置：[verifyMany](https://github.com/MiaAI-Lab/Qwen3.8-Flash-Next-Single-DGX-Spark-TensorFold/blob/656879fd752749bbd11a6e1a065a326c00940911/patches/0005-engine.patch#L3265)、[draftMany](https://github.com/MiaAI-Lab/Qwen3.8-Flash-Next-Single-DGX-Spark-TensorFold/blob/656879fd752749bbd11a6e1a065a326c00940911/patches/0005-engine.patch#L3331)、[Graph 组合与缓存](https://github.com/MiaAI-Lab/Qwen3.8-Flash-Next-Single-DGX-Spark-TensorFold/blob/656879fd752749bbd11a6e1a065a326c00940911/patches/0005-engine.patch#L3856)。
@@ -49,6 +50,8 @@ DeepInfer 已核对的模型实现以 DeepSeek 为主，没有现成的本模型
 
 ### B — 自有 Target 紧凑执行与 GDN/QSA 状态
 
+两请求研究实现已接通，限定文本/BF16 KV、2048 内 dense-budget QSA；细项和性能结论见[本轮报告](K4_OWN_TARGET_REPORT.md)。这是部分自主执行与数值验收，未完成全部算子或加载迁移。
+
 实现自有 compact staging 和 Qwen StateManager，逐步替换 `stage/layer_forward/commit` 控制循环。先分别做 GDN、QSA，再串联完整 48 层；dense/MoE/PLE 算子可以经显式 provider 暂时复用，报告必须逐项标明来源与剩余依赖。
 
 跨请求 GDN recurrence 和 QSA attention 需要设备端批处理，避免把 Python 中的逐请求循环藏在新后端名字之下。已有可兼容 DeepInfer 算子优先评估；缺失的 Qwen/SM121 能力由我们实现。算法学习与源码复用分别标注；若采用第三方 kernel，保留许可证和源码/二进制指纹。
@@ -56,6 +59,8 @@ DeepInfer 已核对的模型实现以 DeepSeek 为主，没有现成的本模型
 **验收：**单层以及整模的 token/logit/feature/有效状态对照；包含不同 context、不同 parity、不同接受前缀、取消与 slot 复用。浮点计算顺序变化须单独报告误差及路由/输出影响，不能只报局部近似误差便宣布等价。
 
 ### C — 有界 Graph 与四请求完整服务
+
+两请求有界 Graph 已实现：默认最多 32 张、第二次遇到形状才捕获、LRU 驱逐；尚未完成四请求服务扩展与未知形状的冷延迟验收。正式 warm 对照排除新增 capture/JIT，不能视作冷请求延迟承诺。
 
 在 A/B 的实际布局上实现有界 Graph 缓存，不把当前双 slot 全排列预捕获机械扩展到四 slot。捕获在安全边界执行，不能额外提交候选状态；失败可回退 eager，销毁须等待设备完成。暴露捕获时间、命中率、显存、fallback 和主机提交耗时。
 
