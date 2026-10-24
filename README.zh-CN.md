@@ -6,13 +6,14 @@
 
 ## 现状一览
 
-截至 2026-10-23，仓库包含 E0–E22 的实现、测试和脱敏证据、源码封存的 E23/E24 研究流程，以及已验证的双请求 target-only 联合运行时。进行中的流程不代表已经取得性能成果。
+截至 2026-10-24，仓库包含 E0–E22 的实现、测试和脱敏证据、源码封存的 E23/E24 研究流程、已验证的双请求 target-only 联合运行时，以及 E36/E37 prefill 证据。进行中的流程不代表已经取得性能成果。
 
 - **做什么**：Qwen3.8-Flash-Next（NVFP4，TensorFold 内核）用 DFlash2 草稿模型做推测解码，由 DeepInfer 的 MTPVarlen 决定每一步验证多少个草稿。性能实验及 K2 动态预算运行时采用同步、单请求、greedy 执行。
 - **最大的单项 decode 改进**：E15/E16 训练的轻量置信度预测器。在另行冻结的新任务上，它比默认的滞后预算快约 10%（E16：44.08 vs 40.21 tok/s），目前是可选路径。
 - **prompt 处理**：8 行分块让完整请求快 1.67 倍，首 token 时间之和从 19.69 秒降到 4.23 秒；decode 速度基本没变（E8）。
 - **双请求 GPU batch**：DeepInfer 原生调度器已能让两个请求共享一次 target 前向。受控 target-only 对照中，decode 总吞吐从 23.64 升至 38.63 tok/s（+63.4%）；目前是显式同步 API，尚未验证联合 DFlash 和 HTTP，见[报告](docs/JOINT_TARGET_EXECUTION_REPORT.md)。
 - **大块 prefill（E36）**：保留现有 decode 算术的候选，在七条前缀上通过 logits、全部草稿特征、有效状态和 8 步交接的精确对照；prompt 本体从 110.87 提升到 889.22 tok/s（8.02倍）。目前是研究适配器，尚无完整请求或 HTTP 收益，见[报告](docs/E36_PREFILL_NUMERICS_REPORT.md)。
+- **Prefill 剖析（E37）**：两个 512-token 样本中，路由专家占 GPU 内核累计耗时 52.5%–54.9%。GDN scratch 复用使配对 prompt wall 增加 1.02%，未采用，继续保留 E36，见[报告](docs/E37_PREFILL_PROFILE_REPORT.md)。
 - **还没做到**：整体速度没有超过原生 TensorFold（E7 时 45.62 vs 49.18 tok/s，E8 之后没有重测）；多请求 DFlash、4K 以上上下文和随机采样仍待推进。
 
 ## 主要结果
@@ -21,6 +22,7 @@
 | --- | --- | --- | --- |
 | [联合 Target](docs/JOINT_TARGET_EXECUTION_REPORT.md) | 原生调度下两个请求共享一次 target 前向 | 两组中英文请求对 × 四轮，decode 总吞吐 23.64 → 38.63 tok/s（+63.4%） | 可选、同步 target-only；尚未接双请求 DFlash |
 | [E36](docs/E36_PREFILL_NUMERICS_REPORT.md) | 大块 prefill，统一投影/递归/MoE 算术 | 七条4–512 token前缀、四轮，prompt本体 110.87 → 889.22 tok/s（8.02倍） | 研究适配器；精确门槛通过，默认引擎待接入 |
+| [E37](docs/E37_PREFILL_PROFILE_REPORT.md) | Prefill 剖析与单变量 GDN scratch 复用 | 48 次配对 prompt 中复用 wall +1.02%；独立 GPU 剖析显示专家是最大成本 | 不采用复用；没有新增速度收益或默认变更 |
 | [E6](docs/E6_DRAFT_HEAD_REPORT.md) | 草稿输出头换成完整词表 Q4 | decode 41.70 → 45.54 tok/s（+9.23%） | 默认 |
 | [E8](docs/E8_INTEGRATION_REPORT.md) | prompt 按 8 行分块，沿用 decode 算术 | 完整请求快 1.67 倍；decode −1.14% | 默认 |
 | [E13](docs/E13_DRAFT_CACHE_CONFIDENCE_REPORT.md) | 增量缓存 DFlash 的历史投影 | 1K–2K 输入 +6.27%；短输入 −0.31% | 可选 |

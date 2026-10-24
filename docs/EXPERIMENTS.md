@@ -4,6 +4,8 @@
 
 ## Current priorities
 
+2026-10-24 prefill evidence: [E36](E36_PREFILL_NUMERICS_REPORT.md) passed exact large-chunk prompt and decode-handoff gates. [E37](E37_PREFILL_PROFILE_REPORT.md) rejected GDN scratch reuse (matched wall +1.02%) and identified routed experts as 52.5–54.9% of cumulative GPU kernel time on two 512-token probes. Prioritize a measured prefill expert-compute candidate, preserving full logits/features/state checks; E36 default integration and complete-request timing remain separate gates. The other workspace owns K4 dynamic DFlash and service work.
+
 2026-10-23 engine milestone: [K1 target-only runtime](K1_RUNTIME_REPORT.md) builds on E5's real C++ Scheduler, adding a reusable request API, output events, lifecycle/cleanup and loopback SSE. Seven native/GPU groups pass (233 full-logit rows, 91 live-state comparisons); DFlash2 integration and actual cross-request GPU batching remain subsequent work. See [usage](K1_RUNTIME_USAGE.md).
 
 Subsequent [K2 integration](K2_DFLASH_SCHEDULER_REPORT.md) connects Q4 DFlash2, native lagged/E16 confidence and the current E17 post-draft BudgetProbe to that API. The latter is checked against the existing loop at every selected width. Cross-request GPU batching remains subsequent work; see [K2 usage](K2_DFLASH_SCHEDULER_USAGE.md).

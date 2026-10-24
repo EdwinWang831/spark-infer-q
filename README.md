@@ -6,13 +6,14 @@ A research project on accelerating Qwen inference on a single NVIDIA DGX Spark (
 
 ## At a glance
 
-As of 2026-10-23, this repository includes E0–E22 implementations, tests and sanitized evidence, source-sealed E23/E24 research workflows, and a validated two-request target-only joint runtime. Ongoing workflows are not completed performance results.
+As of 2026-10-24, this repository includes E0–E22 implementations, tests and sanitized evidence, source-sealed E23/E24 research workflows, a validated two-request target-only joint runtime, and E36/E37 prefill evidence. Ongoing workflows are not completed performance results.
 
 - **What it does**: Qwen3.8-Flash-Next (NVFP4, TensorFold kernels) runs speculative decoding with the DFlash2 drafter. DeepInfer's MTPVarlen decides how many drafts to verify at each step. Performance studies and the K2 dynamic-budget runtime use synchronous single-request greedy execution.
 - **Largest single decode gain**: a lightweight confidence predictor trained in E15/E16. On separately frozen new tasks it is about 10% faster than the default lagged budget (E16: 44.08 vs 40.21 tok/s). It is opt-in for now.
 - **Prompt processing**: eight-row prompt chunks make complete requests 1.67× faster, cutting summed time to first token from 19.69 s to 4.23 s; decode speed is essentially unchanged (E8).
 - **Two-request GPU batching**: the native DeepInfer scheduler can now send two requests through one target forward. In a controlled target-only test, aggregate decode throughput rose from 23.64 to 38.63 tok/s (+63.4%); this is an explicit synchronous API, without batched DFlash or HTTP validation. See the [report](docs/JOINT_TARGET_EXECUTION_REPORT.md).
 - **Large-chunk prefill (E36)**: a candidate preserving decode arithmetic passed exact logits, all draft features, live-state and eight-step handoff checks on seven prefixes. Prompt-only throughput rose from 110.87 to 889.22 tok/s (8.02×); this is a research adapter, with no full-request or HTTP result yet. See the [report](docs/E36_PREFILL_NUMERICS_REPORT.md).
+- **Prefill profiling (E37)**: routed experts account for 52.5–54.9% of cumulative GPU kernel time on two 512-token probes. GDN scratch reuse increased matched prompt wall by 1.02% and was rejected; E36 remains unchanged. See the [report](docs/E37_PREFILL_PROFILE_REPORT.md).
 - **Not there yet**: no overall lead over native TensorFold (45.62 vs 49.18 tok/s in E7; not rerun since E8). Multi-request DFlash, 4K+ context and random sampling remain open.
 
 ## Key results
@@ -21,6 +22,7 @@ As of 2026-10-23, this repository includes E0–E22 implementations, tests and s
 | --- | --- | --- | --- |
 | [Joint Target](docs/JOINT_TARGET_EXECUTION_REPORT.md) | Two requests share one target forward under the native scheduler | aggregate decode 23.64 → 38.63 tok/s (+63.4%), two bilingual pairs × four repetitions | Opt-in, synchronous target-only; no batched DFlash |
 | [E36](docs/E36_PREFILL_NUMERICS_REPORT.md) | Large-chunk prefill with matched projection/recurrence/MoE arithmetic | prompt-only 110.87 → 889.22 tok/s (8.02×); seven 4–512-token prefixes, four repetitions | Research adapter; exact gates pass, default integration pending |
+| [E37](docs/E37_PREFILL_PROFILE_REPORT.md) | Prefill profiling and single-variable GDN scratch reuse | reuse wall +1.02% across 48 matched prompt runs; experts dominate two separate GPU profiles | Reuse rejected; no new speed gain or default change |
 | [E6](docs/E6_DRAFT_HEAD_REPORT.md) | Full-vocabulary Q4 draft output head | decode 41.70 → 45.54 tok/s (+9.23%) | Default |
 | [E8](docs/E8_INTEGRATION_REPORT.md) | Eight-row prompt chunks using the decode arithmetic | complete requests 1.67× faster; decode −1.14% | Default |
 | [E13](docs/E13_DRAFT_CACHE_CONFIDENCE_REPORT.md) | Incremental cache for DFlash context projections | +6.27% on 1K–2K inputs; −0.31% on short inputs | Opt-in |
