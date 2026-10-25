@@ -1,5 +1,7 @@
 # Experiment plan
 
+2026-10-25 [E49 long-output adaptive DFlash / four-state capacity](E49_LONG_DYNAMIC_REPORT.md): BF16 single261120-token input /512-token output pair, target-only16.36→adaptive30.81 decode tok/s (+88.37%), exact full committed state/output; total wall −5.27%. INT8 measures13.29→29.18 tok/s (+119.58%) with exact within-format outputs/state; it remains research-only and diverges from BF16 after326 output tokens. Four full INT8 states/common scratch project to90.14GiB > current88GiB before Graph/head/draft extras; no four256K execution or fixed-draft arm.
+
 2026-10-25 [E48 prefill/decode fairness](E48_PREFILL_FAIRNESS_REPORT.md): opt-in two-slot single-rank target-only native polling. One contemporary two256K pair reduces A max output gap225.42→0.842s and completion453.03→241.60s; total wall453.24→452.27s, B TTFT+0.076%. Full committed state/output exact, lifecycle and recovery pass. INT8 precision gate still failed; no HTTP, GPU batch, multi-request DFlash or default promotion.
 
 2026-10-25 [E47 compressed KV / two256K states](E47_KV_DUAL_REPORT.md): INT8/FP8 within-format prefill/Graph/state-scale checks pass. Both fail the original raw-logit L2 gate despite INT8 matching8/8 greedy outputs. Capacity-only INT8 run admits two distinct262080-token requests:4.13GiB cache/index each,82.63GiB peak, retrieval3/3 each, exact private-state continuation. Native prompt priority causes225.8s output gap. No default precision promotion, adaptive DFlash, GPU batching or serving-speed claim.

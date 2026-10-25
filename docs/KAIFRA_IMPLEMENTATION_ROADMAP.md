@@ -33,6 +33,11 @@ A最长输出停顿225.42→0.842秒，完成453.03→241.60秒，双请求总wa
 输出与完整已提交状态一致，生命周期/回收审计通过。下一步优先独立长文精度/质量校准和
 长请求HTTP生命周期验证；INT8原始精度门槛仍未过，尚无多请求DFlash、GPU batch或1M结论。
 
+[E49](E49_LONG_DYNAMIC_REPORT.md) 完成单请求长输出对照：BF16/512-token配对下，
+target-only16.36→动态DFlash30.81 decode tok/s，完整输出/已提交状态一致，总wall减少5.27%。
+四份完整INT8状态及公共区的分配下界90.14GiB已超过当前88GiB限额，尚未计入Graph/head/草稿，
+因此未执行四路256K。后续需先补容量缺口和长请求草稿/预算/提交隔离，不能直接放宽旧guard。
+
 > **状态：设计提议，不包含任何实际实现或新的 GPU 运行结果。**  
 > **基础路线：基于 DeepInfer 原生 C++ Scheduler / MTPVarlen 进行 Qwen 与 Spark 深度适配，不从零实现新的 Scheduler；TensorFold 组件作为可替换执行后端，DFlash2 作为草稿提供者。**  
 > 此文档与 [Kaifra Vision RFC](KAIFRA_VISION_RFC.md) 同 PR，落实“怎样才算自己的引擎”。  

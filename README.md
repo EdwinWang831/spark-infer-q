@@ -6,7 +6,7 @@ A research project on accelerating Qwen inference on a single NVIDIA DGX Spark (
 
 ## At a glance
 
-As of 2026-10-25, this branch includes E0–E48 research records (E26 cancelled at the user’s request), the validated K1–K3 native-scheduler runtime, single-request overhead improvements and a two-request target-only API. Experimental candidates retain their individual scope; defaults are unchanged.
+As of 2026-10-25, this branch includes E0–E49 research records (E26 cancelled at the user’s request), the validated K1–K3 native-scheduler runtime, single-request overhead improvements and a two-request target-only API. Experimental candidates retain their individual scope; defaults are unchanged.
 
 See the [repository map](docs/REPOSITORY_STATUS.md) for the consolidated main branch and independent K4/service and self-evolution workstreams.
 
@@ -26,6 +26,7 @@ E33 preserves the original BF16 target decision through an INT8-assisted head sc
 - **Direct 256K execution (E46)**: a single native request processes 262,080 input tokens in 230.4 s (1,137.5 input tok/s), then emits 24 tokens. All three synthetic retrieval keys, 16 long-prefix Graph buckets and target-only continuation checks pass. Peak CUDA allocated is 81.41 GiB; no double-request 256K or 1M claim. [Report](docs/E46_256K_REPORT.md).
 - **Two 256K states / compressed KV (E47)**: two distinct 262,080-token target-only requests share eager buffers, the head and prefill scratch. INT8 KV + QSA indices allocate 4.13 GiB/request; peak CUDA allocated is 82.63 GiB, both retrievals pass 3/3 and private Graph/state/scale checks pass. The original raw-logit precision gate failed, and native prefill priority causes a 225.8 s output gap. Research capacity result, default unchanged. [Report](docs/E47_KV_DUAL_REPORT.md) · [Usage](docs/E47_SHARED_GRAPH_USAGE.md).
 - **Two 256K prefill/decode fairness (E48)**: opt-in native polling interleaves decode with 1024-row prompt plans. In one contemporary matched pair, A’s longest output gap falls 225.42→0.842 s and completion 453.03→241.60 s; total pair wall stays near 453 s. Outputs/full committed state match, B TTFT +0.076%. Target-only token API; INT8 precision gate still failed, no default promotion. [Report](docs/E48_PREFILL_FAIRNESS_REPORT.md) · [Usage](docs/E48_PREFILL_FAIRNESS_USAGE.md).
+- **Long-output adaptive DFlash / four-slot capacity (E49)**: one BF16 261,120-token input /512-token output pair measures target-only16.36→adaptive30.81 decode tok/s (+88.37%), exact outputs/full committed state, complete wall −5.27%. The INT8 pair measures13.29→29.18 tok/s (+119.58%); its output differs from BF16 after326 tokens. Four full INT8 states plus common scratch project to90.14GiB before Graph/head/draft extras, exceeding the current88GiB limit; four long requests were not executed. [Report](docs/E49_LONG_DYNAMIC_REPORT.md).
 - **Not there yet**: no overall lead over native TensorFold (45.62 vs 49.18 tok/s in E7; not rerun since E8). Multi-request DFlash, long-context HTTP serving, physical KV paging, independent compressed-KV quality calibration, contexts beyond 256K and random sampling remain open.
 
 ## Key results
@@ -45,6 +46,7 @@ E33 preserves the original BF16 target decision through an INT8-assisted head sc
 | [E46](docs/E46_256K_REPORT.md) | Direct 256K native request; compact Graph warmup seed | 262,080 input tokens / 230.4 s; 24 output tokens, retrieval 3/3, exact Graph/state gates; peak allocated 81.41 GiB | Single-request capacity/correctness; BF16 KV, no concurrent 256K or general quality claim |
 | [E47](docs/E47_KV_DUAL_REPORT.md) | INT8/FP8 KV options; two private Graph slots share serial scratch | Two 262,080-token requests, 4.13 GiB KV/index each, 82.63 GiB peak, retrieval 3/3 each | Capacity/isolation passes; original precision gate fails, 225.8 s scheduling gap; target-only |
 | [E48](docs/E48_PREFILL_FAIRNESS_REPORT.md) | Alternate native prefill/decode opportunities for two target-only slots | One matched two256K pair: A max gap 225.42→0.842 s; completion 453.03→241.60 s; total 453.24→452.27 s; full state exact | Opt-in latency improvement; INT8 precision gate still failed, no HTTP/batch or general TPS claim |
+| [E49](docs/E49_LONG_DYNAMIC_REPORT.md) | Long-output target-only vs adaptive DFlash, no fixed arm; four-state allocation check | BF16 single-request decode16.36→30.81 tok/s,512 output tokens, full state exact; total wall −5.27% | One pair; four256K capacity stop90.14GiB >88GiB, INT8 quality not promoted |
 | [E6](docs/E6_DRAFT_HEAD_REPORT.md) | Full-vocabulary Q4 draft output head | decode 41.70 → 45.54 tok/s (+9.23%) | Default |
 | [E8](docs/E8_INTEGRATION_REPORT.md) | Eight-row prompt chunks using the decode arithmetic | complete requests 1.67× faster; decode −1.14% | Default |
 | [E13](docs/E13_DRAFT_CACHE_CONFIDENCE_REPORT.md) | Incremental cache for DFlash context projections | +6.27% on 1K–2K inputs; −0.31% on short inputs | Opt-in |
