@@ -6,7 +6,7 @@ A research project on accelerating Qwen inference on a single NVIDIA DGX Spark (
 
 ## At a glance
 
-As of 2026-10-25, this branch includes E0–E46 research records (E26 cancelled at the user’s request), the validated K1–K3 native-scheduler runtime, single-request overhead improvements and a two-request target-only API. Experimental candidates retain their individual scope; defaults are unchanged.
+As of 2026-10-25, this branch includes E0–E47 research records (E26 cancelled at the user’s request), the validated K1–K3 native-scheduler runtime, single-request overhead improvements and a two-request target-only API. Experimental candidates retain their individual scope; defaults are unchanged.
 
 See the [repository map](docs/REPOSITORY_STATUS.md) for the consolidated main branch and independent K4/service and self-evolution workstreams.
 
@@ -24,7 +24,8 @@ E33 preserves the original BF16 target decision through an INT8-assisted head sc
 - **Mia expert tile integration (E44)**: the MIT-attributed shared-input tile is available through an owned prefill backend. Against optimized chunk1024, long-prefill wall falls 6.97% in aggregate; code1024/mixed1536 TTFT falls 10.60%/3.76%, complete request wall 4.51%/1.47%. Full-model exactness and the final public API pass. Explicit option; no new decode gain or fresh Mia ranking. [Report](docs/E44_MIA_PREFILL_TILE_REPORT.md).
 - **Bounded draft history / 4K (E45)**: a per-request2040-row mirrored ring passes absolute-position cache checks and complete4K Graph/QSA/oracle/lifecycle tests. Raw draft-feature storage is fixed99.61MiB; matched aggregate decode60.001→59.972 tok/s shows no new speed gain. Dual long requests were target-only isolation checks. This is groundwork for per-request1M, with paged/quantized target KV and model-context quality still open. [Report](docs/E45_LONG_CONTEXT_REPORT.md) · [Usage](docs/E45_LONG_CONTEXT_USAGE.md).
 - **Direct 256K execution (E46)**: a single native request processes 262,080 input tokens in 230.4 s (1,137.5 input tok/s), then emits 24 tokens. All three synthetic retrieval keys, 16 long-prefix Graph buckets and target-only continuation checks pass. Peak CUDA allocated is 81.41 GiB; no double-request 256K or 1M claim. [Report](docs/E46_256K_REPORT.md).
-- **Not there yet**: no overall lead over native TensorFold (45.62 vs 49.18 tok/s in E7; not rerun since E8). Multi-request DFlash, concurrent 256K and contexts beyond the 256K pilot, paged/quantized KV,1M model quality and random sampling remain open.
+- **Two 256K states / compressed KV (E47)**: two distinct 262,080-token target-only requests share eager buffers, the head and prefill scratch. INT8 KV + QSA indices allocate 4.13 GiB/request; peak CUDA allocated is 82.63 GiB, both retrievals pass 3/3 and private Graph/state/scale checks pass. The original raw-logit precision gate failed, and native prefill priority causes a 225.8 s output gap. Research capacity result, default unchanged. [Report](docs/E47_KV_DUAL_REPORT.md) · [Usage](docs/E47_SHARED_GRAPH_USAGE.md).
+- **Not there yet**: no overall lead over native TensorFold (45.62 vs 49.18 tok/s in E7; not rerun since E8). Multi-request DFlash, smooth 256K concurrency and contexts beyond the 256K pilot, paged/quantized KV,1M model quality and random sampling remain open.
 
 ## Key results
 
@@ -41,6 +42,7 @@ E33 preserves the original BF16 target decision through an INT8-assisted head sc
 | [E44](docs/E44_MIA_PREFILL_TILE_REPORT.md) | Adapt Mia shared-input plan64 / RT4S4 gate-up / RT2S3 down into owned prefill | eligible complete-MoE cost −26.62%; long-prefill wall −6.97%; code1024/mixed1536 TTFT −10.60%/−3.76% | Explicit backend; full-model/public-hook checks and its stable-baseline audit pass, default unchanged |
 | [E45](docs/E45_LONG_CONTEXT_REPORT.md) | Bounded draft history and absolute-position projections; native watermark accounting repair | Exact4K QSA/Graph and complete requests pass; raw feature ring99.61MiB/request; decode60.001→59.972 tok/s | Explicit option; no new speed gain, paged/quantized KV or1M support |
 | [E46](docs/E46_256K_REPORT.md) | Direct 256K native request; compact Graph warmup seed | 262,080 input tokens / 230.4 s; 24 output tokens, retrieval 3/3, exact Graph/state gates; peak allocated 81.41 GiB | Single-request capacity/correctness; BF16 KV, no concurrent 256K or general quality claim |
+| [E47](docs/E47_KV_DUAL_REPORT.md) | INT8/FP8 KV options; two private Graph slots share serial scratch | Two 262,080-token requests, 4.13 GiB KV/index each, 82.63 GiB peak, retrieval 3/3 each | Capacity/isolation passes; original precision gate fails, 225.8 s scheduling gap; target-only |
 | [E6](docs/E6_DRAFT_HEAD_REPORT.md) | Full-vocabulary Q4 draft output head | decode 41.70 → 45.54 tok/s (+9.23%) | Default |
 | [E8](docs/E8_INTEGRATION_REPORT.md) | Eight-row prompt chunks using the decode arithmetic | complete requests 1.67× faster; decode −1.14% | Default |
 | [E13](docs/E13_DRAFT_CACHE_CONFIDENCE_REPORT.md) | Incremental cache for DFlash context projections | +6.27% on 1K–2K inputs; −0.31% on short inputs | Opt-in |
@@ -134,7 +136,7 @@ The [K1 runtime](docs/K1_RUNTIME_USAGE.md) exposes a native-scheduler target-onl
 - Keep the E29 Graph path as an opt-in research candidate. Prioritize target data movement/fusion and real shared GPU compute; isolated W8 benefit beyond Graph is still unconfirmed.
 - Rerun the native TensorFold comparison after E8.
 - Keep MLP/hybrid deferred. Diagnose whether linear budget changes reduce actual verification work before further training; retain independent tests and actual decode gates.
-- Longer context: E46 directly validates single-request 256K execution. Prioritize KV compression and multi-request state/workspace reuse next; per-request 1M concurrency still needs capacity and position/quality evidence beyond the checkpoint's 262K configuration.
+- Longer context: E47 validates two admitted target-only 256K states with compressed KV and shared scratch. Prioritize prefill/decode fairness and independent long-context precision/quality calibration; per-request 1M still needs capacity and position/quality evidence beyond the checkpoint's 262K configuration.
 - Extend the validated joint target path to multi-request dynamic DFlash, then asynchronous serving and broader workloads. The overall multi-request design is in the [global scheduler RFC](docs/GLOBAL_COST_AWARE_SCHEDULER_RFC.md) (Chinese; design only).
 - The [proposal status table](docs/EXPERIMENTS.md#proposals-without-results-yet) distinguishes unrun or partly evaluated ideas from the later completed experiments.
 

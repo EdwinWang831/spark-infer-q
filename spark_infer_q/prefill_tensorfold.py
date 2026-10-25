@@ -46,7 +46,7 @@ class TensorFoldPrefillProvider:
     max_chunk_rows = 1024
     arithmetic = 'e36_decode_mxfp8_decode_gdn_f32_moe'
 
-    def __init__(self, weights, torch, *, capacity, expert_backend=None):
+    def __init__(self, weights, torch, *, capacity, expert_backend=None,kv_dtype='bf16'):
         from tensorfold.families.qwen4_exp.cuda import forward, gdn
         from tensorfold.families.qwen4_exp.cuda.state import Buffers, _MoECfg
         if expert_backend is not None and not callable(expert_backend):
@@ -60,9 +60,12 @@ class TensorFoldPrefillProvider:
             raise ValueError('prefill feature contract requires the 48-layer Qwen target')
         if type(capacity) is not int or not 8 <= capacity <= 262160:
             raise ValueError('bounded prefill capacity must be 8..262160')
+        if kv_dtype not in ('bf16','int8','fp8'):
+            raise ValueError('prefill KV dtype must be bf16, int8 or fp8')
         self.torch, self.ops, self.gdn, self.Buffers = torch, forward, gdn, Buffers
         self.expert_backend, self.MoECfg = expert_backend, _MoECfg
         self.capacity = capacity
+        self.kv_dtype = kv_dtype
         self.vocab_size = int(weights.head.b.weight.shape[0])
         self.w = _matrix_view(weights, ('head',))
         self.w.layers = []
@@ -135,8 +138,8 @@ class TensorFoldPrefillProvider:
 
     def run(self, b, state, ids, *, capture):
         torch, w, f, rows = self.torch, self.w, self.ops, len(ids)
-        if state.kv_dtype != 'bf16':
-            raise ValueError('initial prefill provider requires BF16 KV')
+        if state.kv_dtype != self.kv_dtype:
+            raise ValueError('prefill provider and request KV dtype must match')
         if state.image_positions is not None or state.rope_delta:
             raise ValueError('initial prefill provider is text-only')
         with torch.inference_mode():

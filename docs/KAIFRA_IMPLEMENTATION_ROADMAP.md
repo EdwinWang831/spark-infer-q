@@ -24,6 +24,10 @@
 24-token输出、合成检索3/3、长程Graph/selector/续写状态验证及独立回收审计通过。
 峰值allocated81.41GiB；下一步转向KV压缩/请求工作区共享，尚无双请求256K或1M证据。
 
+[E47](E47_KV_DUAL_REPORT.md) 已完成INT8双256K状态容量/隔离验证：KV/index每请求4.13GiB，
+峰值allocated82.63GiB；原始精度门槛未过，原生prefill优先还造成225.8秒输出空窗。
+下一优先级是公平调度与独立精度校准，不能将容量通过视为平滑并发服务。
+
 > **状态：设计提议，不包含任何实际实现或新的 GPU 运行结果。**  
 > **基础路线：基于 DeepInfer 原生 C++ Scheduler / MTPVarlen 进行 Qwen 与 Spark 深度适配，不从零实现新的 Scheduler；TensorFold 组件作为可替换执行后端，DFlash2 作为草稿提供者。**  
 > 此文档与 [Kaifra Vision RFC](KAIFRA_VISION_RFC.md) 同 PR，落实“怎样才算自己的引擎”。  

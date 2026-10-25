@@ -1,5 +1,7 @@
 # Experiment plan
 
+2026-10-25 [E47 compressed KV / two256K states](E47_KV_DUAL_REPORT.md): INT8/FP8 within-format prefill/Graph/state-scale checks pass. Both fail the original raw-logit L2 gate despite INT8 matching8/8 greedy outputs. Capacity-only INT8 run admits two distinct262080-token requests:4.13GiB cache/index each,82.63GiB peak, retrieval3/3 each, exact private-state continuation. Native prompt priority causes225.8s output gap. No default precision promotion, adaptive DFlash, GPU batching or serving-speed claim.
+
 2026-10-25 [E46 direct256K](E46_256K_REPORT.md): one native request,262080 input/24 output tokens,230.399s prefill,1137.50 input tok/s. Retrieval3/3,16 long Graph buckets, tiled QSA selector and same-prefix greedy/state checks pass; peak CUDA allocated81.41GiB, independent audit returns to baseline. BF16 KV, no reload, no concurrent256K/1M or general-quality claim. Next priority: KV compression and shared request workspaces.
 
 2026-10-25 [E45 bounded draft history /4K](E45_LONG_CONTEXT_REPORT.md): exact QSA/Graph, rolling projection and complete greedy requests pass; raw feature ring99.61MiB/request, aggregate decode60.001→59.972 tok/s (no gain). Native logical-pool watermark stall reproduced and repaired; full failed/success/audit chain retained. Long HTTP and dual target-only isolation pass. Next: physical KV paging/compression and8K/32K; no1M or multi-request DFlash claim.

@@ -18,6 +18,11 @@ the original device bodies; the PyTorch host launch is supplied by this project.
 `spark_infer_q/prefill_experts.py` preserves TensorFold `nvfp4_moe.py` routing
 and shared-expert sequencing around the optional tile backend.
 
+E47's explicit INT8/FP8 KV options reuse the pinned TensorFold
+`kvcache.py`, `kvquant.py`, `kv8.py`, attention and State operators. Their
+H32/group-scale and FP8 row-scale algorithms are upstream dependencies;
+`shared_graph.py` adds private request ownership and serial scratch reuse.
+
 MIT License
 
 Copyright (c) 2026 TensorFold contributors
