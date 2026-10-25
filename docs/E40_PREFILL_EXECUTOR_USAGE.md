@@ -56,7 +56,7 @@ promised.
 ## Scope
 
 Initial provider: one GPU, the 48-layer NVFP4 Qwen target, BF16 KV, text only,
-eager prompt execution, up to 512 rows per chunk and capacity up to 2048. The
+eager prompt execution, explicit chunks up to 1024 rows and capacity up to 2048. The
 E40 study uses capacity 1024, prefixes up to 512 and a 129-row continuation test.
 Neither the constructor's capacity bound nor multi-chunk support establishes
 4K+, vision, random sampling, cross-request GPU batching or HTTP performance.
@@ -67,6 +67,16 @@ tokens, partial commits, cancel/reuse and loopback HTTP functional checks. Both
 request arms use token_budget=512, physical capacity=2048 and logical capacity=1792.
 Prefill stays eager; Graph covers decode. E41 measures lower TTFT and complete
 request time against rows8, with no new residual decode gain or HTTP speed claim.
+
+[E42](E42_WIDER_PREFILL_REPORT.md) adds an explicit `chunk_rows=1024` option
+within physical capacity2048. The default stays512. Set the native scheduler's
+`token_budget>=1024` on both comparison arms to let it deliver wider prompt
+plans. At the measured Graph/E33/W8 profile, long-input prefill wall falls5.80%
+versus chunk512; complete request gains are smaller, and short inputs do not
+improve. Whole prompts up to1536 and tails at position1024 are checked; arbitrary
+nonzero-prefix1024-row incremental calls and4K remain outside the validation.
+The study used a max_chunk_rows=1024 subclass; the post-study production change
+only raises that admission bound, with identical inherited arithmetic.
 
 External dependencies remain: weight loading, State/Buffers, input staging,
 attention/PLE/HC/MoE/commit and CUDA kernels. The first owned layer is execution

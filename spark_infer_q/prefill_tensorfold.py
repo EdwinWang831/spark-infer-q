@@ -43,7 +43,7 @@ class TensorFoldPrefillProvider:
     remain TensorFold dependencies. A larger physical capacity is not a claim
     of validated long-context or DFlash support.
     """
-    max_chunk_rows = 512
+    max_chunk_rows = 1024
     arithmetic = 'e36_decode_mxfp8_decode_gdn_f32_moe'
 
     def __init__(self, weights, torch, *, capacity):

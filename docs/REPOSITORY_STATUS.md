@@ -12,6 +12,7 @@
 | `codex/prefill-expert-reuse` | E38 paired expert reuse, E39 CTA loading and ownership recovery / 专家复用、CTA加载及观测回调收尾 | Both component cost gates failed; independent research records / 两候选成本门槛失败，独立研究记录 |
 | `codex/prefill-expert-reuse` | E40 owned prefill executor with TensorFold operators / 自主 prompt 执行模块及算子接口 | Explicit opt-in target-only / dynamic DFlash integration; see [usage](E40_PREFILL_EXECUTOR_USAGE.md) / 显式接入，外部算子依赖仍保留 |
 | `codex/prefill-expert-reuse` | [E41](E41_PREFILL_GRAPH_REPORT.md) optimized Graph/E33/W8 prefill handoff / 完整优化链路验证 | Exact 1,536-token input, partial commits, cancel/reuse and HTTP smoke pass; prefill gain, no new decode gain / prefill提速，decode无新增收益 |
+| `codex/prefill-expert-reuse` | [E42](E42_WIDER_PREFILL_REPORT.md) explicit1024-row prefill / 更大分块 | Long-prefill wall −5.80%, exact checks pass; default512 retained / 长输入收益，默认保留512 |
 | [K4 research, PR #19](https://github.com/EdwinWang831/spark-infer-q/pull/19) | `codex/k4-batched-runtime`: joint verification, async SSE and dispatch wait fix / 双请求动态验证、异步服务及等待修正 | Independent draft; existing worktree retained / 保留现有工作区 |
 | [Self-evolution design, PR #15](https://github.com/EdwinWang831/spark-infer-q/pull/15) | `claude/magical-fermi-tc55jr`; local worktree branch `codex/pr15-e33-rsi-plan` / 自演化设计 | Design under review, not an implemented speed result / 设计评审中 |
 | `archive/pr6-confidence-proposal` tag | Original closed PR #6 branch tip / 已关闭预测器提案的原分支端点 | History retained; later E15–E25 results live on main / 归档保留，不将旧提案混入当前实现 |
@@ -24,7 +25,7 @@ K4 仍以远端 `codex/k4-runtime-overhead` 为 PR 基线，因此暂留这个�
 
 - Runtime / 运行时：[K1](K1_RUNTIME_USAGE.md)、[K2](K2_DFLASH_SCHEDULER_USAGE.md)、[Graph](K3_GRAPH_RUNTIME_USAGE.md)、[E33 profile](K3_E33_RUNTIME_USAGE.md)、[overhead report](K4_RUNTIME_OVERHEAD.md)。
 - Target batching / 联合执行：[Joint Target](JOINT_TARGET_EXECUTION_REPORT.md)。
-- Prefill / 提示处理：[E36](E36_PREFILL_NUMERICS_REPORT.md)、[E37](E37_PREFILL_PROFILE_REPORT.md)、[E40 executor](E40_PREFILL_EXECUTOR_USAGE.md)、[E41 Graph validation](E41_PREFILL_GRAPH_REPORT.md)。
+- Prefill / 提示处理：[E36](E36_PREFILL_NUMERICS_REPORT.md)、[E37](E37_PREFILL_PROFILE_REPORT.md)、[E40 executor](E40_PREFILL_EXECUTOR_USAGE.md)、[E41 Graph validation](E41_PREFILL_GRAPH_REPORT.md)、[E42 chunk1024](E42_WIDER_PREFILL_REPORT.md)。
 - Rejected candidates / 已否决候选：[E34](E34_DEVICE_SCREEN_REPORT.md)、[E35](E35_MOE_OVERLAP_REPORT.md)。
 - Full experiment index / 完整实验索引：[EXPERIMENTS](EXPERIMENTS.md)。
 

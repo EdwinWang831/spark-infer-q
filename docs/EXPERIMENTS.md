@@ -1,5 +1,7 @@
 # Experiment plan
 
+2026-10-24 [E42 wider owned prefill](E42_WIDER_PREFILL_REPORT.md): chunk1024 passes exact full-logit/features/state and Graph handoff against chunk512; long-input prefill wall −5.80%, complete code1024/mixed1536 requests −4.58%/−1.79%. Explicit1024-row option, default512; no confirmed decode gain.
+
 2026-10-24 [E41 optimized prefill integration](E41_PREFILL_GRAPH_REPORT.md): E40 module passes full-logit Graph handoff, Graph/E33/W8 requests, partial commits, cancellation/reuse and loopback HTTP smoke. code513 total 5.464→1.202 s; mixed1536 15.347→2.131 s versus rows8; residual decode 54.63→54.41 tok/s. No 4K, HTTP speed, native-TensorFold lead or default promotion claim.
 
 **Rule: use small probes to isolate initial blockers, then combine verified components into meaningful integration milestones.** Keep internal diagnostics, but do not stop after every small substep once the foundational gates pass. Do not download the full DeepSeek V4.1 checkpoint to test compatibility. Do not overwrite a working local inference environment.
