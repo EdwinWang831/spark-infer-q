@@ -31,7 +31,9 @@ class E33Budget:
         return choose_rows(cumulative,[v+costs['paid_ms'] for v in costs['verify_commit_ms']],min(8,remaining))
 
 
-def optimized_provider(session, *, history_window_rows=None, max_request_context=None):
+def optimized_provider(session, *, history_window_rows=None, max_request_context=None,query_graphs=False):
+    if type(query_graphs) is not bool or (query_graphs and history_window_rows is None):
+        raise ValueError('query_graphs requires boolean and bounded rolling history')
     from .draft_head import HeadDraft
     from .draft_backbone import attach_mlp_w8
     from .linear_runtime import NumpyLinearProgressModel
@@ -52,6 +54,9 @@ def optimized_provider(session, *, history_window_rows=None, max_request_context
     if history_window_rows is not None:
         from .rolling_draft import RollingContextDraft
         worker=RollingContextDraft.attach(worker)
+    if query_graphs:
+        from .long_draft_graph import GraphRollingDraft
+        worker=GraphRollingDraft.attach(worker)
     provider=DFlashProvider(worker,model=NumpyLinearProgressModel(artifact['metadata']),
                             feature_group='f1',budget=E33Budget(costs),
                             history_window_rows=history_window_rows,max_request_context=max_request_context)
@@ -67,6 +72,7 @@ def optimized_provider(session, *, history_window_rows=None, max_request_context
     if history_window_rows is not None:
         metadata.update(history_window_rows=history_window_rows,max_request_context=provider.max_context,
             context_policy='bounded suffix / absolute rotary positions; frozen predictor/costs beyond2K not recalibrated')
+    metadata['draft_query_graphs']=query_graphs
     return provider,metadata
 
 

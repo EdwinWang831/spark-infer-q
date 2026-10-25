@@ -20,6 +20,7 @@
 | `codex/prefill-expert-reuse` | [E47](E47_KV_DUAL_REPORT.md) compressed KV + two256K states / 双256K容量 | 4.13GiB/request cache,82.63GiB peak; original precision gate failed,225.8s output gap / 非服务晋升 |
 | `codex/prefill-expert-reuse` | [E48](E48_PREFILL_FAIRNESS_REPORT.md) two256K prefill/decode fairness / 公平调度 | A gap225.42→0.842s, completion453.03→241.60s; full state exact, total wall unchanged / 显式target-only，INT8精度门槛仍未过 |
 | `codex/prefill-expert-reuse` | [E49](E49_LONG_DYNAMIC_REPORT.md) long-output adaptive DFlash / 动态长输出与四状态容量 | BF16 single-request decode16.36→30.81 tok/s; full state exact; four256K capacity stop90.14GiB >88GiB / 未运行四路长请求 |
+| `codex/prefill-expert-reuse` | [E50](E50_OWN_OPTIMIZATION_REPORT.md) own long execution and eight-state accounting / 自主链路与八路预算 | BF16 native decode32.14→34.49 tok/s, exact full state; FP8 eight-state106.77GiB forecast / 显式启用；有界原始索引仅CPU模型，尚无八路GPU结果 |
 | [K4 research, PR #19](https://github.com/EdwinWang831/spark-infer-q/pull/19) | `codex/k4-batched-runtime`: joint verification, async SSE and dispatch wait fix / 双请求动态验证、异步服务及等待修正 | Independent draft; existing worktree retained / 保留现有工作区 |
 | [Self-evolution design, PR #15](https://github.com/EdwinWang831/spark-infer-q/pull/15) | `claude/magical-fermi-tc55jr`; local worktree branch `codex/pr15-e33-rsi-plan` / 自演化设计 | Design under review, not an implemented speed result / 设计评审中 |
 | `archive/pr6-confidence-proposal` tag | Original closed PR #6 branch tip / 已关闭预测器提案的原分支端点 | History retained; later E15–E25 results live on main / 归档保留，不将旧提案混入当前实现 |
@@ -32,7 +33,7 @@ K4 仍以远端 `codex/k4-runtime-overhead` 为 PR 基线，因此暂留这个�
 
 - Runtime / 运行时：[K1](K1_RUNTIME_USAGE.md)、[K2](K2_DFLASH_SCHEDULER_USAGE.md)、[Graph](K3_GRAPH_RUNTIME_USAGE.md)、[E33 profile](K3_E33_RUNTIME_USAGE.md)、[overhead report](K4_RUNTIME_OVERHEAD.md)。
 - Target batching / 联合执行：[Joint Target](JOINT_TARGET_EXECUTION_REPORT.md)。
-- Prefill / 提示处理：[E36](E36_PREFILL_NUMERICS_REPORT.md)、[E37](E37_PREFILL_PROFILE_REPORT.md)、[E40 executor](E40_PREFILL_EXECUTOR_USAGE.md)、[E41 Graph validation](E41_PREFILL_GRAPH_REPORT.md)、[E42 chunk1024](E42_WIDER_PREFILL_REPORT.md)、[E44 expert tile](E44_MIA_PREFILL_TILE_REPORT.md)、[E45 bounded history /4K](E45_LONG_CONTEXT_REPORT.md)、[E46 direct256K](E46_256K_REPORT.md)、[E47 compressed KV / two256K](E47_KV_DUAL_REPORT.md)、[E48 fairness](E48_PREFILL_FAIRNESS_REPORT.md)、[E49 adaptive long output](E49_LONG_DYNAMIC_REPORT.md)。
+- Prefill / 提示处理：[E36](E36_PREFILL_NUMERICS_REPORT.md)、[E37](E37_PREFILL_PROFILE_REPORT.md)、[E40 executor](E40_PREFILL_EXECUTOR_USAGE.md)、[E41 Graph validation](E41_PREFILL_GRAPH_REPORT.md)、[E42 chunk1024](E42_WIDER_PREFILL_REPORT.md)、[E44 expert tile](E44_MIA_PREFILL_TILE_REPORT.md)、[E45 bounded history /4K](E45_LONG_CONTEXT_REPORT.md)、[E46 direct256K](E46_256K_REPORT.md)、[E47 compressed KV / two256K](E47_KV_DUAL_REPORT.md)、[E48 fairness](E48_PREFILL_FAIRNESS_REPORT.md)、[E49 adaptive long output](E49_LONG_DYNAMIC_REPORT.md)、[E50 own optimization](E50_OWN_OPTIMIZATION_REPORT.md)。
 - Rejected candidates / 已否决候选：[E34](E34_DEVICE_SCREEN_REPORT.md)、[E35](E35_MOE_OVERLAP_REPORT.md)。
 - Full experiment index / 完整实验索引：[EXPERIMENTS](EXPERIMENTS.md)。
 

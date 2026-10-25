@@ -420,6 +420,7 @@ class SpeculativeSchedulerBridge(SchedulerBridge):
                         raise BridgeError('native/device position diverged after speculation')
                     if expected and expected[-1] in self.eos_ids:
                         entry['seq'].status=self.core.SequenceStatus.FINISHED_STOPPED
+                self._cache_published(entry,expected)
                 self.events.append(dict(request_id=row.handle.request_id,published=count))
             if plan.rows and not plan.rows[0].prompt and self.native.decode_perf_curve:
                 self.native.update_mtp_runtime(len(plan.rows),sum(len(r.token_ids) for r in plan.rows),
@@ -436,7 +437,7 @@ class SpeculativeSchedulerBridge(SchedulerBridge):
 
 def speculative_engine(native, target, provider, *, eos_ids, prior, mode='adaptive',
                        capacity=256,max_requests=1,token_budget=32,prefill_rows=8,
-                       tokenizer=None,curve=None,observer=None,prefill_executor=None):
+                       tokenizer=None,curve=None,observer=None,prefill_executor=None,output_cache=False):
     if getattr(native,'max_drafts',None)!=7:
         raise ValueError('speculation requires a native max_drafts=7 context')
     if mode not in ('lagged','confidence','adaptive'):
@@ -455,9 +456,10 @@ def speculative_engine(native, target, provider, *, eos_ids, prior, mode='adapti
                                prefill_rows=prefill_rows,observer=observer,prefill_executor=prefill_executor)
     bridge=SpeculativeSchedulerBridge(native.core,native.torch,native.group,native.sampling_class,
         backend,vocab_size=int(target.w.head.b.weight.shape[0]),eos_ids=eos_ids,capacity=capacity,
-        max_requests=max_requests,token_budget=token_budget,curve=curve if dynamic else None,postdraft=mode=='adaptive')
+        max_requests=max_requests,token_budget=token_budget,curve=curve if dynamic else None,postdraft=mode=='adaptive',output_cache=output_cache)
     engine=KaifraEngine(bridge,tokenizer=tokenizer)
     engine.capabilities=dict(engine.capabilities,target_only=False,speculative=True,
+                            native_output_cache=output_cache,
                             draft_depth=depth,verification_budget=('current_postdraft_e17' if mode=='adaptive' else
                                 'native_mtp_varlen'))
     engine.capabilities.update(getattr(target,'capabilities',{}))

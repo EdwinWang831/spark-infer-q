@@ -107,7 +107,7 @@ class KaifraEngine:
     @classmethod
     def from_native(cls, native, target, *, eos_ids, capacity=1024,
                     max_requests=2, token_budget=32, prefill_rows=8,
-                    tokenizer=None, observer=None, prefill_executor=None):
+                    tokenizer=None, observer=None, prefill_executor=None,output_cache=False):
         if capacity > target.capacity:
             raise ValueError('scheduler capacity exceeds target capacity')
         backend = QwenTargetBackend(target, prefill_rows=prefill_rows, observer=observer,
@@ -115,7 +115,7 @@ class KaifraEngine:
         bridge = SchedulerBridge(native.core, native.torch, native.group,
             native.sampling_class, backend, vocab_size=int(target.w.head.b.weight.shape[0]),
             eos_ids=eos_ids, capacity=capacity, max_requests=max_requests,
-            token_budget=token_budget)
+            token_budget=token_budget,output_cache=output_cache)
         engine = cls(bridge, tokenizer=tokenizer)
         if prefill_executor is not None:
             engine.capabilities = dict(engine.capabilities, **prefill_executor.capabilities)
@@ -197,7 +197,8 @@ class KaifraEngine:
                     else:
                         if entry is None or entry['handle'] != handle:
                             raise BridgeError('native request disappeared')
-                        tokens = tuple(entry['seq'].data.get_token_ids()[record.prompt_tokens:])
+                        read=getattr(self.bridge,'output_tokens',None)
+                        tokens = read(handle) if read is not None else tuple(entry['seq'].data.get_token_ids()[record.prompt_tokens:])
                         position, reason = entry['seq'].num_cached_tokens, None
                     if (tokens[:len(record.tokens)] != tuple(record.tokens) or
                             len(tokens) > record.max_tokens):

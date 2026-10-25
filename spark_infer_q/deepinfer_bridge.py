@@ -46,7 +46,7 @@ class Plan:
 class SchedulerBridge:
     def __init__(self, core, torch, group, sampling_class, backend, *, vocab_size,
                  eos_ids, capacity=128, max_requests=2, token_budget=32,
-                 max_drafts=0,prefill_interleave=False):
+                 max_drafts=0,prefill_interleave=False,output_cache=False):
         if type(max_drafts) is not int or not 0 <= max_drafts <= 7:
             raise ValueError('max_drafts must be 0..7')
         if os.environ.get('DEEPINFER_USE_NEXTN_DECODE') != str(max_drafts):
@@ -57,6 +57,9 @@ class SchedulerBridge:
             raise ValueError('unsupported scheduler capacity')
         if type(prefill_interleave) is not bool:
             raise ValueError('prefill_interleave must be boolean')
+        if type(output_cache) is not bool:
+            raise ValueError('output_cache must be boolean')
+        self.output_cache=output_cache
         if prefill_interleave and (max_requests!=2 or group.size()!=1 or max_drafts!=0):
             raise ValueError('prefill interleave requires two single-rank target-only slots')
         self.prefill_interleave=prefill_interleave
@@ -158,7 +161,7 @@ class SchedulerBridge:
             self.backend.release(handle, state)
             raise
         self.requests[request_id] = dict(handle=handle, seq=seq, state=state,
-            cancelled=False, prompt_length=len(ids))
+            cancelled=False, prompt_length=len(ids),published=[])
         self.slots[slot] = handle
         return handle
 
@@ -177,13 +180,34 @@ class SchedulerBridge:
             if not self._terminal(entry['seq']) or entry['handle'] in leased:
                 continue
             seq = entry['seq']; handle = entry['handle']
-            self.completed[handle] = dict(token_ids=seq.data.get_token_ids()[entry['prompt_length']:],
+            tokens=seq.data.get_token_ids()[entry['prompt_length']:]
+            if self.output_cache and list(tokens)!=entry['published']:
+                self.poisoned=True
+                raise BridgeError('cached native publication differs at retirement')
+            self.completed[handle] = dict(token_ids=tokens,
                 processed_position=seq.num_cached_tokens, status=str(seq.status),
                 cancelled=entry['cancelled'])
             self.native.free_seq(seq)
             self.backend.release(handle, entry['state'])
             self.slots[handle.slot] = None
             del self.requests[request_id]
+
+    def _cache_published(self,entry,tokens):
+        if not self.output_cache:return
+        seq=entry['seq'];data=seq.data
+        if (data.get_len()-entry['prompt_length']!=len(entry['published'])+len(tokens) or
+                (tokens and data.get_last_token_id()!=tokens[-1])):
+            raise BridgeError('native publication length/tail differs from cache')
+        if tokens and tuple(seq.last_accepted_token)+(int(seq.last_output_token),)!=tuple(tokens):
+            raise BridgeError('native accepted/output tokens differ from cache')
+        # Called only after native process_outputs and its count/position gates.
+        # Read the native bounded last-step fields, not backend guesses.
+        # The complete native prefix is independently checked at retirement.
+        entry['published'].extend(tokens)
+
+    def output_tokens(self,handle):
+        entry=self._entry(handle)
+        return tuple(entry['published']) if self.output_cache else tuple(entry['seq'].data.get_token_ids()[entry['prompt_length']:])
 
     def prepare(self):
         self._ready()
@@ -211,7 +235,8 @@ class SchedulerBridge:
 
     def _work_row(self, meta, seq, entry):
         start = seq.num_cached_tokens
-        ids = tuple(seq.data.get_token_ids()[start:start+meta.seqlen_q])
+        ids = ((seq.data.get_last_token_id(),) if self.output_cache and not meta.is_prompt else
+               tuple(seq.data.get_token_ids()[start:start+meta.seqlen_q]))
         if (len(ids) != meta.seqlen_q or meta.seqlen_k != start+len(ids)
                 or (not meta.is_prompt and len(ids) != 1)):
             self.poisoned = True
@@ -264,6 +289,9 @@ class SchedulerBridge:
                         raise BridgeError('native/device position diverged at completion')
                     if count and token in self.eos_ids:
                         seq.status = self.core.SequenceStatus.FINISHED_STOPPED
+                if self.output_cache and count not in (0,1):
+                    raise BridgeError('target-only native publication count differs')
+                self._cache_published(entry,() if not count else (token,))
                 self.events.append(dict(slot=row.handle.slot, generation=row.handle.generation,
                     request_id=row.handle.request_id, prompt=row.prompt,
                     start=row.position, rows=len(row.token_ids), published=count,

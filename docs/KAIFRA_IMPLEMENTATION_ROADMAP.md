@@ -38,6 +38,12 @@ target-only16.36→动态DFlash30.81 decode tok/s，完整输出/已提交状态
 四份完整INT8状态及公共区的分配下界90.14GiB已超过当前88GiB限额，尚未计入Graph/head/草稿，
 因此未执行四路256K。后续需先补容量缺口和长请求草稿/预算/提交隔离，不能直接放宽旧guard。
 
+[E50](E50_OWN_OPTIMIZATION_REPORT.md) 已完成自主长请求query Graph＋原生输出缓存：
+同期单256K/512-token decode32.14→34.49 tok/s，完整输出/状态/预算轨迹一致。
+八FP8状态＋公共区外推106.77GiB，INT4为95.52GiB但质量未测；下一步优先研究保留FP8的
+有界QSA原始索引（CPU模型理论八路约省5.95GiB），再完善资源池、八slot草稿/验证/提交隔离。
+尚无八路GPU执行、INT4质量或1M结果，默认不晋升。
+
 > **状态：设计提议，不包含任何实际实现或新的 GPU 运行结果。**  
 > **基础路线：基于 DeepInfer 原生 C++ Scheduler / MTPVarlen 进行 Qwen 与 Spark 深度适配，不从零实现新的 Scheduler；TensorFold 组件作为可替换执行后端，DFlash2 作为草稿提供者。**  
 > 此文档与 [Kaifra Vision RFC](KAIFRA_VISION_RFC.md) 同 PR，落实“怎样才算自己的引擎”。  

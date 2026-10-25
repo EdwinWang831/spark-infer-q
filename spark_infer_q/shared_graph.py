@@ -108,15 +108,16 @@ class SharedGraphBackend(QwenTargetBackend):
         return token
 
 
-def shared_graph_engine(native,target,*,eos_ids,capacity=262144,token_budget=1024,tokenizer=None,prefill_executor=None,prefill_interleave=False):
+def shared_graph_engine(native,target,*,eos_ids,capacity=262144,token_budget=1024,tokenizer=None,prefill_executor=None,prefill_interleave=False,output_cache=False):
     if getattr(native,'max_drafts',None)!=0:raise ValueError('shared Graph target-only requires NEXTN=0')
     if capacity>target.capacity:raise ValueError('logical capacity exceeds target capacity')
     backend=SharedGraphBackend(target,prefill_executor=prefill_executor)
     bridge=SchedulerBridge(native.core,native.torch,native.group,native.sampling_class,backend,
         vocab_size=int(target.w.head.b.weight.shape[0]),eos_ids=eos_ids,capacity=capacity,
-        max_requests=len(target.targets),token_budget=token_budget,prefill_interleave=prefill_interleave)
+        max_requests=len(target.targets),token_budget=token_budget,prefill_interleave=prefill_interleave,output_cache=output_cache)
     engine=KaifraEngine(bridge,tokenizer=tokenizer)
     engine.capabilities=dict(engine.capabilities,**target.capabilities)
     engine.capabilities['prefill_interleave']=prefill_interleave
+    engine.capabilities['native_output_cache']=output_cache
     if prefill_executor is not None:engine.capabilities.update(prefill_executor.capabilities)
     return engine
