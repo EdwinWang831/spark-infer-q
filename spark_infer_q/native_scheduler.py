@@ -96,6 +96,9 @@ class NativeScheduler:
             raise
 
     def close(self):
+        worker = getattr(self, '_worker_thread', None)
+        if worker is not None and worker.is_alive():
+            raise RuntimeError('native process group is still owned by a live worker')
         if self._owns_group:
             self.dist.destroy_process_group()
             self._owns_group = False
@@ -112,6 +115,12 @@ class NativeScheduler:
                 os.environ[key] = value
         self._environment = {}
         self.opened = False
+
+    def bind_worker(self, thread):
+        previous = getattr(self, '_worker_thread', None)
+        if not self.opened or (previous is not None and previous.is_alive() and previous is not thread):
+            raise RuntimeError('native scheduler cannot change its active worker owner')
+        self._worker_thread = thread
 
     def __enter__(self):
         return self.open()
