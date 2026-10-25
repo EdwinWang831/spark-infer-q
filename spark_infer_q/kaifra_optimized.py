@@ -143,15 +143,15 @@ class ScreenedGraphTarget(GraphTarget):
             self.screen=None
 
 
-def optimized_target(session, *, capacity=2048,kv_dtype='bf16'):
+def optimized_target(session, *, capacity=2048,kv_dtype='bf16',index_ring_rows=None):
     from e3_wide_target import WideTarget
     from .screened_head_fused import FusedScreenedHead
     with session.torch.inference_mode():
         screen=FusedScreenedHead(session.weights.head)
         if not screen.static_ok:
             raise ValueError('E33 frozen head range gate failed')
-        if capacity>2048 or kv_dtype!='bf16':
+        if capacity>2048 or kv_dtype!='bf16' or index_ring_rows is not None:
             from .long_target import LongTarget
-            eager=LongTarget(session.weights,capacity=capacity,kv_dtype=kv_dtype)
+            eager=LongTarget(session.weights,capacity=capacity,kv_dtype=kv_dtype,index_ring_rows=index_ring_rows)
         else:eager=WideTarget(session.weights,capacity=capacity)
         return ScreenedGraphTarget(eager,screen)

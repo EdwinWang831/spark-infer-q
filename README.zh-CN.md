@@ -6,7 +6,7 @@
 
 ## 现状一览
 
-截至 2026-10-25，本分支包含 E0–E50 研究记录（E26 依用户要求中止）、已验证的 K1–K3 原生调度运行时、单请求开销优化和双请求 target-only API。实验候选保留各自的验证范围，默认路径不变。
+截至 2026-10-25，本分支包含 E0–E51 研究记录（E26 依用户要求中止）、已验证的 K1–K3 原生调度运行时、单请求开销优化和双请求 target-only API。实验候选保留各自的验证范围，默认路径不变。
 
 已汇总的 main 与独立的 K4/服务、自演化设计路线，见[仓库导航](docs/REPOSITORY_STATUS.md)。
 
@@ -27,7 +27,8 @@ E33 用 INT8 辅助筛选、原 BF16 头最终裁决，在相同 W8 草稿/线�
 - **双256K状态与KV压缩（E47）**：两个独立262,080-token target-only请求共享计算缓冲区、输出头和prefill工作区；INT8 KV＋QSA索引每请求4.13GiB，峰值allocated82.63GiB，各自检索3/3，Graph/状态/缩放因子隔离通过。原始logit精度门槛未过，原生prefill优先导致225.8秒输出空窗；这是容量研究结果，默认不变。[报告](docs/E47_KV_DUAL_REPORT.md) · [用法](docs/E47_SHARED_GRAPH_USAGE.md)。
 - **双256K公平调度（E48）**：显式使用原生轮询阶段，在1024行prefill计划之间提供decode机会。一组同期配对中，A最长输出停顿225.42→0.842秒，完成时间453.03→241.60秒；双请求总耗时仍约453秒。输出与完整已提交状态一致，B首token时间增加0.076%。仅target-only token API；INT8精度门槛仍未过，默认不晋升。[报告](docs/E48_PREFILL_FAIRNESS_REPORT.md) · [用法](docs/E48_PREFILL_FAIRNESS_USAGE.md)。
 - **长输出动态DFlash与四路容量（E49）**：BF16单请求261,120-token输入/512-token输出配对，target-only→动态DFlash的decode16.36→30.81 tok/s（+88.37%），输出和完整已提交状态一致，完整wall减少5.27%。INT8配对为13.29→29.18 tok/s（+119.58%），与BF16输出在326 tokens后分歧。四份完整INT8状态＋公共区外推90.14GiB，尚未计Graph/head/草稿，超过当前88GiB限额；未执行四路长请求。[报告](docs/E49_LONG_DYNAMIC_REPORT.md)。
-- **自主长请求执行优化（E50）**：显式草稿query Graph和原生输出发布缓存保持完整输出/状态/预算轨迹一致；同期BF16单256K/512-token配对decode32.14→34.49 tok/s（+7.34%），完整wall减少1.58%。八状态＋公共区外推FP8为106.77GiB、INT4为95.52GiB，尚非八请求执行或INT4质量结果。有界QSA原始索引已有CPU活跃范围模型，八路理论约省5.95GiB，GPU实现尚未完成。[报告](docs/E50_OWN_OPTIMIZATION_REPORT.md)。
+- **自主长请求执行优化（E50）**：显式草稿query Graph和原生输出发布缓存保持完整输出/状态/预算轨迹一致；同期BF16单256K/512-token配对decode32.14→34.49 tok/s（+7.34%），完整wall减少1.58%。八状态＋公共区外推FP8为106.77GiB、INT4为95.52GiB，尚非八请求执行或INT4质量结果。当时有界QSA原始索引仅完成CPU模型；GPU实现及验证见下方E51。[报告](docs/E50_OWN_OPTIMIZATION_REPORT.md)。
+- **有界QSA原始索引（E51）**：显式2048行环保留完整FP8/BF16 K/V和池化历史，每请求tensor storage实省0.744GiB。GPU回绕/Graph/生命周期及同格式256K动态输出/有效状态验证通过。八份FP8状态＋公共区外推降到100.81GiB，仍未计Graph/head/草稿且超过当前88GiB限额。BF16 decode34.44→34.45 tok/s基本持平；共享地址AB/BA复测38.494→38.490 tok/s持平，未确认首次FP8单组的大幅增益。[报告](docs/E51_BOUNDED_INDEX_REPORT.md) · [用法](docs/E51_BOUNDED_INDEX_USAGE.md)。
 - **还没做到**：整体速度没有超过原生 TensorFold（E7 时 45.62 vs 49.18 tok/s，E8 之后没有重测）；多请求 DFlash、长上下文HTTP服务、物理KV分页、独立压缩KV质量校准、超出256K的上下文和随机采样仍待推进。
 
 ## 主要结果

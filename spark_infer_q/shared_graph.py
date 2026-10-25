@@ -22,10 +22,10 @@ class SharedGraphTarget:
         self.eager,self.screen=first.eager,first.screen
 
     @classmethod
-    def from_session(cls,session,*,capacity=262160,kv_dtype='int8',slots=2):
+    def from_session(cls,session,*,capacity=262160,kv_dtype='int8',slots=2,index_ring_rows=None):
         if type(slots) is not int or not 1<=slots<=2:raise ValueError('one or two slots required')
         from .kaifra_optimized import optimized_target,ScreenedGraphTarget
-        first=optimized_target(session,capacity=capacity,kv_dtype=kv_dtype)
+        first=optimized_target(session,capacity=capacity,kv_dtype=kv_dtype,index_ring_rows=index_ring_rows)
         return cls([first]+[ScreenedGraphTarget(first.eager,first.screen) for _ in range(slots-1)])
 
     def __getattr__(self,name):return getattr(self.eager,name)

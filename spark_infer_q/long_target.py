@@ -7,7 +7,7 @@ from e3_target import Target
 
 
 class LongTarget(Target):
-    def __init__(self,w,capacity=4608,*,kv_dtype='bf16'):
+    def __init__(self,w,capacity=4608,*,kv_dtype='bf16',index_ring_rows=None):
         import torch
         from tensorfold.families.qwen4_exp.cuda import forward
         from tensorfold.families.qwen4_exp.cuda.state import Buffers,State
@@ -18,6 +18,15 @@ class LongTarget(Target):
         self.torch,self.w,self.forward,self.State=torch,w,forward,State
         self.capacity=capacity
         self.kv_dtype=kv_dtype
+        self.index_ring_rows=index_ring_rows
+        if index_ring_rows is not None:
+            from functools import partial
+            from .bounded_index import build_forward,make_state,validate_geometry
+            validate_geometry(index_ring_rows)
+            if capacity<index_ring_rows or kv_dtype not in ('bf16','fp8'):
+                raise ValueError('index ring needs BF16/FP8 and sufficient physical capacity')
+            self.forward=build_forward(index_ring_rows)
+            self.State=partial(make_state,ring_rows=index_ring_rows)
         self.buffers={r:Buffers(w,r,capacity,prefill=False) for r in range(1,9)}
 
     def state(self):
@@ -25,6 +34,9 @@ class LongTarget(Target):
 
     def state_difference(self,a,b):
         if a.kv_dtype!=b.kv_dtype:return ['kv_dtype']
+        if getattr(a,'index_ring_rows',None) is not None or getattr(b,'index_ring_rows',None) is not None:
+            from .bounded_index import state_difference
+            return state_difference(self.torch,a,b)
         differences=super().state_difference(a,b)
         for i,(ka,kb) in enumerate(zip(a.kc,b.kc)):
             if ka.quantized:

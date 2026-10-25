@@ -44,6 +44,8 @@ target-only16.36→动态DFlash30.81 decode tok/s，完整输出/已提交状态
 有界QSA原始索引（CPU模型理论八路约省5.95GiB），再完善资源池、八slot草稿/验证/提交隔离。
 尚无八路GPU执行、INT4质量或1M结果，默认不晋升。
 
+[E51](E51_BOUNDED_INDEX_REPORT.md) 已实现保留FP8/BF16 KV的2048行原始索引环，GPU回绕/Graph/完整动态请求通过；每请求tensor storage减少0.744GiB，八FP8状态＋公共区外推100.81GiB，仍超88GiB限额且不含八路辅助开销。首次FP8完整请求差值另用共享地址AB/BA复核，不认作稳定29.75%提速。后续继续实际256K验证成本/专家投影效率，以及资源预算和多请求隔离；默认不变。
+
 > **状态：设计提议，不包含任何实际实现或新的 GPU 运行结果。**  
 > **基础路线：基于 DeepInfer 原生 C++ Scheduler / MTPVarlen 进行 Qwen 与 Spark 深度适配，不从零实现新的 Scheduler；TensorFold 组件作为可替换执行后端，DFlash2 作为草稿提供者。**  
 > 此文档与 [Kaifra Vision RFC](KAIFRA_VISION_RFC.md) 同 PR，落实“怎样才算自己的引擎”。  

@@ -46,7 +46,7 @@ class TensorFoldPrefillProvider:
     max_chunk_rows = 1024
     arithmetic = 'e36_decode_mxfp8_decode_gdn_f32_moe'
 
-    def __init__(self, weights, torch, *, capacity, expert_backend=None,kv_dtype='bf16'):
+    def __init__(self, weights, torch, *, capacity, expert_backend=None,kv_dtype='bf16',index_ring_rows=None):
         from tensorfold.families.qwen4_exp.cuda import forward, gdn
         from tensorfold.families.qwen4_exp.cuda.state import Buffers, _MoECfg
         if expert_backend is not None and not callable(expert_backend):
@@ -63,9 +63,13 @@ class TensorFoldPrefillProvider:
         if kv_dtype not in ('bf16','int8','fp8'):
             raise ValueError('prefill KV dtype must be bf16, int8 or fp8')
         self.torch, self.ops, self.gdn, self.Buffers = torch, forward, gdn, Buffers
+        if index_ring_rows is not None:
+            from .bounded_index import build_forward
+            self.ops=build_forward(index_ring_rows)
         self.expert_backend, self.MoECfg = expert_backend, _MoECfg
         self.capacity = capacity
         self.kv_dtype = kv_dtype
+        self.index_ring_rows = index_ring_rows
         self.vocab_size = int(weights.head.b.weight.shape[0])
         self.w = _matrix_view(weights, ('head',))
         self.w.layers = []
@@ -138,6 +142,8 @@ class TensorFoldPrefillProvider:
 
     def run(self, b, state, ids, *, capture):
         torch, w, f, rows = self.torch, self.w, self.ops, len(ids)
+        if getattr(state,'index_ring_rows',None) != self.index_ring_rows:
+            raise ValueError('prefill provider and raw-index state layout must match')
         if state.kv_dtype != self.kv_dtype:
             raise ValueError('prefill provider and request KV dtype must match')
         if state.image_positions is not None or state.rope_delta:

@@ -9,7 +9,8 @@ import tarfile
 import uuid
 
 
-def main():
+def main(*,experiment='e50'):
+    stage_prefix={'e50':'e50-own-20261025-','e51':'e51-index-20261025-'}[experiment]
     p=argparse.ArgumentParser();p.add_argument('--out',type=Path,required=True)
     for k in ('study-version','study-job','audit-version','audit-job'):p.add_argument('--'+k,required=True)
     p.add_argument('--extra-stage',nargs=2,action='append',default=[])
@@ -19,8 +20,8 @@ def main():
         assert version and all(c.isalnum() or c=='-' for c in version)
         assert Path(job).name==job and job.endswith('.json')
     stamp=uuid.uuid4().hex[:12]
-    remote_archive='/workspace/e1/e50-archive-'+stamp+'.tar.gz'
-    host_archive='/tmp/e50-archive-'+stamp+'.tar.gz'
+    remote_archive='/workspace/e1/'+experiment+'-archive-'+stamp+'.tar.gz'
+    host_archive='/tmp/'+experiment+'-archive-'+stamp+'.tar.gz'
     code='''import io,pathlib,tarfile,sys,json
 r=pathlib.Path('/workspace/e1/resident-verification');buf=io.BytesIO()
 with tarfile.open(fileobj=buf,mode='w:gz',dereference=True) as t:
@@ -28,8 +29,8 @@ with tarfile.open(fileobj=buf,mode='w:gz',dereference=True) as t:
  for job in ('520-e49-capacity-v1.json','528-e49-study-v2.json'):
   t.add(r/'jobs/done'/job,arcname='references/'+job)
  for version,job in PAIRS:
-  t.add(r.parent/('e50-own-20261025-'+version),arcname='stages/'+version,filter=lambda x:None if '__pycache__' in x.name else x)
-  wrapper='e50_job_'+version.replace('-','_')+'.py';t.add(r/wrapper,arcname=wrapper);t.add(r/'jobs/done'/job,arcname='jobs/done/'+job)
+  t.add(r.parent/(STAGE_PREFIX+version),arcname='stages/'+version,filter=lambda x:None if '__pycache__' in x.name else x)
+  wrapper=WRAPPER_PREFIX+version.replace('-','_')+'.py';t.add(r/wrapper,arcname=wrapper);t.add(r/'jobs/done'/job,arcname='jobs/done/'+job)
  for name in ('e33-online-seal.json','e27-linear-model.json','e29-frozen-costs.json'):
   t.add(r/'artifacts'/name,arcname='frozen/'+name)
  for name in ('e3_target.py','e3_wide_target.py'):
@@ -47,7 +48,7 @@ with tarfile.open(fileobj=buf,mode='w:gz',dereference=True) as t:
  for name in seal['external_source_sha256']:
   t.add(r.parent/'e2-load/reference/tensorfold'/name,arcname='external/tensorfold/'+name)
 payload=buf.getvalue();pathlib.Path(ARCHIVE).write_bytes(payload);import hashlib;print(json.dumps(dict(sha256=hashlib.sha256(payload).hexdigest(),bytes=len(payload))))
-'''.replace('PAIRS',repr(pairs)).replace('ARCHIVE',repr(remote_archive))
+'''.replace('PAIRS',repr(pairs)).replace('ARCHIVE',repr(remote_archive)).replace('STAGE_PREFIX',repr(stage_prefix)).replace('WRAPPER_PREFIX',repr(experiment+'_job_'))
     result=subprocess.run(['ssh','-o','BatchMode=yes','-o','ConnectTimeout=12','hermes-spark','docker exec -i spark-infer-q-e2-load python3 -'],input=code.encode(),capture_output=True,check=True)
     seal=json.loads(result.stdout);a.out.mkdir(parents=True)
     subprocess.run(['ssh','-o','BatchMode=yes','-o','ConnectTimeout=12','hermes-spark','docker cp spark-infer-q-e2-load:'+remote_archive+' '+host_archive],check=True,capture_output=True)

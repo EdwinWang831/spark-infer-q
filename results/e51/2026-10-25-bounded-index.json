@@ -1,0 +1,706 @@
+{
+  "status": "PASS_E51_EVIDENCE",
+  "date": "2026-10-25",
+  "provenance": {
+    "kernel_first": {
+      "job": "562-e51-kernel-v1.json",
+      "sha256": "6bcb2db7cca965c816e3b92b128e67aa49becbd3e4cab5b4c9f2139e08e2223a",
+      "manifest_sha256": "a66b60a2f3bf65367a4cb815e6d0dd0bf97dd2eb2434666ec6bd12820312dc1c"
+    },
+    "kernel_first_audit": {
+      "job": "564-e51-kernel-audit-v1.json",
+      "sha256": "3a9bf594c5321877bf31637157aaff681554a8c2fb6f6a1a55488dc3612da7e6",
+      "manifest_sha256": "a66b60a2f3bf65367a4cb815e6d0dd0bf97dd2eb2434666ec6bd12820312dc1c"
+    },
+    "bf16": {
+      "job": "566-e51-study-bf16-v1.json",
+      "sha256": "42869e45f9e3e9416115918b6cbfd47f58e17a85e31c45df418efd340547c734",
+      "manifest_sha256": "781455c0590af5f39afbbaf91a73a9c8767645f987faf38ae460d79f6857f995"
+    },
+    "kernel": {
+      "job": "568-e51-kernel-v2.json",
+      "sha256": "bee9016c5d323e15c139fdeffa16944600a81280a792b9e0ce5fda0cac64fab5",
+      "manifest_sha256": "46c96f70d2ee13d9a95cbfd158eb3d6a31a08fceab8bb485fd675c8140e30357"
+    },
+    "bf16_audit": {
+      "job": "570-e51-bf16-audit-v1.json",
+      "sha256": "a0bf8361a35be608b96107f341ca9e39dc27b5d6caedc35b69cea1fcd904f319",
+      "manifest_sha256": "46c96f70d2ee13d9a95cbfd158eb3d6a31a08fceab8bb485fd675c8140e30357"
+    },
+    "fp8": {
+      "job": "574-e51-study-fp8-v2.json",
+      "sha256": "6bc6759c875ba631cf8a9d97c520b6fdf45db51ac25ff84528c0070bbaa841d1",
+      "manifest_sha256": "af3413a7d2f59f373c1cbc12b35856124bcc4b2eea8dbe7da05a642eac6e4a92"
+    },
+    "fp8_audit": {
+      "job": "576-e51-fp8-audit-v2.json",
+      "sha256": "684c9128373f7024c59af15f5115b777fa5f41ec15319e95e17ee100644a1cff",
+      "manifest_sha256": "791ac9a92ddc43ece121fd77376f77f05d80b2b26ec8bf63f75cba32a2e52f93"
+    },
+    "kernel_audit": {
+      "job": "578-e51-kernel-audit-v2.json",
+      "sha256": "d73ea32c0de1bbecf988ab009576ba86376a6a7b1ead80457487182dc6706fcc",
+      "manifest_sha256": "303e7dedda25a20aa34262f663ab4a72fc9a82f5c84f7fa29eb53d5082eb88dd"
+    },
+    "repeat": {
+      "job": "584-e51-repeat-v2.json",
+      "sha256": "97d43a50228f57d50e7a7aa04290354a1a68281ba1f2c7413d2eb505a7ade093",
+      "manifest_sha256": "09bb08bdc1685d6d7788090b2645a2cec85a021d75d9c0f2fe1803215f9e5b27"
+    },
+    "repeat_audit": {
+      "job": "586-e51-repeat-audit-v2.json",
+      "sha256": "0a5eb189ff430e4a3dc166798821c0f64dedeb75d38711e32eaf326c4ac42e84",
+      "manifest_sha256": "95c11877d399f4fabc2ed695ccb6f550df402a1e3570b90aaf73c1143e131b78"
+    }
+  },
+  "resident": {
+    "pid": 46235,
+    "load_count": 1,
+    "allocated_bytes": 77393408000
+  },
+  "kernel_cases": 26,
+  "allocations": [
+    {
+      "kv_dtype": "bf16",
+      "full": {
+        "allocated_bytes": 7685497344,
+        "storage_bytes": 7684436028,
+        "raw_bytes": 805355520,
+        "kv_bytes": 6442844208,
+        "pool_bytes": 201338880
+      },
+      "ring": {
+        "allocated_bytes": 6885385728,
+        "storage_bytes": 6885371964,
+        "raw_bytes": 6291456,
+        "kv_bytes": 6442844208,
+        "pool_bytes": 201338880
+      },
+      "saved_bytes": 800111616
+    },
+    {
+      "kv_dtype": "fp8",
+      "full": {
+        "allocated_bytes": 4564744704,
+        "storage_bytes": 4563683388,
+        "raw_bytes": 805355520,
+        "kv_bytes": 3322091568,
+        "pool_bytes": 201338880
+      },
+      "ring": {
+        "allocated_bytes": 3765680640,
+        "storage_bytes": 3764619324,
+        "raw_bytes": 6291456,
+        "kv_bytes": 3322091568,
+        "pool_bytes": 201338880
+      },
+      "saved_bytes": 799064064
+    }
+  ],
+  "studies": [
+    {
+      "kv_dtype": "bf16",
+      "runs": [
+        {
+          "mode": "full",
+          "decode_tok_s": 34.44481141889394,
+          "decode_ms": 14835.325813968666,
+          "decode_tokens": 511,
+          "ttft_ms": 217540.9041220555,
+          "request_ms": 232384.17814602144,
+          "output_tokens": 512,
+          "verify_rounds": 180,
+          "accepted": 331,
+          "observed": 478,
+          "phase_ms": {
+            "draft_ms": 2761.15384476725,
+            "verify_ms": 10402.642385219224,
+            "commit_ms": 212.89742115186527
+          },
+          "peak_allocated_bytes": 87179373056,
+          "state_storage_bytes": 7684436028
+        },
+        {
+          "mode": "ring",
+          "decode_tok_s": 34.44783064513823,
+          "decode_ms": 14834.025551972445,
+          "decode_tokens": 511,
+          "ttft_ms": 219829.03162098955,
+          "request_ms": 234671.4377590106,
+          "output_tokens": 512,
+          "verify_rounds": 180,
+          "accepted": 331,
+          "observed": 478,
+          "phase_ms": {
+            "draft_ms": 2722.247989382595,
+            "verify_ms": 10438.599377463106,
+            "commit_ms": 210.90421004919335
+          },
+          "peak_allocated_bytes": 86347964416,
+          "state_storage_bytes": 6885371964
+        }
+      ],
+      "decode_change": 8.765402160504365e-05,
+      "request_wall_change": 0.009842578919257994,
+      "state_storage_saved_bytes": 799064064,
+      "exact_output_live_state_budget_features_selectors": true,
+      "full_logit_diagnostic": false,
+      "output_sha256": "e2c1d110cc9de617eb1a3f21e808316233e6ec7ec47e35c2d0514c7255d2fa5f",
+      "live_state_sha256": "d117d01079180489bf7eeec6f241b13ae8d0df8d681421cc8ff6abd0618740e7",
+      "scope": "one same-format full request pair; single request; no eight-way execution or quality parity"
+    },
+    {
+      "kv_dtype": "fp8",
+      "runs": [
+        {
+          "mode": "full",
+          "decode_tok_s": 27.091627303883403,
+          "decode_ms": 18861.916055029724,
+          "decode_tokens": 511,
+          "ttft_ms": 216214.08196201082,
+          "request_ms": 235084.8656439921,
+          "output_tokens": 512,
+          "verify_rounds": 174,
+          "accepted": 337,
+          "observed": 485,
+          "phase_ms": {
+            "draft_ms": 2723.191099707037,
+            "verify_ms": 14324.002550798468,
+            "commit_ms": 217.52927650231868
+          },
+          "peak_allocated_bytes": 84058596352,
+          "state_storage_bytes": 4563683388
+        },
+        {
+          "mode": "ring",
+          "decode_tok_s": 35.150105226051025,
+          "decode_ms": 14537.652069993783,
+          "decode_tokens": 511,
+          "ttft_ms": 218318.5414460022,
+          "request_ms": 232865.2599650086,
+          "output_tokens": 512,
+          "verify_rounds": 174,
+          "accepted": 337,
+          "observed": 485,
+          "phase_ms": {
+            "draft_ms": 2660.086699645035,
+            "verify_ms": 10184.140259982087,
+            "commit_ms": 211.15985553478822
+          },
+          "peak_allocated_bytes": 83227190784,
+          "state_storage_bytes": 3764619324
+        }
+      ],
+      "decode_change": 0.2974527086090726,
+      "request_wall_change": -0.009441720856436686,
+      "state_storage_saved_bytes": 799064064,
+      "exact_output_live_state_budget_features_selectors": true,
+      "full_logit_diagnostic": true,
+      "output_sha256": "1d377552c2941fc8099de9dd0e79811044d1b50727b24dff3bd45644696bd48a",
+      "live_state_sha256": "66862f2810cf936a503e094319e46e248a1cbff51dac576f1e958faa1b1a24c4",
+      "scope": "one same-format full request pair; single request; no eight-way execution or quality parity"
+    }
+  ],
+  "repeat": {
+    "seeded_tps": {
+      "full": 38.494033659596255,
+      "ring": 38.48969269907758
+    },
+    "aggregate_change": -0.0001127696971706671,
+    "per_pair_change": [
+      0.0031268654941509766,
+      0.002379045427942872,
+      0.0005897184876701989,
+      -0.0065758831132894935
+    ],
+    "all_pairs_positive": false,
+    "same_kv_pool_scratch_head_addresses": true,
+    "full_request_fidelity": true,
+    "profiles": {
+      "full": {
+        "phase": "e50.verify",
+        "rounds": 16,
+        "wall_us": 955910.563,
+        "kernel_calls": 29888,
+        "kernel_sum_us": 902251.511,
+        "kernel_union_us": 901914.6882324219,
+        "activity_union_us": 902320.8061523438,
+        "families": {
+          "other": {
+            "calls": 21376,
+            "total_us": 134227.11799999775,
+            "fraction": 0.14876906978102888
+          },
+          "bf16_matmul": {
+            "calls": 3136,
+            "total_us": 115754.97499999966,
+            "fraction": 0.12829568428397972
+          },
+          "quantized_projections": {
+            "calls": 3072,
+            "total_us": 241434.74499999994,
+            "fraction": 0.2675914000214957
+          },
+          "experts": {
+            "calls": 1536,
+            "total_us": 335736.8990000001,
+            "fraction": 0.3721100989101032
+          },
+          "qsa_selection": {
+            "calls": 384,
+            "total_us": 64590.67699999998,
+            "fraction": 0.07158832788033977
+          },
+          "attention": {
+            "calls": 384,
+            "total_us": 10507.097,
+            "fraction": 0.011645419123049824
+          }
+        },
+        "top_kernels": [
+          {
+            "name": "void (anonymous namespace)::nvfp4_expert_kernel<2, 2, 4>(__nv_bfloat16 const*, int, int, uint4 const*, float const*, int, int, int const*, int const*, int const*, void*, int, float, int)",
+            "calls": 768,
+            "total_us": 225391.3890000001
+          },
+          {
+            "name": "void (anonymous namespace)::qmmf_kernel<2, 16, 64, 1, 4, 4, false, false, false>(__nv_bfloat16 const*, unsigned char const*, unsigned char const*, float, void*, float*, int, int, int, int, int, int, int)",
+            "calls": 1536,
+            "total_us": 158010.4809999999
+          },
+          {
+            "name": "_b16mm",
+            "calls": 3136,
+            "total_us": 115754.97499999966
+          },
+          {
+            "name": "void (anonymous namespace)::nvfp4_expert_kernel<1, 0, 4>(__nv_bfloat16 const*, int, int, uint4 const*, float const*, int, int, int const*, int const*, int const*, void*, int, float, int)",
+            "calls": 768,
+            "total_us": 110345.51000000013
+          },
+          {
+            "name": "void (anonymous namespace)::qmmf_kernel<2, 16, 64, 1, 4, 4, false, true, false>(__nv_bfloat16 const*, unsigned char const*, unsigned char const*, float, void*, float*, int, int, int, int, int, int, int)",
+            "calls": 1536,
+            "total_us": 83424.26400000002
+          },
+          {
+            "name": "_approx",
+            "calls": 16,
+            "total_us": 53554.308000000005
+          },
+          {
+            "name": "_select_tiles",
+            "calls": 192,
+            "total_us": 48225.488999999994
+          },
+          {
+            "name": "void (anonymous namespace)::chain_kernel<16, 48, true>(__nv_bfloat16 const*, __nv_bfloat16 const*, __nv_bfloat16 const*, float const*, float const*, float const*, __nv_bfloat16 const*, float, int, __nv_bfloat16*, float*, float*, float*, __nv_bfloat16*, float*, float*)",
+            "calls": 576,
+            "total_us": 24718.839999999964
+          },
+          {
+            "name": "_scores",
+            "calls": 192,
+            "total_us": 16365.188000000006
+          },
+          {
+            "name": "_router",
+            "calls": 768,
+            "total_us": 12374.327000000012
+          },
+          {
+            "name": "_chunks8",
+            "calls": 192,
+            "total_us": 9825.399
+          },
+          {
+            "name": "void at::native::elementwise_kernel<128, 4, at::native::gpu_kernel_impl<at::native::direct_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda()#3}::operator()() const::{lambda()#7}::operator()() const::{lambda(float)#1}>(at::TensorIteratorBase&, at::native::direct_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda()#3}::operator()() const::{lambda()#7}::operator()() const::{lambda(float)#1} const&)::{lambda(int)#1}>(int, at::native::gpu_kernel_impl<at::native::direct_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda()#3}::operator()() const::{lambda()#7}::operator()() const::{lambda(float)#1}>(at::TensorIteratorBase&, at::native::direct_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda()#3}::operator()() const::{lambda()#7}::operator()() const::{lambda(float)#1} const&)::{lambda(int)#1})",
+            "calls": 2304,
+            "total_us": 5364.6479999999765
+          },
+          {
+            "name": "_reduce",
+            "calls": 1568,
+            "total_us": 5037.324000000005
+          },
+          {
+            "name": "_hc_writeback",
+            "calls": 1648,
+            "total_us": 4627.527999999966
+          },
+          {
+            "name": "_topk_rows",
+            "calls": 768,
+            "total_us": 2803.717999999987
+          },
+          {
+            "name": "_hc_normed",
+            "calls": 1552,
+            "total_us": 2366.081000000001
+          },
+          {
+            "name": "(anonymous namespace)::plan_kernel(int const*, int, int, int, int*, int*, int*)",
+            "calls": 768,
+            "total_us": 2197.505000000001
+          },
+          {
+            "name": "_attn_prep8",
+            "calls": 192,
+            "total_us": 1856.8390000000006
+          },
+          {
+            "name": "_hc_act",
+            "calls": 1552,
+            "total_us": 1786.3689999999888
+          },
+          {
+            "name": "_bounds_tiles",
+            "calls": 16,
+            "total_us": 1676.711
+          },
+          {
+            "name": "void at::native::unrolled_elementwise_kernel<at::native::direct_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda()#3}::operator()() const::{lambda()#7}::operator()() const::{lambda(float)#1}, std::array<char*, 2ul>, 4, TrivialOffsetCalculator<1, unsigned int>, TrivialOffsetCalculator<1, unsigned int>, at::native::memory::LoadWithCast<1>, at::native::memory::StoreWithCast<1> >(int, at::native::direct_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda()#3}::operator()() const::{lambda()#7}::operator()() const::{lambda(float)#1}, std::array<char*, 2ul>, TrivialOffsetCalculator<1, unsigned int>, TrivialOffsetCalculator<1, unsigned int>, at::native::memory::LoadWithCast<1>, at::native::memory::StoreWithCast<1>)",
+            "calls": 768,
+            "total_us": 1666.7590000000075
+          },
+          {
+            "name": "_hc_mix",
+            "calls": 1552,
+            "total_us": 1612.5169999999657
+          },
+          {
+            "name": "void at::native::vectorized_elementwise_kernel<4, at::native::bfloat16_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda(float)#1}, std::array<char*, 2ul> >(int, at::native::bfloat16_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda(float)#1}, std::array<char*, 2ul>)",
+            "calls": 1536,
+            "total_us": 1428.9620000000039
+          },
+          {
+            "name": "void at::native::elementwise_kernel<128, 4, at::native::gpu_kernel_impl_nocast<at::native::direct_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda()#3}::operator()() const::{lambda()#12}::operator()() const::{lambda(c10::BFloat16)#1}>(at::TensorIteratorBase&, at::native::direct_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda()#3}::operator()() const::{lambda()#12}::operator()() const::{lambda(c10::BFloat16)#1} const&)::{lambda(int)#1}>(int, at::native::gpu_kernel_impl_nocast<at::native::direct_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda()#3}::operator()() const::{lambda()#12}::operator()() const::{lambda(c10::BFloat16)#1}>(at::TensorIteratorBase&, at::native::direct_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda()#3}::operator()() const::{lambda()#12}::operator()() const::{lambda(c10::BFloat16)#1} const&)::{lambda(int)#1})",
+            "calls": 768,
+            "total_us": 1323.8149999999944
+          },
+          {
+            "name": "_pool",
+            "calls": 192,
+            "total_us": 1238.2410000000002
+          }
+        ]
+      },
+      "ring": {
+        "phase": "e50.verify",
+        "rounds": 16,
+        "wall_us": 971589.988,
+        "kernel_calls": 29888,
+        "kernel_sum_us": 919532.75,
+        "kernel_union_us": 919204.6706542969,
+        "activity_union_us": 919578.1821289062,
+        "families": {
+          "other": {
+            "calls": 21376,
+            "total_us": 135326.83599999986,
+            "fraction": 0.1471691312789021
+          },
+          "bf16_matmul": {
+            "calls": 3136,
+            "total_us": 117822.6729999998,
+            "fraction": 0.1281331991709918
+          },
+          "quantized_projections": {
+            "calls": 3072,
+            "total_us": 246287.52,
+            "fraction": 0.2678398567098344
+          },
+          "experts": {
+            "calls": 1536,
+            "total_us": 344705.33599999995,
+            "fraction": 0.3748701022339878
+          },
+          "qsa_selection": {
+            "calls": 384,
+            "total_us": 64697.27700000003,
+            "fraction": 0.07035886106286049
+          },
+          "attention": {
+            "calls": 384,
+            "total_us": 10693.108000000006,
+            "fraction": 0.011628849543423012
+          }
+        },
+        "top_kernels": [
+          {
+            "name": "void (anonymous namespace)::nvfp4_expert_kernel<2, 2, 4>(__nv_bfloat16 const*, int, int, uint4 const*, float const*, int, int, int const*, int const*, int const*, void*, int, float, int)",
+            "calls": 768,
+            "total_us": 231101.927
+          },
+          {
+            "name": "void (anonymous namespace)::qmmf_kernel<2, 16, 64, 1, 4, 4, false, false, false>(__nv_bfloat16 const*, unsigned char const*, unsigned char const*, float, void*, float*, int, int, int, int, int, int, int)",
+            "calls": 1536,
+            "total_us": 161245.06500000026
+          },
+          {
+            "name": "_b16mm",
+            "calls": 3136,
+            "total_us": 117822.6729999998
+          },
+          {
+            "name": "void (anonymous namespace)::nvfp4_expert_kernel<1, 0, 4>(__nv_bfloat16 const*, int, int, uint4 const*, float const*, int, int, int const*, int const*, int const*, void*, int, float, int)",
+            "calls": 768,
+            "total_us": 113603.40900000006
+          },
+          {
+            "name": "void (anonymous namespace)::qmmf_kernel<2, 16, 64, 1, 4, 4, false, true, false>(__nv_bfloat16 const*, unsigned char const*, unsigned char const*, float, void*, float*, int, int, int, int, int, int, int)",
+            "calls": 1536,
+            "total_us": 85042.45500000005
+          },
+          {
+            "name": "_approx",
+            "calls": 16,
+            "total_us": 54521.35799999999
+          },
+          {
+            "name": "_select_tiles",
+            "calls": 192,
+            "total_us": 48174.780999999995
+          },
+          {
+            "name": "void (anonymous namespace)::chain_kernel<16, 48, true>(__nv_bfloat16 const*, __nv_bfloat16 const*, __nv_bfloat16 const*, float const*, float const*, float const*, __nv_bfloat16 const*, float, int, __nv_bfloat16*, float*, float*, float*, __nv_bfloat16*, float*, float*)",
+            "calls": 576,
+            "total_us": 24628.40300000003
+          },
+          {
+            "name": "_scores",
+            "calls": 192,
+            "total_us": 16522.495999999992
+          },
+          {
+            "name": "_router",
+            "calls": 768,
+            "total_us": 12553.367
+          },
+          {
+            "name": "_chunks8",
+            "calls": 192,
+            "total_us": 9892.468000000003
+          },
+          {
+            "name": "void at::native::elementwise_kernel<128, 4, at::native::gpu_kernel_impl<at::native::direct_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda()#3}::operator()() const::{lambda()#7}::operator()() const::{lambda(float)#1}>(at::TensorIteratorBase&, at::native::direct_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda()#3}::operator()() const::{lambda()#7}::operator()() const::{lambda(float)#1} const&)::{lambda(int)#1}>(int, at::native::gpu_kernel_impl<at::native::direct_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda()#3}::operator()() const::{lambda()#7}::operator()() const::{lambda(float)#1}>(at::TensorIteratorBase&, at::native::direct_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda()#3}::operator()() const::{lambda()#7}::operator()() const::{lambda(float)#1} const&)::{lambda(int)#1})",
+            "calls": 2304,
+            "total_us": 5363.368999999938
+          },
+          {
+            "name": "_reduce",
+            "calls": 1568,
+            "total_us": 5007.114999999989
+          },
+          {
+            "name": "_hc_writeback",
+            "calls": 1648,
+            "total_us": 4656.265999999974
+          },
+          {
+            "name": "_topk_rows",
+            "calls": 768,
+            "total_us": 2795.0769999999857
+          },
+          {
+            "name": "_hc_normed",
+            "calls": 1552,
+            "total_us": 2461.955000000004
+          },
+          {
+            "name": "(anonymous namespace)::plan_kernel(int const*, int, int, int, int*, int*, int*)",
+            "calls": 768,
+            "total_us": 2129.1240000000034
+          },
+          {
+            "name": "_prep",
+            "calls": 192,
+            "total_us": 1825.9260000000008
+          },
+          {
+            "name": "_hc_act",
+            "calls": 1552,
+            "total_us": 1787.3339999999755
+          },
+          {
+            "name": "void at::native::unrolled_elementwise_kernel<at::native::direct_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda()#3}::operator()() const::{lambda()#7}::operator()() const::{lambda(float)#1}, std::array<char*, 2ul>, 4, TrivialOffsetCalculator<1, unsigned int>, TrivialOffsetCalculator<1, unsigned int>, at::native::memory::LoadWithCast<1>, at::native::memory::StoreWithCast<1> >(int, at::native::direct_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda()#3}::operator()() const::{lambda()#7}::operator()() const::{lambda(float)#1}, std::array<char*, 2ul>, TrivialOffsetCalculator<1, unsigned int>, TrivialOffsetCalculator<1, unsigned int>, at::native::memory::LoadWithCast<1>, at::native::memory::StoreWithCast<1>)",
+            "calls": 768,
+            "total_us": 1708.520000000009
+          },
+          {
+            "name": "_bounds_tiles",
+            "calls": 16,
+            "total_us": 1675.938
+          },
+          {
+            "name": "_hc_mix",
+            "calls": 1552,
+            "total_us": 1627.845999999964
+          },
+          {
+            "name": "void at::native::vectorized_elementwise_kernel<4, at::native::bfloat16_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda(float)#1}, std::array<char*, 2ul> >(int, at::native::bfloat16_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda(float)#1}, std::array<char*, 2ul>)",
+            "calls": 1536,
+            "total_us": 1438.9480000000042
+          },
+          {
+            "name": "void at::native::elementwise_kernel<128, 4, at::native::gpu_kernel_impl_nocast<at::native::direct_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda()#3}::operator()() const::{lambda()#12}::operator()() const::{lambda(c10::BFloat16)#1}>(at::TensorIteratorBase&, at::native::direct_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda()#3}::operator()() const::{lambda()#12}::operator()() const::{lambda(c10::BFloat16)#1} const&)::{lambda(int)#1}>(int, at::native::gpu_kernel_impl_nocast<at::native::direct_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda()#3}::operator()() const::{lambda()#12}::operator()() const::{lambda(c10::BFloat16)#1}>(at::TensorIteratorBase&, at::native::direct_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda()#3}::operator()() const::{lambda()#12}::operator()() const::{lambda(c10::BFloat16)#1} const&)::{lambda(int)#1})",
+            "calls": 768,
+            "total_us": 1378.5929999999953
+          },
+          {
+            "name": "_pool",
+            "calls": 192,
+            "total_us": 1241.2159999999997
+          }
+        ]
+      }
+    },
+    "scope": "four AB/BA real-prefix seeded512 loops; excludes native Scheduler/events; profiles excluded from rates"
+  },
+  "eight_fp8": {
+    "common_area_bytes": 78121510400,
+    "forecast_bytes": 108246955520,
+    "saved_bytes": 6392512512,
+    "current_process_limit_bytes": 94489280512,
+    "executed": false,
+    "excluded": [
+      "eight Graph/head/draft overhead",
+      "system/driver/other process memory"
+    ]
+  },
+  "latest_library_sha256": {
+    "spark_infer_q/__init__.py": "623ddaf4adfbf51e0c029203b0ff1780ebcc5824ff8300de5f1e6d6cd819d5d7",
+    "spark_infer_q/bounded_index.py": "dbda1a72020d9fc07db5edcd535092905bd167a1f717ce64afe9f3267bb4fe08",
+    "spark_infer_q/bounded_index_kernels.py": "ad2c581af22819b821614a067856f7bef271ff8597130ea343ef00e84502f23c",
+    "spark_infer_q/budget_audit.py": "7c2116b666e99c4c07055426733a292e5219ca7b788ce0d0e45f75001640db68",
+    "spark_infer_q/budget_regret.py": "14477f3464091a5eaff1a9cbdb0df045b1c047570fe7a7a782b0c8e63076ba11",
+    "spark_infer_q/checkpoint.py": "d7027b4803ee2564f5a881c3dcbbbb58f0508ee3e8f66d7895fbb7b174aad6b8",
+    "spark_infer_q/collection_budget.py": "4319736e8acfbe4c88911961f37676b188a39a5a6c0a2216a886cb34addbbbb2",
+    "spark_infer_q/collection_trajectory.py": "b528e4e35b8deb7551782d390aee4d4fb40b407e8f966d02fe607c52e844d2f6",
+    "spark_infer_q/collector.py": "dc34bc95c2984ce099a881717c47659e928e89b2ebf55711ac57b291a1ad6677",
+    "spark_infer_q/confidence_budget.py": "b055819b45a2e4d04b773eef34aa0212b140ba3721fbb1f5ad192903463365b9",
+    "spark_infer_q/confidence_features.py": "6d40253da4dad1de1a6866767af154e3a3ce69647a80df0e2e931f5ab53f0fc1",
+    "spark_infer_q/confidence_head.py": "e27c07808689e54f8660ef8068884be874c0fd5045ed2acfa04fc929b286ad28",
+    "spark_infer_q/csf_loader.py": "1dd25c5e9129fc705c285673c68554546cd9b8b0a3b8813e2429fd9f945214cc",
+    "spark_infer_q/decision_head.py": "0d7337f1b3e2d19493dbe543680db32c428bb5c6f565539974954c2ec40d62a4",
+    "spark_infer_q/deepinfer_bridge.py": "37b07de39a1b14628de5c02e3bc6dec9007f9401435a7f094496d36e1b2134c8",
+    "spark_infer_q/dflash2_block.py": "e376a509f046ee41882147b560701029c25a93152b874702863d4875a0013376",
+    "spark_infer_q/dflash2_reference.py": "55863cffcdc7514d9ff9cab16493d77e0a39bb3e69c5565926bd902fb29c5681",
+    "spark_infer_q/dflash2_scored.py": "8175ca379543a27aa6015821f8810c3ff5ba5b197b682da6545377d2b270227b",
+    "spark_infer_q/draft_backbone.py": "e378bbc8ea733abca580955c07b303fb3645783c29f36ba24c8dff0f12520e6c",
+    "spark_infer_q/draft_context.py": "756869e7db93a56329079b7aaf542d25eb6d6858fbbf6f60fb4280f63e6ad3e5",
+    "spark_infer_q/draft_fastpath.py": "ddfc09b065f28ffcecd8a9ad8f7209d3d28fb0de2f8188dbc91bc8d55884fdb8",
+    "spark_infer_q/draft_fidelity.py": "1381ea37bac11e09c45197a35964c3849976d9f3911a171e0984914cedcd3bb0",
+    "spark_infer_q/draft_head.py": "cebeeaf86487f2487783fb0df5af465ce6a5a365f49565997d13bfff14a866a5",
+    "spark_infer_q/draft_signals.py": "5f6a0ea0708498b2aad1ffaab3e913c22891981be4ee7702d553d9851edb9c3a",
+    "spark_infer_q/executor.py": "e2d981663cfa9f71858fc2d8737246b8a10def79c62f6aa3e670ccb75e2bc16e",
+    "spark_infer_q/feature_window.py": "20d4218fa9839ce3836e27196251c43209c7d55eecf43e3d12280cab4fadf7f1",
+    "spark_infer_q/head_screen.py": "9a1859e5543f239653c96124a1b68928bb2b80f10309a30ff19ffb5336147a01",
+    "spark_infer_q/kaifra_graph.py": "ddae0aefd8af9a68eb22fdbcc98c123e57d8f9c5ba123d1eeb7686b1a42ab4bb",
+    "spark_infer_q/kaifra_http.py": "1b136bcf1e69bf43250a404e30791b1f9f34a30b823837112985c3019a12800f",
+    "spark_infer_q/kaifra_joint_runtime.py": "22640599f5692af471687d3d0bddf76080ae9c134d66cf0a8663c2752cf7e4aa",
+    "spark_infer_q/kaifra_joint_target.py": "e80d0386f53d9c0e34dea34fafb680f1a3d87822589c67a044a38aad3ce7083c",
+    "spark_infer_q/kaifra_optimized.py": "04cefcebfc41423ffdc2db8b1761562691f0844a256d66298051f54ec73142a2",
+    "spark_infer_q/kaifra_runtime.py": "7ecc87bc755352139c4c057696787194e9c9a6ed98b184a10f13f43e6416c747",
+    "spark_infer_q/kaifra_speculative.py": "9dab9406da5caf9b5a6f66cf512ea664d85a3c359d87606a7d8190f03d397ed6",
+    "spark_infer_q/linear_runtime.py": "16c8d55fa049d7f4d8985cd24982c653c0805d75a6c94facab9cd9718ad7b01f",
+    "spark_infer_q/local_policy.py": "de7b204f92685dbf68d8769df9bf63608c74c96167aa8cb6a08057f39ff3222f",
+    "spark_infer_q/long_draft_graph.py": "9b84b92b9766027775bfcf2752cca4abd424edb8214ab3f9e46440fc7b5b414d",
+    "spark_infer_q/long_target.py": "b351e631836fc0d083d44493eeb17d2e1d7493891caca4ddfd5043ef1f288749",
+    "spark_infer_q/mlp_head.py": "52e378708572736c18e0d0cc10090b454209b5ac7fc1b5cd9fd689549b960020",
+    "spark_infer_q/mlp_runtime.py": "9a87d1efd104e33cea4a4454016a61df4b4e043f1768411db1764ae71a7b9855",
+    "spark_infer_q/moe_cost.py": "7e06f87b17dc789ba76f19e179962b778b78be937e9dfd59d609b707c08639ca",
+    "spark_infer_q/native_scheduler.py": "bf0c41f628ca6de5b7e873c90e33ec9f40d17731b19c67a3af74529c0b5dd8c7",
+    "spark_infer_q/past_cost.py": "d303247bc62badf4fc3f7d06952d78ba6551290ee8fec7a6d426b7ee9ac6d106",
+    "spark_infer_q/prefill.py": "2063bc06ae774652870c4f7c8915dbcefd1951fc9bfb2fdfe13655a145a9b915",
+    "spark_infer_q/prefill_evidence.py": "6350bdfb1b0feee8eddbb71bb350b6a53408c2248c7f34ff8b9c5573ba10e52c",
+    "spark_infer_q/prefill_experts.py": "ca38e9c6727a0cf3c88d3a2c731af121f5b9b8cb8994e4eebc308a16489b1d28",
+    "spark_infer_q/prefill_scratch.py": "cd13a071268b8f2ac6d110a9fd4e13c0bd16a93b20f5ccc2b2dd94efe0969e43",
+    "spark_infer_q/prefill_tensorfold.py": "b03cf057f3c9f9685005d883e6bdaf6d650698fe07a6a7937b80479e092622b4",
+    "spark_infer_q/prompt.py": "6b997c3c6e6834666dfa0f7d13a7c950f6dc2e9b1d80818e5ee4b08a9b886f58",
+    "spark_infer_q/regret_head.py": "ad23a257754d123d93feb805480e8d717192c9d99e83de5afbcdc0886bc647e0",
+    "spark_infer_q/residual_head.py": "a5f1dfa78560bf216a5a69f1e3a61973041a30bb00d16002dbb01c8be84bef18",
+    "spark_infer_q/rolling_draft.py": "a4b43054502234114ab9ca7eb1eaa7e3baf99e983dbd6aa874b1be0644a3f6ca",
+    "spark_infer_q/screened_head.py": "aaba84b6efd33b247fc9f54dcdda52a3db7c2b1a6d9d3cba6ccff56c1b722052",
+    "spark_infer_q/screened_head_fused.py": "ac963778f7e81a957838ab3443a49c7660ad342128fb9047c73d9b7f8f151bef",
+    "spark_infer_q/shared_graph.py": "75530c1adfe4f6d2a57447d47c98636c5f58964a883ea75503ff5097e1c88628",
+    "spark_infer_q/speculative.py": "ee1c2855cef1f31a868783d00f27cc88eef77f49ff95ff21dc2705d986f12045",
+    "spark_infer_q/tensorfold_block.py": "5527a5f6407c3dbb136003f687151b9754249423f964f71975e4eb9a1b9dadfa",
+    "spark_infer_q/verification_budget.py": "71f28552b8e83f682066edf9e9dd7267e3b54120c5d478949499a443f6eb5c50",
+    "spark_infer_q/wide_budget.py": "5cc2032ce32fd05b019aa90ddc0eefee80df2d2d850ede0e3bda3eedacd854fc"
+  },
+  "defaults_promoted": false,
+  "fp8_bf16_quality_parity": false,
+  "bf16_interface_note": "BF16 v1 predates copy/comparison safety-interface additions; FP8 v2 validates latest library",
+  "source": "sealed resident jobs, exact-state checks, native event timing and measured CUDA allocations",
+  "preserved_failures": [
+    {
+      "job": "580-e51-repeat-v1.json",
+      "job_sha256": "4889a35b147a0e046bcafc0091106c774adc329f387996eefbe6a90a951caddc",
+      "phase_status": "FAIL_E51_REPEAT",
+      "error": "'int' object is not callable",
+      "used_for_speed_claims": false
+    },
+    {
+      "job": "582-e51-repeat-audit-v1.json",
+      "job_sha256": "c8d789e1d254bcffcb4f59b980328581853f3989855645a7701a3f53962ea06a",
+      "phase_status": "FAIL_E51_AUDIT",
+      "error": "'result'",
+      "used_for_speed_claims": false
+    }
+  ],
+  "archive": {
+    "sha256": "ddeaaddd1625b83cc9da8da2e6371c41de57af3af1efc975b12bf487a7ce3016",
+    "bytes": 14387620,
+    "files": 1033,
+    "stages": [
+      [
+        "repeat-v2",
+        "584-e51-repeat-v2.json"
+      ],
+      [
+        "repeat-audit-v2",
+        "586-e51-repeat-audit-v2.json"
+      ],
+      [
+        "kernel-v1",
+        "562-e51-kernel-v1.json"
+      ],
+      [
+        "kernel-audit-v1",
+        "564-e51-kernel-audit-v1.json"
+      ],
+      [
+        "study-bf16-v1",
+        "566-e51-study-bf16-v1.json"
+      ],
+      [
+        "kernel-v2",
+        "568-e51-kernel-v2.json"
+      ],
+      [
+        "bf16-audit-v1",
+        "570-e51-bf16-audit-v1.json"
+      ],
+      [
+        "study-fp8-v2",
+        "574-e51-study-fp8-v2.json"
+      ],
+      [
+        "fp8-audit-v2",
+        "576-e51-fp8-audit-v2.json"
+      ],
+      [
+        "kernel-audit-v2",
+        "578-e51-kernel-audit-v2.json"
+      ],
+      [
+        "repeat-v1",
+        "580-e51-repeat-v1.json"
+      ],
+      [
+        "repeat-audit-v1",
+        "582-e51-repeat-audit-v1.json"
+      ]
+    ]
+  }
+}

@@ -23,6 +23,12 @@ E47's explicit INT8/FP8 KV options reuse the pinned TensorFold
 H32/group-scale and FP8 row-scale algorithms are upstream dependencies;
 `shared_graph.py` adds private request ownership and serial scratch reuse.
 
+`bounded_index.py` and `bounded_index_kernels.py` adapt TensorFold's State
+allocation and attention dispatch to a bounded raw-index ring. Prep and pool
+arithmetic is still executed by the external original JIT bodies; only the raw
+index pointer is translated. Full KV and pooled index history remain external
+TensorFold layouts and operators.
+
 MIT License
 
 Copyright (c) 2026 TensorFold contributors

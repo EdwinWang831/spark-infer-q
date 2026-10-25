@@ -8,7 +8,7 @@ def family(name):
     if 'qmmf_kernel' in name:return 'quantized_projections'
     if '_b16mm' in name:return 'bf16_matmul'
     if name in ('_scores','_select_tiles') or any(k in name.lower() for k in ('radix','select_top','indexer','_score_blocks','_pick')):return 'qsa_selection'
-    if name in ('_chunks','_merge'):return 'attention'
+    if name in ('_chunks','_chunks8','_merge','_merge8'):return 'attention'
     return 'other'
 
 
