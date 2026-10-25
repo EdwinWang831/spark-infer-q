@@ -65,7 +65,13 @@ class SchedulerBridge:
         self.slots = [None]*max_requests
         self.requests, self.completed, self.events = {}, {}, []
         self.pending, self.poisoned, self.closed = None, False, False
-        self.block_count = 1 + max_requests*((capacity+15)//16+2)
+        # These block IDs account for private Qwen state; they do not allocate
+        # device KV. Native prefill reserves a prompt's complete block table on
+        # its first chunk, then refuses further chunks above its 90% watermark.
+        # Leave host accounting headroom even when every admitted slot is full,
+        # or a valid near-capacity prompt can wait forever after its first chunk.
+        accounted_blocks = 1 + max_requests*((capacity+15)//16+2)
+        self.block_count = (10*accounted_blocks+8)//9
         self.blocks = core.BlockManager(self.block_count)
         self.pool = core.SequenceMetadataPool()
         # With one rank and one admitted slot there cannot be a second waiting

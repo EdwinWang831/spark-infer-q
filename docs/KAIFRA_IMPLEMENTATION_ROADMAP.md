@@ -16,6 +16,10 @@
 减少6.97%；最终公开接口/Graph状态交接及本轮基线审计通过。CUDA机制保留MIT署名，
 加载器、状态与其他算子依赖仍保留；E43指令流水无收益和更早32MiB审计差额单独记录。
 
+[E45](E45_LONG_CONTEXT_REPORT.md) 已完成有界DFlash后缀、绝对位置投影、4K QSA/Graph与完整请求验证，
+并修复near-capacity原生逻辑块水位停滞；配对decode持平。每请求1M多并发仍是目标：下一步
+做物理KV分页/压缩及8K/32K验证；当前checkpoint位置配置262K，1M质量另设门槛。
+
 > **状态：设计提议，不包含任何实际实现或新的 GPU 运行结果。**  
 > **基础路线：基于 DeepInfer 原生 C++ Scheduler / MTPVarlen 进行 Qwen 与 Spark 深度适配，不从零实现新的 Scheduler；TensorFold 组件作为可替换执行后端，DFlash2 作为草稿提供者。**  
 > 此文档与 [Kaifra Vision RFC](KAIFRA_VISION_RFC.md) 同 PR，落实“怎样才算自己的引擎”。  

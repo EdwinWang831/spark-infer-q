@@ -36,6 +36,8 @@ class DraftState:
     next_width: int = 1
     current_drafts: tuple = (0,)*7
     cumulative: tuple = ()
+    context_start: int = 0
+    feature_window: object = None
 
 
 @dataclass(frozen=True)
@@ -87,9 +89,20 @@ class PostDraftBudget:
 
 class DFlashProvider:
     """Borrow loaded Q4 weights; optional existing F0/F1 head, no fitting."""
-    def __init__(self, worker, *, model=None, feature_group='f1', budget=None):
+    def __init__(self, worker, *, model=None, feature_group='f1', budget=None,
+                 history_window_rows=None, max_request_context=None):
         self.worker, self.model, self.feature_group = worker, model, feature_group
-        self.max_context = worker.max_context
+        self.max_context = worker.max_context if max_request_context is None else max_request_context
+        if type(self.max_context) is not int or self.max_context<8:
+            raise ValueError('invalid request context bound')
+        if history_window_rows is not None:
+            if (type(history_window_rows) is not int or history_window_rows<1 or
+                    history_window_rows+worker.block_size>worker.max_context or
+                    not callable(getattr(worker,'set_window',None))):
+                raise ValueError('bounded history requires a positioned rolling drafter')
+        elif self.max_context>worker.max_context:
+            raise ValueError('long requests require bounded positioned draft history')
+        self.history_window_rows=history_window_rows
         self.budget = budget
         self.deferred_draft = False
 
@@ -103,17 +116,21 @@ class DFlashProvider:
             # Its projection cache has one owner. On interleaving, reset the
             # cache before rebuilding from this request's committed context.
             worker.begin(handle)
+        start=getattr(state,'context_start',0)
+        if callable(getattr(worker,'set_window',None)):
+            worker.set_window(start)
+        context_rows=start+len(state.context)
         tokens, info = worker.propose(state.context, anchor)
         rates = None
         if self.model is not None:
             from .confidence_features import feature_vector
-            features = feature_vector(info['signals'], len(state.context),
+            features = feature_vector(info['signals'], context_rows,
                 state.output_tokens, remaining, False, self.feature_group)
             cumulative = self.model.predict(features)
             state.cumulative = tuple(cumulative)
             rates = conditional_rates(cumulative)
             if self.budget is not None:
-                state.next_width = self.budget.choose(cumulative, len(state.context), remaining)
+                state.next_width = self.budget.choose(cumulative, context_rows, remaining)
         return tokens, rates
 
 
@@ -135,6 +152,10 @@ class SpeculativeBackend:
     def create(self, handle):
         with self.target.torch.inference_mode():
             state = DraftState(self.target.state(), LaggedAcceptance(self.prior))
+            window=getattr(self.provider,'history_window_rows',None)
+            if window is not None:
+                from .feature_window import FeatureWindow
+                state.feature_window=FeatureWindow(window)
         self.states[handle] = state
         return state
 
@@ -149,6 +170,15 @@ class SpeculativeBackend:
             release(state.target)
         del self.states[handle]
         state.context = None
+        state.feature_window = None
+        state.context_start = 0
+
+    def _append_context(self,state,features):
+        if state.feature_window is None:
+            state.context=features if state.context is None else self.target.torch.cat([state.context,features])
+        else:
+            state.context=state.feature_window.append(features)
+            state.context_start=state.feature_window.start
 
     def synchronize(self):
         self.target.torch.cuda.synchronize()
@@ -166,7 +196,7 @@ class SpeculativeBackend:
                     t = time.perf_counter()
                     result = self.prefill_executor.advance(state.target, row.token_ids, capture=True)
                     logits, features = result.logits, result.features
-                    state.context = features if state.context is None else torch.cat([state.context,features])
+                    self._append_context(state,features)
                     verify_ms += (time.perf_counter()-t)*1000
                 for begin in (() if self.prefill_executor is not None else
                               range(0,len(row.token_ids),self.prefill_rows)):
@@ -174,7 +204,7 @@ class SpeculativeBackend:
                     t = time.perf_counter()
                     logits, features = target.step(state.target, ids, capture=True)
                     verify_ms += (time.perf_counter()-t)*1000
-                    state.context = features if state.context is None else torch.cat([state.context,features])
+                    self._append_context(state,features)
                     if self.observer:
                         self.observer(row.handle, row.position+begin, ids, logits, len(ids), state.target)
                 outputs = (int(logits[-1].argmax()),) if row.last_prompt_chunk else ()
@@ -204,13 +234,13 @@ class SpeculativeBackend:
                 state.policy.observe(observed,accepted)
                 t = time.perf_counter()
                 target.commit(state.target, buffers, len(row.token_ids), keep)
-                state.context = torch.cat([state.context,features[:keep]])
+                self._append_context(state,features[:keep])
                 commit_ms = (time.perf_counter()-t)*1000
                 if self.observer:
                     self.observer(row.handle,row.position,list(row.token_ids),logits,keep,state.target)
                 outputs = tuple(outputs)
             state.output_tokens += len(outputs)
-            if len(state.context) != state.target.pos:
+            if state.context_start+len(state.context) != state.target.pos:
                 raise BridgeError('draft context differs from committed target position')
             next_drafts = [0]*self.depth
             conditional = [0.0]*self.depth

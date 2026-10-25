@@ -1,5 +1,7 @@
 # Experiment plan
 
+2026-10-25 [E45 bounded draft history /4K](E45_LONG_CONTEXT_REPORT.md): exact QSA/Graph, rolling projection and complete greedy requests pass; raw feature ring99.61MiB/request, aggregate decode60.001→59.972 tok/s (no gain). Native logical-pool watermark stall reproduced and repaired; full failed/success/audit chain retained. Long HTTP and dual target-only isolation pass. Next: physical KV paging/compression and8K/32K; no1M or multi-request DFlash claim.
+
 2026-10-25 [E43](E43_PREFILL_PIPELINE_REPORT.md) rejects instruction-only expert scheduling; the earlier32MiB allocation audit remains unresolved. [E44](E44_MIA_PREFILL_TILE_REPORT.md) adapts Mia shared-input tiles: eligible complete-MoE cost −26.62%, long-prefill wall −6.97%, code1024/mixed1536 TTFT −10.60%/−3.76%. Full-model/current public hook and independent stable-baseline audit pass; opt-in, no new decode gain or Mia ranking.
 
 2026-10-24 [E42 wider owned prefill](E42_WIDER_PREFILL_REPORT.md): chunk1024 passes exact full-logit/features/state and Graph handoff against chunk512; long-input prefill wall −5.80%, complete code1024/mixed1536 requests −4.58%/−1.79%. Explicit1024-row option, default512; no confirmed decode gain.

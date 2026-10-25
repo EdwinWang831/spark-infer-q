@@ -6,7 +6,7 @@
 
 ## 现状一览
 
-截至 2026-10-25，本分支包含 E0–E44 研究记录（E26 依用户要求中止）、已验证的 K1–K3 原生调度运行时、单请求开销优化和双请求 target-only API。实验候选保留各自的验证范围，默认路径不变。
+截至 2026-10-25，本分支包含 E0–E45 研究记录（E26 依用户要求中止）、已验证的 K1–K3 原生调度运行时、单请求开销优化和双请求 target-only API。实验候选保留各自的验证范围，默认路径不变。
 
 已汇总的 main 与独立的 K4/服务、自演化设计路线，见[仓库导航](docs/REPOSITORY_STATUS.md)。
 
@@ -22,7 +22,8 @@ E33 用 INT8 辅助筛选、原 BF16 头最终裁决，在相同 W8 草稿/线�
 - **完整优化链路验证（E41）**：自主 prefill 已通过 Graph/E33/W8 交接、部分提交、取消复用及本机 HTTP 功能检查，输入覆盖至1,536 tokens。相同配置的 token API 请求中，code513 总耗时5.464→1.202秒，mixed1536 为15.347→2.131秒，对照为rows8；残差 decode 为54.63→54.41 tok/s，没有新增 decode 收益。[报告](docs/E41_PREFILL_GRAPH_REPORT.md)。
 - **更大自主 prefill 分块（E42）**：在已优化的512行对照上，1024行使长输入prefill合计耗时减少5.80%，code1024/mixed1536完整请求耗时减少4.58%/1.79%。logits、特征、状态、Graph交接与生命周期通过；开放1024行显式选项，默认保留512。残差decode仅+0.15%，没有证实新增decode收益。[报告](docs/E42_WIDER_PREFILL_REPORT.md)。
 - **Mia专家tile接入（E44）**：将保留MIT署名的共享输入tile接入自主prefill后端。相对已优化chunk1024，长输入prefill合计耗时减少6.97%；code1024/mixed1536首token时间减少10.60%/3.76%，完整请求耗时减少4.51%/1.47%。完整模型及最终公开接口精确通过；显式启用，没有新增decode收益或最新Mia排名结论。[报告](docs/E44_MIA_PREFILL_TILE_REPORT.md)。
-- **还没做到**：整体速度没有超过原生 TensorFold（E7 时 45.62 vs 49.18 tok/s，E8 之后没有重测）；多请求 DFlash、4K 以上上下文和随机采样仍待推进。
+- **有界草稿历史与4K（E45）**：每请求2040行镜像环通过绝对位置缓存、完整4K Graph/QSA/oracle和生命周期检查，原始草稿特征固定99.61MiB。配对汇总decode60.001→59.972 tok/s，没有新增提速；双长请求仅验证target-only隔离。这是每请求1M的基础，target分页/量化KV及位置扩展质量仍待验证。[报告](docs/E45_LONG_CONTEXT_REPORT.md) · [用法](docs/E45_LONG_CONTEXT_USAGE.md)。
+- **还没做到**：整体速度没有超过原生 TensorFold（E7 时 45.62 vs 49.18 tok/s，E8 之后没有重测）；多请求 DFlash、超出本轮4K的上下文、分页/量化KV、1M模型质量和随机采样仍待推进。
 
 ## 主要结果
 
@@ -37,6 +38,7 @@ E33 用 INT8 辅助筛选、原 BF16 头最终裁决，在相同 W8 草稿/线�
 | [E42](docs/E42_WIDER_PREFILL_REPORT.md) | 自主prefill分块512→1024，decode配置与调度预算相同 | 长输入prefill耗时−5.80%；code1024/mixed1536完整请求−4.58%/−1.79% | 显式选项；短输入不提速，不宣称新增decode收益 |
 | [E43](docs/E43_PREFILL_PIPELINE_REPORT.md) | 单tile专家MMA/FMA指令流水 | 完整MoE扰动成本+0.143%，组件精确通过 | 不采用；更早总allocated审计保留32MiB未解释增量 |
 | [E44](docs/E44_MIA_PREFILL_TILE_REPORT.md) | 将Mia共享输入plan64/RT4S4 gate-up/RT2S3 down接入自主prefill | 适用MoE成本−26.62%；长输入prefill耗时−6.97%；code1024/mixed1536首token耗时−10.60%/−3.76% | 显式后端；完整模型/最终接口及本轮稳定基线审计通过，默认不变 |
+| [E45](docs/E45_LONG_CONTEXT_REPORT.md) | 有界草稿历史/绝对位置投影，修复原生调度水位计数 | 完整4K QSA/Graph及请求精确通过，原始特征环99.61MiB/请求；decode60.001→59.972 tok/s | 显式启用；无新增提速，尚无分页/量化KV或1M支持 |
 | [E6](docs/E6_DRAFT_HEAD_REPORT.md) | 草稿输出头换成完整词表 Q4 | decode 41.70 → 45.54 tok/s（+9.23%） | 默认 |
 | [E8](docs/E8_INTEGRATION_REPORT.md) | prompt 按 8 行分块，沿用 decode 算术 | 完整请求快 1.67 倍；decode −1.14% | 默认 |
 | [E13](docs/E13_DRAFT_CACHE_CONFIDENCE_REPORT.md) | 增量缓存 DFlash 的历史投影 | 1K–2K 输入 +6.27%；短输入 −0.31% | 可选 |
@@ -130,7 +132,7 @@ E33 用 INT8 辅助筛选、原 BF16 头最终裁决，在相同 W8 草稿/线�
 - 保留E29 Graph为可选研究路径，优先target数据搬运/融合及真正共享GPU计算；W8相对纯Graph的独立增益仍未确认。
 - E8 之后重新对照原生 TensorFold。
 - 暂缓MLP/混合路线。先检查线性预算改变能否减少实际验证工作，再决定是否继续训练；保留独立测试与实际decode门槛。
-- 4K 以上上下文：先处理 DFlash 的 2048 滑窗和绝对位置。
+- 更长上下文：E45已验证有界草稿后缀与4K交接；接下来验证target分页/压缩KV的8K/32K路径。每请求1M多并发还需要容量和超出当前262K配置的位置/质量证据。
 - 将已验证的联合 Target 接入多请求动态 DFlash，再推进异步服务和更广任务覆盖。多请求调度的整体设计见[全局调度 RFC](docs/GLOBAL_COST_AWARE_SCHEDULER_RFC.md)（仅为设计提案）。
 - [提案状态表](docs/EXPERIMENTS.md#proposals-without-results-yet)区分尚未执行、部分验证的想法与后续已完成实验。
 

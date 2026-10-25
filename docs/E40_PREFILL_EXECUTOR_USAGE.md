@@ -112,3 +112,12 @@ organization, not a new expert kernel or complete independence from TensorFold.
 The provider targets the frozen Python operator interfaces used by E33/E36;
 the latest MiaAI-Lab Zig engine is a separate source of implementation ideas,
 not a drop-in dependency for this adapter.
+
+## Optional4K / bounded draft history (E45)
+
+The [E45 integration example](E45_LONG_CONTEXT_USAGE.md) combines capacity4608,
+logical4352, chunk1024 and the opt-in expert backend with an absolute-position
+2040-row draft suffix. Its [report](E45_LONG_CONTEXT_REPORT.md) validates full4K
+QSA/Graph handoff and complete requests. The constructor permits8192 for future
+experiments; that bound is not validation of8K. Target KV remains BF16 and full
+history; no1M, paged KV or multi-request DFlash support is implied.
