@@ -28,6 +28,11 @@
 峰值allocated82.63GiB；原始精度门槛未过，原生prefill优先还造成225.8秒输出空窗。
 下一优先级是公平调度与独立精度校准，不能将容量通过视为平滑并发服务。
 
+[E48](E48_PREFILL_FAIRNESS_REPORT.md) 已用显式原生轮询阶段完成同期双256K公平调度对照：
+A最长输出停顿225.42→0.842秒，完成453.03→241.60秒，双请求总wall持平。
+输出与完整已提交状态一致，生命周期/回收审计通过。下一步优先独立长文精度/质量校准和
+长请求HTTP生命周期验证；INT8原始精度门槛仍未过，尚无多请求DFlash、GPU batch或1M结论。
+
 > **状态：设计提议，不包含任何实际实现或新的 GPU 运行结果。**  
 > **基础路线：基于 DeepInfer 原生 C++ Scheduler / MTPVarlen 进行 Qwen 与 Spark 深度适配，不从零实现新的 Scheduler；TensorFold 组件作为可替换执行后端，DFlash2 作为草稿提供者。**  
 > 此文档与 [Kaifra Vision RFC](KAIFRA_VISION_RFC.md) 同 PR，落实“怎样才算自己的引擎”。  

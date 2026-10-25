@@ -46,7 +46,7 @@ class Plan:
 class SchedulerBridge:
     def __init__(self, core, torch, group, sampling_class, backend, *, vocab_size,
                  eos_ids, capacity=128, max_requests=2, token_budget=32,
-                 max_drafts=0):
+                 max_drafts=0,prefill_interleave=False):
         if type(max_drafts) is not int or not 0 <= max_drafts <= 7:
             raise ValueError('max_drafts must be 0..7')
         if os.environ.get('DEEPINFER_USE_NEXTN_DECODE') != str(max_drafts):
@@ -55,6 +55,13 @@ class SchedulerBridge:
         if (any(type(v) is not int for v in (capacity, max_requests, token_budget)) or
                 not (capacity >= 16 and max_requests >= 1 and token_budget >= 16)):
             raise ValueError('unsupported scheduler capacity')
+        if type(prefill_interleave) is not bool:
+            raise ValueError('prefill_interleave must be boolean')
+        if prefill_interleave and (max_requests!=2 or group.size()!=1 or max_drafts!=0):
+            raise ValueError('prefill interleave requires two single-rank target-only slots')
+        self.prefill_interleave=prefill_interleave
+        self._last_prompt=False
+        self.interleave_hints=dict(decode_after_prompt=0,prompt_after_decode=0,prompt_without_ready_decode=0)
         self.core, self.torch, self.sampling_class, self.backend = core, torch, sampling_class, backend
         self.vocab_size, self.eos_ids = vocab_size, frozenset(eos_ids)
         if not self.eos_ids or any(not 0 <= t < vocab_size for t in self.eos_ids):
@@ -80,7 +87,7 @@ class SchedulerBridge:
         # restarting this polling phase at admission also makes reuse immediate.
         # This counter is separate from native MTP schedule_cnt/process_cnt.
         self.single_slot = max_requests == 1 and group.size() == 1
-        prefill_interval = capacity+1 if self.single_slot else 1
+        prefill_interval = 2 if prefill_interleave else capacity+1 if self.single_slot else 1
         config = SimpleNamespace(max_model_len=capacity, runtime_max_model_len=capacity+2*max_drafts,
             max_num_batched_tokens=token_budget, max_num_seqs=max_requests,
             stop_preempted_request=True, chunked_prefill=True, engine_type=0,
@@ -103,6 +110,22 @@ class SchedulerBridge:
     def _terminal(self, seq):
         return seq.status not in (self.core.SequenceStatus.WAITING,
             self.core.SequenceStatus.RUNNING, self.core.SequenceStatus.SWAPPED)
+
+    def _prefill_phase(self):
+        if not self.prefill_interleave:return
+        live=list(self.requests.values())
+        waiting=any(e['seq'].status==self.core.SequenceStatus.WAITING for e in live)
+        ready=any(e['seq'].status==self.core.SequenceStatus.RUNNING and
+                  e['seq'].num_cached_tokens>=e['prompt_length'] for e in live)
+        if waiting:
+            # Single-rank NEXTN=0 only: choose a supported native polling phase,
+            # not a request/token plan. Native admission/queues still select work.
+            # An interval of2 makes phase1 a decode-only opportunity and phase0
+            # a prompt polling point. Without runnable decode, keep prefill moving.
+            yield_decode=ready and self._last_prompt
+            self.native.decode_step=1 if yield_decode else 0
+            key='decode_after_prompt' if yield_decode else 'prompt_after_decode' if ready else 'prompt_without_ready_decode'
+            self.interleave_hints[key]+=1
 
     def add(self, request_id, prompt_ids, max_tokens):
         import numpy as np
@@ -167,6 +190,7 @@ class SchedulerBridge:
         if self.pending is not None:
             raise BridgeError('previous plan not completed')
         self._retire()
+        self._prefill_phase()
         metadata, output = self.native.schedule(self.pool)
         if any(getattr(output, name).size for name in ('clone_states','clone_blocks','zero_states')):
             self.poisoned = True
@@ -246,6 +270,7 @@ class SchedulerBridge:
                     cancelled=entry['cancelled']))
             self.pool.release(plan.metadata)
             self.pending = None
+            self._last_prompt=any(row.prompt for row in plan.rows)
             self._retire()
             return pushed
         except Exception:

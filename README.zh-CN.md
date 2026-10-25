@@ -6,7 +6,7 @@
 
 ## 现状一览
 
-截至 2026-10-25，本分支包含 E0–E47 研究记录（E26 依用户要求中止）、已验证的 K1–K3 原生调度运行时、单请求开销优化和双请求 target-only API。实验候选保留各自的验证范围，默认路径不变。
+截至 2026-10-25，本分支包含 E0–E48 研究记录（E26 依用户要求中止）、已验证的 K1–K3 原生调度运行时、单请求开销优化和双请求 target-only API。实验候选保留各自的验证范围，默认路径不变。
 
 已汇总的 main 与独立的 K4/服务、自演化设计路线，见[仓库导航](docs/REPOSITORY_STATUS.md)。
 
@@ -25,7 +25,8 @@ E33 用 INT8 辅助筛选、原 BF16 头最终裁决，在相同 W8 草稿/线�
 - **有界草稿历史与4K（E45）**：每请求2040行镜像环通过绝对位置缓存、完整4K Graph/QSA/oracle和生命周期检查，原始草稿特征固定99.61MiB。配对汇总decode60.001→59.972 tok/s，没有新增提速；双长请求仅验证target-only隔离。这是每请求1M的基础，target分页/量化KV及位置扩展质量仍待验证。[报告](docs/E45_LONG_CONTEXT_REPORT.md) · [用法](docs/E45_LONG_CONTEXT_USAGE.md)。
 - **直接256K实跑（E46）**：单个原生请求处理262,080-token输入，用时230.4秒（1,137.5 input tok/s），生成24 tokens；三处合成检索键、16种长前缀Graph桶和target-only续写/状态检查通过。峰值CUDA allocated81.41GiB；尚未验证双请求256K或1M。[报告](docs/E46_256K_REPORT.md)。
 - **双256K状态与KV压缩（E47）**：两个独立262,080-token target-only请求共享计算缓冲区、输出头和prefill工作区；INT8 KV＋QSA索引每请求4.13GiB，峰值allocated82.63GiB，各自检索3/3，Graph/状态/缩放因子隔离通过。原始logit精度门槛未过，原生prefill优先导致225.8秒输出空窗；这是容量研究结果，默认不变。[报告](docs/E47_KV_DUAL_REPORT.md) · [用法](docs/E47_SHARED_GRAPH_USAGE.md)。
-- **还没做到**：整体速度没有超过原生 TensorFold（E7 时 45.62 vs 49.18 tok/s，E8 之后没有重测）；多请求 DFlash、平滑的256K并发服务及超出本轮256K的上下文、分页/量化KV、1M模型质量和随机采样仍待推进。
+- **双256K公平调度（E48）**：显式使用原生轮询阶段，在1024行prefill计划之间提供decode机会。一组同期配对中，A最长输出停顿225.42→0.842秒，完成时间453.03→241.60秒；双请求总耗时仍约453秒。输出与完整已提交状态一致，B首token时间增加0.076%。仅target-only token API；INT8精度门槛仍未过，默认不晋升。[报告](docs/E48_PREFILL_FAIRNESS_REPORT.md) · [用法](docs/E48_PREFILL_FAIRNESS_USAGE.md)。
+- **还没做到**：整体速度没有超过原生 TensorFold（E7 时 45.62 vs 49.18 tok/s，E8 之后没有重测）；多请求 DFlash、长上下文HTTP服务、物理KV分页、独立压缩KV质量校准、超出256K的上下文和随机采样仍待推进。
 
 ## 主要结果
 
@@ -43,6 +44,7 @@ E33 用 INT8 辅助筛选、原 BF16 头最终裁决，在相同 W8 草稿/线�
 | [E45](docs/E45_LONG_CONTEXT_REPORT.md) | 有界草稿历史/绝对位置投影，修复原生调度水位计数 | 完整4K QSA/Graph及请求精确通过，原始特征环99.61MiB/请求；decode60.001→59.972 tok/s | 显式启用；无新增提速，尚无分页/量化KV或1M支持 |
 | [E46](docs/E46_256K_REPORT.md) | 直接256K原生请求，Graph预热改用小状态seed | 262,080-token输入/230.4秒；生成24 tokens、检索3/3、Graph/状态精确通过；峰值allocated81.41GiB | 单请求容量/正确性，BF16 KV；无256K并发或通用质量结论 |
 | [E47](docs/E47_KV_DUAL_REPORT.md) | INT8/FP8 KV入口，双私有Graph槽共享串行工作区 | 两个262,080-token请求，KV/index各4.13GiB，峰值82.63GiB，各检索3/3 | 容量/隔离通过；原始精度门槛未过，225.8秒调度空窗；target-only |
+| [E48](docs/E48_PREFILL_FAIRNESS_REPORT.md) | 双target-only槽交替获得原生prefill/decode机会 | 一组双256K配对：A最长停顿225.42→0.842秒，完成453.03→241.60秒；总耗时453.24→452.27秒；完整状态一致 | 显式延迟改善；INT8精度门槛仍未过，无HTTP/batch或通用TPS结论 |
 | [E6](docs/E6_DRAFT_HEAD_REPORT.md) | 草稿输出头换成完整词表 Q4 | decode 41.70 → 45.54 tok/s（+9.23%） | 默认 |
 | [E8](docs/E8_INTEGRATION_REPORT.md) | prompt 按 8 行分块，沿用 decode 算术 | 完整请求快 1.67 倍；decode −1.14% | 默认 |
 | [E13](docs/E13_DRAFT_CACHE_CONFIDENCE_REPORT.md) | 增量缓存 DFlash 的历史投影 | 1K–2K 输入 +6.27%；短输入 −0.31% | 可选 |
@@ -71,7 +73,7 @@ E33 用 INT8 辅助筛选、原 BF16 头最终裁决，在相同 W8 草稿/线�
 **怎么读这些数字**
 
 - 每个实验用自己的任务集，不同行的 tok/s 不能直接比较，收益也不能相乘。
-- 都是单台 Spark、greedy 解码。联合 Target 测量双请求总吞吐，其余为单请求研究；大多数任务是合成提示，上下文最多约 2K token。
+- 都是单台 Spark、greedy 解码。联合 Target 测量双请求总吞吐，E47/E48研究双target-only 256K请求；较早实验多使用合成提示，上下文最多约 2K token。
 - 生成实验核对输出 token、committed logits 和 GDN/QSA 状态；CPU 原型和采集研究的具体核验范围见各自报告。
 - 特征提取、CPU 传输、预测等额外开销都算在耗时里。
 
@@ -136,7 +138,7 @@ E33 用 INT8 辅助筛选、原 BF16 头最终裁决，在相同 W8 草稿/线�
 - 保留E29 Graph为可选研究路径，优先target数据搬运/融合及真正共享GPU计算；W8相对纯Graph的独立增益仍未确认。
 - E8 之后重新对照原生 TensorFold。
 - 暂缓MLP/混合路线。先检查线性预算改变能否减少实际验证工作，再决定是否继续训练；保留独立测试与实际decode门槛。
-- 更长上下文：E47已完成压缩KV与共享工作区下的双256K target-only准入/隔离验证；接下来优先prefill/decode公平调度和独立长文精度/质量校准。每请求1M仍需容量和超出当前262K配置的位置/质量证据。
+- 更长上下文：E48已完成双256K target-only公平调度对照，输出与完整状态一致；接下来优先独立长文精度/质量校准及长请求HTTP生命周期验证。每请求1M仍需容量和超出当前262K配置的位置/质量证据。
 - 将已验证的联合 Target 接入多请求动态 DFlash，再推进异步服务和更广任务覆盖。多请求调度的整体设计见[全局调度 RFC](docs/GLOBAL_COST_AWARE_SCHEDULER_RFC.md)（仅为设计提案）。
 - [提案状态表](docs/EXPERIMENTS.md#proposals-without-results-yet)区分尚未执行、部分验证的想法与后续已完成实验。
 

@@ -1,5 +1,7 @@
 # Experiment plan
 
+2026-10-25 [E48 prefill/decode fairness](E48_PREFILL_FAIRNESS_REPORT.md): opt-in two-slot single-rank target-only native polling. One contemporary two256K pair reduces A max output gap225.42→0.842s and completion453.03→241.60s; total wall453.24→452.27s, B TTFT+0.076%. Full committed state/output exact, lifecycle and recovery pass. INT8 precision gate still failed; no HTTP, GPU batch, multi-request DFlash or default promotion.
+
 2026-10-25 [E47 compressed KV / two256K states](E47_KV_DUAL_REPORT.md): INT8/FP8 within-format prefill/Graph/state-scale checks pass. Both fail the original raw-logit L2 gate despite INT8 matching8/8 greedy outputs. Capacity-only INT8 run admits two distinct262080-token requests:4.13GiB cache/index each,82.63GiB peak, retrieval3/3 each, exact private-state continuation. Native prompt priority causes225.8s output gap. No default precision promotion, adaptive DFlash, GPU batching or serving-speed claim.
 
 2026-10-25 [E46 direct256K](E46_256K_REPORT.md): one native request,262080 input/24 output tokens,230.399s prefill,1137.50 input tok/s. Retrieval3/3,16 long Graph buckets, tiled QSA selector and same-prefix greedy/state checks pass; peak CUDA allocated81.41GiB, independent audit returns to baseline. BF16 KV, no reload, no concurrent256K/1M or general-quality claim. Next priority: KV compression and shared request workspaces.
