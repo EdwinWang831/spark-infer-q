@@ -6,7 +6,7 @@ A research project on accelerating Qwen inference on a single NVIDIA DGX Spark (
 
 ## At a glance
 
-As of 2026-10-24, this branch includes E0–E42 research records (E26 cancelled at the user’s request), the validated K1–K3 native-scheduler runtime, single-request overhead improvements and a two-request target-only API. Experimental candidates retain their individual scope; defaults are unchanged.
+As of 2026-10-25, this branch includes E0–E44 research records (E26 cancelled at the user’s request), the validated K1–K3 native-scheduler runtime, single-request overhead improvements and a two-request target-only API. Experimental candidates retain their individual scope; defaults are unchanged.
 
 See the [repository map](docs/REPOSITORY_STATUS.md) for the consolidated main branch and independent K4/service and self-evolution workstreams.
 
@@ -21,6 +21,7 @@ E33 preserves the original BF16 target decision through an INT8-assisted head sc
 - **Owned prefill module (E40)**: the engine owns prompt chunking, workspace lifetime and feature capture, with opt-in target-only/DFlash integration over TensorFold operators. Seven prefixes and 56 decode handoff steps pass exact checks. In matched eager-token-API tests, a controlled 512-token prompt/24-token reply takes 4.839→0.684 s with DFlash; this is against rows8, not the latest native engine or Graph/E33. [Report](docs/E40_PREFILL_EXECUTOR_REPORT.md) · [Usage](docs/E40_PREFILL_EXECUTOR_USAGE.md).
 - **Optimized prefill integration (E41)**: owned prefill passes Graph/E33/W8 handoff, partial commits, cancellation/reuse and loopback HTTP checks, with inputs up to 1,536 tokens. Matched token API requests take 5.464→1.202 s for code513 and 15.347→2.131 s for mixed1536 versus rows8; residual decode is 54.63→54.41 tok/s, with no new decode gain. [Report](docs/E41_PREFILL_GRAPH_REPORT.md).
 - **Wider owned prefill (E42)**: chunk1024 versus the optimized chunk512 path reduces summed long-input prefill wall by 5.80%; complete code1024/mixed1536 requests take 4.58%/1.79% less time. Exact logits/features/state, Graph handoff and lifecycle checks pass. Explicit 1024-row option, default512 retained; residual decode +0.15% is not a confirmed decode gain. [Report](docs/E42_WIDER_PREFILL_REPORT.md).
+- **Mia expert tile integration (E44)**: the MIT-attributed shared-input tile is available through an owned prefill backend. Against optimized chunk1024, long-prefill wall falls 6.97% in aggregate; code1024/mixed1536 TTFT falls 10.60%/3.76%, complete request wall 4.51%/1.47%. Full-model exactness and the final public API pass. Explicit option; no new decode gain or fresh Mia ranking. [Report](docs/E44_MIA_PREFILL_TILE_REPORT.md).
 - **Not there yet**: no overall lead over native TensorFold (45.62 vs 49.18 tok/s in E7; not rerun since E8). Multi-request DFlash, 4K+ context and random sampling remain open.
 
 ## Key results
@@ -34,6 +35,8 @@ E33 preserves the original BF16 target decision through an INT8-assisted head sc
 | [E39](docs/E39_PREFILL_CTA_REPORT.md) | CTA-shared packed weights with one 16-row accumulator per warp | lower register usage, but complete-MoE event cost +3.11% | Rejected; no prompt/decode gain or default change |
 | [E41](docs/E41_PREFILL_GRAPH_REPORT.md) | Owned 512-row prefill on the optimized Graph/E33/W8 path | code513 total 5.464→1.202 s; mixed1536 15.347→2.131 s; residual decode −0.41% | Exactness/lifecycle pass; opt-in, ≤1,536-token inputs, no 4K or HTTP speed claim |
 | [E42](docs/E42_WIDER_PREFILL_REPORT.md) | Owned prefill chunk512→1024, same optimized decode and scheduler budget | long-prefill wall −5.80%; complete code1024/mixed1536 −4.58%/−1.79% | Explicit option; short inputs do not improve, no new decode claim |
+| [E43](docs/E43_PREFILL_PIPELINE_REPORT.md) | Single-tile expert MMA/FMA instruction scheduling | complete-MoE perturbed cost +0.143%; exact component gates pass | Rejected; earlier total-allocation audit retains an unresolved32MiB increase |
+| [E44](docs/E44_MIA_PREFILL_TILE_REPORT.md) | Adapt Mia shared-input plan64 / RT4S4 gate-up / RT2S3 down into owned prefill | eligible complete-MoE cost −26.62%; long-prefill wall −6.97%; code1024/mixed1536 TTFT −10.60%/−3.76% | Explicit backend; full-model/public-hook checks and its stable-baseline audit pass, default unchanged |
 | [E6](docs/E6_DRAFT_HEAD_REPORT.md) | Full-vocabulary Q4 draft output head | decode 41.70 → 45.54 tok/s (+9.23%) | Default |
 | [E8](docs/E8_INTEGRATION_REPORT.md) | Eight-row prompt chunks using the decode arithmetic | complete requests 1.67× faster; decode −1.14% | Default |
 | [E13](docs/E13_DRAFT_CACHE_CONFIDENCE_REPORT.md) | Incremental cache for DFlash context projections | +6.27% on 1K–2K inputs; −0.31% on short inputs | Opt-in |
@@ -110,7 +113,7 @@ Each decode step has three parts:
 
 | Part | Source | Code in this repo |
 | --- | --- | --- |
-| Target execution, CUDA kernels, GDN/QSA commit | TensorFold (externally supplied source and checkpoint) | `scripts/e3_target.py`, `spark_infer_q/csf_loader.py` |
+| Target execution, CUDA kernels, GDN/QSA commit | TensorFold; optional Mia/TensorFold prefill expert tile with our host/backend integration | `scripts/e3_target.py`, `spark_infer_q/csf_loader.py`, `spark_infer_q/prefill_experts.py` |
 | Drafter | DFlash2 | `spark_infer_q/dflash2_block.py`, `draft_head.py` (Q4 head), `draft_context.py` (context cache) |
 | Verification budget | DeepInfer MTPVarlen | `spark_infer_q/verification_budget.py`, `confidence_head.py`, `confidence_features.py` |
 | Greedy verification contract | this repo | `spark_infer_q/speculative.py` |
@@ -177,6 +180,6 @@ Can we bring DeepInfer's engine, scheduling, speculative-verification and memory
 - [vLLM](https://github.com/vllm-project/vllm)
 - [SGLang](https://github.com/sgl-project/sglang)
 
-**Do not vendor upstream source or weights without reviewing the respective licenses and notices.** This repo contains planning notes, diagnostic/build/test harnesses, a bounded experimental request executor, adapters to externally supplied TensorFold blocks and the full target, a bounded eager DFlash2 bridge, and sanitized evidence. It does not vendor a complete Qwen model implementation, third-party kernels or model weights; the full loading/smoke harness uses externally supplied TensorFold source and checkpoint files.
+**Do not vendor upstream source or weights without reviewing the respective licenses and notices.** This repo contains planning notes, diagnostic/build/test harnesses, a bounded experimental request executor, adapters to externally supplied TensorFold blocks and the full target, a bounded eager DFlash2 bridge, and sanitized evidence. It includes an MIT-attributed adaptation of Mia/TensorFold prefill expert tiles; see [third-party notices](THIRD_PARTY_NOTICES.md). It does not include a complete Qwen model implementation or model weights; loading and remaining target operators use externally supplied TensorFold source and checkpoints.
 
 License: [Apache 2.0](LICENSE).

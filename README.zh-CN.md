@@ -6,7 +6,7 @@
 
 ## 现状一览
 
-截至 2026-10-24，本分支包含 E0–E42 研究记录（E26 依用户要求中止）、已验证的 K1–K3 原生调度运行时、单请求开销优化和双请求 target-only API。实验候选保留各自的验证范围，默认路径不变。
+截至 2026-10-25，本分支包含 E0–E44 研究记录（E26 依用户要求中止）、已验证的 K1–K3 原生调度运行时、单请求开销优化和双请求 target-only API。实验候选保留各自的验证范围，默认路径不变。
 
 已汇总的 main 与独立的 K4/服务、自演化设计路线，见[仓库导航](docs/REPOSITORY_STATUS.md)。
 
@@ -21,6 +21,7 @@ E33 用 INT8 辅助筛选、原 BF16 头最终裁决，在相同 W8 草稿/线�
 - **自主 Prefill 模块（E40）**：由引擎管理分块、工作区与特征捕获，显式接入 target-only/DFlash，仍复用 TensorFold 算子。七条前缀和56步 decode 交接精确通过；eager token API配对实测中，受控512-token输入/24-token输出的DFlash请求耗时4.839→0.684秒，对照为旧rows8，不是最新原生引擎或Graph/E33。[报告](docs/E40_PREFILL_EXECUTOR_REPORT.md) · [用法](docs/E40_PREFILL_EXECUTOR_USAGE.md)。
 - **完整优化链路验证（E41）**：自主 prefill 已通过 Graph/E33/W8 交接、部分提交、取消复用及本机 HTTP 功能检查，输入覆盖至1,536 tokens。相同配置的 token API 请求中，code513 总耗时5.464→1.202秒，mixed1536 为15.347→2.131秒，对照为rows8；残差 decode 为54.63→54.41 tok/s，没有新增 decode 收益。[报告](docs/E41_PREFILL_GRAPH_REPORT.md)。
 - **更大自主 prefill 分块（E42）**：在已优化的512行对照上，1024行使长输入prefill合计耗时减少5.80%，code1024/mixed1536完整请求耗时减少4.58%/1.79%。logits、特征、状态、Graph交接与生命周期通过；开放1024行显式选项，默认保留512。残差decode仅+0.15%，没有证实新增decode收益。[报告](docs/E42_WIDER_PREFILL_REPORT.md)。
+- **Mia专家tile接入（E44）**：将保留MIT署名的共享输入tile接入自主prefill后端。相对已优化chunk1024，长输入prefill合计耗时减少6.97%；code1024/mixed1536首token时间减少10.60%/3.76%，完整请求耗时减少4.51%/1.47%。完整模型及最终公开接口精确通过；显式启用，没有新增decode收益或最新Mia排名结论。[报告](docs/E44_MIA_PREFILL_TILE_REPORT.md)。
 - **还没做到**：整体速度没有超过原生 TensorFold（E7 时 45.62 vs 49.18 tok/s，E8 之后没有重测）；多请求 DFlash、4K 以上上下文和随机采样仍待推进。
 
 ## 主要结果
@@ -34,6 +35,8 @@ E33 用 INT8 辅助筛选、原 BF16 头最终裁决，在相同 W8 草稿/线�
 | [E39](docs/E39_PREFILL_CTA_REPORT.md) | CTA共享压缩权重，每warp保持16行累加器 | 寄存器占用降低，但完整MoE设备区间成本+3.11% | 不采用；没有新增prompt/decode收益或默认变更 |
 | [E41](docs/E41_PREFILL_GRAPH_REPORT.md) | 自主512行 prefill 接入 Graph/E33/W8 完整路径 | code513总耗时5.464→1.202秒；mixed1536为15.347→2.131秒；残差decode −0.41% | 精确性与生命周期通过；显式启用，输入≤1,536 tokens；无4K/HTTP测速结论 |
 | [E42](docs/E42_WIDER_PREFILL_REPORT.md) | 自主prefill分块512→1024，decode配置与调度预算相同 | 长输入prefill耗时−5.80%；code1024/mixed1536完整请求−4.58%/−1.79% | 显式选项；短输入不提速，不宣称新增decode收益 |
+| [E43](docs/E43_PREFILL_PIPELINE_REPORT.md) | 单tile专家MMA/FMA指令流水 | 完整MoE扰动成本+0.143%，组件精确通过 | 不采用；更早总allocated审计保留32MiB未解释增量 |
+| [E44](docs/E44_MIA_PREFILL_TILE_REPORT.md) | 将Mia共享输入plan64/RT4S4 gate-up/RT2S3 down接入自主prefill | 适用MoE成本−26.62%；长输入prefill耗时−6.97%；code1024/mixed1536首token耗时−10.60%/−3.76% | 显式后端；完整模型/最终接口及本轮稳定基线审计通过，默认不变 |
 | [E6](docs/E6_DRAFT_HEAD_REPORT.md) | 草稿输出头换成完整词表 Q4 | decode 41.70 → 45.54 tok/s（+9.23%） | 默认 |
 | [E8](docs/E8_INTEGRATION_REPORT.md) | prompt 按 8 行分块，沿用 decode 算术 | 完整请求快 1.67 倍；decode −1.14% | 默认 |
 | [E13](docs/E13_DRAFT_CACHE_CONFIDENCE_REPORT.md) | 增量缓存 DFlash 的历史投影 | 1K–2K 输入 +6.27%；短输入 −0.31% | 可选 |
@@ -110,7 +113,7 @@ E33 用 INT8 辅助筛选、原 BF16 头最终裁决，在相同 W8 草稿/线�
 
 | 部分 | 来源 | 本仓库代码 |
 | --- | --- | --- |
-| Target 执行、CUDA 内核、GDN/QSA 提交 | TensorFold（外部提供源码和检查点） | `scripts/e3_target.py`、`spark_infer_q/csf_loader.py` |
+| Target 执行、CUDA 内核、GDN/QSA 提交 | TensorFold；可选Mia/TensorFold prefill专家tile由本项目接入 | `scripts/e3_target.py`、`spark_infer_q/csf_loader.py`、`spark_infer_q/prefill_experts.py` |
 | 草稿模型 | DFlash2 | `spark_infer_q/dflash2_block.py`、`draft_head.py`（Q4 头）、`draft_context.py`（上下文缓存） |
 | 验证预算 | DeepInfer MTPVarlen | `spark_infer_q/verification_budget.py`、`confidence_head.py`、`confidence_features.py` |
 | greedy 验证规则 | 本仓库 | `spark_infer_q/speculative.py` |
@@ -177,6 +180,6 @@ python3 -m unittest discover -s tests -v
 - [vLLM](https://github.com/vllm-project/vllm)
 - [SGLang](https://github.com/sgl-project/sglang)
 
-**引入上游源码或权重前，须检查其许可证和声明。** 本仓库包含研究计划、诊断/构建/测试工具、有界的实验请求执行器、对外部 TensorFold 模块和完整 target 的适配、有界的 eager DFlash2 桥接，以及脱敏实验记录。不包含完整的 Qwen 模型实现、第三方内核或模型权重；完整加载与冒烟测试依赖外部提供的 TensorFold 源码和检查点文件。
+**引入上游源码或权重前，须检查其许可证和声明。** 本仓库包含研究计划、诊断/构建/测试工具、有界的实验请求执行器、对外部 TensorFold 模块和完整 target 的适配、有界的 eager DFlash2 桥接，以及脱敏实验记录。现包含保留MIT署名的Mia/TensorFold prefill专家tile适配，见[第三方说明](THIRD_PARTY_NOTICES.md)；不包含完整Qwen模型实现或模型权重，加载与其余target算子仍依赖外部TensorFold源码和检查点。
 
 许可证：[Apache 2.0](LICENSE)。

@@ -46,9 +46,11 @@ class TensorFoldPrefillProvider:
     max_chunk_rows = 1024
     arithmetic = 'e36_decode_mxfp8_decode_gdn_f32_moe'
 
-    def __init__(self, weights, torch, *, capacity):
+    def __init__(self, weights, torch, *, capacity, expert_backend=None):
         from tensorfold.families.qwen4_exp.cuda import forward, gdn
-        from tensorfold.families.qwen4_exp.cuda.state import Buffers
+        from tensorfold.families.qwen4_exp.cuda.state import Buffers, _MoECfg
+        if expert_backend is not None and not callable(expert_backend):
+            raise ValueError('prefill expert backend must be callable')
         if weights.comm is not None or int(weights.meta.get('world', 1)) != 1:
             raise ValueError('prefill provider requires world=1')
         if weights.x3 is not None or any(getattr(l.moe.experts, 'kernel', None) != 'nvfp4'
@@ -59,6 +61,7 @@ class TensorFoldPrefillProvider:
         if type(capacity) is not int or not 8 <= capacity <= 2048:
             raise ValueError('initial prefill capacity must be 8..2048')
         self.torch, self.ops, self.gdn, self.Buffers = torch, forward, gdn, Buffers
+        self.expert_backend, self.MoECfg = expert_backend, _MoECfg
         self.capacity = capacity
         self.vocab_size = int(weights.head.b.weight.shape[0])
         self.w = _matrix_view(weights, ('head',))
@@ -86,6 +89,14 @@ class TensorFoldPrefillProvider:
 
     def concatenate(self, features):
         return self.torch.cat(features, dim=0)
+
+    def _moe_block(self, layer, b, rows):
+        if self.expert_backend is None:
+            return self.ops.moe_block(layer, self.w, b, rows)
+        m = layer.moe
+        self.expert_backend(b.mixed[:rows], b.xs_mixed[:rows], m.router,
+                            m.experts, b.moe, self.MoECfg(self.w.cfg))
+        return 2, b.moe.y[:rows], b.moe.wts[:rows]
 
     def _gdn_block(self, layer, state, b, rows):
         w, f, g, cfg = self.w, self.ops, layer.gdn, self.w.cfg
@@ -119,7 +130,7 @@ class TensorFoldPrefillProvider:
         mode, branch = (self._gdn_block(layer, state, b, rows) if layer.linear else
                         f.attn_block(layer, w, segs, b, rows, False))
         f.hc_block(layer.mlp_hc, b, rows, *args, mode, b.inj_a[:rows], b.inj_m, b.h, branch=branch)
-        mode, branch, weights = f.moe_block(layer, w, b, rows)
+        mode, branch, weights = self._moe_block(layer, b, rows)
         return mode, branch, weights, b.inj_m
 
     def run(self, b, state, ids, *, capture):

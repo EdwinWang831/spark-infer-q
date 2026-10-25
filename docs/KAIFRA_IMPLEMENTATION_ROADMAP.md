@@ -12,6 +12,10 @@
 [E42](E42_WIDER_PREFILL_REPORT.md) 继续开放1024行显式分块，长输入prefill耗时减少5.80%；
 默认仍512，decode无新增已证实收益，算子依赖边界不变。
 
+[E44](E44_MIA_PREFILL_TILE_REPORT.md) 已接入Mia共享输入专家tile的可选后端，长输入prefill耗时
+减少6.97%；最终公开接口/Graph状态交接及本轮基线审计通过。CUDA机制保留MIT署名，
+加载器、状态与其他算子依赖仍保留；E43指令流水无收益和更早32MiB审计差额单独记录。
+
 > **状态：设计提议，不包含任何实际实现或新的 GPU 运行结果。**  
 > **基础路线：基于 DeepInfer 原生 C++ Scheduler / MTPVarlen 进行 Qwen 与 Spark 深度适配，不从零实现新的 Scheduler；TensorFold 组件作为可替换执行后端，DFlash2 作为草稿提供者。**  
 > 此文档与 [Kaifra Vision RFC](KAIFRA_VISION_RFC.md) 同 PR，落实“怎样才算自己的引擎”。  

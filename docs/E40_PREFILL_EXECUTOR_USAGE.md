@@ -78,6 +78,34 @@ nonzero-prefix1024-row incremental calls and4K remain outside the validation.
 The study used a max_chunk_rows=1024 subclass; the post-study production change
 only raises that admission bound, with identical inherited arithmetic.
 
+## Optional Mia shared-input expert tile (E44)
+
+[E44](E44_MIA_PREFILL_TILE_REPORT.md) validates the pinned SM121 binary and a
+public provider hook. With the matching prepared extension and recorded SHA256:
+
+```python
+from spark_infer_q.prefill_experts import PrefillExpertTile
+
+experts = PrefillExpertTile.from_file(extension_path,
+                                    expected_sha256=validated_binary_sha256)
+provider = TensorFoldPrefillProvider(target.w, target.torch,
+                                    capacity=target.capacity,
+                                    expert_backend=experts)
+with PrefillExecutor(provider, chunk_rows=1024) as prefill:
+    # Pass prefill_executor=prefill to the existing engine factory.
+    # Native token_budget must be >=1024 to deliver an eligible prompt plan.
+    ...
+```
+
+The default `expert_backend=None` retains the original operators. The explicit
+backend uses Mia's fixed plan64, RT4/S4 gate-up and RT2/S3 down at rows>=1024;
+shorter calls keep the original MoE. It borrows router/plan/shared-expert helpers
+and packed weights, without changing shared TensorFold dispatch. The extension
+is prepared with `scripts/e44_build.py` in the source-sealed resident workflow;
+no runtime compilation belongs inside request timing. This is a prepared research
+environment API, not a self-contained model distribution. MIT attribution and
+source hashes remain in the E44 report and THIRD_PARTY_NOTICES.
+
 External dependencies remain: weight loading, State/Buffers, input staging,
 attention/PLE/HC/MoE/commit and CUDA kernels. The first owned layer is execution
 organization, not a new expert kernel or complete independence from TensorFold.

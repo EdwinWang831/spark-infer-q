@@ -1,5 +1,7 @@
 # Experiment plan
 
+2026-10-25 [E43](E43_PREFILL_PIPELINE_REPORT.md) rejects instruction-only expert scheduling; the earlier32MiB allocation audit remains unresolved. [E44](E44_MIA_PREFILL_TILE_REPORT.md) adapts Mia shared-input tiles: eligible complete-MoE cost −26.62%, long-prefill wall −6.97%, code1024/mixed1536 TTFT −10.60%/−3.76%. Full-model/current public hook and independent stable-baseline audit pass; opt-in, no new decode gain or Mia ranking.
+
 2026-10-24 [E42 wider owned prefill](E42_WIDER_PREFILL_REPORT.md): chunk1024 passes exact full-logit/features/state and Graph handoff against chunk512; long-input prefill wall −5.80%, complete code1024/mixed1536 requests −4.58%/−1.79%. Explicit1024-row option, default512; no confirmed decode gain.
 
 2026-10-24 [E41 optimized prefill integration](E41_PREFILL_GRAPH_REPORT.md): E40 module passes full-logit Graph handoff, Graph/E33/W8 requests, partial commits, cancellation/reuse and loopback HTTP smoke. code513 total 5.464→1.202 s; mixed1536 15.347→2.131 s versus rows8; residual decode 54.63→54.41 tok/s. No 4K, HTTP speed, native-TensorFold lead or default promotion claim.
