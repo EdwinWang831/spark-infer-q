@@ -1,5 +1,9 @@
 # E45 opt-in 4K integration
 
+This page records the E45 configuration and its original validation boundary.
+For the subsequent direct256K run and updated physical capacity, see
+[E46](E46_256K_REPORT.md).
+
 This builds on the already prepared [resident workflow](RESIDENT_RESEARCH_WORKER.md)
 and [E44 expert binary](E40_PREFILL_EXECUTOR_USAGE.md#optional-mia-shared-input-expert-tile-e44).
 It borrows loaded weights and the pinned external operators. It is not a standalone

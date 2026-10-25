@@ -58,8 +58,8 @@ class TensorFoldPrefillProvider:
             raise ValueError('prefill provider requires the NVFP4 checkpoint path')
         if len(weights.layers) != 48 or [l.index for l in weights.layers] != list(range(48)):
             raise ValueError('prefill feature contract requires the 48-layer Qwen target')
-        if type(capacity) is not int or not 8 <= capacity <= 8192:
-            raise ValueError('bounded prefill capacity must be 8..8192')
+        if type(capacity) is not int or not 8 <= capacity <= 262160:
+            raise ValueError('bounded prefill capacity must be 8..262160')
         self.torch, self.ops, self.gdn, self.Buffers = torch, forward, gdn, Buffers
         self.expert_backend, self.MoECfg = expert_backend, _MoECfg
         self.capacity = capacity

@@ -118,6 +118,6 @@ not a drop-in dependency for this adapter.
 The [E45 integration example](E45_LONG_CONTEXT_USAGE.md) combines capacity4608,
 logical4352, chunk1024 and the opt-in expert backend with an absolute-position
 2040-row draft suffix. Its [report](E45_LONG_CONTEXT_REPORT.md) validates full4K
-QSA/Graph handoff and complete requests. The constructor permits8192 for future
-experiments; that bound is not validation of8K. Target KV remains BF16 and full
-history; no1M, paged KV or multi-request DFlash support is implied.
+QSA/Graph handoff and complete requests. [E46](E46_256K_REPORT.md) subsequently validates one near256K request, with
+physical262160/logical262144 and a compact Graph warmup seed. Target KV remains
+BF16 and full history; no1M, paged KV or concurrent256K support is implied.

@@ -1,5 +1,7 @@
 # Experiment plan
 
+2026-10-25 [E46 direct256K](E46_256K_REPORT.md): one native request,262080 input/24 output tokens,230.399s prefill,1137.50 input tok/s. Retrieval3/3,16 long Graph buckets, tiled QSA selector and same-prefix greedy/state checks pass; peak CUDA allocated81.41GiB, independent audit returns to baseline. BF16 KV, no reload, no concurrent256K/1M or general-quality claim. Next priority: KV compression and shared request workspaces.
+
 2026-10-25 [E45 bounded draft history /4K](E45_LONG_CONTEXT_REPORT.md): exact QSA/Graph, rolling projection and complete greedy requests pass; raw feature ring99.61MiB/request, aggregate decode60.001→59.972 tok/s (no gain). Native logical-pool watermark stall reproduced and repaired; full failed/success/audit chain retained. Long HTTP and dual target-only isolation pass. Next: physical KV paging/compression and8K/32K; no1M or multi-request DFlash claim.
 
 2026-10-25 [E43](E43_PREFILL_PIPELINE_REPORT.md) rejects instruction-only expert scheduling; the earlier32MiB allocation audit remains unresolved. [E44](E44_MIA_PREFILL_TILE_REPORT.md) adapts Mia shared-input tiles: eligible complete-MoE cost −26.62%, long-prefill wall −6.97%, code1024/mixed1536 TTFT −10.60%/−3.76%. Full-model/current public hook and independent stable-baseline audit pass; opt-in, no new decode gain or Mia ranking.

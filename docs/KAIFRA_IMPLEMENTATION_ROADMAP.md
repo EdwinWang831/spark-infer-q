@@ -20,6 +20,10 @@
 并修复near-capacity原生逻辑块水位停滞；配对decode持平。每请求1M多并发仍是目标：下一步
 做物理KV分页/压缩及8K/32K验证；当前checkpoint位置配置262K，1M质量另设门槛。
 
+[E46](E46_256K_REPORT.md) 按用户要求直接完成单请求256K：262080-token输入/230.4秒，
+24-token输出、合成检索3/3、长程Graph/selector/续写状态验证及独立回收审计通过。
+峰值allocated81.41GiB；下一步转向KV压缩/请求工作区共享，尚无双请求256K或1M证据。
+
 > **状态：设计提议，不包含任何实际实现或新的 GPU 运行结果。**  
 > **基础路线：基于 DeepInfer 原生 C++ Scheduler / MTPVarlen 进行 Qwen 与 Spark 深度适配，不从零实现新的 Scheduler；TensorFold 组件作为可替换执行后端，DFlash2 作为草稿提供者。**  
 > 此文档与 [Kaifra Vision RFC](KAIFRA_VISION_RFC.md) 同 PR，落实“怎样才算自己的引擎”。  

@@ -11,8 +11,8 @@ class LongTarget(Target):
         import torch
         from tensorfold.families.qwen4_exp.cuda import forward
         from tensorfold.families.qwen4_exp.cuda.state import Buffers,State
-        if type(capacity) is not int or not 16<=capacity<=8192:
-            raise ValueError('long target physical capacity must be16..8192')
+        if type(capacity) is not int or not 16<=capacity<=262160:
+            raise ValueError('long target physical capacity must be16..262160')
         self.torch,self.w,self.forward,self.State=torch,w,forward,State
         self.capacity=capacity
         self.buffers={r:Buffers(w,r,capacity,prefill=False) for r in range(1,9)}
