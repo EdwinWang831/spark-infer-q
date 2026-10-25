@@ -19,9 +19,10 @@ def run(session,arguments):
     for n,h in manifest.items():assert hashlib.sha256((root/n).read_bytes()).hexdigest()==h,n
     tag='_k4_progress_'+hashlib.sha256((root/'manifest.json').read_bytes()).hexdigest()[:16]
     pkg=ModuleType(tag);pkg.__path__=[str(root/'spark_infer_q')];sys.modules[tag]=pkg
-    torch=session.torch;target=executor=worker=server=server_thread=None
+    torch=session.torch;target=executor=worker=server=server_thread=None;draft_providers={}
+    draft_acceleration=bool(arguments.get('draft_acceleration'))
     affinity_service=bool(arguments.get('affinity_service'))
-    modes=('fast_prefill','fast_cpu') if affinity_service else ('baseline','interleave','fast_prefill')
+    modes=('eager','buffers','graphs') if draft_acceleration else (('fast_prefill','fast_cpu') if affinity_service else ('baseline','interleave','fast_prefill'))
     probe_only=bool(arguments.get('draft_probe_only'))
     report=dict(status='RUNNING',source_sha256=manifest,model_reloaded=False,correctness=[],timings=[],draft_probe=[],
         contract=dict(modes=modes,repetitions=0 if probe_only else 5,target='owned compact',draft='same owned batch DFlash/Q4/W8/E17/E29',
@@ -40,13 +41,16 @@ def run(session,arguments):
         hm=importlib.import_module(tag+'.screened_head_fused');loader=importlib.import_module(tag+'.qwen_state_kernel')
         dl=importlib.import_module(tag+'.draft_batch_w8');pm=importlib.import_module(tag+'.prefill');po=importlib.import_module(tag+'.prefill_tensorfold')
         wm=importlib.import_module(tag+'.kaifra_worker');sm=importlib.import_module(tag+'.kaifra_service')
-        cp=importlib.import_module(tag+'.worker_cpu') if affinity_service else None
+        cp=importlib.import_module(tag+'.worker_cpu') if affinity_service or draft_acceleration else None
         from e3_wide_target import WideTarget
         component=json.loads(Path('/workspace/e1/k4batch-20261023-target-component-v6/target-component.json').read_text())
         draft=json.loads(Path('/workspace/e1/k4batch-20261023-batch-draft-component-v5/batch-draft-result.json').read_text())
         ext=loader.load_state_kernel(component['kernel']['library'],component['kernel']['binary_sha256'])
         matmul,identity=dl.load_library(draft['kernel']['library'],draft['kernel']['binary_sha256'])
         base,profile=opt.optimized_provider(session);report['profile_metadata']=profile
+        if draft_acceleration:
+            draft_providers={mode:batch.BatchedRequestDraftProvider(base,matmul,kernel_identity=identity,
+                max_requests=2,buffers=mode!='eager',graphs=mode=='graphs') for mode in modes}
         target=cm.CompactTarget(WideTarget(session.weights,capacity=2048),hm.FusedScreenedHead(session.weights.head),ext)
         target.warmup();executor=pm.PrefillExecutor(po.TensorFoldPrefillProvider(session.weights,torch,capacity=2048),chunk_rows=128)
         oracle=WideTarget(session.weights,capacity=2048)
@@ -72,11 +76,14 @@ def run(session,arguments):
             finally:
                 if previous is not None:os.sched_setaffinity(0,previous)
         def make(mode):
-            provider=batch.BatchedRequestDraftProvider(base,matmul,kernel_identity=identity)
+            provider=draft_providers[mode] if draft_acceleration else batch.BatchedRequestDraftProvider(base,matmul,kernel_identity=identity)
+            if draft_acceleration and mode=='graphs' and not provider.backend.query_graphs.nodes:
+                provider.backend.warmup()
             engine=batch.batch_engine(native,target,provider,eos_ids=session.eos,prior=session.calibration['conditional_prior'],
                 capacity=768,tokenizer=session.tokenizer,interleave_prefill=mode!='baseline',
-                prompt_token_budget=128 if mode.startswith('fast') else 32,prefill_executor=executor if mode.startswith('fast') else None)
-            engine.capabilities['worker_cpu_policy']='performance' if mode=='fast_cpu' else 'default'
+                prompt_token_budget=128 if draft_acceleration or mode.startswith('fast') else 32,
+                prefill_executor=executor if draft_acceleration or mode.startswith('fast') else None)
+            engine.capabilities['worker_cpu_policy']='performance' if draft_acceleration or mode=='fast_cpu' else 'default'
             engine.metrics=[];engine.plan_trace=[];collect=engine._collect_events
             def traced(plan):
                 result=collect(plan);engine.metrics.extend(engine.last_step_metrics)
@@ -118,7 +125,7 @@ def run(session,arguments):
                             ft=torch.cat(features)
                             assert torch.equal(ft,state.context[-len(ft):]),'prompt features'
                             assert not oracle.state_difference(state.target,ref),'prompt state'
-                            if mode.startswith('fast'):assert torch.equal(captured.pop().logits,lg[-1:]),'prompt final logits'
+                            if draft_acceleration or mode.startswith('fast'):assert torch.equal(captured.pop().logits,lg[-1:]),'prompt final logits'
                             counts['prefill_checks']+=1
                         return result
                     engine.bridge.backend.advance=prompt
@@ -135,7 +142,7 @@ def run(session,arguments):
             finally:target.launch,target.commit,target.retire=launch,commit,retire;executor.advance=advance
         def start(mode,probe=False,affinity=None):
             nonlocal worker,server,server_thread
-            worker=wm.AsyncWorker(lambda:make(mode),context_factory=lambda:context(affinity,mode=='fast_cpu')).start();native.bind_worker(worker.thread)
+            worker=wm.AsyncWorker(lambda:make(mode),context_factory=lambda:context(affinity,draft_acceleration or mode=='fast_cpu')).start();native.bind_worker(worker.thread)
             if probe:instrument(worker.engine)
             server=sm.make_server(worker,('127.0.0.1',0));server_thread=Thread(target=server.serve_forever);server_thread.start()
         def stop():
@@ -166,6 +173,8 @@ def run(session,arguments):
             finally:response.close();conn.close()
         def pair(mode,group):
             before=dict(target.counters);jit=set(target.screen.kernel_sha256);worker.engine.metrics.clear();worker.engine.plan_trace.clear()
+            dg=getattr(worker.engine.bridge.backend.provider.backend,'query_graphs',None)
+            dc=dg.captures if dg else 0
             barrier=Barrier(2);first=Event()
             with ThreadPoolExecutor(2) as pool:rows=list(pool.map(lambda i:client(group,i,barrier,first),range(2)))
             worker.wait_idle(60);end=max(r['end'] for r in rows);cohort=min(r['chunks'][0][0] for r in rows)
@@ -180,6 +189,8 @@ def run(session,arguments):
                 stage_ms={k:sum(m[k] for m in worker.engine.metrics if not m['prompt']) for k in ('draft_ms','verify_ms','commit_ms')},
                 prompt_ms=sum(m['verify_ms'] for m in worker.engine.metrics if m['prompt']),
                 plan_trace=list(worker.engine.plan_trace),outputs_exact=True,
+                draft_captures=(dg.captures-dc) if dg else 0,
+                draft_capabilities=getattr(worker.engine.bridge.backend.provider.backend,'capabilities',{}),
                 captures=target.counters['captures']-before.get('captures',0),new_jit_shapes=sorted(set(target.screen.kernel_sha256)-jit),
                 counters={k:target.counters[k]-before.get(k,0) for k in target.counters})
         def instrument(engine):
@@ -201,33 +212,40 @@ def run(session,arguments):
                 for mode in modes:
                     save(dict(phase='correctness',mode=mode,group=group['name']))
                     report['correctness'].append(diagnostic(mode,group));save()
-            for mode in modes:
-                start(mode)
-                try:
-                    for group in groups:
-                        for attempt in range(5):
-                            save(dict(phase='warmup',mode=mode,group=group['name']))
-                            row=pair(mode,group)
-                            if not row['captures'] and not row['new_jit_shapes']:break
-                        else:raise AssertionError('serving warmup did not stabilize')
-                finally:stop()
-            for rep in range(0 if probe_only else 5):
-                order=modes[rep%len(modes):]+modes[:rep%len(modes)]
-                for mode in order:
+            # Keep each workload's working set warm in the bounded Target LRU.
+            # A second-sight capture can require more than one priming cohort;
+            # every cold observation is retained, without speed-based selection.
+            batches=[[g] for g in groups] if draft_acceleration else [groups]
+            for selected_groups in batches:
+                for mode in modes:
                     start(mode)
                     try:
-                        for group in groups:
-                            save(dict(phase='SSE',mode=mode,group=group['name'],repetition=rep))
-                            row=pair(mode,group)
-                            if row['captures'] or row['new_jit_shapes']:
-                                report.setdefault('late_shape_warmups',[]).append(row)
+                        for group in selected_groups:
+                            for attempt in range(5):
+                                save(dict(phase='warmup',mode=mode,group=group['name']))
                                 row=pair(mode,group)
-                            assert not row['captures'] and not row['new_jit_shapes']
-                            row['repetition']=rep;report['timings'].append(row);save()
+                                if draft_acceleration:report.setdefault('warmups',[]).append(row);save()
+                                if not row['captures'] and not row['new_jit_shapes'] and not row['draft_captures']:break
+                            else:raise AssertionError('serving warmup did not stabilize')
                     finally:stop()
+                for rep in range(0 if probe_only else 5):
+                    order=modes[rep%len(modes):]+modes[:rep%len(modes)]
+                    for mode in order:
+                        start(mode)
+                        try:
+                            for group in selected_groups:
+                                save(dict(phase='SSE',mode=mode,group=group['name'],repetition=rep))
+                                for attempt in range(6 if draft_acceleration else 2):
+                                    row=pair(mode,group)
+                                    if not row['captures'] and not row['new_jit_shapes'] and not row['draft_captures']:break
+                                    row['repetition']=rep;row['priming_attempt']=attempt
+                                    report.setdefault('late_shape_warmups',[]).append(row);save()
+                                else:raise AssertionError('formal shape did not stabilize')
+                                row['repetition']=rep;report['timings'].append(row);save()
+                        finally:stop()
             # Isolated eager draft spans on the same workload. GPU spans include
             # launch gaps; they are not a sum of individual kernel durations.
-            scopes=() if affinity_service else ('direct','SSE')
+            scopes=() if affinity_service or draft_acceleration else ('direct','SSE')
             affinity_groups={}
             if arguments.get('affinity_probe'):
                 frequencies={cpu:int((Path('/sys/devices/system/cpu')/('cpu'+str(cpu))/'cpufreq/cpuinfo_max_freq').read_text())
@@ -255,12 +273,18 @@ def run(session,arguments):
                         gpu_span_ms=r['start'].elapsed_time(r['end'])) for r in records]));save()
         assert target.inflight is None and not any(target.leased) and not torch.distributed.is_initialized()
         if affinity_service:report['contract'].update(experiment='same fast prefill, default vs performance-core owner thread',repetitions=5)
+        if draft_acceleration:
+            report['contract'].update(experiment='same fast prefill/interleaving/performance owner; eager vs buffers vs query graphs',
+                scope='two-request full SSE; Graph islands exclude context/attention/selector',repetitions=5,
+                warmup_order='one workload at a time, all modes warmed, five rotated repetitions',
+                late_shapes='retain every cold cohort; at most six attempts, first capture/JIT-free cohort is formal')
         report.update(status='PASS_K4_PROGRESS_CPU_SERVICE' if affinity_service else ('PASS_K4_PROGRESS_DRAFT' if probe_only else 'PASS_K4_PROGRESS_SERVICE'),correctness_counts=counts,capabilities=target.capabilities,
             gloo_restored=True,environment_restored=True);report.pop('active',None);save();return report
     finally:
         if worker is not None:worker.close(60)
         if server is not None:server.shutdown();server.server_close();server_thread.join(5)
         if executor is not None:executor.close()
+        for provider in draft_providers.values():provider.close()
         if target is not None:
             torch.cuda.synchronize()
             if target.inflight is not None:target.discard(target.inflight)

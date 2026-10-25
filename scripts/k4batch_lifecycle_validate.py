@@ -12,7 +12,7 @@ def run(session,arguments):
     for n,h in manifest.items():assert hashlib.sha256((root/n).read_bytes()).hexdigest()==h,n
     tag='_k4_lifecycle_'+hashlib.sha256((root/'manifest.json').read_bytes()).hexdigest()[:16]
     pkg=ModuleType(tag);pkg.__path__=[str(root/'spark_infer_q')];sys.modules[tag]=pkg
-    target=worker=None;cases=[]
+    target=worker=None;cases=[];owned_providers=[]
     def save(active):
         (root/'lifecycle-progress.json').write_text(json.dumps(dict(active=active,cases=cases),indent=2)+'\n')
     try:
@@ -41,7 +41,9 @@ def run(session,arguments):
             if depth and arguments.get('batch_draft_library'):
                 loader=importlib.import_module(tag+'.draft_batch_w8')
                 matmul,identity=loader.load_library(arguments['batch_draft_library'],arguments['batch_draft_sha256'])
-                provider=batch.BatchedRequestDraftProvider(provider,matmul,kernel_identity=identity)
+                provider=batch.BatchedRequestDraftProvider(provider,matmul,kernel_identity=identity,
+                    buffers=bool(arguments.get('draft_buffers')),graphs=bool(arguments.get('draft_graphs')))
+                owned_providers.append(provider)
             with nm.NativeScheduler(session.root.parent/'DeepInfer',session.root.parent/'build-release/lib/deepinfer',max_drafts=depth) as native:
                 def make():
                     executor=None
@@ -189,6 +191,7 @@ def run(session,arguments):
         if worker is not None:
             try:worker.close(60)
             except wm.WorkerFailed:pass
+        for provider in owned_providers:provider.close()
         if target is not None:
             session.torch.cuda.synchronize()
             if target.inflight is not None:target.discard(target.inflight)

@@ -43,7 +43,7 @@ class BatchedRequestDraftProvider(RequestDraftProvider):
     The caller supplies a verified 1..32-row W8 provider. Existing packed
     weights and the resident worker remain unchanged. Opt-in until measured.
     """
-    def __init__(self,provider,matmul,*,kernel_identity,max_requests=4):
+    def __init__(self,provider,matmul,*,kernel_identity,max_requests=4,buffers=False,graphs=False):
         from .draft_batch import BatchedDFlash
         from .draft_backbone import PackedLinear
         if not provider.deferred_draft or provider.model is None or provider.budget is None:
@@ -56,12 +56,18 @@ class BatchedRequestDraftProvider(RequestDraftProvider):
             for name,weight in mapping.items():
                 if isinstance(weight,PackedLinear):
                     mapping[name]=PackedLinear(weight.packed,matmul)
-        self.backend=BatchedDFlash(worker,max_requests=max_requests)
+        if type(buffers) is not bool or type(graphs) is not bool or (graphs and not buffers):
+            raise ValueError('draft graphs require reusable buffers')
+        if buffers:
+            from .draft_batch_graph import BufferedBatchedDFlash
+            self.backend=BufferedBatchedDFlash(worker,max_requests=max_requests,graphs=graphs)
+        else:self.backend=BatchedDFlash(worker,max_requests=max_requests)
         self.providers=self.backend.caches
         self.profile_metadata=dict(getattr(provider,'profile_metadata',{}) or {},
             draft_execution='owned_batch_v1',draft='batched W8 MLP / Q4 output head / BF16 attention and selector',
             batch_w8_kernel=dict(kernel_identity),
             budget_cost_status='legacy E29 control; batch draft costs not recalibrated')
+        self.profile_metadata.update(draft_buffers=buffers,draft_graph_scope='query_islands' if graphs else 'none')
         # Old joint tables bind the original W8 binary/source. Extra metadata
         # alone would not invalidate them: validate_runtime compares only the
         # table's recorded keys. Replace those identities, never inherit them.
@@ -72,6 +78,11 @@ class BatchedRequestDraftProvider(RequestDraftProvider):
 
     def release(self,handle):
         self.backend.release(handle)
+
+    def close(self):
+        close=getattr(self.backend,'close',None)
+        if close is not None:close()
+        elif self.backend.caches:raise RuntimeError('release draft generations before closing')
 
     def propose(self,handle,state,anchor,remaining):
         return self.propose_batch([(handle,state,anchor,remaining)])[0]
@@ -358,6 +369,8 @@ def batch_engine(native,target,provider,*,eos_ids,prior,capacity=1536,tokenizer=
     engine.capabilities.update(draft_gpu_batch=isinstance(provider,BatchedRequestDraftProvider),
         draft_execution='owned_batch_v1' if isinstance(provider,BatchedRequestDraftProvider) else 'per_request',
         draft_cost_calibrated=False if isinstance(provider,BatchedRequestDraftProvider) else None)
+    if isinstance(provider,BatchedRequestDraftProvider):
+        engine.capabilities.update(getattr(provider.backend,'capabilities',{}))
     engine.capabilities.update(interleave_prefill=interleave_prefill,prompt_token_budget=prompt_token_budget)
     if prefill_executor is not None:engine.capabilities.update(prefill_executor.capabilities)
     return engine

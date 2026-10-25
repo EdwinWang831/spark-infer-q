@@ -17,6 +17,7 @@ def main():
     names += ['scripts/k2_native_validate.py','docs/K4_BATCH_RUNTIME_PLAN.md','tests/test_draft_batch.py',
               'tests/test_compact_target.py','tests/test_kaifra_batch_transactions.py']
     names += ['tests/test_prefill_executor.py','tests/test_prefill_progress.py','tests/test_worker_cpu.py','THIRD_PARTY_NOTICES.md']
+    names += ['tests/test_draft_batch_graph.py']
     names += ['results/k4/2026-10-24-joint-costs.json']
     manifest={n:hashlib.sha256((root/n).read_bytes()).hexdigest() for n in names};buf=io.BytesIO()
     with tarfile.open(fileobj=buf,mode='w') as archive:

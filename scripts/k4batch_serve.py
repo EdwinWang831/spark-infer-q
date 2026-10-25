@@ -20,11 +20,16 @@ def main():
     parser.add_argument('--target-state-library',type=Path)
     parser.add_argument('--target-state-sha256')
     parser.add_argument('--draft-execution',choices=('sequential','batch'),default='sequential')
+    parser.add_argument('--draft-buffers',action='store_true')
+    parser.add_argument('--draft-graphs',action='store_true')
     parser.add_argument('--draft-w8-batch-library',type=Path)
     parser.add_argument('--draft-w8-batch-sha256')
     parser.add_argument('--batch-costs',type=Path)
     parser.add_argument('--batch-costs-sha256')
     args=parser.parse_args()
+    if args.draft_graphs and not args.draft_buffers:parser.error('draft graphs require --draft-buffers')
+    if (args.draft_buffers or args.draft_graphs) and args.draft_execution!='batch':
+        parser.error('draft buffers/graphs require --draft-execution batch')
     if not 16<=args.prompt_token_budget<=512:parser.error('prompt token budget must be 16..512')
     if not 1<=args.prefill_chunk_rows<=512:parser.error('prefill chunk rows must be 1..512')
     if not 16<=args.capacity<=1536:parser.error('capacity must be 16..1536')
@@ -64,7 +69,8 @@ def main():
             if args.draft_execution=='batch':
                 from spark_infer_q.draft_batch_w8 import load_library
                 matmul,identity=load_library(args.draft_w8_batch_library,args.draft_w8_batch_sha256)
-                provider=BatchedRequestDraftProvider(provider,matmul,kernel_identity=identity)
+                provider=BatchedRequestDraftProvider(provider,matmul,kernel_identity=identity,
+                    max_requests=2,buffers=args.draft_buffers,graphs=args.draft_graphs)
                 metadata=provider.profile_metadata
             screen=FusedScreenedHead(session.weights.head)
             if not screen.static_ok:raise ValueError('E33 head range gate failed')
@@ -88,6 +94,7 @@ def main():
             with worker_cpu(args.worker_cpu) as metadata,torch.inference_mode(),torch.cuda.stream(stream):
                 placement.update(metadata);yield
         def make():
+            if args.draft_graphs:provider.backend.warmup()
             engine=batch_engine(native,target,provider,eos_ids=session.eos,prior=session.calibration['conditional_prior'],
                 capacity=args.capacity,tokenizer=session.tokenizer,target_only=args.mode=='none',joint_budget=joint_budget,
                 prefill_executor=prefill,prompt_token_budget=args.prompt_token_budget,interleave_prefill=args.interleave_prefill)
@@ -105,6 +112,7 @@ def main():
             # leases rather than freeing device state beneath the owner thread.
             if worker.thread is not None and worker.thread.is_alive():worker.close()
             if prefill is not None:prefill.close()
+            if args.draft_execution=='batch':provider.close()
             target.close()
 
 

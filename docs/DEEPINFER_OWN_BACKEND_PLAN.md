@@ -4,6 +4,8 @@
 
 后续已接通[E40 prefill 与 ready-decode 交错](K4_PREFILL_PROGRESS_REPORT.md)：选定两请求场景的长输出停顿明显缩短，短/长输入混合的完整服务吞吐改善。另增加调用线程内的可选 performance CPU 放置；两部分分别对照，不与先前 Target 迁移结果相乘。仍需要更广请求/到达率和四请求完整链路验收。
 
+已增加[草稿 attention 缓冲与 query Graph](K4_DRAFT_QUERY_GRAPH_REPORT.md)，单/双请求共20个片段，context 投影、attention 与 Q4 selector 保留 eager 精确形状。独立 Target Graph 分解显示，选定3+5/8+8形状的主要模型执行区间为 MoE、投影和 HC，应先细分这些算子的计算/数据路径，再决定自有或 DeepInfer 的具体迁移。该分解排除 head/commit/服务开销，不作为整体速度或完全自主后端证明。
+
 用户明确要求：学习 TensorFold 的技术思路，更多使用 DeepInfer 和我们自己的实现。最终架构以 **DeepInfer 调度底座 + 自有 Qwen/SM121 执行后端**为目标；TensorFold 是迁移期间的参考和可替换适配器。增加对 TensorFold 内部执行器的接线，不作为自主后端的完成标准。
 
 用户进一步要求“做得更好”：自主实现和性能优势分别验收。目标是在真实混合并发、尾延迟和资源可控性上建立优势，并利用 E17 与 DeepInfer 调度作出适合我们负载的决策。

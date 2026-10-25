@@ -75,4 +75,15 @@ compact 仅支持当前 TP1 文本、BF16 KV、2048 内 dense-budget QSA。按�
 
 默认仍为 rows8、prompt budget32、原 prompt 优先和系统 CPU 放置；上述方案按可选研究配置提供，E17 与动态预算不变。完整请求/SSE cohort 的口径、固定到达顺序与五轮数据见报告，不与单流 decode 数字混用。
 
+新增[草稿缓冲与 query Graph 研究选项](K4_DRAFT_QUERY_GRAPH_REPORT.md)，需与 `--draft-execution batch` 和已验证的 W8 library/SHA 一起使用：
+
+```bash
+--draft-buffers \
+--draft-graphs
+```
+
+仅指定 `--draft-buffers` 可单独使用 attention K/V 工作区；`--draft-graphs` 要求同时开启 buffers。Graph 捕获每层 query 前段和 attention 后的卷积/MLP，当前两种请求数最多20个片段，不按 context 长度新增形状。context 投影、attention 和 Q4 selector 仍为原长度的 eager 执行；这不是整段 DFlash 的单次 Graph replay。
+
+服务在 owner 线程、指定 CUDA stream 上先预热单/双请求 query Graph，再报告 READY；启动预热成本见报告。不同上下文仍会触发 eager attention 工作区调整，Target 的未知形状捕获/头部 JIT 也仍存在。关闭时先完成 worker/fence、释放 generation，再清理 draft Graph/缓冲。所有开关默认关闭，E17 和动态预算保留。
+
 本入口仍限定单卡双请求；4请求完整服务、4K+、随机采样、跨卡、生产压力和公网部署尚未验证。

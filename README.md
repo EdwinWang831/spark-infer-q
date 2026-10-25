@@ -85,6 +85,8 @@ The [K1 runtime](docs/K1_RUNTIME_USAGE.md) exposes a native-scheduler target-onl
 
 A separate [prefill-progress change](docs/K4_PREFILL_PROGRESS_REPORT.md) adds native ready-decode interleaving and the committed E40 executor. In five controlled two-request cohorts, short-request maximum output stalls shrink from about 3s to 0.28–0.31s; full-request throughput improves 11.54→25.60 token/s for a short stream followed by a long prompt, and 33.40→37.76 for short inputs. This is a prompt/scheduling improvement, not a pure decode-kernel claim. A separate five-repeat CPU-placement A/B improves cap128 full requests 36.45→39.12 token/s with the same fast prefill; final SSE cohort rates are 44.00 short and 39.73 cap128. Placement changes only the owner thread within its existing allowed CPU mask. Defaults remain unchanged; see [usage](docs/K4_BATCH_RUNTIME_USAGE.md).
 
+Opt-in [draft attention buffers and query Graph islands](docs/K4_DRAFT_QUERY_GRAPH_REPORT.md) preserve the existing batch-draft hidden/proposals/signals and effective caches. Two-request service compares eager, buffers and buffers+Graphs with the same fast prefill, CPU placement and E17/E29 control. Ten query islands per request count keep the Graph count independent of context length; context projections, attention and Q4 selection remain eager. A separate instrumented Target breakdown prioritizes MoE, projections and HC for further work. Component timings, complete-service results and Target stream intervals are reported separately; defaults remain unchanged.
+
 ## Next steps
 
 - Rerun the native TensorFold comparison after E8.
