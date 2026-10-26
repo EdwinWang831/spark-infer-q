@@ -38,6 +38,7 @@ class DraftState:
     cumulative: tuple = ()
     context_start: int = 0
     feature_window: object = None
+    projection_cache: object = None
 
 
 @dataclass(frozen=True)
@@ -90,7 +91,7 @@ class PostDraftBudget:
 class DFlashProvider:
     """Borrow loaded Q4 weights; optional existing F0/F1 head, no fitting."""
     def __init__(self, worker, *, model=None, feature_group='f1', budget=None,
-                 history_window_rows=None, max_request_context=None):
+                 history_window_rows=None, max_request_context=None,request_projection_cache=False):
         self.worker, self.model, self.feature_group = worker, model, feature_group
         self.max_context = worker.max_context if max_request_context is None else max_request_context
         if type(self.max_context) is not int or self.max_context<8:
@@ -103,10 +104,24 @@ class DFlashProvider:
         elif self.max_context>worker.max_context:
             raise ValueError('long requests require bounded positioned draft history')
         self.history_window_rows=history_window_rows
+        if type(request_projection_cache) is not bool or (request_projection_cache and
+                (history_window_rows is None or not all(hasattr(worker,name) for name in
+                    ('_context_rows','_keys','_values','window_start')))):
+            raise ValueError('request projection cache requires a bounded rolling drafter')
+        self.request_projection_cache=request_projection_cache
         self.budget = budget
         self.deferred_draft = False
 
     def propose(self, handle, state, anchor, remaining):
+        if not self.request_projection_cache or (self.budget is not None and remaining==1):
+            return self._propose(handle,state,anchor,remaining)
+        from .draft_projection_cache import DraftProjectionCache
+        if state.projection_cache is None:
+            state.projection_cache=DraftProjectionCache(self.worker,handle)
+        with state.projection_cache.bind(self.worker,handle):
+            return self._propose(handle,state,anchor,remaining)
+
+    def _propose(self, handle, state, anchor, remaining):
         if self.budget is not None and remaining == 1:
             state.next_width = 1
             state.cumulative = ()
@@ -168,6 +183,9 @@ class SpeculativeBackend:
         release=getattr(self.target,'release_state',None)
         if release is not None:
             release(state.target)
+        if state.projection_cache is not None:
+            state.projection_cache.close()
+            state.projection_cache=None
         del self.states[handle]
         state.context = None
         state.feature_window = None

@@ -31,7 +31,8 @@ class E33Budget:
         return choose_rows(cumulative,[v+costs['paid_ms'] for v in costs['verify_commit_ms']],min(8,remaining))
 
 
-def optimized_provider(session, *, history_window_rows=None, max_request_context=None,query_graphs=False):
+def optimized_provider(session, *, history_window_rows=None, max_request_context=None,query_graphs=False,
+                       request_projection_cache=False):
     if type(query_graphs) is not bool or (query_graphs and history_window_rows is None):
         raise ValueError('query_graphs requires boolean and bounded rolling history')
     from .draft_head import HeadDraft
@@ -59,7 +60,8 @@ def optimized_provider(session, *, history_window_rows=None, max_request_context
         worker=GraphRollingDraft.attach(worker)
     provider=DFlashProvider(worker,model=NumpyLinearProgressModel(artifact['metadata']),
                             feature_group='f1',budget=E33Budget(costs),
-                            history_window_rows=history_window_rows,max_request_context=max_request_context)
+                            history_window_rows=history_window_rows,max_request_context=max_request_context,
+                            request_projection_cache=request_projection_cache)
     # Matching E33 requires the first draft to be paid inside decode, after the
     # first token event. Native NEXTN metadata reserves candidate capacity only;
     # prepare() supplies the freshly generated proposals and final selected q.
@@ -73,6 +75,7 @@ def optimized_provider(session, *, history_window_rows=None, max_request_context
         metadata.update(history_window_rows=history_window_rows,max_request_context=provider.max_context,
             context_policy='bounded suffix / absolute rotary positions; frozen predictor/costs beyond2K not recalibrated')
     metadata['draft_query_graphs']=query_graphs
+    metadata['request_projection_cache']=request_projection_cache
     return provider,metadata
 
 

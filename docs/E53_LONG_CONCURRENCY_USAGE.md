@@ -4,6 +4,8 @@
 requests reproduce isolated outputs and full committed state, but request A
 changes7 verification widths and144 predictor-rate rounds. Retain this adapter
 for diagnosis; it is not promoted as a validated multi-request dynamic policy.
+[E54](E54_REQUEST_DRAFT_CACHE_USAGE.md) supplies the explicit per-request cache
+option that passes this strict two-request gate; E53's original failure remains.
 
 E53 retains the existing private Graph slots and adds an explicit
 `serialized_postdraft=True` flag. The existing default still rejects adaptive
