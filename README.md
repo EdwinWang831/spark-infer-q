@@ -6,7 +6,7 @@ A research project on accelerating Qwen inference on a single NVIDIA DGX Spark (
 
 ## At a glance
 
-As of 2026-10-26, this branch includes E0–E52 research records (E26 cancelled at the user’s request), the validated K1–K3 native-scheduler runtime, single-request overhead improvements and a two-request target-only API. Experimental candidates retain their individual scope; defaults are unchanged.
+As of 2026-10-26, this branch includes E0–E53 research records (E26 cancelled at the user’s request), the validated K1–K3 native-scheduler runtime, single-request overhead improvements and a two-request target-only API. Experimental candidates retain their individual scope; defaults are unchanged.
 
 See the [repository map](docs/REPOSITORY_STATUS.md) for the consolidated main branch and independent K4/service and self-evolution workstreams.
 
@@ -30,6 +30,7 @@ E33 preserves the original BF16 target decision through an INT8-assisted head sc
 - **Owned long-context execution (E50)**: opt-in draft query islands and cached native output publication preserve full outputs/state/budget traces. One contemporary BF16256K/512-output-token native pair measures32.14→34.49 decode tok/s (+7.34%), full wall −1.58%. Eight-state/common-scratch forecasts are106.77GiB with FP8 and95.52GiB with INT4; neither is an eight-request run or INT4 quality result. At E50 the bounded-index route had only a CPU model; E51 below implements and validates the GPU option. [Report](docs/E50_OWN_OPTIMIZATION_REPORT.md).
 - **Bounded raw QSA index (E51)**: an explicit2048-row ring preserves full FP8/BF16 K/V and pooled history, saving0.744GiB tensor storage per request. GPU wrap/Graph/lifecycle checks and same-format256K adaptive outputs/live state match. Eight FP8 states/common scratch forecast100.81GiB before Graph/head/draft extras, still above the current88GiB limit. BF16 decode stays34.44→34.45 tok/s; shared-address AB/BA seeded repeats are38.494→38.490 tok/s (flat), so the first FP8 pair’s large gain is not confirmed. [Report](docs/E51_BOUNDED_INDEX_REPORT.md) · [Usage](docs/E51_BOUNDED_INDEX_USAGE.md).
 - **Decode expert pipeline screen (E52)**: the existing E43 pipeline is exact on96 decode boundaries and24 real complete-MoE cases, but fails the5% performance gate: warm cost+0.787%, cache-perturbed cost−0.007%, both bootstrap intervals cross zero. Rejected before full-model replacement; existing decode/defaults unchanged. [Report](docs/E52_DECODE_PIPELINE_REPORT.md).
+- **Long concurrency accounting (E53)**: two independent261120-token/512-output adaptive requests execute with exact isolated outputs/full committed state at81.14GiB peak allocation. The strict candidate gate fails: request A changes7 verification widths and144 predictor-rate rounds. Research adapter retained, no promotion. Complete eight-slot forecast103.67GiB exceeds the current88GiB cap by15.67GiB; no eight-way run. [Report](docs/E53_LONG_CONCURRENCY_REPORT.md) · [Research usage](docs/E53_LONG_CONCURRENCY_USAGE.md).
 - **Not there yet**: no overall lead over native TensorFold (45.62 vs 49.18 tok/s in E7; not rerun since E8). Multi-request DFlash, long-context HTTP serving, physical KV paging, independent compressed-KV quality calibration, contexts beyond 256K and random sampling remain open.
 
 ## Key results

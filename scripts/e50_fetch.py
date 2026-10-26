@@ -10,7 +10,8 @@ import uuid
 
 
 def main(*,experiment='e50'):
-    stage_prefix={'e50':'e50-own-20261025-','e51':'e51-index-20261025-','e52':'e52-target-20261026-'}[experiment]
+    stage_prefix={'e50':'e50-own-20261025-','e51':'e51-index-20261025-','e52':'e52-target-20261026-',
+        'e53':'e53-long-20261026-'}[experiment]
     p=argparse.ArgumentParser();p.add_argument('--out',type=Path,required=True)
     for k in ('study-version','study-job','audit-version','audit-job'):p.add_argument('--'+k,required=True)
     p.add_argument('--extra-stage',nargs=2,action='append',default=[])

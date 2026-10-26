@@ -263,13 +263,24 @@ class SpeculativeBackend:
 
 class SpeculativeSchedulerBridge(SchedulerBridge):
     """Native MTP counters/publishing and accepted-token flat-layout adapter."""
-    def __init__(self, *args, curve=None, postdraft=False, **kwargs):
+    def __init__(self, *args, curve=None, postdraft=False, serialized_postdraft=False, **kwargs):
         if not postdraft and curve is None:
             raise ValueError('a dynamic verification budget is required')
+        if type(serialized_postdraft) is not bool:
+            raise ValueError('serialized_postdraft must be boolean')
+        if serialized_postdraft:
+            backend=args[4]
+            caps=getattr(backend.target,'capabilities',{})
+            if (not postdraft or curve is not None or kwargs.get('max_requests',1)<=1 or
+                    kwargs['max_requests']>caps.get('max_requests',0) or
+                    caps.get('gpu_batch') is not False or
+                    caps.get('graph_scope')!='private_request_Graphs_shared_serial_scratch' or
+                    not getattr(backend.provider,'deferred_draft',False)):
+                raise ValueError('serialized post-draft requires private shared-scratch Graph slots and a deferred provider')
         super().__init__(*args,max_drafts=7,**kwargs)
         self.depth = 7
         self.postdraft = postdraft
-        if postdraft and self.max_requests != 1:
+        if postdraft and self.max_requests != 1 and not serialized_postdraft:
             raise ValueError('post-draft mode requires a single-request measured cost curve')
         if curve is not None:
             if self.max_requests != 1:
@@ -437,7 +448,8 @@ class SpeculativeSchedulerBridge(SchedulerBridge):
 
 def speculative_engine(native, target, provider, *, eos_ids, prior, mode='adaptive',
                        capacity=256,max_requests=1,token_budget=32,prefill_rows=8,
-                       tokenizer=None,curve=None,observer=None,prefill_executor=None,output_cache=False):
+                       tokenizer=None,curve=None,observer=None,prefill_executor=None,output_cache=False,
+                       serialized_postdraft=False):
     if getattr(native,'max_drafts',None)!=7:
         raise ValueError('speculation requires a native max_drafts=7 context')
     if mode not in ('lagged','confidence','adaptive'):
@@ -456,13 +468,17 @@ def speculative_engine(native, target, provider, *, eos_ids, prior, mode='adapti
                                prefill_rows=prefill_rows,observer=observer,prefill_executor=prefill_executor)
     bridge=SpeculativeSchedulerBridge(native.core,native.torch,native.group,native.sampling_class,
         backend,vocab_size=int(target.w.head.b.weight.shape[0]),eos_ids=eos_ids,capacity=capacity,
-        max_requests=max_requests,token_budget=token_budget,curve=curve if dynamic else None,postdraft=mode=='adaptive',output_cache=output_cache)
+        max_requests=max_requests,token_budget=token_budget,curve=curve if dynamic else None,postdraft=mode=='adaptive',
+        serialized_postdraft=serialized_postdraft,output_cache=output_cache)
     engine=KaifraEngine(bridge,tokenizer=tokenizer)
     engine.capabilities=dict(engine.capabilities,target_only=False,speculative=True,
                             native_output_cache=output_cache,
                             draft_depth=depth,verification_budget=('current_postdraft_e17' if mode=='adaptive' else
                                 'native_mtp_varlen'))
     engine.capabilities.update(getattr(target,'capabilities',{}))
+    engine.capabilities['serialized_postdraft']=serialized_postdraft
+    if serialized_postdraft:
+        engine.capabilities['budget_cost_scope']='frozen_per_request_E29; multi-request throughput objective uncalibrated'
     if prefill_executor is not None:
         engine.capabilities.update(prefill_executor.capabilities)
     return engine

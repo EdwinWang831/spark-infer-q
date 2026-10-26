@@ -3,7 +3,7 @@ from contextlib import nullcontext
 from types import SimpleNamespace
 import unittest
 
-from spark_infer_q.kaifra_speculative import conditional_rates,DFlashProvider,PostDraftBudget,speculative_engine,SpeculativeBackend
+from spark_infer_q.kaifra_speculative import conditional_rates,DFlashProvider,PostDraftBudget,speculative_engine,SpeculativeBackend,SpeculativeSchedulerBridge
 from spark_infer_q.deepinfer_bridge import RequestHandle,WorkRow
 from spark_infer_q.native_scheduler import NativeScheduler
 
@@ -62,6 +62,22 @@ class SpeculativeContracts(unittest.TestCase):
             tokens,rates=provider.propose(handle,SimpleNamespace(context='committed'),1,10)
             self.assertEqual(worker.request,handle)
             self.assertEqual(tokens,[2]*7);self.assertIsNone(rates)
+
+    def test_serialized_postdraft_rejects_unowned_or_batched_slots_before_dispatch(self):
+        backend=SimpleNamespace(target=SimpleNamespace(capabilities={}),provider=SimpleNamespace(deferred_draft=True))
+        with self.assertRaisesRegex(ValueError,'private shared-scratch'):
+            SpeculativeSchedulerBridge(None,None,None,None,backend,postdraft=True,
+                serialized_postdraft=True,max_requests=2)
+        backend.target.capabilities=dict(max_requests=2,gpu_batch=False,
+            graph_scope='private_request_Graphs_shared_serial_scratch')
+        for kwargs in (dict(max_requests=3),dict(max_requests=2,curve=[(1,1)]),dict(max_requests=1)):
+            with self.assertRaisesRegex(ValueError,'private shared-scratch'):
+                SpeculativeSchedulerBridge(None,None,None,None,backend,postdraft=True,
+                    serialized_postdraft=True,**kwargs)
+        backend.target.capabilities['gpu_batch']=True
+        with self.assertRaisesRegex(ValueError,'private shared-scratch'):
+            SpeculativeSchedulerBridge(None,None,None,None,backend,postdraft=True,
+                serialized_postdraft=True,max_requests=2)
 
     def test_owned_prefill_keeps_all_draft_features_across_scheduler_chunks(self):
         calls=[]
