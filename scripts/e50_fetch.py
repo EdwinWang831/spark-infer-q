@@ -10,7 +10,7 @@ import uuid
 
 
 def main(*,experiment='e50'):
-    stage_prefix={'e50':'e50-own-20261025-','e51':'e51-index-20261025-'}[experiment]
+    stage_prefix={'e50':'e50-own-20261025-','e51':'e51-index-20261025-','e52':'e52-target-20261026-'}[experiment]
     p=argparse.ArgumentParser();p.add_argument('--out',type=Path,required=True)
     for k in ('study-version','study-job','audit-version','audit-job'):p.add_argument('--'+k,required=True)
     p.add_argument('--extra-stage',nargs=2,action='append',default=[])
@@ -26,6 +26,9 @@ def main(*,experiment='e50'):
 r=pathlib.Path('/workspace/e1/resident-verification');buf=io.BytesIO()
 with tarfile.open(fileobj=buf,mode='w:gz',dereference=True) as t:
  t.add(r/'worker-status.json',arcname='worker-status.json')
+ if EXPERIMENT=='e52':
+  t.add(r/'jobs/done/430-e43-build-v1.json',arcname='references/430-e43-build-v1.json')
+  t.add(r.parent/'e43-prefill-20261024-build-v1',arcname='references/e43-build',filter=lambda x:None if '__pycache__' in x.name else x)
  for job in ('520-e49-capacity-v1.json','528-e49-study-v2.json'):
   t.add(r/'jobs/done'/job,arcname='references/'+job)
  for version,job in PAIRS:
@@ -48,7 +51,7 @@ with tarfile.open(fileobj=buf,mode='w:gz',dereference=True) as t:
  for name in seal['external_source_sha256']:
   t.add(r.parent/'e2-load/reference/tensorfold'/name,arcname='external/tensorfold/'+name)
 payload=buf.getvalue();pathlib.Path(ARCHIVE).write_bytes(payload);import hashlib;print(json.dumps(dict(sha256=hashlib.sha256(payload).hexdigest(),bytes=len(payload))))
-'''.replace('PAIRS',repr(pairs)).replace('ARCHIVE',repr(remote_archive)).replace('STAGE_PREFIX',repr(stage_prefix)).replace('WRAPPER_PREFIX',repr(experiment+'_job_'))
+'''.replace('PAIRS',repr(pairs)).replace('ARCHIVE',repr(remote_archive)).replace('STAGE_PREFIX',repr(stage_prefix)).replace('WRAPPER_PREFIX',repr(experiment+'_job_')).replace('EXPERIMENT',repr(experiment))
     result=subprocess.run(['ssh','-o','BatchMode=yes','-o','ConnectTimeout=12','hermes-spark','docker exec -i spark-infer-q-e2-load python3 -'],input=code.encode(),capture_output=True,check=True)
     seal=json.loads(result.stdout);a.out.mkdir(parents=True)
     subprocess.run(['ssh','-o','BatchMode=yes','-o','ConnectTimeout=12','hermes-spark','docker cp spark-infer-q-e2-load:'+remote_archive+' '+host_archive],check=True,capture_output=True)

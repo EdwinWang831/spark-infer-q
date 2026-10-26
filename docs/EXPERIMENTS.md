@@ -1,5 +1,7 @@
 # Experiment plan
 
+2026-10-26 [E52 decode expert pipeline screen](E52_DECODE_PIPELINE_REPORT.md): reuse E43 binary on decode tile16;96 exact boundaries,24 real complete-MoE cases and8 diagnostic windows. Final warm cost+0.787%,128MiB-perturbed cost−0.007%, both bootstrap gain intervals cross zero; reject the fixed5% gate. No full-model candidate generation, new decode TPS or default change; same resident restored exactly.
+
 2026-10-25 [E51 bounded raw QSA index](E51_BOUNDED_INDEX_REPORT.md): explicit2048-row raw ring preserves full FP8/BF16 KV and pooled keys, saving0.744GiB tensor storage/request; eight FP8 states/common scratch forecast100.81GiB before extras. GPU wrap/snapshot/Graph/lifecycle and same-format256K adaptive output/live-state checks pass. BF16 decode34.44→34.45 is flat; the single FP8 native pair is separated from shared-address AB/BA seeded repeats. No8-way execution, BF16-relative FP8 quality claim or default promotion.
 
 2026-10-25 [E50 own long-context optimization / eight-state accounting](E50_OWN_OPTIMIZATION_REPORT.md): graph-only seeded loop +1.38%; combined draft query islands/native publication cache improves one contemporary BF16 native256K/512-output pair32.14→34.49 tok/s (+7.34%), full wall −1.58%, exact output/state/budget traces. Eight empty-state/common-scratch forecasts: FP8106.77GiB, INT495.52GiB; no eight-request execution or INT4 quality. CPU raw-index liveness model suggests ~5.95GiB possible eight-slot saving, not implemented on GPU. Defaults unchanged; no cross-engine or fixed-draft comparison.
