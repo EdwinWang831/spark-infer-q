@@ -1,0 +1,370 @@
+{
+  "status": "PASS_E55_EVIDENCE_CANDIDATE_NOT_PROMOTED",
+  "date": "2026-10-27",
+  "inventory": {
+    "target_storage_bytes": 75002047104,
+    "baseline": {
+      "weights": {
+        "reachable_bytes": 75002047104,
+        "exclusive_bytes": 0
+      },
+      "legacy_target": {
+        "reachable_bytes": 75095432684,
+        "exclusive_bytes": 93385580
+      },
+      "draft": {
+        "reachable_bytes": 4696742400,
+        "exclusive_bytes": 1756633600
+      },
+      "projection": {
+        "reachable_bytes": 397312000,
+        "exclusive_bytes": 0
+      }
+    },
+    "optimized": {
+      "weights": {
+        "reachable_bytes": 75002047104,
+        "exclusive_bytes": 0
+      },
+      "legacy_target": {
+        "reachable_bytes": 75095432684,
+        "exclusive_bytes": 93385580
+      },
+      "draft": {
+        "reachable_bytes": 4696742400,
+        "exclusive_bytes": 589824000
+      },
+      "projection": {
+        "reachable_bytes": 397312000,
+        "exclusive_bytes": 0
+      },
+      "optimized_draft": {
+        "reachable_bytes": 4454904320,
+        "exclusive_bytes": 347985920
+      }
+    },
+    "rooted_unique_bytes": 77249378284,
+    "baseline_unattributed_bytes": 144029716
+  },
+  "state_allocations": [
+    {
+      "kv_dtype": "bf16",
+      "full": {
+        "allocated_bytes": 7685497344,
+        "storage_bytes": 7684436028,
+        "raw_bytes": 805355520,
+        "kv_bytes": 6442844208,
+        "pool_bytes": 201338880
+      },
+      "ring": {
+        "allocated_bytes": 6885385728,
+        "storage_bytes": 6885371964,
+        "raw_bytes": 6291456,
+        "kv_bytes": 6442844208,
+        "pool_bytes": 201338880
+      },
+      "saved_bytes": 800111616
+    },
+    {
+      "kv_dtype": "fp8",
+      "full": {
+        "allocated_bytes": 4564744704,
+        "storage_bytes": 4563683388,
+        "raw_bytes": 805355520,
+        "kv_bytes": 3322091568,
+        "pool_bytes": 201338880
+      },
+      "ring": {
+        "allocated_bytes": 3765680640,
+        "storage_bytes": 3764619324,
+        "raw_bytes": 6291456,
+        "kv_bytes": 3322091568,
+        "pool_bytes": 201338880
+      },
+      "saved_bytes": 799064064
+    },
+    {
+      "kv_dtype": "int4",
+      "full": {
+        "allocated_bytes": 3055737856,
+        "storage_bytes": 3053641740,
+        "raw_bytes": 805355520,
+        "kv_bytes": 1812049920,
+        "pool_bytes": 201338880
+      },
+      "ring": {
+        "allocated_bytes": 2256673792,
+        "storage_bytes": 2254577676,
+        "raw_bytes": 6291456,
+        "kv_bytes": 1812049920,
+        "pool_bytes": 201338880
+      },
+      "saved_bytes": 799064064
+    }
+  ],
+  "kernel_cases": 39,
+  "quality": {
+    "bf16": {
+      "teacher_rows": 54,
+      "mean_kl": 0.0,
+      "mean_relative_l2": 0.0,
+      "teacher_top1": 1.0,
+      "lost_objectives": [],
+      "greedy_exact_cases": 8,
+      "quality_gate_passed": true
+    },
+    "fp8": {
+      "teacher_rows": 54,
+      "mean_kl": 0.0003152743875386528,
+      "mean_relative_l2": 0.0841832176250805,
+      "teacher_top1": 1.0,
+      "lost_objectives": [],
+      "greedy_exact_cases": 7,
+      "quality_gate_passed": false
+    },
+    "int4": {
+      "teacher_rows": 54,
+      "mean_kl": 0.0020582720449200415,
+      "mean_relative_l2": 0.11230224059446874,
+      "teacher_top1": 1.0,
+      "lost_objectives": [],
+      "greedy_exact_cases": 8,
+      "quality_gate_passed": false
+    }
+  },
+  "long": {
+    "runs": [
+      {
+        "kv_dtype": "bf16",
+        "prompt_tokens": 261120,
+        "output_tokens": 512,
+        "output_sha256": "e2c1d110cc9de617eb1a3f21e808316233e6ec7ec47e35c2d0514c7255d2fa5f",
+        "same_format_output_exact": true,
+        "same_format_state_exact": true,
+        "teacher_metrics": {
+          "rows": 8,
+          "mean_kl": 0.0,
+          "mean_relative_l2": 0.0,
+          "top1_matches": 8
+        },
+        "retrieval_keys": [
+          "MAPLE-7319",
+          "RIVER-4826",
+          "CEDAR-9053"
+        ],
+        "memory": {
+          "allocated_bytes": 86267558400,
+          "reserved_bytes": 86809509888,
+          "peak_allocated_bytes": 86545496576,
+          "peak_reserved_bytes": 86809509888,
+          "MemTotal": 130596184064,
+          "MemAvailable": 22851166208,
+          "SwapFree": 16298369024
+        },
+        "minimum_host_available_bytes": 22928195584
+      },
+      {
+        "kv_dtype": "int4",
+        "prompt_tokens": 261120,
+        "output_tokens": 512,
+        "output_sha256": "09fcf1d35990b679c38d74ba3d11be51e27172513c2afa84f0e91bf1d4841f95",
+        "same_format_output_exact": true,
+        "same_format_state_exact": true,
+        "teacher_metrics": {
+          "rows": 8,
+          "mean_kl": 0.008061632007700688,
+          "mean_relative_l2": 0.07004834095895708,
+          "top1_matches": 8
+        },
+        "retrieval_keys": [
+          "MAPLE-7319",
+          "RIVER-4826",
+          "CEDAR-9053"
+        ],
+        "memory": {
+          "allocated_bytes": 81639251456,
+          "reserved_bytes": 82233524224,
+          "peak_allocated_bytes": 81916141056,
+          "peak_reserved_bytes": 82233524224,
+          "MemTotal": 130596184064,
+          "MemAvailable": 27585765376,
+          "SwapFree": 16331583488
+        },
+        "minimum_host_available_bytes": 27262902272
+      }
+    ],
+    "int4_bf16_greedy_exact": false,
+    "throughput_claim": false
+  },
+  "capacity": {
+    "eight_fp8_forecast_bytes": 111734190080,
+    "eight_int4_forecast_bytes": 99662135296,
+    "eight_state_allocation_saving_bytes": 12072054784,
+    "deficit_bytes": 5172854784,
+    "allocator_limit_bytes": 94489280512,
+    "host_reserve_bytes": 8589934592,
+    "target_plus_eight_fp8_states_bytes": 105127492224,
+    "forecast_only": true
+  },
+  "provenance": {
+    "inventory-v2": {
+      "job": "618-e55-inventory-v2.json",
+      "sha256": "12577879bbc728eb348eacc0fe44750c6dd39cb5eb7731ff085892765774cc41",
+      "manifest_sha256": "8978b3bc240d039029107eef34b6e3f5b821dc422b2c963ea8b310c5f3130b8c"
+    },
+    "kernel-v1": {
+      "job": "620-e55-kernel-v1.json",
+      "sha256": "f191ee688c5ffa2ddd07c17b0bdc51f33b5ff6d4065934305bac4afde55e4cec",
+      "manifest_sha256": "7720323b65affa93e7c23de105b7ab31406f6b9af34b5a34ce7853edd0685564"
+    },
+    "quality-v1": {
+      "job": "622-e55-quality-v1.json",
+      "sha256": "2ba43309b8a4d0b7e2961a144bf4da1e982e20ea1eec8ea9e699f56c1b6e3fb8",
+      "manifest_sha256": "7c09483bc4a602a3bcbc5f4e74abe66ac43765f2f398dfdb4ee447f3238620c3"
+    },
+    "long-v3": {
+      "job": "628-e55-long-v3.json",
+      "sha256": "90c84f306f0ea8b3506c1c27459e89a48b6dcf2d7636fcb1ff66c805ee8342e0",
+      "manifest_sha256": "c01e61190dccdc21043600a936728e5d593697878a18f9391679417d12431841"
+    },
+    "audit-v1": {
+      "job": "630-e55-audit-v1.json",
+      "sha256": "a6edc1cb93ce8afb617b1a4e9a9a554d6bedafd2eb18ddbd8d534cf75e004ee8",
+      "manifest_sha256": "e7fbafc0c77ac640e0db249f90458f64f808c1f40a40f2ccf3dd540e670a4426"
+    }
+  },
+  "historical_attempts": [
+    {
+      "version": "inventory-v1",
+      "status": "PASS",
+      "error": null,
+      "job_sha256": "c3b381a842c4c80bc630e0e4241dcda93eb0c6a4740f7d7cf51216246b13bff8",
+      "report_sha256": "245aa30e6860b9fcaacd5ab3b9bf53f9a91fc70e18909173026c2cc05ca11b82"
+    },
+    {
+      "version": "long-v1",
+      "status": "FAIL",
+      "error": "AttributeError: 'LongTarget' object has no attribute 'leased'",
+      "job_sha256": "a2adb1d7b24fcb7c31278da5ceb1f2d651af13baffd1a2a1f0ce08bb600e71b3",
+      "report_sha256": "529fda62dcdfb667eafe95f3d177cd891a5f53c8ddfa5bbad6b37d5ff27a2e34"
+    },
+    {
+      "version": "long-v2",
+      "status": "FAIL",
+      "error": "AssertionError: ",
+      "job_sha256": "ee750ac8da66e1f1b8b1926673f4b660ca4c7dc91655ae428fc1aa9b5a618a68",
+      "report_sha256": "0fda76b9e20a4b9698c4248cd46aa9055228b1f6f2b330a17ef1a0f839d10b58"
+    }
+  ],
+  "archive": {
+    "sha256": "e5bf28cf77cc33e89cdc957038e6706a7ae26d8fde3c071e4a7d4a7a1ff403cb",
+    "bytes": 13439247,
+    "files": 924,
+    "stages": [
+      [
+        "long-v3",
+        "628-e55-long-v3.json"
+      ],
+      [
+        "audit-v1",
+        "630-e55-audit-v1.json"
+      ],
+      [
+        "inventory-v1",
+        "616-e55-inventory-v1.json"
+      ],
+      [
+        "inventory-v2",
+        "618-e55-inventory-v2.json"
+      ],
+      [
+        "kernel-v1",
+        "620-e55-kernel-v1.json"
+      ],
+      [
+        "quality-v1",
+        "622-e55-quality-v1.json"
+      ],
+      [
+        "long-v1",
+        "624-e55-long-v1.json"
+      ],
+      [
+        "long-v2",
+        "626-e55-long-v2.json"
+      ]
+    ]
+  },
+  "final_library_sha256": {
+    "spark_infer_q/__init__.py": "623ddaf4adfbf51e0c029203b0ff1780ebcc5824ff8300de5f1e6d6cd819d5d7",
+    "spark_infer_q/bounded_index.py": "9cc785f5ca6831fe7ef45fa3984c648ab27b6f01e0b69157c76e8aeace6eaabb",
+    "spark_infer_q/bounded_index_kernels.py": "6266e6eb7e9486a9651f431775a8677a5295666b6f0c65a7da1bca3e0294d4b3",
+    "spark_infer_q/budget_audit.py": "7c2116b666e99c4c07055426733a292e5219ca7b788ce0d0e45f75001640db68",
+    "spark_infer_q/budget_regret.py": "14477f3464091a5eaff1a9cbdb0df045b1c047570fe7a7a782b0c8e63076ba11",
+    "spark_infer_q/checkpoint.py": "d7027b4803ee2564f5a881c3dcbbbb58f0508ee3e8f66d7895fbb7b174aad6b8",
+    "spark_infer_q/collection_budget.py": "4319736e8acfbe4c88911961f37676b188a39a5a6c0a2216a886cb34addbbbb2",
+    "spark_infer_q/collection_trajectory.py": "b528e4e35b8deb7551782d390aee4d4fb40b407e8f966d02fe607c52e844d2f6",
+    "spark_infer_q/collector.py": "dc34bc95c2984ce099a881717c47659e928e89b2ebf55711ac57b291a1ad6677",
+    "spark_infer_q/confidence_budget.py": "b055819b45a2e4d04b773eef34aa0212b140ba3721fbb1f5ad192903463365b9",
+    "spark_infer_q/confidence_features.py": "6d40253da4dad1de1a6866767af154e3a3ce69647a80df0e2e931f5ab53f0fc1",
+    "spark_infer_q/confidence_head.py": "e27c07808689e54f8660ef8068884be874c0fd5045ed2acfa04fc929b286ad28",
+    "spark_infer_q/csf_loader.py": "1dd25c5e9129fc705c285673c68554546cd9b8b0a3b8813e2429fd9f945214cc",
+    "spark_infer_q/decision_head.py": "0d7337f1b3e2d19493dbe543680db32c428bb5c6f565539974954c2ec40d62a4",
+    "spark_infer_q/deepinfer_bridge.py": "37b07de39a1b14628de5c02e3bc6dec9007f9401435a7f094496d36e1b2134c8",
+    "spark_infer_q/dflash2_block.py": "e376a509f046ee41882147b560701029c25a93152b874702863d4875a0013376",
+    "spark_infer_q/dflash2_reference.py": "55863cffcdc7514d9ff9cab16493d77e0a39bb3e69c5565926bd902fb29c5681",
+    "spark_infer_q/dflash2_scored.py": "8175ca379543a27aa6015821f8810c3ff5ba5b197b682da6545377d2b270227b",
+    "spark_infer_q/draft_backbone.py": "e378bbc8ea733abca580955c07b303fb3645783c29f36ba24c8dff0f12520e6c",
+    "spark_infer_q/draft_context.py": "756869e7db93a56329079b7aaf542d25eb6d6858fbbf6f60fb4280f63e6ad3e5",
+    "spark_infer_q/draft_fastpath.py": "ddfc09b065f28ffcecd8a9ad8f7209d3d28fb0de2f8188dbc91bc8d55884fdb8",
+    "spark_infer_q/draft_fidelity.py": "1381ea37bac11e09c45197a35964c3849976d9f3911a171e0984914cedcd3bb0",
+    "spark_infer_q/draft_head.py": "cebeeaf86487f2487783fb0df5af465ce6a5a365f49565997d13bfff14a866a5",
+    "spark_infer_q/draft_projection_cache.py": "2ebf83f028b93d1866d6df0626888e6fbaf90e7be77ef37da9447f829294417d",
+    "spark_infer_q/draft_signals.py": "5f6a0ea0708498b2aad1ffaab3e913c22891981be4ee7702d553d9851edb9c3a",
+    "spark_infer_q/executor.py": "e2d981663cfa9f71858fc2d8737246b8a10def79c62f6aa3e670ccb75e2bc16e",
+    "spark_infer_q/feature_window.py": "20d4218fa9839ce3836e27196251c43209c7d55eecf43e3d12280cab4fadf7f1",
+    "spark_infer_q/head_screen.py": "9a1859e5543f239653c96124a1b68928bb2b80f10309a30ff19ffb5336147a01",
+    "spark_infer_q/kaifra_graph.py": "ddae0aefd8af9a68eb22fdbcc98c123e57d8f9c5ba123d1eeb7686b1a42ab4bb",
+    "spark_infer_q/kaifra_http.py": "1b136bcf1e69bf43250a404e30791b1f9f34a30b823837112985c3019a12800f",
+    "spark_infer_q/kaifra_joint_runtime.py": "22640599f5692af471687d3d0bddf76080ae9c134d66cf0a8663c2752cf7e4aa",
+    "spark_infer_q/kaifra_joint_target.py": "e80d0386f53d9c0e34dea34fafb680f1a3d87822589c67a044a38aad3ce7083c",
+    "spark_infer_q/kaifra_optimized.py": "fc7baca06eeb2ff441cd54eb98316da3f423f74fe7d8812ce86a4f297d31e18b",
+    "spark_infer_q/kaifra_runtime.py": "7ecc87bc755352139c4c057696787194e9c9a6ed98b184a10f13f43e6416c747",
+    "spark_infer_q/kaifra_speculative.py": "a5c038baa3903bbabbed40adc264d4cefbab04fce808da96a84cdd84a325baad",
+    "spark_infer_q/linear_runtime.py": "16c8d55fa049d7f4d8985cd24982c653c0805d75a6c94facab9cd9718ad7b01f",
+    "spark_infer_q/local_policy.py": "de7b204f92685dbf68d8769df9bf63608c74c96167aa8cb6a08057f39ff3222f",
+    "spark_infer_q/long_capacity.py": "1f24fc4e2f4c74528d75d50f36ab72f4968bcd33a152f9e5cf53c4ae8b928e0e",
+    "spark_infer_q/long_draft_graph.py": "9b84b92b9766027775bfcf2752cca4abd424edb8214ab3f9e46440fc7b5b414d",
+    "spark_infer_q/long_target.py": "2d00587da131fb5235f0a75a8463ad5f440fe1f127c47a142d9d7f626fe8ba7b",
+    "spark_infer_q/mlp_head.py": "52e378708572736c18e0d0cc10090b454209b5ac7fc1b5cd9fd689549b960020",
+    "spark_infer_q/mlp_runtime.py": "9a87d1efd104e33cea4a4454016a61df4b4e043f1768411db1764ae71a7b9855",
+    "spark_infer_q/moe_cost.py": "7e06f87b17dc789ba76f19e179962b778b78be937e9dfd59d609b707c08639ca",
+    "spark_infer_q/native_scheduler.py": "bf0c41f628ca6de5b7e873c90e33ec9f40d17731b19c67a3af74529c0b5dd8c7",
+    "spark_infer_q/past_cost.py": "d303247bc62badf4fc3f7d06952d78ba6551290ee8fec7a6d426b7ee9ac6d106",
+    "spark_infer_q/prefill.py": "2063bc06ae774652870c4f7c8915dbcefd1951fc9bfb2fdfe13655a145a9b915",
+    "spark_infer_q/prefill_evidence.py": "6350bdfb1b0feee8eddbb71bb350b6a53408c2248c7f34ff8b9c5573ba10e52c",
+    "spark_infer_q/prefill_experts.py": "ca38e9c6727a0cf3c88d3a2c731af121f5b9b8cb8994e4eebc308a16489b1d28",
+    "spark_infer_q/prefill_scratch.py": "cd13a071268b8f2ac6d110a9fd4e13c0bd16a93b20f5ccc2b2dd94efe0969e43",
+    "spark_infer_q/prefill_tensorfold.py": "d4e738875aec6dc8265076517c512771db53370800c7ae4efea087842dacdddd",
+    "spark_infer_q/prompt.py": "6b997c3c6e6834666dfa0f7d13a7c950f6dc2e9b1d80818e5ee4b08a9b886f58",
+    "spark_infer_q/regret_head.py": "ad23a257754d123d93feb805480e8d717192c9d99e83de5afbcdc0886bc647e0",
+    "spark_infer_q/residual_head.py": "a5f1dfa78560bf216a5a69f1e3a61973041a30bb00d16002dbb01c8be84bef18",
+    "spark_infer_q/rolling_draft.py": "a4b43054502234114ab9ca7eb1eaa7e3baf99e983dbd6aa874b1be0644a3f6ca",
+    "spark_infer_q/screened_head.py": "aaba84b6efd33b247fc9f54dcdda52a3db7c2b1a6d9d3cba6ccff56c1b722052",
+    "spark_infer_q/screened_head_fused.py": "ac963778f7e81a957838ab3443a49c7660ad342128fb9047c73d9b7f8f151bef",
+    "spark_infer_q/shared_graph.py": "75530c1adfe4f6d2a57447d47c98636c5f58964a883ea75503ff5097e1c88628",
+    "spark_infer_q/speculative.py": "ee1c2855cef1f31a868783d00f27cc88eef77f49ff95ff21dc2705d986f12045",
+    "spark_infer_q/tensorfold_block.py": "5527a5f6407c3dbb136003f687151b9754249423f964f71975e4eb9a1b9dadfa",
+    "spark_infer_q/verification_budget.py": "71f28552b8e83f682066edf9e9dd7267e3b54120c5d478949499a443f6eb5c50",
+    "spark_infer_q/wide_budget.py": "5cc2032ce32fd05b019aa90ddc0eefee80df2d2d850ede0e3bda3eedacd854fc"
+  },
+  "resident": {
+    "pid": 46235,
+    "load_count": 1,
+    "allocated_bytes": 77393408000
+  },
+  "default_promoted": false,
+  "quality_promoted": false,
+  "eight_execution_validated": false,
+  "throughput_claim": false
+}

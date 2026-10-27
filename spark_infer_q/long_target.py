@@ -13,8 +13,8 @@ class LongTarget(Target):
         from tensorfold.families.qwen4_exp.cuda.state import Buffers,State
         if type(capacity) is not int or not 16<=capacity<=262160:
             raise ValueError('long target physical capacity must be16..262160')
-        if kv_dtype not in ('bf16','int8','fp8'):
-            raise ValueError('long target KV dtype must be bf16, int8 or fp8')
+        if kv_dtype not in ('bf16','int8','fp8','int4'):
+            raise ValueError('long target KV dtype must be bf16, int8, fp8 or int4')
         self.torch,self.w,self.forward,self.State=torch,w,forward,State
         self.capacity=capacity
         self.kv_dtype=kv_dtype
@@ -23,8 +23,8 @@ class LongTarget(Target):
             from functools import partial
             from .bounded_index import build_forward,make_state,validate_geometry
             validate_geometry(index_ring_rows)
-            if capacity<index_ring_rows or kv_dtype not in ('bf16','fp8'):
-                raise ValueError('index ring needs BF16/FP8 and sufficient physical capacity')
+            if capacity<index_ring_rows or kv_dtype not in ('bf16','fp8','int4'):
+                raise ValueError('index ring needs BF16/FP8/INT4 and sufficient physical capacity')
             self.forward=build_forward(index_ring_rows)
             self.State=partial(make_state,ring_rows=index_ring_rows)
         self.buffers={r:Buffers(w,r,capacity,prefill=False) for r in range(1,9)}

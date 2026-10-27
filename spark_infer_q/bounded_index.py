@@ -60,8 +60,8 @@ def make_state(w, capacity, max_rows, kv_dtype='bf16', *, limit=None,
     from tensorfold.families.qwen4_exp.cuda import kvcache
     import torch
     validate_geometry(ring_rows, max_prepare, w.cfg.index_ratio)
-    if w.mtp is not None or kv_dtype not in ('bf16', 'fp8'):
-        raise ValueError('bounded index initially supports BF16/FP8 target without native MTP')
+    if w.mtp is not None or kv_dtype not in ('bf16', 'fp8', 'int4'):
+        raise ValueError('bounded index supports BF16/FP8/INT4 target without native MTP')
     if limit is not None and limit != capacity:
         raise ValueError('bounded index currently uses fixed full KV capacity')
     if capacity < ring_rows:

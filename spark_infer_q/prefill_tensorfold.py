@@ -60,8 +60,8 @@ class TensorFoldPrefillProvider:
             raise ValueError('prefill feature contract requires the 48-layer Qwen target')
         if type(capacity) is not int or not 8 <= capacity <= 262160:
             raise ValueError('bounded prefill capacity must be 8..262160')
-        if kv_dtype not in ('bf16','int8','fp8'):
-            raise ValueError('prefill KV dtype must be bf16, int8 or fp8')
+        if kv_dtype not in ('bf16','int8','fp8','int4'):
+            raise ValueError('prefill KV dtype must be bf16, int8, fp8 or int4')
         self.torch, self.ops, self.gdn, self.Buffers = torch, forward, gdn, Buffers
         if index_ring_rows is not None:
             from .bounded_index import build_forward
