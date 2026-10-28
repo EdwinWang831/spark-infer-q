@@ -11,7 +11,8 @@ import uuid
 
 def main(*,experiment='e50'):
     stage_prefix={'e50':'e50-own-20261025-','e51':'e51-index-20261025-','e52':'e52-target-20261026-',
-        'e53':'e53-long-20261026-','e54':'e54-cache-20261026-','e55':'e55-memory-20261027-'}[experiment]
+        'e53':'e53-long-20261026-','e54':'e54-cache-20261026-','e55':'e55-memory-20261027-',
+        'e56':'e56-kv-20261028-'}[experiment]
     p=argparse.ArgumentParser();p.add_argument('--out',type=Path,required=True)
     for k in ('study-version','study-job','audit-version','audit-job'):p.add_argument('--'+k,required=True)
     p.add_argument('--extra-stage',nargs=2,action='append',default=[])
@@ -30,10 +31,13 @@ with tarfile.open(fileobj=buf,mode='w:gz',dereference=True) as t:
  if EXPERIMENT=='e52':
   t.add(r/'jobs/done/430-e43-build-v1.json',arcname='references/430-e43-build-v1.json')
   t.add(r.parent/'e43-prefill-20261024-build-v1',arcname='references/e43-build',filter=lambda x:None if '__pycache__' in x.name else x)
- if EXPERIMENT in ('e54','e55'):
+ if EXPERIMENT in ('e54','e55','e56'):
   for version,job in (('capacity-v3','600-e53-capacity-v3.json'),('multi-v3','606-e53-multi-v3.json')):
    t.add(r.parent/('e53-long-20261026-'+version),arcname='references/e53-'+version,filter=lambda x:None if '__pycache__' in x.name else x)
    t.add(r/'jobs/done'/job,arcname='references/'+job)
+ if EXPERIMENT=='e56':
+  t.add(r.parent/'e55-memory-20261027-kernel-v1',arcname='references/e55-kernel-v1',filter=lambda x:None if '__pycache__' in x.name else x)
+  t.add(r/'jobs/done/620-e55-kernel-v1.json',arcname='references/620-e55-kernel-v1.json')
  for job in ('520-e49-capacity-v1.json','528-e49-study-v2.json'):
   t.add(r/'jobs/done'/job,arcname='references/'+job)
  for version,job in PAIRS:
