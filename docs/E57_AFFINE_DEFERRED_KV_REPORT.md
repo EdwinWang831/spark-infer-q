@@ -132,3 +132,7 @@ python3 scripts/e57_stage.py deferred-audit-v1 650-e57-deferred-audit-v1.json --
 python3 scripts/e57_export.py --raw results/raw/e57/2026-10-28-final/worker --out results/e57/2026-10-28-affine-deferred-kv.json
 python3 -m unittest discover -s tests -v
 ```
+
+后续验证：[E58](E58_NATIVE_CONVERSION_REPORT.md)已在相同六条真实前缀上核对
+新原生转换与Torch转换，codes/scales、完整teacher logits、greedy输出和有效
+状态均逐位一致，并复现本报告控制；此结果补充上述转换实现混杂项的已测范围。

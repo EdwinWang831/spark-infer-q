@@ -29,6 +29,11 @@ arithmetic is still executed by the external original JIT bodies; only the raw
 index pointer is translated. Full KV and pooled index history remain external
 TensorFold layouts and operators.
 
+`kv_conversion_kernels.py` calls the pinned TensorFold `quant_groups_4` and
+`store_kv` JIT bodies to encode already prepared BF16 cache rows. Conversion
+ownership and destination dispatch are local; quantizer arithmetic remains
+the external implementation.
+
 MIT License
 
 Copyright (c) 2026 TensorFold contributors

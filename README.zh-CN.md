@@ -6,7 +6,7 @@
 
 ## 现状一览
 
-截至 2026-10-28，本分支包含 E0–E57 研究记录（E26 依用户要求中止）、已验证的 K1–K3 原生调度运行时、单请求开销优化、双请求 target-only API 及显式双长请求动态适配。实验候选保留各自的验证范围，默认路径不变。
+截至 2026-10-28，本分支包含 E0–E58 研究记录（E26 依用户要求中止）、已验证的 K1–K3 原生调度运行时、单请求开销优化、双请求 target-only API 及显式双长请求动态适配。实验候选保留各自的验证范围，默认路径不变。
 
 已汇总的 main 与独立的 K4/服务、自演化设计路线，见[仓库导航](docs/REPOSITORY_STATUS.md)。
 
@@ -35,6 +35,7 @@ E33 用 INT8 辅助筛选、原 BF16 头最终裁决，在相同 W8 草稿/线�
 - **常驻盘点与INT4 KV（E55）**：去重storage确认target权重69.85GiB，只清理公共区无法让八份FP8状态进入88GiB。显式INT4＋索引环使每状态allocation从3.51降至2.10GiB；39例GPU差分、32个全模型Graph窗口通过。沿用八任务BF16相对质量门槛，INT4因raw logits L2偏差11.23%未通过（top1 54/54），不提升默认或质量等级。单261120输入/512输出动态请求均与同格式greedy全输出/有效状态一致，但INT4与BF16输出有分歧。八路allocation外推104.06→92.82GiB，仍超88GiB。[报告](docs/E55_RESIDENCY_REPORT.md) · [用法](docs/E55_INT4_KV_USAGE.md)。
 - **INT4精度归因（E56）**：84次校准teacher运行排序12个attention层，再冻结1/2/4层BF16保护组合，在四条留出4K/8K中英文输入上验证。保护4层使raw logits L2从13.82%降至10.07%，仍未过3%门槛，且增加八路容量预算；这批四例greedy输出均与BF16一致。K/V重建与尺度搜索仅为BF16存储诊断，尚无新内核或质量提升结论；identity插桩完整logits一致，独立回收通过。[报告](docs/E56_KV_PRECISION_REPORT.md)。
 - **非对称仿射KV与延后压缩（E57）**：无旋转4bit打包编码通过解析、CPU/GPU及变输入codec Graph检查；六个因果重建候选仍未过3% raw logits门槛，八路布局外推也超过88GiB。另测真实原生INT4 decode：BF16 prefill后转换KV，在4K/8K/16K共100个匹配decode teacher位置上，L2从9.58%降至7.22%、KL减少25.1%，转换后storage与原生INT4一致。两条128-token教程输出仍与BF16有分歧，不提升质量/默认，不宣称Graph或动态路径已适配。[报告](docs/E57_AFFINE_DEFERRED_KV_REPORT.md)。
+- **原生KV转换与混合解码（E58）**：INT4/FP8转换在8组偏移/形状及codec Graph回放中与原生prep一致；六条真实前缀的新旧INT4转换，完整logits/输出/有效状态逐位一致。6次BF16 prefill供36次私有副本解码，并保存可复用teacher。INT4、4层FP8＋INT4、全FP8的decode L2为7.22%/5.20%/4.06%，top1为98/97/100（共100），完整输出一致4/4/5例（共6）；仍全部未过3%，八路外推92.82/96.57/104.07GiB均超88GiB，不提升默认或引擎Graph路径。[报告](docs/E58_NATIVE_CONVERSION_REPORT.md)。
 - **还没做到**：整体速度没有超过原生 TensorFold（E7 时 45.62 vs 49.18 tok/s，E8 之后没有重测）；多请求 DFlash、长上下文HTTP服务、物理KV分页、独立压缩KV质量校准、超出256K的上下文和随机采样仍待推进。
 
 ## 主要结果
