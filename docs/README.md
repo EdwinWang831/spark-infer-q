@@ -112,7 +112,7 @@
 | [Kaifra 愿景](KAIFRA_VISION_RFC.md) · [实施路线](KAIFRA_IMPLEMENTATION_ROADMAP.md) | 基于 DeepInfer 的自适应推理引擎的定位与 K0–K7 阶段 | 设计；K1–K4 已部分实现 |
 | [Decode 前沿 RFC](KAIFRA_DECODE_FRONTIER_RFC.md) · [验证矩阵](KAIFRA_DECODE_VALIDATION_MATRIX.md) | 八个 decode 研究方向及止损规则 | 设计 |
 | [未执行方案表](EXPERIMENTS.md#proposals-without-results-yet) | prefill 数值参考、专家占用速率、专家感知预算在线阶段、草稿 fidelity | 未执行或部分执行 |
-| [自演化设计 PR #15](https://github.com/EdwinWang831/spark-infer-q/pull/15) | 使用中无损地改进推测栈 | 评审中，未合入 |
+| [使用期无损自演化](USE_TIME_SELF_EVOLUTION_PLAN.md) | 在使用中用精确回放评估、按证据晋升推测栈的改动；v2 按 E17–E58 的结果重排了可进化部件 | 设计；EV0–EV7 未执行 |
 
 ## 8. 其他参考
 
