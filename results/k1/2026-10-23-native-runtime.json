@@ -1,0 +1,246 @@
+{
+  "status": "PASS_K1_NATIVE_GPU",
+  "native": {
+    "upstream_revision": "774ce244b87cc0eb8d4b94ab9f5de2ab22049f01",
+    "core_sha256": "f6aa14b790eb7bc729251eea152fd9c83cf215bc5ab912e25ee19c57d8fc1768",
+    "owns_process_group": true
+  },
+  "cases": [
+    {
+      "case": "single_eos_rows1",
+      "status": "PASS",
+      "output_events": 3,
+      "free_logical_blocks": 36,
+      "expected_free_logical_blocks": 36,
+      "completions": [
+        {
+          "request_id": "single",
+          "generation": 1,
+          "reason": "stop",
+          "prompt_tokens": 28,
+          "completion_tokens": 3,
+          "processed_position": 30
+        }
+      ]
+    },
+    {
+      "case": "single_eos_rows8",
+      "status": "PASS",
+      "output_events": 3,
+      "free_logical_blocks": 36,
+      "expected_free_logical_blocks": 36,
+      "completions": [
+        {
+          "request_id": "single",
+          "generation": 1,
+          "reason": "stop",
+          "prompt_tokens": 28,
+          "completion_tokens": 3,
+          "processed_position": 30
+        }
+      ]
+    },
+    {
+      "case": "two_requests_interleaved",
+      "status": "PASS",
+      "output_events": 32,
+      "free_logical_blocks": 36,
+      "expected_free_logical_blocks": 36,
+      "completions": [
+        {
+          "request_id": "b",
+          "generation": 1,
+          "reason": "stop",
+          "prompt_tokens": 26,
+          "completion_tokens": 8,
+          "processed_position": 33
+        },
+        {
+          "request_id": "a",
+          "generation": 1,
+          "reason": "length",
+          "prompt_tokens": 19,
+          "completion_tokens": 24,
+          "processed_position": 42
+        }
+      ]
+    },
+    {
+      "case": "max_tokens_one_pending",
+      "status": "PASS",
+      "output_events": 1,
+      "free_logical_blocks": 36,
+      "expected_free_logical_blocks": 36,
+      "completions": [
+        {
+          "request_id": "one",
+          "generation": 1,
+          "reason": "length",
+          "prompt_tokens": 19,
+          "completion_tokens": 1,
+          "processed_position": 19
+        }
+      ]
+    },
+    {
+      "case": "cancel_waiting_reuse",
+      "status": "PASS",
+      "output_events": 4,
+      "free_logical_blocks": 36,
+      "expected_free_logical_blocks": 36,
+      "completions": [
+        {
+          "request_id": "reuse",
+          "generation": 1,
+          "reason": "cancelled",
+          "prompt_tokens": 19,
+          "completion_tokens": 0,
+          "processed_position": 0
+        },
+        {
+          "request_id": "reuse",
+          "generation": 2,
+          "reason": "stop",
+          "prompt_tokens": 28,
+          "completion_tokens": 3,
+          "processed_position": 30
+        }
+      ]
+    },
+    {
+      "case": "cancel_after_output_reuse",
+      "status": "PASS",
+      "output_events": 5,
+      "free_logical_blocks": 36,
+      "expected_free_logical_blocks": 36,
+      "completions": [
+        {
+          "request_id": "reuse",
+          "generation": 1,
+          "reason": "cancelled",
+          "prompt_tokens": 19,
+          "completion_tokens": 1,
+          "processed_position": 19
+        },
+        {
+          "request_id": "reuse",
+          "generation": 2,
+          "reason": "stop",
+          "prompt_tokens": 28,
+          "completion_tokens": 3,
+          "processed_position": 30
+        }
+      ]
+    },
+    {
+      "case": "invalid_and_full_admission",
+      "status": "PASS",
+      "output_events": 2,
+      "free_logical_blocks": 36,
+      "expected_free_logical_blocks": 36,
+      "completions": [
+        {
+          "request_id": "full_a",
+          "generation": 1,
+          "reason": "cancelled",
+          "prompt_tokens": 26,
+          "completion_tokens": 0,
+          "processed_position": 0
+        },
+        {
+          "request_id": "full_b",
+          "generation": 1,
+          "reason": "cancelled",
+          "prompt_tokens": 26,
+          "completion_tokens": 0,
+          "processed_position": 0
+        }
+      ]
+    }
+  ],
+  "http": {
+    "status": "PASS_K1_HTTP_GPU",
+    "cases": [
+      {
+        "case": "stream",
+        "status": "PASS",
+        "output_tokens": 3,
+        "finish_reason": "stop",
+        "complete_sse": true
+      },
+      {
+        "case": "cancel",
+        "status": "PASS",
+        "output_tokens": 1,
+        "finish_reason": "cancelled",
+        "complete_sse": true
+      }
+    ],
+    "full_logit_rows": 49,
+    "live_state_checks": 9,
+    "same_target_object": true,
+    "same_draft_object": true,
+    "model_reloaded": false,
+    "source_sha256": {
+      "spark_infer_q/deepinfer_bridge.py": "5045ed38d1fb0983537e6d5942b8673d9db5927cd8f6eed9463a84299089d196",
+      "spark_infer_q/kaifra_runtime.py": "73bdfdc008585a28343dbc9a0c0d65791376c9e5c989b50096401502be3b7cda",
+      "spark_infer_q/native_scheduler.py": "948bccf71242fe0e46ef1a6e34c50406e24530eb3211de7ee4ddeda61b2445a8",
+      "spark_infer_q/kaifra_http.py": "1b136bcf1e69bf43250a404e30791b1f9f34a30b823837112985c3019a12800f",
+      "scripts/k1_http_validate.py": "1e4be5583cd1cc7702980bb9e0a07c85597900ea3b89ef62724b1bc5529708d1"
+    },
+    "native": {
+      "upstream_revision": "774ce244b87cc0eb8d4b94ab9f5de2ab22049f01",
+      "core_sha256": "f6aa14b790eb7bc729251eea152fd9c83cf215bc5ab912e25ee19c57d8fc1768",
+      "owns_process_group": true
+    },
+    "limits": [
+      "loopback HTTP using existing resident session; standalone weight loading not rerun",
+      "synchronous single HTTP request; no performance claim",
+      "cancellation delivered after first output using a test gate at a step boundary"
+    ]
+  },
+  "full_logit_rows": 233,
+  "live_state_checks": 91,
+  "source_sha256": {
+    "spark_infer_q/deepinfer_bridge.py": "5045ed38d1fb0983537e6d5942b8673d9db5927cd8f6eed9463a84299089d196",
+    "spark_infer_q/kaifra_runtime.py": "73bdfdc008585a28343dbc9a0c0d65791376c9e5c989b50096401502be3b7cda",
+    "spark_infer_q/native_scheduler.py": "948bccf71242fe0e46ef1a6e34c50406e24530eb3211de7ee4ddeda61b2445a8",
+    "spark_infer_q/kaifra_http.py": "1b136bcf1e69bf43250a404e30791b1f9f34a30b823837112985c3019a12800f",
+    "scripts/kaifra_serve.py": "ece63b53ed18ea7f68203cd5d353addb91cd5843911bc10917d1c46ec3542c54",
+    "scripts/k1_runtime_validate.py": "81be80fa0b50ba2c7859b6ac6e897867b7a869a9e768cd3323c92d130eca507a",
+    "docs/K1_RUNTIME_PLAN.md": "26289940c4b46664426699f27b46b8515cb99935e070e3a7d09c22679703e4eb"
+  },
+  "same_worker": true,
+  "load_count": 1,
+  "same_target_object": true,
+  "same_draft_object": true,
+  "final_worker_status": "READY",
+  "repeated_native_open": true,
+  "borrowed_group_preserved": true,
+  "model_reloaded": false,
+  "prior_failures": [
+    {
+      "job": "091-k1-native-gpu.json",
+      "status": "FAIL",
+      "error": "RuntimeError: DeepInfer already imported with incompatible NEXTN setting"
+    },
+    {
+      "job": "093-k1-native-gpu-v2.json",
+      "status": "FAIL",
+      "error": "AssertionError: "
+    }
+  ],
+  "limits": [
+    "synchronous target-only; requests execute separately on GPU",
+    "same-path serial reference, not independent full-model numerical proof",
+    "controlled short prompts; no performance or service throughput claim"
+  ],
+  "raw_job_sha256": {
+    "090-k1-native-preflight.json": "e656183ec4b23ce0e3235f6ef6aa31d1d202d8bb4503200f86c73dad2d59b9fe",
+    "091-k1-native-gpu.json": "38aa0851bdd969a8d3b7fea2c60b805738320c0edf9601032bb6e482d90c8728",
+    "092-k1-native-preflight-v2.json": "cb5716bf820ab4442ec835ca9ad13f74e62b75d89854539266a4db433441280f",
+    "093-k1-native-gpu-v2.json": "a3fdb61e46aff7ebbb64b6591d06b41cbf3bb3d0f749f35e25f0377344ccf54a",
+    "094-k1-native-gpu-v3.json": "7f61f3c258064a03d8a272761a588d4a72075a0d28fbc11850105658611469b9",
+    "095-k1-http-gpu.json": "f639ea8e145bfe2b8dbc293251f495b9ba8d90700b222eda9753000193576974"
+  }
+}

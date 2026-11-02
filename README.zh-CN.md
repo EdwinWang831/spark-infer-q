@@ -2,111 +2,73 @@
 
 [English](README.md) | **简体中文**
 
-在单台 NVIDIA DGX Spark（GB10 / SM121）上加速 Qwen 模型推理的研究项目，借鉴 [DeepInfer](https://github.com/deepseek-ai/DeepInfer)。
+在单台 NVIDIA DGX Spark（GB10 / SM121）上加速 Qwen3.8-Flash-Next 推理的研究项目，借鉴 [DeepInfer](https://github.com/deepseek-ai/DeepInfer) 的调度和推测验证。截至 2026-10-28，已记录 E0–E58 实验和 K1–K4 运行时里程碑。
 
-## 现状一览
+## 研究问题
 
-截至2026-10-23，仓库包含E0–E33实现、测试和脱敏证据（E26依用户要求中止）。E33用INT8辅助筛选、原BF16头最终裁决，在相同W8草稿/线性预算/Graph基线上，实际decode 46.91→48.51 token/s（+3.41%，root95% +2.39%～+4.12%）；8条旧工程root、64次计时，输出、提交logits/特征/状态及预算轨迹一致。当前仍为研究路径；E30–E32候选均未晋升。
+一台 CPU 与 GPU 共享 128 GB 内存的桌面设备，能不能让一个大型 MoE 模型跑得更快、上下文更长、同时服务多个请求，并且**输出和原模型逐 token 完全一致**？
 
-- **做什么**：Qwen3.8-Flash-Next（NVFP4，TensorFold 内核）用 DFlash2 草稿模型做推测解码，由 DeepInfer 的 MTPVarlen 决定每一步验证多少个草稿。执行器是同步、单请求、greedy 的研究原型。
-- **最大的单项 decode 改进**：E15/E16 训练的轻量置信度预测器。在另行冻结的新任务上，它比默认的滞后预算快约 10%（E16：44.08 vs 40.21 tok/s），目前是可选路径。
-- **prompt 处理**：8 行分块让完整请求快 1.67 倍，首 token 时间之和从 19.69 秒降到 4.23 秒；decode 速度基本没变（E8）。
-- **还没做到**：整体速度没有超过原生 TensorFold（E7 时 45.62 vs 49.18 tok/s，E8 之后没有重测）；也还没有多请求 GPU batch、4K 以上上下文和随机采样。
+- 模型：Qwen3.8-Flash-Next，NVFP4 量化，48 层（36 层 GDN 线性注意力 + 12 层 QSA 稀疏注意力），每层 512 个路由专家取 top-10，target 权重约 70 GiB。
+- 范围：单台 Spark、greedy 解码；不重新训练 Qwen，不搭生产服务，没有实测就不宣称加速。推理底座（DeepInfer、TensorFold、vLLM、SGLang）由实验结果决定，不预先选定。
+
+## 方法
+
+每个 decode 步分三部分：
+
+1. **出草稿**：DFlash2 草稿模型读取 target 已提交的特征，一次给出最多 7 个候选 token。
+2. **定预算**：根据接受率预测和实测成本，决定这一步让 target 验证几行（DeepInfer 的 MTPVarlen）。
+3. **验证并提交**：target 一次前向验证这些行，只接受和 greedy 结果一致的最长前缀，写入 GDN/QSA 状态。
+
+所有实验遵守同一套规范：
+
+- **正确性契约**：每个候选都和逐 token 的 serial 执行对照输出 token、committed logits 和完整状态，不一致就不算通过。
+- **事先冻结方案**：任务、变量和通过门槛在运行前写进 `*_PLAN.md`，结果写进 `*_REPORT.md`。
+- **负结果同样保留**：没过门槛的候选记为"未采用"，不事后放宽阈值。
+- **开销全计入**：特征提取、CPU 传输、预测等额外耗时都算进计时。
 
 ## 主要结果
 
-| 实验 | 改了什么 | 结果 | 现状 |
-| --- | --- | --- | --- |
-| [E6](docs/E6_DRAFT_HEAD_REPORT.md) | 草稿输出头换成完整词表 Q4 | decode 41.70 → 45.54 tok/s（+9.23%） | 默认 |
-| [E8](docs/E8_INTEGRATION_REPORT.md) | prompt 按 8 行分块，沿用 decode 算术 | 完整请求快 1.67 倍；decode −1.14% | 默认 |
-| [E13](docs/E13_DRAFT_CACHE_CONFIDENCE_REPORT.md) | 增量缓存 DFlash 的历史投影 | 1K–2K 输入 +6.27%；短输入 −0.31% | 可选 |
-| [E15](docs/E15_CONFIDENCE_TRAINING_REPORT.md) | 训练七深度置信度预测器 | 6 个新任务上比滞后预算 +10.00%，比固定七草稿 +10.88% | 可选 |
-| [E16](docs/E16_BILINGUAL_EXPANSION_REPORT.md) | 用 600 条中英文提示重新训练 | 20 个新任务上比滞后预算 +9.61%，比 E15 的预测器 +3.18%（其中 2 个任务变慢）；英文 +7.60%，中文 +10.75% | 可选 |
-| [E17](docs/E17_COMPLETED_TRAINING_REPORT.md) | 中英文预测器定向补训 | 20个root上36.83 tok/s；比固定预算+11.02%，比E16仅+0.09%，区间跨零 | 未确认超过E16 |
-| [E19](docs/E19_MLP_CAPACITY_REPORT.md) | 相同数据的11,157参数MLP | 离线效率比线性低0.55%，未过晋升门槛 | E19候选未晋升 |
-| [E21](docs/E21_ADAPTIVE_COLLECTOR_REPORT.md) | 自适应训练标签采集器 | 六个root上采集计算耗时减少21.13%；已知中文例仍慢2.15% | 采集入口已验证，不是服务TPS |
-| [E22](docs/E22_PREDICTOR_DIAGNOSIS_REPORT.md) | 可选NumPy标量MLP运行时 | 小头0.3353→0.0118毫秒（28.38×）；诊断回放仍比线性低0.06% | CPU原型，没有新增decode TPS |
-| [E24](docs/E24_COVERAGE_EXPANSION_REPORT.md) | 504条新root覆盖问答/代码/数学/多轮/长输入后补训 | 离线比冻结MLP高0.252%、比线性高0.212%，区间均为正 | 离线门槛通过 |
-| [E25](docs/E25_ONLINE_COMPARISON_REPORT.md) | 12个root、108次实际decode配对计时 | 新MLP 47.15、冻结MLP 47.28、线性47.49 token/s；两个相对区间均跨零 | 未确认实际提速 |
-| [E27](docs/E27_LINEAR_COST_REPORT.md) | 相同线性权重的NumPy执行＋因果实时费用对照 | 原版43.39、NumPy43.65、实时修正43.42 token/s；NumPy +0.60%，重复敏感性区间跨零 | 不替换默认；MLP/混合暂停 |
-| [E28](docs/DRAFT_BACKBONE_W8_REPORT.md) | 草稿五层MLP，INT8权重＋BF16激活 | 草稿阶段耗时−6.89%；固定预算decode 42.04→42.29 token/s（+0.61%，区间−0.52%～+1.66%） | 正确性通过，未确认decode收益 |
-| [E29](docs/E29_TARGET_VERIFICATION_REPORT.md) | target CUDA Graph，保留DFlash特征捕获 | 相同线性预算47.05→47.65 token/s（+1.28%）；Graph＋W8为48.01（+2.04%）；两项区间均为正 | 8条旧root受控正收益，默认不变 |
-| [E30](docs/E30_TARGET_PROFILE_REPORT.md) | 冻结W8/线性/Graph剖析，保持精度的BF16头布局 | target内核时间：专家41.3%、量化投影26.9%、BF16为23.4%；布局仅头部+0.8%，未过门槛 | 剖析完成、候选拒绝，无新增decode TPS |
-| [E31](docs/E31_EXPERT_SCALE_REPORT.md) | FP8专家scale成对转换，保持精度 | 转换静态指令减半；专家pair热复用+0.23%、缓存扰动−0.18%，区间均跨零 | 数值检查通过，候选拒绝，不进入整模长测 |
-| [E32](docs/E32_COMPACT_STAGING_REPORT.md) | MXFP8投影有效输入行紧凑staging | 每CTA共享内存少16%～31%；真实回放热复用−1.06%、缓存扰动−0.92% | 224组筛查＋96份真实输入通过，性能拒绝 |
-| [E33](docs/E33_EXACT_HEAD_SCREEN_REPORT.md) | INT8辅助头筛选＋定向FP64误差界＋原BF16子集精算 | 完整头耗时−36.24%；实际decode 46.91→48.51 token/s（+3.41%，区间为正） | 8条root/64次对照、精确检查通过；研究路径，默认不变 |
-| [E11](docs/E11_PROJECTION_REPORT.md) | 投影改用 MXFP8 split-K | decode +0.62%，完整请求 −0.64% | 可选，默认不变 |
-| [E10](docs/E10_TARGET_KERNEL_REPORT.md) | 调专家核的 warp 数和预取深度 | holdout 上 +0.08% | 未采用 |
-| [E12](docs/E12_EXPERT_VERIFICATION_REPORT.md) | 按路由专家并集估计验证成本 | 离线成本误差降 26.17%，但专家并集要验证后才知道；能在线用的特征只降 2.42% | 未采用 |
-| [E14](docs/E14_CONFIDENCE_BUDGET_REPORT.md) | 按草稿 margin 分桶调整预算 | +0.065%，区间跨零 | 未采用 |
-
-**怎么读这些数字**
-
-- 每个实验用自己的任务集，不同行的 tok/s 不能直接比较，收益也不能相乘。
-- 都是单台 Spark、单请求、greedy 解码。大多数任务是合成提示，上下文最多约 2K token。
-- 生成实验核对输出 token、committed logits 和 GDN/QSA 状态；CPU 原型和采集研究的具体核验范围见各自报告。
-- 特征提取、CPU 传输、预测等额外开销都算在耗时里。
-
-其余实验是打基础和做诊断：
-
-| 实验 | 内容 | 结论 |
+| 方向 | 结果 | 实验 |
 | --- | --- | --- |
-| E0–E2 | 环境审计、DeepInfer 构建、SM121 内核探测、模型加载与前向 | 完整 target 权重可以加载并运行；原生 DeepGEMM BF16 不支持 SM121 |
-| [E3](docs/E3_WIDE_BLOCK_REPORT.md) | 接入 DFlash2 和 DeepInfer 原生动态预算，8 行 / 最多 7 个草稿 | 状态正确；按深度先验的动态预算与合适的固定长度打平（42.21 vs 42.20 tok/s） |
-| [E4](docs/E4_MATCHED_REPORT.md) | 短上下文同机对照 | 动态比固定六草稿 +2.12%；没有领先原生 TensorFold MTP |
-| [E5](docs/E5_ENGINE_BRIDGE_REPORT.md) | 让 DeepInfer C++ Scheduler 驱动 Qwen target-only 请求 | 七组 GPU 场景通过；GPU 仍逐个请求执行 |
-| [E7](docs/E7_TENSORFOLD_MATCH_REPORT.md) | 充分预热后对照原生 TensorFold | 整体 45.62 vs 49.18 tok/s；8 个自然完成的任务 45.57 vs 43.58 |
-| [E9](docs/E9_DECODE_PROFILE_REPORT.md) | 用 Nsight 剖析 decode | target 验证占 83.81%，草稿占 14.39% |
+| Decode：验证预算 | 训练的轻量接受率预测器，比滞后预算快约 10%（20 个新任务上 44.08 vs 40.21 tok/s） | [E15](docs/E15_CONFIDENCE_TRAINING_REPORT.md)、[E16](docs/E16_BILINGUAL_EXPANSION_REPORT.md) |
+| Decode：草稿 | 草稿输出头换成完整词表 Q4，+9.23% | [E6](docs/E6_DRAFT_HEAD_REPORT.md) |
+| Decode：target 执行 | 精确筛选输出头 +3.41%（46.91 → 48.51 tok/s）；CUDA Graph +1.28% | [E33](docs/E33_EXACT_HEAD_SCREEN_REPORT.md)、[E29](docs/E29_TARGET_VERIFICATION_REPORT.md) |
+| Prefill | 8 行分块让完整请求快 1.67 倍；再改用 512 行分块的自主 prefill，1,536-token 请求从 15.35 秒降到 2.13 秒 | [E8](docs/E8_INTEGRATION_REPORT.md)、[E41](docs/E41_PREFILL_GRAPH_REPORT.md) |
+| 长上下文 | 单请求 256K（262,080 token）跑通，检索 3/3；256K 输入下动态 DFlash 让 decode 比 target-only 快 88%（16.36 → 30.81 tok/s） | [E46](docs/E46_256K_REPORT.md)、[E49](docs/E49_LONG_DYNAMIC_REPORT.md) |
+| 多请求 | 两个请求共享一次 target 前向，总 decode 吞吐 +63.4%；两个 256K 请求同时运行，输出和状态与各自单独运行一致 | [联合 Target](docs/JOINT_TARGET_EXECUTION_REPORT.md)、[E53](docs/E53_LONG_CONCURRENCY_REPORT.md)、[E54](docs/E54_REQUEST_DRAFT_CACHE_REPORT.md) |
 
-[E20固定宽度采集](docs/E20_FAST_COLLECTOR_REPORT.md)保留为研究对照，推荐已验证的自适应[采集入口](docs/FAST_COLLECTOR_USAGE.md)。[E18短草稿](docs/E18_PREDRAFT_COMPUTE_REPORT.md)只让草稿计算减少0.74%，没有建立在线提速。
+每个数字只在对应报告的任务和计时口径内成立，不同行之间不能比较，收益也不能相乘。大多数任务是合成提示。**全部实验的一句话结论见 [docs/README.md](docs/README.md)。**
 
-**E23–E25（2026-10-23 UTC）：** 固定数据的新机会损失目标[未通过独立门槛](docs/E23_OBJECTIVE_COMPARISON_REPORT.md)。随后[504条新root的覆盖补训](docs/E24_COVERAGE_EXPANSION_REPORT.md)已完成，并通过72个root的离线测试；但[实际decode对照](docs/E25_ONLINE_COMPARISON_REPORT.md)比冻结MLP低0.263%、比线性低0.717%，区间均跨零。没有确认实际提速，不替换当前策略；离线估算和实测decode仍分开报告。
+## 没有用的方向（同样是结论）
 
-**E26–E27（2026-10-23 UTC）：** [混合路线](docs/E26_RESIDUAL_HYBRID_PLAN.md)依用户要求在18/108次计时后取消，不作性能结论。[线性实际对照](docs/E27_LINEAR_COST_REPORT.md)完成12条新root、108次计时：实时费用修正比原版+0.07%、比冻结费用NumPy−0.53%；纯NumPy比原版+0.60%，纳入重复波动的区间仍跨零。全部正确性通过，常驻模型未重载，默认不变。
+- **逐个调内核收益很小。** target 验证占 decode 时间的 84%（E9），专家核是其中最大的一块（E30）。但调 warp 和预取、改 staging、权重复用、双 stream、指令流水等 11 项候选（E10、E30–E32、E34、E35、E37–E39、E43、E52）都没有被采用：改善只有几个百分点以内，或者反而变慢。
+- **更大的预测器没有带来实际提速。** MLP 补训后离线评估略好于线性（+0.21%），但实际 decode 中没有超过线性（E19、E24、E25）。
+- **只改成本模型帮助有限。** 专家并集能解释验证成本，但要验证完才知道（E12）。
 
-**E28（2026-10-23 UTC）：** [草稿MLP W8A16](docs/DRAFT_BACKBONE_W8_REPORT.md)完成8条旧工程回归root、64次计时，target输出token、已提交logits与live state检查全部通过。观测草稿接受率73.74%→73.58%，验证多16轮。BF16控制仍常驻，量化包大小不是实测整机净省内存。本轮仅固定预算，量化后的动态策略尚未验证。
+有效的改进主要来自"决定算什么"（验证预算、草稿、输出头筛选）和重新组织 prefill。
 
-**E29（2026-10-23 UTC）：** [target验证对照](docs/E29_TARGET_VERIFICATION_REPORT.md)完成32个校准前缀、1,536次宽度计时、96次三组decode和32次同期预算计时。已有线性预算比固定7草稿少计算36.72%的验证行、验证耗时少12.70%，decode 42.32→47.31 token/s（+11.78%）；这是复核已有策略，不是新预测器收益。纯Graph在决策/提交轨迹精确相同下+1.28%，是本轮新增执行结果。W8及费用变化比纯Graph再高0.75%，但区间跨零。输出token、logits、特征与live state检查通过，权重保持常驻。
+## 当前卡点
 
-**E30（2026-10-23 UTC）：** [历史核对与当前路径剖析](docs/E30_TARGET_PROFILE_REPORT.md)确认E10/E11已试过专家发射/预取和投影调参。本轮4条旧校准root、32个早期步骤统计真实target GPU内核，profiler扰动4.85%～8.67%。新NK→KN输出头布局在32份真实激活上保持logits精确一致，但只让头部省约0.8%时间，还多1.27GB副本，因此不进入整模长测。target/draft未重载，没有新训练或精度修改。
+- **内存**：目标是 8 个并发、每个 256K 的请求，放进 88 GiB 的 CUDA 分配上限。即使把 KV 压到 INT4，预计仍需 92.82 GiB（E55）。
+- **KV 压缩精度**：FP8 / INT4 KV 的 logit 相对误差是 8.42% / 11.23%，超过事前定的 3% 门槛；保护敏感层、仿射编码、延后压缩都没有解决（E55–E58）。
+- **多请求服务**：双请求动态 DFlash 和异步 SSE 已能运行，但还没有稳定超过优化后的单请求顺序处理（[PR #19](https://github.com/EdwinWang831/spark-infer-q/pull/19)，进行中）。
+- **对照原生 TensorFold**：E7 时整体 45.62 vs 原生 49.18 tok/s，之后没有重测。
 
-**E31（2026-10-23 UTC）：** [专家scale成对转换](docs/E31_EXPERT_SCALE_REPORT.md)通过65,536对scale穷举、24组真实路由专家输出和8次诊断前向的Graph/logits/特征/状态检查。CUDA已提供该成对操作，这是实现优化尝试，不是新算法。转换静态指令减半，但两种计时条件均无可靠收益，停止候选、不做整模长测。权重常驻，默认路径不变。
+## 仓库结构
 
-**E32（2026-10-23 UTC）：** [紧凑staging](docs/E32_COMPACT_STAGING_REPORT.md)去掉无效输入行填零，保持有效行MMA/累加顺序。224组算术/边界筛查、96份真实输入及8次诊断logits/特征/状态检查通过。首版采集器漏掉类方法调用、完整性断言失败，原记录保留并用私有代理补齐。两种计时区间均为负，不进入整模长测；权重常驻、默认不变。
+| 目录 | 内容 |
+| --- | --- |
+| [`spark_infer_q/`](spark_infer_q) | 可复用的库：greedy 验证规则、预算与预测器、草稿缓存、prefill、长上下文状态、运行时（`kaifra_*`，Kaifra 是引擎的暂定名） |
+| [`scripts/`](scripts) | 各实验的运行、采集和导出脚本，文件名带实验编号 |
+| [`tests/`](tests) | CPU 单元测试，不需要 GPU |
+| [`docs/`](docs) | 每个实验的方案和报告，以及[按主题的索引](docs/README.md) |
+| [`results/`](results) | 每个实验的脱敏数据，可由对应导出脚本重新校验 |
 
-**E33（2026-10-23 UTC）：** [头筛选报告](docs/E33_EXACT_HEAD_SCREEN_REPORT.md)保留首轮成本门槛失败记录，随后仅融合相同保守区间计算。32份校准窗口均保留原argmax，完整头耗时少36.24%；另8条旧工程root、64次完整生成实测decode +3.41%（root95% +2.39%～+4.12%），四轮均为正。两组均验证12,748行，接受/提交轨迹相同；筛选路径2,596个计时轮次无自然回退。原BF16权重最终裁决，启用时辅助payload多约641MB；未切默认服务，也未新增原生TensorFold排名结论。
-
-## 工作原理
-
-每个 decode 步分三步：
-
-1. **出草稿**：DFlash2 读取 target 已提交的特征，一次给出最多 7 个草稿 token。输出头用 Q4，默认草稿主干和 selector 保持 BF16。E28另行测试INT8 MLP权重＋BF16激活。
-2. **定预算**：决定这一步让 target 验证几行（1–8 行）。默认用 DeepInfer 原生 MTPVarlen 加滞后的接受率；也可以改用 E16 置信度预测器给出的接受率。
-3. **验证并提交**：target 一次验证这些行，接受与 greedy 结果一致的最长前缀，只把这部分写入 GDN/QSA 状态。
-
-| 部分 | 来源 | 本仓库代码 |
-| --- | --- | --- |
-| Target 执行、CUDA 内核、GDN/QSA 提交 | TensorFold（外部提供源码和检查点） | `scripts/e3_target.py`、`spark_infer_q/csf_loader.py` |
-| 草稿模型 | DFlash2 | `spark_infer_q/dflash2_block.py`、`draft_head.py`（Q4 头）、`draft_context.py`（上下文缓存） |
-| 验证预算 | DeepInfer MTPVarlen | `spark_infer_q/verification_budget.py`、`confidence_head.py`、`confidence_features.py` |
-| greedy 验证规则 | 本仓库 | `spark_infer_q/speculative.py` |
-| prompt 分块 | 本仓库 | `spark_infer_q/prompt.py` |
-| 调度桥接（E5） | DeepInfer C++ Scheduler | `spark_infer_q/deepinfer_bridge.py`、`executor.py` |
-
-完整执行器是 [`scripts/e8_ours.py`](scripts/e8_ours.py)，提供 SSE 接口。它需要准备好的研究环境、外部依赖和检查点，见[用法说明](docs/PROMPT_USAGE.md)。实验之间由[常驻 worker](docs/RESIDENT_RESEARCH_WORKER.md) 保持权重加载。
-
-## 下一步
-
-- 保留E29 Graph为可选研究路径，优先target数据搬运/融合及真正共享GPU计算；W8相对纯Graph的独立增益仍未确认。
-- E8 之后重新对照原生 TensorFold。
-- 暂缓MLP/混合路线。先检查线性预算改变能否减少实际验证工作，再决定是否继续训练；保留独立测试与实际decode门槛。
-- 4K 以上上下文：先处理 DFlash 的 2048 滑窗和绝对位置。
-- 让两个请求共享一次 target forward，从 E5 的调度桥接出发。多请求调度的整体设计见[全局调度 RFC](docs/GLOBAL_COST_AWARE_SCHEDULER_RFC.md)（仅为设计提案）。
-- 五份已写好、还没执行的方案（prefill 数值参考、专家占用速率、专家感知预算的在线阶段、草稿 fidelity、精确输出头筛选），见[未执行方案列表](docs/EXPERIMENTS.md#proposals-without-results-yet)。
+`main` 汇总已完成的工作；仍在进行的分支和 PR 见[仓库导航](docs/REPOSITORY_STATUS.md)。
 
 ## 快速开始（不需要 GPU，不下载权重）
 
-后续 DeepInfer 构建以 Python 3.12 为目标。以下脚本只用 Python 标准库，**不会安装依赖或修改 GPU 设置**。
+以下脚本只用 Python 标准库，**不会安装依赖或修改 GPU 设置**。研究环境以 Python 3.12 为目标。
 
 ```bash
 git clone https://github.com/EdwinWang831/spark-infer-q.git
@@ -118,38 +80,23 @@ python3 scripts/probe_environment.py --static-only
 # 指向已有的本地 Hugging Face config.json，不下载检查点。
 python3 scripts/inspect_hf_config.py /path/to/model/config.json
 
-# 运行单元测试，无需 GPU；没有 PyTorch 时会跳过少数测试。
+# 运行单元测试，无需 GPU；没有 PyTorch 或 NumPy 时会跳过部分测试。
 python3 -m unittest discover -s tests -v
 ```
 
+在 Spark 上运行完整模型需要准备好的研究环境、外部 TensorFold 源码和检查点，见 [prompt 分块执行器](docs/PROMPT_USAGE.md)、[K2 运行时](docs/K2_DFLASH_SCHEDULER_USAGE.md) 和[常驻 worker](docs/RESIDENT_RESEARCH_WORKER.md)。
+
 **隐私：** 环境报告默认不提交。分享前先检查内容；不要提交 API key、token、模型权重、私有路径或个人标识信息。
-
-## 文档导航
-
-| 想看 | 去哪里 |
-| --- | --- |
-| 所有实验的计划、通过标准和结论 | [docs/EXPERIMENTS.md](docs/EXPERIMENTS.md) |
-| 单个实验 | `docs/E*_PLAN.md`（事先冻结的方案）、`docs/E*_REPORT.md`（报告）、`results/eN/`（脱敏数据） |
-| 用法 | [prompt 分块执行器](docs/PROMPT_USAGE.md)、[Q4 草稿头](docs/DRAFT_HEAD_USAGE.md)、[草稿上下文缓存](docs/DRAFT_CONTEXT_CACHE_USAGE.md)、[投影路由](docs/E11_PROJECTION_USAGE.md)、[常驻 worker](docs/RESIDENT_RESEARCH_WORKER.md) |
-| 架构与移植 | [候选架构](docs/ARCHITECTURE.md)、[适配接口](docs/ADAPTER_INTERFACES.md)、[初始源码审计](docs/PORTING_MATRIX.md) |
-| 设计提案 | [全局调度](docs/GLOBAL_COST_AWARE_SCHEDULER_RFC.md)、[Kaifra愿景](docs/KAIFRA_VISION_RFC.md)、[实施路线](docs/KAIFRA_IMPLEMENTATION_ROADMAP.md)、[Decode前沿](docs/KAIFRA_DECODE_FRONTIER_RFC.md)及[验证矩阵](docs/KAIFRA_DECODE_VALIDATION_MATRIX.md)。均为设计提案，不代表服务能力已实现 |
-
-## 研究问题与范围
-
-能否把 DeepInfer 在引擎、调度、推测验证和内存管理上的长处用到**单台 DGX Spark** 上，同时把模型执行器和 GPU 内核适配到 Qwen3.8-Flash-Next？还是基于 vLLM / SGLang 的实现，能以更少的工程量得到经过验证的速度？**推理底座由实验结果决定**，不预先选定。
-
-- **范围内：** 验证 SM121 兼容性、Qwen 模型适配、GPU 投机验证、准确的 GDN/QSA 状态回滚与提交、延迟和吞吐分析。
-- **初期范围外：** 重新训练 Qwen、搭建生产 Web 服务、假设 DeepInfer 已支持 GB10，以及未经实测就宣称加速。
-- **基线：** 在同一台 Spark、相同输入、采样设置和检查点格式下对照 TensorFold、vLLM 与 SGLang。公开结果只作参考；同条件性能和运行可用性需要实际验证。
 
 ## 上游项目与归属
 
-- [DeepSeek DeepInfer](https://github.com/deepseek-ai/DeepInfer)（Apache-2.0）
-- [TensorFold](https://github.com/ashhart/TensorFold)（模型执行与 CUDA 内核；须保留适用的上游许可证和声明）
-- [Qwen3.8-Flash-Next-DFlash2](https://huggingface.co/incoai/Qwen3.8-Flash-Next-DFlash2)（外部提供的草稿检查点与参考实现）
-- [vLLM](https://github.com/vllm-project/vllm)
-- [SGLang](https://github.com/sgl-project/sglang)
+- [DeepSeek DeepInfer](https://github.com/deepseek-ai/DeepInfer)（Apache-2.0）：C++ Scheduler 和 MTPVarlen 验证预算
+- [TensorFold](https://github.com/ashhart/TensorFold)：模型执行与 CUDA 内核；须保留适用的上游许可证和声明
+- [MiaAI-Lab 的 TensorFold 配方](https://github.com/MiaAI-Lab/Qwen3.8-Flash-Next-Single-DGX-Spark-TensorFold)（MIT）：E43/E44 改编了其中的 prefill 专家 tile，见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)
+- [Qwen3.8-Flash-Next-DFlash2](https://huggingface.co/incoai/Qwen3.8-Flash-Next-DFlash2)：外部提供的草稿检查点与参考实现
+- [OASST1](https://huggingface.co/datasets/OpenAssistant/oasst1)（Apache-2.0）：E17 预测器补训用的提示来源，见[署名说明](docs/data/OASST1_ATTRIBUTION.md)
+- [vLLM](https://github.com/vllm-project/vllm)、[SGLang](https://github.com/sgl-project/sglang)：对照基线候选，尚未实测
 
-**引入上游源码或权重前，须检查其许可证和声明。** 本仓库包含研究计划、诊断/构建/测试工具、有界的实验请求执行器、对外部 TensorFold 模块和完整 target 的适配、有界的 eager DFlash2 桥接，以及脱敏实验记录。不包含完整的 Qwen 模型实现、第三方内核或模型权重；完整加载与冒烟测试依赖外部提供的 TensorFold 源码和检查点文件。
+**引入上游源码或权重前，须检查其许可证和声明。** 本仓库包含研究计划、诊断/构建/测试工具、实验请求执行器与运行时、对外部 TensorFold 模块和完整 target 的适配、DFlash2 桥接，以及脱敏实验记录。不包含完整的 Qwen 模型实现或模型权重；加载和其余 target 算子依赖外部提供的 TensorFold 源码和检查点。
 
 许可证：[Apache 2.0](LICENSE)。

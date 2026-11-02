@@ -1,5 +1,7 @@
 # Experimental results
 
+> This table covers E0–E9 only. For every experiment (E0–E58, K1–K4) see the [themed index](README.md).
+
 E0 observations are recorded in [E0_REPORT.md](E0_REPORT.md). E1 covers [core build/CPU interfaces](E1_BUILD_REPORT.md) and [selected GPU probes](E1_GPU_REPORT.md). E2 covers [quantized-activation comparisons](E2_EXPERT_REPORT.md) and [native BF16-input expert validation](E2_NATIVE_REPORT.md), and [complete MoE validation](E2_MOE_REPORT.md), and [GDN/QSA block and state validation](E2_BLOCK_REPORT.md), with [block evidence](../results/e2/2026-10-20-decoder-blocks.json) and a [whole-checkpoint/state accounting record](../results/e2/2026-10-20-model-budget.json). The latest [minimal executor milestone](E2_EXECUTOR_REPORT.md) adds [20 GPU records](../results/e2/2026-10-20-executor.json) and local one-block timing. The [complete loading milestone](E2_LOAD_REPORT.md) adds full target residency and selected token/logit execution, with a significant prefill/serial numerical difference retained. The subsequent [DFlash2 milestone](E3_DFLASH2_REPORT.md) adds bounded real-weight greedy/state integration and exploratory short-prefix timing. **Independent full-model correctness, full-context capacity, task-quality and stable performance remain unproven.**
 
 | ID | Host | Status | Baseline tok/s | Candidate tok/s | Correctness | Notes |

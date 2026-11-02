@@ -1,0 +1,1678 @@
+{
+  "status": "PASS_K3_GRAPH_RUNTIME",
+  "probe": {
+    "status": "PASS_K3_GRAPH_PROBE",
+    "cases": [
+      {
+        "parity": 0,
+        "width": 1,
+        "keep": 1,
+        "status": "PASS"
+      },
+      {
+        "parity": 0,
+        "width": 2,
+        "keep": 1,
+        "status": "PASS"
+      },
+      {
+        "parity": 0,
+        "width": 2,
+        "keep": 2,
+        "status": "PASS"
+      },
+      {
+        "parity": 0,
+        "width": 3,
+        "keep": 1,
+        "status": "PASS"
+      },
+      {
+        "parity": 0,
+        "width": 3,
+        "keep": 3,
+        "status": "PASS"
+      },
+      {
+        "parity": 0,
+        "width": 4,
+        "keep": 1,
+        "status": "PASS"
+      },
+      {
+        "parity": 0,
+        "width": 4,
+        "keep": 2,
+        "status": "PASS"
+      },
+      {
+        "parity": 0,
+        "width": 4,
+        "keep": 4,
+        "status": "PASS"
+      },
+      {
+        "parity": 0,
+        "width": 5,
+        "keep": 1,
+        "status": "PASS"
+      },
+      {
+        "parity": 0,
+        "width": 5,
+        "keep": 2,
+        "status": "PASS"
+      },
+      {
+        "parity": 0,
+        "width": 5,
+        "keep": 5,
+        "status": "PASS"
+      },
+      {
+        "parity": 0,
+        "width": 6,
+        "keep": 1,
+        "status": "PASS"
+      },
+      {
+        "parity": 0,
+        "width": 6,
+        "keep": 3,
+        "status": "PASS"
+      },
+      {
+        "parity": 0,
+        "width": 6,
+        "keep": 6,
+        "status": "PASS"
+      },
+      {
+        "parity": 0,
+        "width": 7,
+        "keep": 1,
+        "status": "PASS"
+      },
+      {
+        "parity": 0,
+        "width": 7,
+        "keep": 3,
+        "status": "PASS"
+      },
+      {
+        "parity": 0,
+        "width": 7,
+        "keep": 7,
+        "status": "PASS"
+      },
+      {
+        "parity": 0,
+        "width": 8,
+        "keep": 1,
+        "status": "PASS"
+      },
+      {
+        "parity": 0,
+        "width": 8,
+        "keep": 4,
+        "status": "PASS"
+      },
+      {
+        "parity": 0,
+        "width": 8,
+        "keep": 8,
+        "status": "PASS"
+      },
+      {
+        "parity": 1,
+        "width": 1,
+        "keep": 1,
+        "status": "PASS"
+      },
+      {
+        "parity": 1,
+        "width": 2,
+        "keep": 1,
+        "status": "PASS"
+      },
+      {
+        "parity": 1,
+        "width": 2,
+        "keep": 2,
+        "status": "PASS"
+      },
+      {
+        "parity": 1,
+        "width": 3,
+        "keep": 1,
+        "status": "PASS"
+      },
+      {
+        "parity": 1,
+        "width": 3,
+        "keep": 3,
+        "status": "PASS"
+      },
+      {
+        "parity": 1,
+        "width": 4,
+        "keep": 1,
+        "status": "PASS"
+      },
+      {
+        "parity": 1,
+        "width": 4,
+        "keep": 2,
+        "status": "PASS"
+      },
+      {
+        "parity": 1,
+        "width": 4,
+        "keep": 4,
+        "status": "PASS"
+      },
+      {
+        "parity": 1,
+        "width": 5,
+        "keep": 1,
+        "status": "PASS"
+      },
+      {
+        "parity": 1,
+        "width": 5,
+        "keep": 2,
+        "status": "PASS"
+      },
+      {
+        "parity": 1,
+        "width": 5,
+        "keep": 5,
+        "status": "PASS"
+      },
+      {
+        "parity": 1,
+        "width": 6,
+        "keep": 1,
+        "status": "PASS"
+      },
+      {
+        "parity": 1,
+        "width": 6,
+        "keep": 3,
+        "status": "PASS"
+      },
+      {
+        "parity": 1,
+        "width": 6,
+        "keep": 6,
+        "status": "PASS"
+      },
+      {
+        "parity": 1,
+        "width": 7,
+        "keep": 1,
+        "status": "PASS"
+      },
+      {
+        "parity": 1,
+        "width": 7,
+        "keep": 3,
+        "status": "PASS"
+      },
+      {
+        "parity": 1,
+        "width": 7,
+        "keep": 7,
+        "status": "PASS"
+      },
+      {
+        "parity": 1,
+        "width": 8,
+        "keep": 1,
+        "status": "PASS"
+      },
+      {
+        "parity": 1,
+        "width": 8,
+        "keep": 4,
+        "status": "PASS"
+      },
+      {
+        "parity": 1,
+        "width": 8,
+        "keep": 8,
+        "status": "PASS"
+      }
+    ],
+    "state_checks": 81,
+    "full_logit_rows": 244,
+    "full_feature_rows": 244,
+    "capabilities": {
+      "cuda_graph": true,
+      "graph_widths": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "graph_parities": [
+        0,
+        1
+      ],
+      "graph_captures": 16,
+      "graph_replays": 80,
+      "graph_fallbacks": {},
+      "graph_warmup_ms": 5615.721640991978,
+      "graph_scope": "single_request_decode",
+      "graph_full_logits": true,
+      "host_synchronization": true
+    },
+    "eager_fallback": {
+      "cuda_graph": true,
+      "graph_widths": [
+        1
+      ],
+      "graph_parities": [
+        0,
+        1
+      ],
+      "graph_captures": 2,
+      "graph_replays": 0,
+      "graph_fallbacks": {
+        "uncaptured_bucket": 1
+      },
+      "graph_warmup_ms": 805.883678025566,
+      "graph_scope": "single_request_decode",
+      "graph_full_logits": true,
+      "host_synchronization": true
+    },
+    "allocated_before": 77862716928,
+    "allocated_after_warmup": 78128585728,
+    "same_model_objects": true,
+    "source": "E29 operations with runtime-owned static state",
+    "source_sha256": {
+      "spark_infer_q/__init__.py": "623ddaf4adfbf51e0c029203b0ff1780ebcc5824ff8300de5f1e6d6cd819d5d7",
+      "spark_infer_q/budget_audit.py": "7c2116b666e99c4c07055426733a292e5219ca7b788ce0d0e45f75001640db68",
+      "spark_infer_q/budget_regret.py": "14477f3464091a5eaff1a9cbdb0df045b1c047570fe7a7a782b0c8e63076ba11",
+      "spark_infer_q/checkpoint.py": "d7027b4803ee2564f5a881c3dcbbbb58f0508ee3e8f66d7895fbb7b174aad6b8",
+      "spark_infer_q/collection_budget.py": "4319736e8acfbe4c88911961f37676b188a39a5a6c0a2216a886cb34addbbbb2",
+      "spark_infer_q/collection_trajectory.py": "b528e4e35b8deb7551782d390aee4d4fb40b407e8f966d02fe607c52e844d2f6",
+      "spark_infer_q/collector.py": "dc34bc95c2984ce099a881717c47659e928e89b2ebf55711ac57b291a1ad6677",
+      "spark_infer_q/confidence_budget.py": "b055819b45a2e4d04b773eef34aa0212b140ba3721fbb1f5ad192903463365b9",
+      "spark_infer_q/confidence_features.py": "6d40253da4dad1de1a6866767af154e3a3ce69647a80df0e2e931f5ab53f0fc1",
+      "spark_infer_q/confidence_head.py": "e27c07808689e54f8660ef8068884be874c0fd5045ed2acfa04fc929b286ad28",
+      "spark_infer_q/csf_loader.py": "1dd25c5e9129fc705c285673c68554546cd9b8b0a3b8813e2429fd9f945214cc",
+      "spark_infer_q/decision_head.py": "0d7337f1b3e2d19493dbe543680db32c428bb5c6f565539974954c2ec40d62a4",
+      "spark_infer_q/deepinfer_bridge.py": "0c373908852eddbc9155f307a03fdfdf446e37a8f4e791f955032cb1e8e5b8c2",
+      "spark_infer_q/dflash2_block.py": "e376a509f046ee41882147b560701029c25a93152b874702863d4875a0013376",
+      "spark_infer_q/dflash2_reference.py": "55863cffcdc7514d9ff9cab16493d77e0a39bb3e69c5565926bd902fb29c5681",
+      "spark_infer_q/dflash2_scored.py": "8175ca379543a27aa6015821f8810c3ff5ba5b197b682da6545377d2b270227b",
+      "spark_infer_q/draft_context.py": "756869e7db93a56329079b7aaf542d25eb6d6858fbbf6f60fb4280f63e6ad3e5",
+      "spark_infer_q/draft_fastpath.py": "ddfc09b065f28ffcecd8a9ad8f7209d3d28fb0de2f8188dbc91bc8d55884fdb8",
+      "spark_infer_q/draft_fidelity.py": "1381ea37bac11e09c45197a35964c3849976d9f3911a171e0984914cedcd3bb0",
+      "spark_infer_q/draft_head.py": "cebeeaf86487f2487783fb0df5af465ce6a5a365f49565997d13bfff14a866a5",
+      "spark_infer_q/draft_signals.py": "5f6a0ea0708498b2aad1ffaab3e913c22891981be4ee7702d553d9851edb9c3a",
+      "spark_infer_q/executor.py": "e2d981663cfa9f71858fc2d8737246b8a10def79c62f6aa3e670ccb75e2bc16e",
+      "spark_infer_q/head_screen.py": "9a1859e5543f239653c96124a1b68928bb2b80f10309a30ff19ffb5336147a01",
+      "spark_infer_q/kaifra_graph.py": "f4234a399bc7b8475adfaae496ae9e120f2ca37bc3b74b8b2116195146f24b07",
+      "spark_infer_q/kaifra_http.py": "1b136bcf1e69bf43250a404e30791b1f9f34a30b823837112985c3019a12800f",
+      "spark_infer_q/kaifra_runtime.py": "7ea76f3b0dccb64ceb1aaf67abca6a6e8635ce61fb68ba3f484a2c38d5fb3e14",
+      "spark_infer_q/kaifra_speculative.py": "a2788e19451c77ad3b6261c4fc14abad7f64a4b89ba33f277c97708beef3a3f0",
+      "spark_infer_q/local_policy.py": "de7b204f92685dbf68d8769df9bf63608c74c96167aa8cb6a08057f39ff3222f",
+      "spark_infer_q/mlp_head.py": "52e378708572736c18e0d0cc10090b454209b5ac7fc1b5cd9fd689549b960020",
+      "spark_infer_q/mlp_runtime.py": "9a87d1efd104e33cea4a4454016a61df4b4e043f1768411db1764ae71a7b9855",
+      "spark_infer_q/moe_cost.py": "7e06f87b17dc789ba76f19e179962b778b78be937e9dfd59d609b707c08639ca",
+      "spark_infer_q/native_scheduler.py": "bf0c41f628ca6de5b7e873c90e33ec9f40d17731b19c67a3af74529c0b5dd8c7",
+      "spark_infer_q/prompt.py": "6b997c3c6e6834666dfa0f7d13a7c950f6dc2e9b1d80818e5ee4b08a9b886f58",
+      "spark_infer_q/regret_head.py": "ad23a257754d123d93feb805480e8d717192c9d99e83de5afbcdc0886bc647e0",
+      "spark_infer_q/speculative.py": "ee1c2855cef1f31a868783d00f27cc88eef77f49ff95ff21dc2705d986f12045",
+      "spark_infer_q/tensorfold_block.py": "5527a5f6407c3dbb136003f687151b9754249423f964f71975e4eb9a1b9dadfa",
+      "spark_infer_q/verification_budget.py": "71f28552b8e83f682066edf9e9dd7267e3b54120c5d478949499a443f6eb5c50",
+      "spark_infer_q/wide_budget.py": "5cc2032ce32fd05b019aa90ddc0eefee80df2d2d850ede0e3bda3eedacd854fc",
+      "scripts/k3_probe_validate.py": "84dee503758023ec9c19bcc118431e9f03fa973c0c830e849bb5132f4cf7c808",
+      "scripts/k2_serve.py": "3c9c248b0f10de00489ef308ee0b8a1a95801aeea5085273d3976d9a3d30b66d",
+      "docs/K3_GRAPH_RUNTIME_PLAN.md": "c6589f09894a1c943cfebc78160c070970b99b8d123c9dac69ff5de56cd5b79f"
+    },
+    "model_reloaded": false
+  },
+  "gpu": {
+    "status": "PASS_K3_NATIVE_GPU",
+    "native": {
+      "upstream_revision": "774ce244b87cc0eb8d4b94ab9f5de2ab22049f01",
+      "core_sha256": "f6aa14b790eb7bc729251eea152fd9c83cf215bc5ab912e25ee19c57d8fc1768",
+      "owns_process_group": true,
+      "max_drafts": 7
+    },
+    "cases": [
+      {
+        "case": "lagged_arithmetic",
+        "status": "PASS",
+        "oracle_proposals": false,
+        "output_tokens": 3,
+        "metadata": {
+          "model_sha256": null,
+          "paid_draft_cost_includes_width1": true
+        },
+        "decode_widths": [
+          1,
+          6
+        ]
+      },
+      {
+        "case": "lagged_zh",
+        "status": "PASS",
+        "oracle_proposals": false,
+        "output_tokens": 32,
+        "metadata": {
+          "model_sha256": null,
+          "paid_draft_cost_includes_width1": true
+        },
+        "decode_widths": [
+          1,
+          6,
+          6,
+          6,
+          6,
+          6,
+          6,
+          6,
+          6,
+          6,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4
+        ]
+      },
+      {
+        "case": "lagged_code",
+        "status": "PASS",
+        "oracle_proposals": false,
+        "output_tokens": 26,
+        "metadata": {
+          "model_sha256": null,
+          "paid_draft_cost_includes_width1": true
+        },
+        "decode_widths": [
+          1,
+          6,
+          6,
+          6,
+          6
+        ]
+      },
+      {
+        "case": "confidence_arithmetic",
+        "status": "PASS",
+        "oracle_proposals": false,
+        "output_tokens": 3,
+        "metadata": {
+          "model_sha256": "c203b5d1a29f85603b630759b687430a4be3a927e4ee7ceec92c64d7d515f7cb",
+          "cost_bucket": "short",
+          "feature_group": "f1",
+          "paid_draft_cost_includes_width1": true,
+          "budget_policy": "native_lagged",
+          "context_costs": "short"
+        },
+        "decode_widths": [
+          1,
+          7
+        ]
+      },
+      {
+        "case": "confidence_zh",
+        "status": "PASS",
+        "oracle_proposals": false,
+        "output_tokens": 32,
+        "metadata": {
+          "model_sha256": "c203b5d1a29f85603b630759b687430a4be3a927e4ee7ceec92c64d7d515f7cb",
+          "cost_bucket": "short",
+          "feature_group": "f1",
+          "paid_draft_cost_includes_width1": true,
+          "budget_policy": "native_lagged",
+          "context_costs": "short"
+        },
+        "decode_widths": [
+          1,
+          3,
+          3,
+          4,
+          3,
+          1,
+          3,
+          2,
+          2,
+          2,
+          1,
+          2,
+          2,
+          3,
+          2,
+          2,
+          3,
+          3,
+          3,
+          4,
+          3,
+          2
+        ]
+      },
+      {
+        "case": "confidence_code",
+        "status": "PASS",
+        "oracle_proposals": false,
+        "output_tokens": 26,
+        "metadata": {
+          "model_sha256": "c203b5d1a29f85603b630759b687430a4be3a927e4ee7ceec92c64d7d515f7cb",
+          "cost_bucket": "short",
+          "feature_group": "f1",
+          "paid_draft_cost_includes_width1": true,
+          "budget_policy": "native_lagged",
+          "context_costs": "short"
+        },
+        "decode_widths": [
+          1,
+          8,
+          8,
+          8
+        ]
+      },
+      {
+        "case": "adaptive_arithmetic",
+        "status": "PASS",
+        "oracle_proposals": false,
+        "output_tokens": 3,
+        "metadata": {
+          "model_sha256": "ed7a4873f1d8e2d95ed54c8acf2c34ef3cf4772ea113b48ee09e2775f3391dfe",
+          "cost_bucket": "short",
+          "feature_group": "f1",
+          "paid_draft_cost_includes_width1": true,
+          "budget_policy": "current_postdraft",
+          "context_costs": "short_below_768_else_long"
+        },
+        "decode_widths": [
+          7
+        ],
+        "legacy_budget_widths_exact": true
+      },
+      {
+        "case": "adaptive_zh",
+        "status": "PASS",
+        "oracle_proposals": false,
+        "output_tokens": 32,
+        "metadata": {
+          "model_sha256": "ed7a4873f1d8e2d95ed54c8acf2c34ef3cf4772ea113b48ee09e2775f3391dfe",
+          "cost_bucket": "short",
+          "feature_group": "f1",
+          "paid_draft_cost_includes_width1": true,
+          "budget_policy": "current_postdraft",
+          "context_costs": "short_below_768_else_long"
+        },
+        "decode_widths": [
+          3,
+          3,
+          4,
+          2,
+          1,
+          3,
+          2,
+          2,
+          1,
+          2,
+          3,
+          2,
+          2,
+          3,
+          3,
+          3,
+          4,
+          3,
+          2
+        ],
+        "legacy_budget_widths_exact": true
+      },
+      {
+        "case": "adaptive_code",
+        "status": "PASS",
+        "oracle_proposals": false,
+        "output_tokens": 26,
+        "metadata": {
+          "model_sha256": "ed7a4873f1d8e2d95ed54c8acf2c34ef3cf4772ea113b48ee09e2775f3391dfe",
+          "cost_bucket": "short",
+          "feature_group": "f1",
+          "paid_draft_cost_includes_width1": true,
+          "budget_policy": "current_postdraft",
+          "context_costs": "short_below_768_else_long"
+        },
+        "decode_widths": [
+          8,
+          8,
+          8,
+          5
+        ],
+        "legacy_budget_widths_exact": true
+      },
+      {
+        "case": "controlled_fault_None",
+        "status": "PASS",
+        "oracle_proposals": true,
+        "output_tokens": 26,
+        "metadata": {}
+      },
+      {
+        "case": "controlled_fault_0",
+        "status": "PASS",
+        "oracle_proposals": true,
+        "output_tokens": 26,
+        "metadata": {}
+      },
+      {
+        "case": "controlled_fault_3",
+        "status": "PASS",
+        "oracle_proposals": true,
+        "output_tokens": 26,
+        "metadata": {}
+      },
+      {
+        "case": "controlled_fault_6",
+        "status": "PASS",
+        "oracle_proposals": true,
+        "output_tokens": 26,
+        "metadata": {}
+      },
+      {
+        "case": "controlled_eos_in_proposal",
+        "status": "PASS",
+        "oracle_proposals": true,
+        "output_tokens": 3,
+        "metadata": {}
+      },
+      {
+        "case": "max_tokens_one",
+        "status": "PASS",
+        "oracle_proposals": false,
+        "output_tokens": 1,
+        "metadata": {}
+      },
+      {
+        "case": "cancel_waiting_reuse",
+        "status": "PASS",
+        "oracle_proposals": false,
+        "output_tokens": 3,
+        "metadata": {}
+      },
+      {
+        "case": "cancel_prepared_prompt_reuse",
+        "status": "PASS",
+        "oracle_proposals": false,
+        "output_tokens": 3,
+        "metadata": {}
+      },
+      {
+        "case": "cancel_prepared_decode_reuse",
+        "status": "PASS",
+        "oracle_proposals": false,
+        "output_tokens": 3,
+        "metadata": {}
+      }
+    ],
+    "legacy_postdraft_widths": {
+      "arithmetic": [
+        7
+      ],
+      "zh": [
+        3,
+        3,
+        4,
+        2,
+        1,
+        3,
+        2,
+        2,
+        1,
+        2,
+        3,
+        2,
+        2,
+        3,
+        3,
+        3,
+        4,
+        3,
+        2
+      ],
+      "code": [
+        8,
+        8,
+        8,
+        5
+      ]
+    },
+    "full_logit_rows": 838,
+    "live_state_checks": 203,
+    "same_target_object": true,
+    "same_draft_object": true,
+    "limits": [
+      "synchronous greedy, separate GPU execution per request",
+      "controlled oracle proposals are state tests only, not drafter quality or timing",
+      "same Target serial reference, not independent full-model numerical proof"
+    ],
+    "graph": {
+      "cuda_graph": true,
+      "graph_widths": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "graph_parities": [
+        0,
+        1
+      ],
+      "graph_captures": 16,
+      "graph_replays": 123,
+      "graph_fallbacks": {},
+      "graph_warmup_ms": 5544.82133599231,
+      "graph_scope": "single_request_decode",
+      "graph_full_logits": true,
+      "host_synchronization": true
+    },
+    "full_feature_rows": 838,
+    "feature_state_checks": 203,
+    "source_sha256": {
+      "spark_infer_q/__init__.py": "623ddaf4adfbf51e0c029203b0ff1780ebcc5824ff8300de5f1e6d6cd819d5d7",
+      "spark_infer_q/budget_audit.py": "7c2116b666e99c4c07055426733a292e5219ca7b788ce0d0e45f75001640db68",
+      "spark_infer_q/budget_regret.py": "14477f3464091a5eaff1a9cbdb0df045b1c047570fe7a7a782b0c8e63076ba11",
+      "spark_infer_q/checkpoint.py": "d7027b4803ee2564f5a881c3dcbbbb58f0508ee3e8f66d7895fbb7b174aad6b8",
+      "spark_infer_q/collection_budget.py": "4319736e8acfbe4c88911961f37676b188a39a5a6c0a2216a886cb34addbbbb2",
+      "spark_infer_q/collection_trajectory.py": "b528e4e35b8deb7551782d390aee4d4fb40b407e8f966d02fe607c52e844d2f6",
+      "spark_infer_q/collector.py": "dc34bc95c2984ce099a881717c47659e928e89b2ebf55711ac57b291a1ad6677",
+      "spark_infer_q/confidence_budget.py": "b055819b45a2e4d04b773eef34aa0212b140ba3721fbb1f5ad192903463365b9",
+      "spark_infer_q/confidence_features.py": "6d40253da4dad1de1a6866767af154e3a3ce69647a80df0e2e931f5ab53f0fc1",
+      "spark_infer_q/confidence_head.py": "e27c07808689e54f8660ef8068884be874c0fd5045ed2acfa04fc929b286ad28",
+      "spark_infer_q/csf_loader.py": "1dd25c5e9129fc705c285673c68554546cd9b8b0a3b8813e2429fd9f945214cc",
+      "spark_infer_q/decision_head.py": "0d7337f1b3e2d19493dbe543680db32c428bb5c6f565539974954c2ec40d62a4",
+      "spark_infer_q/deepinfer_bridge.py": "0c373908852eddbc9155f307a03fdfdf446e37a8f4e791f955032cb1e8e5b8c2",
+      "spark_infer_q/dflash2_block.py": "e376a509f046ee41882147b560701029c25a93152b874702863d4875a0013376",
+      "spark_infer_q/dflash2_reference.py": "55863cffcdc7514d9ff9cab16493d77e0a39bb3e69c5565926bd902fb29c5681",
+      "spark_infer_q/dflash2_scored.py": "8175ca379543a27aa6015821f8810c3ff5ba5b197b682da6545377d2b270227b",
+      "spark_infer_q/draft_context.py": "756869e7db93a56329079b7aaf542d25eb6d6858fbbf6f60fb4280f63e6ad3e5",
+      "spark_infer_q/draft_fastpath.py": "ddfc09b065f28ffcecd8a9ad8f7209d3d28fb0de2f8188dbc91bc8d55884fdb8",
+      "spark_infer_q/draft_fidelity.py": "1381ea37bac11e09c45197a35964c3849976d9f3911a171e0984914cedcd3bb0",
+      "spark_infer_q/draft_head.py": "cebeeaf86487f2487783fb0df5af465ce6a5a365f49565997d13bfff14a866a5",
+      "spark_infer_q/draft_signals.py": "5f6a0ea0708498b2aad1ffaab3e913c22891981be4ee7702d553d9851edb9c3a",
+      "spark_infer_q/executor.py": "e2d981663cfa9f71858fc2d8737246b8a10def79c62f6aa3e670ccb75e2bc16e",
+      "spark_infer_q/head_screen.py": "9a1859e5543f239653c96124a1b68928bb2b80f10309a30ff19ffb5336147a01",
+      "spark_infer_q/kaifra_graph.py": "f4234a399bc7b8475adfaae496ae9e120f2ca37bc3b74b8b2116195146f24b07",
+      "spark_infer_q/kaifra_http.py": "1b136bcf1e69bf43250a404e30791b1f9f34a30b823837112985c3019a12800f",
+      "spark_infer_q/kaifra_runtime.py": "d0926e8b9d361ce68c98a37afa2fe1923802cec0f184799433eb482669274fde",
+      "spark_infer_q/kaifra_speculative.py": "a2788e19451c77ad3b6261c4fc14abad7f64a4b89ba33f277c97708beef3a3f0",
+      "spark_infer_q/local_policy.py": "de7b204f92685dbf68d8769df9bf63608c74c96167aa8cb6a08057f39ff3222f",
+      "spark_infer_q/mlp_head.py": "52e378708572736c18e0d0cc10090b454209b5ac7fc1b5cd9fd689549b960020",
+      "spark_infer_q/mlp_runtime.py": "9a87d1efd104e33cea4a4454016a61df4b4e043f1768411db1764ae71a7b9855",
+      "spark_infer_q/moe_cost.py": "7e06f87b17dc789ba76f19e179962b778b78be937e9dfd59d609b707c08639ca",
+      "spark_infer_q/native_scheduler.py": "bf0c41f628ca6de5b7e873c90e33ec9f40d17731b19c67a3af74529c0b5dd8c7",
+      "spark_infer_q/prompt.py": "6b997c3c6e6834666dfa0f7d13a7c950f6dc2e9b1d80818e5ee4b08a9b886f58",
+      "spark_infer_q/regret_head.py": "ad23a257754d123d93feb805480e8d717192c9d99e83de5afbcdc0886bc647e0",
+      "spark_infer_q/speculative.py": "ee1c2855cef1f31a868783d00f27cc88eef77f49ff95ff21dc2705d986f12045",
+      "spark_infer_q/tensorfold_block.py": "5527a5f6407c3dbb136003f687151b9754249423f964f71975e4eb9a1b9dadfa",
+      "spark_infer_q/verification_budget.py": "71f28552b8e83f682066edf9e9dd7267e3b54120c5d478949499a443f6eb5c50",
+      "spark_infer_q/wide_budget.py": "5cc2032ce32fd05b019aa90ddc0eefee80df2d2d850ede0e3bda3eedacd854fc",
+      "scripts/k3_gpu_validate.py": "b56c050498ddc97e72e717356a2c2ec2d8a0d402381ffbf3eb84bd8d66f49581",
+      "scripts/k3_online_validate.py": "b61e001868c98867ca4d48f7acc663128dca16fe50969cb7b86f0f4e9cd66277",
+      "scripts/k3_probe_validate.py": "84dee503758023ec9c19bcc118431e9f03fa973c0c830e849bb5132f4cf7c808",
+      "scripts/k2_serve.py": "3c9c248b0f10de00489ef308ee0b8a1a95801aeea5085273d3976d9a3d30b66d",
+      "scripts/k2_gpu_validate.py": "33030f43b396e9647d562588c6464f5dbb478236923fe6a1ae123934882c84f5",
+      "docs/K3_GRAPH_RUNTIME_PLAN.md": "c6589f09894a1c943cfebc78160c070970b99b8d123c9dac69ff5de56cd5b79f"
+    },
+    "model_reloaded": false
+  },
+  "online": {
+    "status": "PASS_K3_ONLINE",
+    "timings": [
+      {
+        "task": "zh",
+        "mode": "eager",
+        "completion_tokens": 32,
+        "decode_tokens": 31,
+        "decode_ms": 1157.511118974071,
+        "request_ms": 1365.5356710078195,
+        "ttft_ms": 208.02455203374848,
+        "decode_widths": [
+          3,
+          3,
+          3,
+          2,
+          1,
+          2,
+          3,
+          3,
+          2,
+          2,
+          3,
+          2,
+          2,
+          2,
+          2,
+          3,
+          2,
+          3,
+          4
+        ],
+        "prefill_draft_ms": 12.258402013685554,
+        "decode_phase_ms": {
+          "draft_ms": 206.49319392396137,
+          "verify_ms": 918.1717569590546,
+          "commit_ms": 19.376059935893863
+        },
+        "decode_rounds": 19,
+        "verified_decode_rows": 47,
+        "exact_tokens": true,
+        "exact_state": true,
+        "repetition": 0
+      },
+      {
+        "task": "code",
+        "mode": "eager",
+        "completion_tokens": 26,
+        "decode_tokens": 25,
+        "decode_ms": 287.511721951887,
+        "request_ms": 569.4042669492774,
+        "ttft_ms": 281.89254499739036,
+        "decode_widths": [
+          8,
+          8,
+          8,
+          5
+        ],
+        "prefill_draft_ms": 11.218579020351171,
+        "decode_phase_ms": {
+          "draft_ms": 33.49015302956104,
+          "verify_ms": 249.64810290839523,
+          "commit_ms": 1.666126016061753
+        },
+        "decode_rounds": 4,
+        "verified_decode_rows": 29,
+        "exact_tokens": true,
+        "exact_state": true,
+        "repetition": 0
+      },
+      {
+        "task": "json",
+        "mode": "eager",
+        "completion_tokens": 48,
+        "decode_tokens": 47,
+        "decode_ms": 771.3522190460935,
+        "request_ms": 1039.2570050316863,
+        "ttft_ms": 267.90478598559275,
+        "decode_widths": [
+          7,
+          8,
+          8,
+          6,
+          6,
+          8,
+          6,
+          6,
+          2,
+          8,
+          4
+        ],
+        "prefill_draft_ms": 11.16552297025919,
+        "decode_phase_ms": {
+          "draft_ms": 110.6890220544301,
+          "verify_ms": 645.2951870160177,
+          "commit_ms": 8.677686098963022
+        },
+        "decode_rounds": 11,
+        "verified_decode_rows": 69,
+        "exact_tokens": true,
+        "exact_state": true,
+        "repetition": 0
+      },
+      {
+        "task": "zh",
+        "mode": "graph",
+        "completion_tokens": 32,
+        "decode_tokens": 31,
+        "decode_ms": 1186.4713579998352,
+        "request_ms": 1393.2256249827333,
+        "ttft_ms": 206.75426698289812,
+        "decode_widths": [
+          3,
+          3,
+          3,
+          2,
+          1,
+          2,
+          3,
+          3,
+          2,
+          2,
+          3,
+          2,
+          2,
+          2,
+          2,
+          3,
+          2,
+          3,
+          4
+        ],
+        "prefill_draft_ms": 11.184834991581738,
+        "decode_phase_ms": {
+          "draft_ms": 217.47198002412915,
+          "verify_ms": 932.8626360511407,
+          "commit_ms": 21.375208045355976
+        },
+        "decode_rounds": 19,
+        "verified_decode_rows": 47,
+        "exact_tokens": true,
+        "exact_state": true,
+        "repetition": 0
+      },
+      {
+        "task": "code",
+        "mode": "graph",
+        "completion_tokens": 26,
+        "decode_tokens": 25,
+        "decode_ms": 303.2752239960246,
+        "request_ms": 584.7464579856023,
+        "ttft_ms": 281.47123398957774,
+        "decode_widths": [
+          8,
+          8,
+          8,
+          5
+        ],
+        "prefill_draft_ms": 11.810049996711314,
+        "decode_phase_ms": {
+          "draft_ms": 35.502230981364846,
+          "verify_ms": 262.9574660095386,
+          "commit_ms": 2.0977090462110937
+        },
+        "decode_rounds": 4,
+        "verified_decode_rows": 29,
+        "exact_tokens": true,
+        "exact_state": true,
+        "repetition": 0
+      },
+      {
+        "task": "json",
+        "mode": "graph",
+        "completion_tokens": 48,
+        "decode_tokens": 47,
+        "decode_ms": 800.5455459933728,
+        "request_ms": 1096.2152749998495,
+        "ttft_ms": 295.6697290064767,
+        "decode_widths": [
+          7,
+          8,
+          8,
+          6,
+          6,
+          8,
+          6,
+          6,
+          2,
+          8,
+          4
+        ],
+        "prefill_draft_ms": 11.959377967286855,
+        "decode_phase_ms": {
+          "draft_ms": 121.14493106491864,
+          "verify_ms": 660.7436299673282,
+          "commit_ms": 9.841491060797125
+        },
+        "decode_rounds": 11,
+        "verified_decode_rows": 69,
+        "exact_tokens": true,
+        "exact_state": true,
+        "repetition": 0
+      },
+      {
+        "task": "zh",
+        "mode": "graph",
+        "completion_tokens": 32,
+        "decode_tokens": 31,
+        "decode_ms": 1178.889019007329,
+        "request_ms": 1397.2103599808179,
+        "ttft_ms": 218.321340973489,
+        "decode_widths": [
+          3,
+          3,
+          3,
+          2,
+          1,
+          2,
+          3,
+          3,
+          2,
+          2,
+          3,
+          2,
+          2,
+          2,
+          2,
+          3,
+          2,
+          3,
+          4
+        ],
+        "prefill_draft_ms": 12.00515398522839,
+        "decode_phase_ms": {
+          "draft_ms": 223.25180110055953,
+          "verify_ms": 918.6404629726894,
+          "commit_ms": 21.52123796986416
+        },
+        "decode_rounds": 19,
+        "verified_decode_rows": 47,
+        "exact_tokens": true,
+        "exact_state": true,
+        "repetition": 1
+      },
+      {
+        "task": "code",
+        "mode": "graph",
+        "completion_tokens": 26,
+        "decode_tokens": 25,
+        "decode_ms": 298.53239795193076,
+        "request_ms": 577.8829309856519,
+        "ttft_ms": 279.35053303372115,
+        "decode_widths": [
+          8,
+          8,
+          8,
+          5
+        ],
+        "prefill_draft_ms": 11.739826004486531,
+        "decode_phase_ms": {
+          "draft_ms": 34.995797963347286,
+          "verify_ms": 258.89164494583383,
+          "commit_ms": 2.1098379511386156
+        },
+        "decode_rounds": 4,
+        "verified_decode_rows": 29,
+        "exact_tokens": true,
+        "exact_state": true,
+        "repetition": 1
+      },
+      {
+        "task": "json",
+        "mode": "graph",
+        "completion_tokens": 48,
+        "decode_tokens": 47,
+        "decode_ms": 811.0978880431503,
+        "request_ms": 1104.1027410537936,
+        "ttft_ms": 293.0048530106433,
+        "decode_widths": [
+          7,
+          8,
+          8,
+          6,
+          6,
+          8,
+          6,
+          6,
+          2,
+          8,
+          4
+        ],
+        "prefill_draft_ms": 12.13041803566739,
+        "decode_phase_ms": {
+          "draft_ms": 117.30357486521825,
+          "verify_ms": 676.7043199506588,
+          "commit_ms": 9.778708044905216
+        },
+        "decode_rounds": 11,
+        "verified_decode_rows": 69,
+        "exact_tokens": true,
+        "exact_state": true,
+        "repetition": 1
+      },
+      {
+        "task": "zh",
+        "mode": "eager",
+        "completion_tokens": 32,
+        "decode_tokens": 31,
+        "decode_ms": 1228.1824360252358,
+        "request_ms": 1458.5301309707575,
+        "ttft_ms": 230.34769494552165,
+        "decode_widths": [
+          3,
+          3,
+          3,
+          2,
+          1,
+          2,
+          3,
+          3,
+          2,
+          2,
+          3,
+          2,
+          2,
+          2,
+          2,
+          3,
+          2,
+          3,
+          4
+        ],
+        "prefill_draft_ms": 12.363569985609502,
+        "decode_phase_ms": {
+          "draft_ms": 223.67061802651733,
+          "verify_ms": 969.5618789992295,
+          "commit_ms": 20.34956100396812
+        },
+        "decode_rounds": 19,
+        "verified_decode_rows": 47,
+        "exact_tokens": true,
+        "exact_state": true,
+        "repetition": 1
+      },
+      {
+        "task": "code",
+        "mode": "eager",
+        "completion_tokens": 26,
+        "decode_tokens": 25,
+        "decode_ms": 312.1740950155072,
+        "request_ms": 600.5368260084651,
+        "ttft_ms": 288.36273099295795,
+        "decode_widths": [
+          8,
+          8,
+          8,
+          5
+        ],
+        "prefill_draft_ms": 10.960482992231846,
+        "decode_phase_ms": {
+          "draft_ms": 36.70669189887121,
+          "verify_ms": 270.03100904403254,
+          "commit_ms": 1.8295350018888712
+        },
+        "decode_rounds": 4,
+        "verified_decode_rows": 29,
+        "exact_tokens": true,
+        "exact_state": true,
+        "repetition": 1
+      },
+      {
+        "task": "json",
+        "mode": "eager",
+        "completion_tokens": 48,
+        "decode_tokens": 47,
+        "decode_ms": 837.3827859759331,
+        "request_ms": 1139.5188609603792,
+        "ttft_ms": 302.13607498444617,
+        "decode_widths": [
+          7,
+          8,
+          8,
+          6,
+          6,
+          8,
+          6,
+          6,
+          2,
+          8,
+          4
+        ],
+        "prefill_draft_ms": 13.668687955942005,
+        "decode_phase_ms": {
+          "draft_ms": 128.51202604360878,
+          "verify_ms": 690.4185439925641,
+          "commit_ms": 9.534739016089588
+        },
+        "decode_rounds": 11,
+        "verified_decode_rows": 69,
+        "exact_tokens": true,
+        "exact_state": true,
+        "repetition": 1
+      },
+      {
+        "task": "zh",
+        "mode": "eager",
+        "completion_tokens": 32,
+        "decode_tokens": 31,
+        "decode_ms": 1222.820749040693,
+        "request_ms": 1452.2148460382596,
+        "ttft_ms": 229.39409699756652,
+        "decode_widths": [
+          3,
+          3,
+          3,
+          2,
+          1,
+          2,
+          3,
+          3,
+          2,
+          2,
+          3,
+          2,
+          2,
+          2,
+          2,
+          3,
+          2,
+          3,
+          4
+        ],
+        "prefill_draft_ms": 12.892400030978024,
+        "decode_phase_ms": {
+          "draft_ms": 227.25763492053375,
+          "verify_ms": 959.8799069644883,
+          "commit_ms": 20.13277483638376
+        },
+        "decode_rounds": 19,
+        "verified_decode_rows": 47,
+        "exact_tokens": true,
+        "exact_state": true,
+        "repetition": 2
+      },
+      {
+        "task": "code",
+        "mode": "eager",
+        "completion_tokens": 26,
+        "decode_tokens": 25,
+        "decode_ms": 312.0532470056787,
+        "request_ms": 620.2483880333602,
+        "ttft_ms": 308.19514102768153,
+        "decode_widths": [
+          8,
+          8,
+          8,
+          5
+        ],
+        "prefill_draft_ms": 12.268001970369369,
+        "decode_phase_ms": {
+          "draft_ms": 35.79757397528738,
+          "verify_ms": 271.03556791553274,
+          "commit_ms": 1.8267020350322127
+        },
+        "decode_rounds": 4,
+        "verified_decode_rows": 29,
+        "exact_tokens": true,
+        "exact_state": true,
+        "repetition": 2
+      },
+      {
+        "task": "json",
+        "mode": "eager",
+        "completion_tokens": 48,
+        "decode_tokens": 47,
+        "decode_ms": 820.5328410258517,
+        "request_ms": 1112.2256810194813,
+        "ttft_ms": 291.6928399936296,
+        "decode_widths": [
+          7,
+          8,
+          8,
+          6,
+          6,
+          8,
+          6,
+          6,
+          2,
+          8,
+          4
+        ],
+        "prefill_draft_ms": 11.904562008567154,
+        "decode_phase_ms": {
+          "draft_ms": 116.84128496563062,
+          "verify_ms": 686.3263569539413,
+          "commit_ms": 9.147558943368495
+        },
+        "decode_rounds": 11,
+        "verified_decode_rows": 69,
+        "exact_tokens": true,
+        "exact_state": true,
+        "repetition": 2
+      },
+      {
+        "task": "zh",
+        "mode": "graph",
+        "completion_tokens": 32,
+        "decode_tokens": 31,
+        "decode_ms": 1190.990885021165,
+        "request_ms": 1414.0284939785488,
+        "ttft_ms": 223.03760895738378,
+        "decode_widths": [
+          3,
+          3,
+          3,
+          2,
+          1,
+          2,
+          3,
+          3,
+          2,
+          2,
+          3,
+          2,
+          2,
+          2,
+          2,
+          3,
+          2,
+          3,
+          4
+        ],
+        "prefill_draft_ms": 12.561649025883526,
+        "decode_phase_ms": {
+          "draft_ms": 224.28564203437418,
+          "verify_ms": 929.5114179840311,
+          "commit_ms": 21.48840797599405
+        },
+        "decode_rounds": 19,
+        "verified_decode_rows": 47,
+        "exact_tokens": true,
+        "exact_state": true,
+        "repetition": 2
+      },
+      {
+        "task": "code",
+        "mode": "graph",
+        "completion_tokens": 26,
+        "decode_tokens": 25,
+        "decode_ms": 302.3950199712999,
+        "request_ms": 583.4502250072546,
+        "ttft_ms": 281.0552050359547,
+        "decode_widths": [
+          8,
+          8,
+          8,
+          5
+        ],
+        "prefill_draft_ms": 11.80193800246343,
+        "decode_phase_ms": {
+          "draft_ms": 36.5582769154571,
+          "verify_ms": 260.40148601168767,
+          "commit_ms": 2.151660912204534
+        },
+        "decode_rounds": 4,
+        "verified_decode_rows": 29,
+        "exact_tokens": true,
+        "exact_state": true,
+        "repetition": 2
+      },
+      {
+        "task": "json",
+        "mode": "graph",
+        "completion_tokens": 48,
+        "decode_tokens": 47,
+        "decode_ms": 816.6690550278872,
+        "request_ms": 1098.3191399718635,
+        "ttft_ms": 281.65008494397625,
+        "decode_widths": [
+          7,
+          8,
+          8,
+          6,
+          6,
+          8,
+          6,
+          6,
+          2,
+          8,
+          4
+        ],
+        "prefill_draft_ms": 11.002338957041502,
+        "decode_phase_ms": {
+          "draft_ms": 123.42259095748886,
+          "verify_ms": 674.2241338943131,
+          "commit_ms": 10.073668032418936
+        },
+        "decode_rounds": 11,
+        "verified_decode_rows": 69,
+        "exact_tokens": true,
+        "exact_state": true,
+        "repetition": 2
+      },
+      {
+        "task": "zh",
+        "mode": "graph",
+        "completion_tokens": 32,
+        "decode_tokens": 31,
+        "decode_ms": 1181.7100190091878,
+        "request_ms": 1389.4737910013646,
+        "ttft_ms": 207.76377199217677,
+        "decode_widths": [
+          3,
+          3,
+          3,
+          2,
+          1,
+          2,
+          3,
+          3,
+          2,
+          2,
+          3,
+          2,
+          2,
+          2,
+          2,
+          3,
+          2,
+          3,
+          4
+        ],
+        "prefill_draft_ms": 11.12961897160858,
+        "decode_phase_ms": {
+          "draft_ms": 215.3844831045717,
+          "verify_ms": 931.2872099690139,
+          "commit_ms": 21.14525594515726
+        },
+        "decode_rounds": 19,
+        "verified_decode_rows": 47,
+        "exact_tokens": true,
+        "exact_state": true,
+        "repetition": 3
+      },
+      {
+        "task": "code",
+        "mode": "graph",
+        "completion_tokens": 26,
+        "decode_tokens": 25,
+        "decode_ms": 310.10013102786615,
+        "request_ms": 596.2745790020563,
+        "ttft_ms": 286.1744479741901,
+        "decode_widths": [
+          8,
+          8,
+          8,
+          5
+        ],
+        "prefill_draft_ms": 12.185986037366092,
+        "decode_phase_ms": {
+          "draft_ms": 35.86330299731344,
+          "verify_ms": 267.92467798804864,
+          "commit_ms": 2.1705409744754434
+        },
+        "decode_rounds": 4,
+        "verified_decode_rows": 29,
+        "exact_tokens": true,
+        "exact_state": true,
+        "repetition": 3
+      },
+      {
+        "task": "json",
+        "mode": "graph",
+        "completion_tokens": 48,
+        "decode_tokens": 47,
+        "decode_ms": 820.3583489521407,
+        "request_ms": 1115.3993789921515,
+        "ttft_ms": 295.0410300400108,
+        "decode_widths": [
+          7,
+          8,
+          8,
+          6,
+          6,
+          8,
+          6,
+          6,
+          2,
+          8,
+          4
+        ],
+        "prefill_draft_ms": 12.292561994399875,
+        "decode_phase_ms": {
+          "draft_ms": 119.68092998722568,
+          "verify_ms": 679.4211411033757,
+          "commit_ms": 10.24814898846671
+        },
+        "decode_rounds": 11,
+        "verified_decode_rows": 69,
+        "exact_tokens": true,
+        "exact_state": true,
+        "repetition": 3
+      },
+      {
+        "task": "zh",
+        "mode": "eager",
+        "completion_tokens": 32,
+        "decode_tokens": 31,
+        "decode_ms": 1224.0104040247388,
+        "request_ms": 1452.050729014445,
+        "ttft_ms": 228.04032498970628,
+        "decode_widths": [
+          3,
+          3,
+          3,
+          2,
+          1,
+          2,
+          3,
+          3,
+          2,
+          2,
+          3,
+          2,
+          2,
+          2,
+          2,
+          3,
+          2,
+          3,
+          4
+        ],
+        "prefill_draft_ms": 11.914561968296766,
+        "decode_phase_ms": {
+          "draft_ms": 218.66404899628833,
+          "verify_ms": 971.389704849571,
+          "commit_ms": 19.75013699848205
+        },
+        "decode_rounds": 19,
+        "verified_decode_rows": 47,
+        "exact_tokens": true,
+        "exact_state": true,
+        "repetition": 3
+      },
+      {
+        "task": "code",
+        "mode": "eager",
+        "completion_tokens": 26,
+        "decode_tokens": 25,
+        "decode_ms": 305.0418979837559,
+        "request_ms": 599.0453620324843,
+        "ttft_ms": 294.00346404872835,
+        "decode_widths": [
+          8,
+          8,
+          8,
+          5
+        ],
+        "prefill_draft_ms": 11.863441963214427,
+        "decode_phase_ms": {
+          "draft_ms": 35.47130199149251,
+          "verify_ms": 265.33063303213567,
+          "commit_ms": 1.777774072252214
+        },
+        "decode_rounds": 4,
+        "verified_decode_rows": 29,
+        "exact_tokens": true,
+        "exact_state": true,
+        "repetition": 3
+      },
+      {
+        "task": "json",
+        "mode": "eager",
+        "completion_tokens": 48,
+        "decode_tokens": 47,
+        "decode_ms": 829.1649809689261,
+        "request_ms": 1130.0263879820704,
+        "ttft_ms": 300.86140701314434,
+        "decode_widths": [
+          7,
+          8,
+          8,
+          6,
+          6,
+          8,
+          6,
+          6,
+          2,
+          8,
+          4
+        ],
+        "prefill_draft_ms": 12.128865986596793,
+        "decode_phase_ms": {
+          "draft_ms": 120.31525099882856,
+          "verify_ms": 691.1496241227724,
+          "commit_ms": 9.228979994077235
+        },
+        "decode_rounds": 11,
+        "verified_decode_rows": 69,
+        "exact_tokens": true,
+        "exact_state": true,
+        "repetition": 3
+      }
+    ],
+    "totals": {
+      "eager": {
+        "decode_tokens": 412,
+        "decode_ms": 9307.738497038372,
+        "decode_tps": 44.26424314897697,
+        "request_ms": 12538.594155048486,
+        "ttft_ms": 3230.855658010114
+      },
+      "graph": {
+        "decode_tokens": 412,
+        "decode_ms": 9201.03489200119,
+        "decode_tps": 44.77757174447489,
+        "request_ms": 12350.328997941688,
+        "ttft_ms": 3149.2941059404984
+      }
+    },
+    "http_cases": [
+      {
+        "case": "stream",
+        "status": "PASS",
+        "output_tokens": 32
+      },
+      {
+        "case": "cancel",
+        "status": "PASS",
+        "output_tokens": 1
+      }
+    ],
+    "graph": {
+      "cuda_graph": true,
+      "graph_widths": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "graph_parities": [
+        0,
+        1
+      ],
+      "graph_captures": 16,
+      "graph_replays": 189,
+      "graph_fallbacks": {},
+      "graph_warmup_ms": 5834.389450959861,
+      "graph_scope": "single_request_decode",
+      "graph_full_logits": true,
+      "host_synchronization": true
+    },
+    "matched_budget_traces": 12,
+    "serial_state_checks": 30,
+    "same_target_object": true,
+    "same_draft_object": true,
+    "limits": [
+      "three controlled prompts, four repetitions; no general speedup or native TensorFold ranking",
+      "initial proposal is computed during prefill before the first event; report TTFT/request alongside decode",
+      "oracle/state checks, model/provider/context construction excluded from timing",
+      "stream cancellation delivered after first output at a test-controlled step boundary"
+    ],
+    "source_sha256": {
+      "spark_infer_q/__init__.py": "623ddaf4adfbf51e0c029203b0ff1780ebcc5824ff8300de5f1e6d6cd819d5d7",
+      "spark_infer_q/budget_audit.py": "7c2116b666e99c4c07055426733a292e5219ca7b788ce0d0e45f75001640db68",
+      "spark_infer_q/budget_regret.py": "14477f3464091a5eaff1a9cbdb0df045b1c047570fe7a7a782b0c8e63076ba11",
+      "spark_infer_q/checkpoint.py": "d7027b4803ee2564f5a881c3dcbbbb58f0508ee3e8f66d7895fbb7b174aad6b8",
+      "spark_infer_q/collection_budget.py": "4319736e8acfbe4c88911961f37676b188a39a5a6c0a2216a886cb34addbbbb2",
+      "spark_infer_q/collection_trajectory.py": "b528e4e35b8deb7551782d390aee4d4fb40b407e8f966d02fe607c52e844d2f6",
+      "spark_infer_q/collector.py": "dc34bc95c2984ce099a881717c47659e928e89b2ebf55711ac57b291a1ad6677",
+      "spark_infer_q/confidence_budget.py": "b055819b45a2e4d04b773eef34aa0212b140ba3721fbb1f5ad192903463365b9",
+      "spark_infer_q/confidence_features.py": "6d40253da4dad1de1a6866767af154e3a3ce69647a80df0e2e931f5ab53f0fc1",
+      "spark_infer_q/confidence_head.py": "e27c07808689e54f8660ef8068884be874c0fd5045ed2acfa04fc929b286ad28",
+      "spark_infer_q/csf_loader.py": "1dd25c5e9129fc705c285673c68554546cd9b8b0a3b8813e2429fd9f945214cc",
+      "spark_infer_q/decision_head.py": "0d7337f1b3e2d19493dbe543680db32c428bb5c6f565539974954c2ec40d62a4",
+      "spark_infer_q/deepinfer_bridge.py": "0c373908852eddbc9155f307a03fdfdf446e37a8f4e791f955032cb1e8e5b8c2",
+      "spark_infer_q/dflash2_block.py": "e376a509f046ee41882147b560701029c25a93152b874702863d4875a0013376",
+      "spark_infer_q/dflash2_reference.py": "55863cffcdc7514d9ff9cab16493d77e0a39bb3e69c5565926bd902fb29c5681",
+      "spark_infer_q/dflash2_scored.py": "8175ca379543a27aa6015821f8810c3ff5ba5b197b682da6545377d2b270227b",
+      "spark_infer_q/draft_context.py": "756869e7db93a56329079b7aaf542d25eb6d6858fbbf6f60fb4280f63e6ad3e5",
+      "spark_infer_q/draft_fastpath.py": "ddfc09b065f28ffcecd8a9ad8f7209d3d28fb0de2f8188dbc91bc8d55884fdb8",
+      "spark_infer_q/draft_fidelity.py": "1381ea37bac11e09c45197a35964c3849976d9f3911a171e0984914cedcd3bb0",
+      "spark_infer_q/draft_head.py": "cebeeaf86487f2487783fb0df5af465ce6a5a365f49565997d13bfff14a866a5",
+      "spark_infer_q/draft_signals.py": "5f6a0ea0708498b2aad1ffaab3e913c22891981be4ee7702d553d9851edb9c3a",
+      "spark_infer_q/executor.py": "e2d981663cfa9f71858fc2d8737246b8a10def79c62f6aa3e670ccb75e2bc16e",
+      "spark_infer_q/head_screen.py": "9a1859e5543f239653c96124a1b68928bb2b80f10309a30ff19ffb5336147a01",
+      "spark_infer_q/kaifra_graph.py": "f4234a399bc7b8475adfaae496ae9e120f2ca37bc3b74b8b2116195146f24b07",
+      "spark_infer_q/kaifra_http.py": "1b136bcf1e69bf43250a404e30791b1f9f34a30b823837112985c3019a12800f",
+      "spark_infer_q/kaifra_runtime.py": "d0926e8b9d361ce68c98a37afa2fe1923802cec0f184799433eb482669274fde",
+      "spark_infer_q/kaifra_speculative.py": "a2788e19451c77ad3b6261c4fc14abad7f64a4b89ba33f277c97708beef3a3f0",
+      "spark_infer_q/local_policy.py": "de7b204f92685dbf68d8769df9bf63608c74c96167aa8cb6a08057f39ff3222f",
+      "spark_infer_q/mlp_head.py": "52e378708572736c18e0d0cc10090b454209b5ac7fc1b5cd9fd689549b960020",
+      "spark_infer_q/mlp_runtime.py": "9a87d1efd104e33cea4a4454016a61df4b4e043f1768411db1764ae71a7b9855",
+      "spark_infer_q/moe_cost.py": "7e06f87b17dc789ba76f19e179962b778b78be937e9dfd59d609b707c08639ca",
+      "spark_infer_q/native_scheduler.py": "bf0c41f628ca6de5b7e873c90e33ec9f40d17731b19c67a3af74529c0b5dd8c7",
+      "spark_infer_q/prompt.py": "6b997c3c6e6834666dfa0f7d13a7c950f6dc2e9b1d80818e5ee4b08a9b886f58",
+      "spark_infer_q/regret_head.py": "ad23a257754d123d93feb805480e8d717192c9d99e83de5afbcdc0886bc647e0",
+      "spark_infer_q/speculative.py": "ee1c2855cef1f31a868783d00f27cc88eef77f49ff95ff21dc2705d986f12045",
+      "spark_infer_q/tensorfold_block.py": "5527a5f6407c3dbb136003f687151b9754249423f964f71975e4eb9a1b9dadfa",
+      "spark_infer_q/verification_budget.py": "71f28552b8e83f682066edf9e9dd7267e3b54120c5d478949499a443f6eb5c50",
+      "spark_infer_q/wide_budget.py": "5cc2032ce32fd05b019aa90ddc0eefee80df2d2d850ede0e3bda3eedacd854fc",
+      "scripts/k3_gpu_validate.py": "b56c050498ddc97e72e717356a2c2ec2d8a0d402381ffbf3eb84bd8d66f49581",
+      "scripts/k3_online_validate.py": "b61e001868c98867ca4d48f7acc663128dca16fe50969cb7b86f0f4e9cd66277",
+      "scripts/k3_probe_validate.py": "84dee503758023ec9c19bcc118431e9f03fa973c0c830e849bb5132f4cf7c808",
+      "scripts/k3_resident_validate.py": "97f06f7ec46185e4560ee2baf0a471b09c8b29a8be956031da6ea5a877f6d3f5",
+      "scripts/k2_serve.py": "3c9c248b0f10de00489ef308ee0b8a1a95801aeea5085273d3976d9a3d30b66d",
+      "scripts/k2_gpu_validate.py": "33030f43b396e9647d562588c6464f5dbb478236923fe6a1ae123934882c84f5",
+      "docs/K3_GRAPH_RUNTIME_PLAN.md": "c6589f09894a1c943cfebc78160c070970b99b8d123c9dac69ff5de56cd5b79f"
+    },
+    "model_reloaded": false
+  },
+  "resident": {
+    "status": "PASS_K3_RESIDENT_AUDIT",
+    "collected_objects": 908,
+    "allocated_before_gc": 77594734592,
+    "allocated_after_gc": 77594734592,
+    "reserved_bytes": 79205236736,
+    "native_group_released": true,
+    "native_environment_restored": true,
+    "model_reloaded": false
+  },
+  "load_count": 1,
+  "same_worker": true,
+  "final_worker_status": "READY",
+  "model_reloaded": false,
+  "raw_sha256": {
+    "160-k3-graph-probe-v1.json": "848d34a0403e5614c86bfaed03618d8068f444053ed49304ffed9182d85d060b",
+    "161-k3-native-gpu-v1.json": "f64ccec194807f9bda7bcb5918a82b5a1a2474de2d5be31796ddd8c1dcedb72f",
+    "162-k3-online-v1.json": "fb0bf060743480f203ddb7e4d322ccfbeda11de24511e55d885b486bd83cbae4",
+    "163-k3-resident-audit-v1.json": "fbdcc9491109c6114b75cc0152fb49cd5651aa099eb1a752a3055130aec448fe"
+  }
+}
