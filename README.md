@@ -1,126 +1,126 @@
 # SparkInfer-Q
 
-**English** | [简体中文](README.zh-CN.md)
+**简体中文** | [English](README.en.md)
 
-Research on cost-aware speculative decoding and runtime execution for local large language models on a single NVIDIA DGX Spark (GB10 / SM121). Current hardware experiments use Qwen3.8-Flash-Next and a DFlash2 drafter, integrating scheduling and speculative verification from [DeepInfer](https://github.com/deepseek-ai/DeepInfer).
+在单台 NVIDIA DGX Spark（GB10 / SM121）上研究本地大模型的投机解码、计算预算分配和运行时执行。目前以 Qwen3.8-Flash-Next 和 DFlash2 草稿模型为实验对象，接入 [DeepInfer](https://github.com/deepseek-ai/DeepInfer) 的调度与推测验证机制。
 
-**Start here:** [research overview](docs/RESEARCH_OVERVIEW.md) · [中文研究导览](docs/RESEARCH_OVERVIEW.zh-CN.md) · [CPU predictor example](examples/adaptive_budget.py) · [experiment index](docs/README.md).
+**从这里开始：** [中文研究导览](docs/RESEARCH_OVERVIEW.zh-CN.md) · [English overview](docs/RESEARCH_OVERVIEW.md) · [CPU 预测器示例](examples/adaptive_budget.py) · [实验索引](docs/README.md)。
 
-The overview connects the research questions to implementation, measured evidence and remaining limitations. Documentation reviewed on 2026-11-02; hardware reports cover E0–E58 through 2026-10-28, with runtime milestones K1–K4.
+研究导览按“问题、实现、证据、局限”介绍项目。文档于 2026-11-02 核对；硬件报告覆盖截至 2026-10-28 的 E0–E58，以及 K1–K4 运行时里程碑。
 
-## Research question
+## 研究问题
 
-On a desktop machine whose CPU and GPU share 128 GB of memory, can a large MoE model run faster, with longer context and several requests at once, while its **output and committed state match the same quantized target run serially**? Compressed target-KV candidates also face a separate BF16-KV-relative accuracy gate.
+一台 CPU 与 GPU 共享 128 GB 内存的桌面设备，能不能让一个大型 MoE 模型跑得更快、上下文更长、同时服务多个请求，并且**输出和已提交状态与同一个量化 target 的串行执行一致**？压缩 target KV 的候选还需要通过独立的 BF16 KV 相对精度门槛。
 
-- Model: Qwen3.8-Flash-Next, NVFP4-quantized, 48 layers (36 GDN linear-attention + 12 QSA sparse-attention), 512 routed experts per layer with top-10 routing, about 70 GiB of target weights.
-- Scope: a single Spark and greedy decoding, with frozen target and draft backbones during predictor training. The current execution layer uses external TensorFold operators and DeepInfer scheduling/budget interfaces. vLLM and SGLang remain unmeasured candidate baselines; a production service and cross-model generalization are not established.
+- 模型：Qwen3.8-Flash-Next，NVFP4 量化，48 层（36 层 GDN 线性注意力 + 12 层 QSA 稀疏注意力），每层 512 个路由专家取 top-10，target 权重约 70 GiB。
+- 范围：单台 Spark、greedy 解码；训练预测器时冻结 target 和草稿主干。当前执行层复用外部 TensorFold 算子和 DeepInfer 调度/预算接口。vLLM、SGLang 仍是未实测的对照候选，尚未建立生产服务或跨模型泛化结论。
 
-## Project work
+## 本项目的具体工作
 
-| Workstream | What this repository develops | Implementation and evidence |
+| 主线 | 本仓库开展的工作 | 实现与证据 |
 | --- | --- | --- |
-| Acceptance prediction | Training, calibration and inference for a lightweight predictor of draft-prefix acceptance, using signals available before target verification | [Predictor](spark_infer_q/confidence_head.py), [features](spark_infer_q/confidence_features.py), [E16](docs/E16_BILINGUAL_EXPANSION_REPORT.md), [E17](docs/E17_COMPLETED_TRAINING_REPORT.md) |
-| Dynamic verification budget | Combine predicted progress and verification cost to select the current verification width; integrate the decision with upstream MTPVarlen | [Budget rule](spark_infer_q/confidence_head.py), [runtime integration](spark_infer_q/kaifra_speculative.py), [K2](docs/K2_DFLASH_SCHEDULER_USAGE.md) |
-| Runtime and evaluation | Request/state ownership, prefill execution, shared target work, lifecycle checks, paired experiments and evidence exports | [Joint target](spark_infer_q/kaifra_joint_target.py), [prefill](spark_infer_q/prefill.py), [E54](docs/E54_REQUEST_DRAFT_CACHE_REPORT.md), [tests](tests) |
+| 接受率预测 | 使用 target 验证前可获得的信号，训练、校准并执行轻量草稿前缀接受率预测器 | [预测器](spark_infer_q/confidence_head.py)、[特征](spark_infer_q/confidence_features.py)、[E16](docs/E16_BILINGUAL_EXPANSION_REPORT.md)、[E17](docs/E17_COMPLETED_TRAINING_REPORT.md) |
+| 动态验证预算 | 结合预测推进量与验证成本，选择本轮验证宽度，并接入上游 MTPVarlen | [预算规则](spark_infer_q/confidence_head.py)、[运行时接入](spark_infer_q/kaifra_speculative.py)、[K2](docs/K2_DFLASH_SCHEDULER_USAGE.md) |
+| 执行与评估 | 请求/状态所有权、prefill 执行、共享 target 计算、生命周期检查、配对实验与证据导出 | [联合 target](spark_infer_q/kaifra_joint_target.py)、[prefill](spark_infer_q/prefill.py)、[E54](docs/E54_REQUEST_DRAFT_CACHE_REPORT.md)、[测试](tests) |
 
-The project builds these prediction, execution and evaluation components on upstream model architectures, DFlash2, DeepInfer Scheduler/MTPVarlen and TensorFold operators. See the attribution below for the dependency boundaries.
+本仓库的工作集中在预测、预算接入、执行适配与评估；模型架构、DFlash2 方法、DeepInfer Scheduler/MTPVarlen 和 TensorFold 算子来自上游。依赖关系与归属见下文说明。
 
-## Method
+## 方法
 
-Each decode step has three parts:
+每个 decode 步分三部分：
 
-1. **Draft**: the DFlash2 drafter reads the target's committed features and proposes up to seven tokens at once.
-2. **Budget**: from predicted acceptance and measured cost, decide how many rows the target verifies this step (DeepInfer's MTPVarlen).
-3. **Verify and commit**: the target verifies those rows in one forward pass, accepts the longest prefix that matches greedy decoding, and writes only that prefix into the GDN/QSA state.
+1. **出草稿**：DFlash2 草稿模型读取 target 已提交的特征，一次给出最多 7 个候选 token。
+2. **定预算**：根据接受率预测和实测成本，决定这一步让 target 验证几行（DeepInfer 的 MTPVarlen）。
+3. **验证并提交**：target 一次前向验证这些行，只接受和 greedy 结果一致的最长前缀，写入 GDN/QSA 状态。
 
-The predictor estimates progress; it does not generate the answer. The current post-draft policy chooses **verification length**, after drafting has already been paid for. Cross-request scheduling and GPU batching are separate mechanisms, described in the [overview](docs/RESEARCH_OVERVIEW.md).
+预测器估计推进概率，不负责生成答案。当前 post-draft 策略在完成草稿后选择**验证长度**，已付出的草稿成本仍要计入。跨请求调度和 GPU 合批是另外的机制，见[研究导览](docs/RESEARCH_OVERVIEW.zh-CN.md)。
 
-Every experiment follows the same rules:
+所有实验遵守同一套规范：
 
-- **Correctness contract**: each candidate is checked against serial token-by-token execution on output tokens, committed logits and the full state; any mismatch is a failure.
-- **Plans frozen in advance**: tasks, variables and pass gates go into `*_PLAN.md` before the run; results go into `*_REPORT.md`.
-- **Negative results are kept**: a candidate that misses its gate is recorded as not adopted; thresholds are not loosened afterwards.
-- **All overheads are timed**: feature extraction, CPU transfers and prediction count toward the measured time.
+- **正确性契约**：每个候选都和逐 token 的 serial 执行对照输出 token、committed logits 和完整状态，不一致就不算通过。
+- **事先冻结方案**：任务、变量和通过门槛在运行前写进 `*_PLAN.md`，结果写进 `*_REPORT.md`。
+- **负结果同样保留**：没过门槛的候选记为"未采用"，不事后放宽阈值。
+- **开销全计入**：特征提取、CPU 传输、预测等额外耗时都算进计时。
 
-## Key results
+## 主要结果
 
-| Area | Result | Experiments |
+| 方向 | 结果 | 实验 |
 | --- | --- | --- |
-| Decode: verification budget | A trained lightweight acceptance predictor is about 10% faster than the lagged budget (44.08 vs 40.21 tok/s on 20 new tasks) | [E15](docs/E15_CONFIDENCE_TRAINING_REPORT.md), [E16](docs/E16_BILINGUAL_EXPANSION_REPORT.md) |
-| Decode: drafting | Full-vocabulary Q4 draft output head, +9.23% | [E6](docs/E6_DRAFT_HEAD_REPORT.md) |
-| Decode: target execution | Exact screened output head +3.41% (46.91 → 48.51 tok/s); CUDA Graph +1.28% | [E33](docs/E33_EXACT_HEAD_SCREEN_REPORT.md), [E29](docs/E29_TARGET_VERIFICATION_REPORT.md) |
-| Prefill | Eight-row chunks make complete requests 1.67× faster; switching to the owned prefill with 512-row chunks then cuts a 1,536-token request from 15.35 s to 2.13 s | [E8](docs/E8_INTEGRATION_REPORT.md), [E41](docs/E41_PREFILL_GRAPH_REPORT.md) |
-| Long context | A single 256K request (262,080 tokens) runs with 3/3 retrieval; with a 256K input, dynamic DFlash makes decode 88% faster than target-only (16.36 → 30.81 tok/s) | [E46](docs/E46_256K_REPORT.md), [E49](docs/E49_LONG_DYNAMIC_REPORT.md) |
-| Multiple requests | Two requests share one target forward, +63.4% aggregate decode throughput; two 256K requests run together with outputs and state identical to running each alone | [Joint target](docs/JOINT_TARGET_EXECUTION_REPORT.md), [E53](docs/E53_LONG_CONCURRENCY_REPORT.md), [E54](docs/E54_REQUEST_DRAFT_CACHE_REPORT.md) |
+| Decode：验证预算 | 训练的轻量接受率预测器，比滞后预算快约 10%（20 个新任务上 44.08 vs 40.21 tok/s） | [E15](docs/E15_CONFIDENCE_TRAINING_REPORT.md)、[E16](docs/E16_BILINGUAL_EXPANSION_REPORT.md) |
+| Decode：草稿 | 草稿输出头换成完整词表 Q4，+9.23% | [E6](docs/E6_DRAFT_HEAD_REPORT.md) |
+| Decode：target 执行 | 精确筛选输出头 +3.41%（46.91 → 48.51 tok/s）；CUDA Graph +1.28% | [E33](docs/E33_EXACT_HEAD_SCREEN_REPORT.md)、[E29](docs/E29_TARGET_VERIFICATION_REPORT.md) |
+| Prefill | 8 行分块让完整请求快 1.67 倍；再改用 512 行分块的自主 prefill，1,536-token 请求从 15.35 秒降到 2.13 秒 | [E8](docs/E8_INTEGRATION_REPORT.md)、[E41](docs/E41_PREFILL_GRAPH_REPORT.md) |
+| 长上下文 | 单请求 256K（262,080 token）跑通，检索 3/3；256K 输入下动态 DFlash 让 decode 比 target-only 快 88%（16.36 → 30.81 tok/s） | [E46](docs/E46_256K_REPORT.md)、[E49](docs/E49_LONG_DYNAMIC_REPORT.md) |
+| 多请求 | 两个请求共享一次 target 前向，总 decode 吞吐 +63.4%；两个 256K 请求同时运行，输出和状态与各自单独运行一致 | [联合 Target](docs/JOINT_TARGET_EXECUTION_REPORT.md)、[E53](docs/E53_LONG_CONCURRENCY_REPORT.md)、[E54](docs/E54_REQUEST_DRAFT_CACHE_REPORT.md) |
 
-Each number holds only for its report's tasks and timing boundaries; rows are not comparable and gains must not be multiplied. Most tasks are synthetic prompts. **One-line conclusions for every experiment are in [docs/README.md](docs/README.md).**
+每个数字只在对应报告的任务和计时口径内成立，不同行之间不能比较，收益也不能相乘。大多数任务是合成提示。**全部实验的一句话结论见 [docs/README.md](docs/README.md)。**
 
-## Candidates not adopted
+## 已测试但未采用的候选
 
-- **The tested kernel candidates missed their promotion gates.** Target verification is 84% of decode time in E9, and expert kernels are its largest part in E30. Eleven candidates — warp and prefetch tuning, staging, weight reuse, dual streams, instruction pipelining (E10, E30–E32, E34, E35, E37–E39, E43, E52) — were not adopted. This does not rule out other kernel designs or workloads.
-- **The tested larger predictor has no confirmed decode gain.** After retraining, an MLP was slightly better than the linear model offline (+0.21%), but not in actual decode (E19, E24, E25).
-- **Post-verification features cannot directly make a causal decision.** The routed-expert union explains verification cost, but it is only known after verifying (E12).
+- **已测内核候选没有通过晋升门槛。** E9 中 target 验证占 decode 时间的 84%，E30 中专家核是最大的一块。调 warp 和预取、改 staging、权重复用、双 stream、指令流水等 11 项候选（E10、E30–E32、E34、E35、E37–E39、E43、E52）未被采用；这一结论不排除其他内核设计或工作负载。
+- **已测更大预测器没有确认 decode 收益。** MLP 补训后离线评估略好于线性（+0.21%），但实际 decode 中没有超过线性（E19、E24、E25）。
+- **验证后才获得的特征不能直接支持因果决策。** 专家并集能解释验证成本，但要验证完才知道（E12）。
 
-The gains that held came from deciding what to compute (verification budget, drafting, head screening) and from restructuring prefill.
+有效的改进主要来自"决定算什么"（验证预算、草稿、输出头筛选）和重新组织 prefill。
 
-## Current blockers
+## 当前卡点
 
-- **Memory**: the target is eight concurrent 256K requests under the 88 GiB CUDA allocation cap. Even with INT4 KV the forecast is 92.82 GiB (E55).
-- **KV compression accuracy**: all compressed candidates still miss the pre-registered 3% relative-logit-L2 gate. In E58, BF16 prefill followed by FP8 / INT4 decode gives 4.06% / 7.22% on the same 100 teacher decode positions across six 4K–16K prefixes. This is not a 256K quality result or a throughput measurement.
-- **Multi-request serving**: two-request dynamic DFlash with async SSE runs, but does not yet consistently beat the optimized single-request engine run sequentially ([PR #19](https://github.com/EdwinWang831/spark-infer-q/pull/19), in progress).
-- **Native TensorFold comparison**: 45.62 vs native 49.18 tok/s overall in E7; not rerun since.
+- **内存**：目标是 8 个并发、每个 256K 的请求，放进 88 GiB 的 CUDA 分配上限。即使把 KV 压到 INT4，预计仍需 92.82 GiB（E55）。
+- **KV 压缩精度**：所有压缩候选仍未通过事前定的 3% logit 相对 L2 门槛。E58 中，BF16 prefill 后使用 FP8 / INT4 解码，在六条 4K–16K 前缀的相同 100 个 teacher decode 位置上得到 4.06% / 7.22%；这不是 256K 质量或吞吐结果。
+- **多请求服务**：双请求动态 DFlash 和异步 SSE 已能运行，但还没有稳定超过优化后的单请求顺序处理（[PR #19](https://github.com/EdwinWang831/spark-infer-q/pull/19)，进行中）。
+- **对照原生 TensorFold**：E7 时整体 45.62 vs 原生 49.18 tok/s，之后没有重测。
 
-## Feedback-driven self-improvement (proposal)
+## 反馈驱动的自改进（方案）
 
-[PR #15](https://github.com/EdwinWang831/spark-infer-q/pull/15) proposes learning from usage feedback, evaluating candidate policies on temporally held-out data, and promoting or rolling back them based on measured net benefit. Its v2 plan has **no executed EV0–EV7 stages**. Frozen acceptance prediction, manual engineering gains and adaptive width decisions are not evidence of recursive self-improvement. See the [overview](docs/RESEARCH_OVERVIEW.md#feedback-and-rsi) for the connection to scientific agents and the proposed evaluation loop.
+[PR #15](https://github.com/EdwinWang831/spark-infer-q/pull/15) 提议利用使用反馈学习策略，在时间留出的新数据上评估候选，并按净收益决定晋升或回滚。v2 方案的 **EV0–EV7 均未执行**。冻结预测器、手工工程提速和动态宽度决策，都不是递归自我改进的实验证据。与科研智能体的联系及拟议评估闭环见[研究导览](docs/RESEARCH_OVERVIEW.zh-CN.md#运行反馈与-rsi)。
 
-## Repository layout
+## 仓库结构
 
-| Directory | Contents |
+| 目录 | 内容 |
 | --- | --- |
-| [`spark_infer_q/`](spark_infer_q) | Reusable library: greedy verification contract, budgets and predictors, draft caches, prefill, long-context state, runtime (`kaifra_*`; Kaifra is the engine's working name) |
-| [`scripts/`](scripts) | Run, collection and export scripts for each experiment, named by experiment number |
-| [`tests/`](tests) | CPU unit tests; no GPU needed |
-| [`docs/`](docs) | Plan and report for every experiment, with a [themed index](docs/README.md) |
-| [`results/`](results) | Sanitized data for every experiment, re-checkable by its export script |
+| [`spark_infer_q/`](spark_infer_q) | 可复用的库：greedy 验证规则、预算与预测器、草稿缓存、prefill、长上下文状态、运行时（`kaifra_*`，Kaifra 是引擎的暂定名） |
+| [`scripts/`](scripts) | 各实验的运行、采集和导出脚本，文件名带实验编号 |
+| [`tests/`](tests) | CPU 单元测试，不需要 GPU |
+| [`docs/`](docs) | 每个实验的方案和报告，以及[按主题的索引](docs/README.md) |
+| [`results/`](results) | 每个实验的脱敏数据，可由对应导出脚本重新校验 |
 
-`main` collects finished work; active branches and PRs are listed in the [repository map](docs/REPOSITORY_STATUS.md).
+`main` 汇总已完成的工作；仍在进行的分支和 PR 见[仓库导航](docs/REPOSITORY_STATUS.md)。
 
-## Getting started (no GPU, no weights downloaded)
+## 快速开始（不需要 GPU，不下载权重）
 
-The scripts below use only Python's standard library and **do not install packages or modify GPU settings**. The research environment targets Python 3.12.
+以下脚本只用 Python 标准库，**不会安装依赖或修改 GPU 设置**。研究环境以 Python 3.12 为目标。
 
 ```bash
 git clone https://github.com/EdwinWang831/spark-infer-q.git
 cd spark-infer-q
 
-# Runs the released E17 predictor and budget rule on synthetic features, using only the standard library.
-# No model generation or throughput measurement; see the overview for the input and cost contract.
+# 用公开 E17 预测器和真实预算规则处理合成特征，只需 Python 标准库。
+# 不生成模型答案、不测吞吐；输入和成本口径见研究导览。
 python3 -m examples.adaptive_budget
 
-# Prints a JSON environment report without importing PyTorch or probing torch.cuda.
+# 输出 JSON 环境报告，不导入 PyTorch，也不探测 torch.cuda。
 python3 scripts/probe_environment.py --static-only
 
-# Point to an existing local Hugging Face config.json; do not download checkpoints.
+# 指向已有的本地 Hugging Face config.json，不下载检查点。
 python3 scripts/inspect_hf_config.py /path/to/model/config.json
 
-# Unit tests; no GPU needed. Some tests skip without PyTorch or NumPy.
+# 运行单元测试，无需 GPU；没有 PyTorch 或 NumPy 时会跳过部分测试。
 python3 -m unittest discover -s tests -v
 ```
 
-Running the full model on a Spark needs a prepared research environment, external TensorFold source and checkpoints; see the [prompt-chunk executor](docs/PROMPT_USAGE.md), the [K2 runtime](docs/K2_DFLASH_SCHEDULER_USAGE.md) and the [resident worker](docs/RESIDENT_RESEARCH_WORKER.md).
+在 Spark 上运行完整模型需要准备好的研究环境、外部 TensorFold 源码和检查点，见 [prompt 分块执行器](docs/PROMPT_USAGE.md)、[K2 运行时](docs/K2_DFLASH_SCHEDULER_USAGE.md) 和[常驻 worker](docs/RESIDENT_RESEARCH_WORKER.md)。
 
-**Privacy:** environment reports are not committed by default. Inspect reports before sharing; never commit API keys, tokens, model weights, private paths or personal identifiers.
+**隐私：** 环境报告默认不提交。分享前先检查内容；不要提交 API key、token、模型权重、私有路径或个人标识信息。
 
-## Upstreams and attribution
+## 上游项目与归属
 
-- [DeepSeek DeepInfer](https://github.com/deepseek-ai/DeepInfer) (Apache-2.0): C++ Scheduler and MTPVarlen verification budget
-- [TensorFold](https://github.com/ashhart/TensorFold): model execution and CUDA kernels; retain the applicable upstream licenses and notices
-- [MiaAI-Lab's TensorFold recipe](https://github.com/MiaAI-Lab/Qwen3.8-Flash-Next-Single-DGX-Spark-TensorFold) (MIT): E43/E44 adapt its prefill expert tiles; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)
-- [Qwen3.8-Flash-Next-DFlash2](https://huggingface.co/incoai/Qwen3.8-Flash-Next-DFlash2): externally supplied draft checkpoint and reference implementation
-- [OASST1](https://huggingface.co/datasets/OpenAssistant/oasst1) (Apache-2.0): prompt source for E17 predictor retraining; see the [attribution](docs/data/OASST1_ATTRIBUTION.md)
-- [vLLM](https://github.com/vllm-project/vllm), [SGLang](https://github.com/sgl-project/sglang): candidate baselines, not yet measured
+- [DeepSeek DeepInfer](https://github.com/deepseek-ai/DeepInfer)（Apache-2.0）：C++ Scheduler 和 MTPVarlen 验证预算
+- [TensorFold](https://github.com/ashhart/TensorFold)：模型执行与 CUDA 内核；须保留适用的上游许可证和声明
+- [MiaAI-Lab 的 TensorFold 配方](https://github.com/MiaAI-Lab/Qwen3.8-Flash-Next-Single-DGX-Spark-TensorFold)（MIT）：E43/E44 改编了其中的 prefill 专家 tile，见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)
+- [Qwen3.8-Flash-Next-DFlash2](https://huggingface.co/incoai/Qwen3.8-Flash-Next-DFlash2)：外部提供的草稿检查点与参考实现
+- [OASST1](https://huggingface.co/datasets/OpenAssistant/oasst1)（Apache-2.0）：E17 预测器补训用的提示来源，见[署名说明](docs/data/OASST1_ATTRIBUTION.md)
+- [vLLM](https://github.com/vllm-project/vllm)、[SGLang](https://github.com/sgl-project/sglang)：对照基线候选，尚未实测
 
-**Do not vendor upstream source or weights without reviewing the respective licenses and notices.** This repo contains planning notes, diagnostic/build/test harnesses, an experimental request executor and runtime, adapters to externally supplied TensorFold blocks and the full target, a DFlash2 bridge, and sanitized evidence. It does not include a complete Qwen model implementation or model weights; loading and the remaining target operators use externally supplied TensorFold source and checkpoints.
+**引入上游源码或权重前，须检查其许可证和声明。** 本仓库包含研究计划、诊断/构建/测试工具、实验请求执行器与运行时、对外部 TensorFold 模块和完整 target 的适配、DFlash2 桥接，以及脱敏实验记录。不包含完整的 Qwen 模型实现或模型权重；加载和其余 target 算子依赖外部提供的 TensorFold 源码和检查点。
 
-License: [Apache 2.0](LICENSE).
+许可证：[Apache 2.0](LICENSE)。

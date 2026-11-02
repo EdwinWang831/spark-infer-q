@@ -1,6 +1,6 @@
 # Research overview
 
-**English** | [简体中文](RESEARCH_OVERVIEW.zh-CN.md) · [Home](../README.md) · [All experiments](README.md)
+[简体中文](RESEARCH_OVERVIEW.zh-CN.md) | **English** · [Home](../README.en.md) · [All experiments](README.md)
 
 Documentation reviewed on 2026-11-02. Hardware reports extend through E58 (2026-10-28); the linked RSI v2 proposal remains unexecuted.
 

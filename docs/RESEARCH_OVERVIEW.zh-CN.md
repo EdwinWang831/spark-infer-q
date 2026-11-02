@@ -1,6 +1,6 @@
 # 研究导览
 
-[English](RESEARCH_OVERVIEW.md) | **简体中文** · [首页](../README.zh-CN.md) · [全部实验](README.md)
+**简体中文** | [English](RESEARCH_OVERVIEW.md) · [首页](../README.md) · [全部实验](README.md)
 
 文档核对日期：2026-11-02。硬件报告更新到 E58（2026-10-28）；所链接的 RSI v2 仍为未执行方案。
 
