@@ -8,6 +8,17 @@ Research on cost-aware speculative decoding and runtime execution for local larg
 
 The overview connects the research questions to implementation, measured evidence and remaining limitations. Documentation reviewed on 2026-11-02; hardware reports cover E0–E58 through 2026-10-28, with runtime milestones K1–K4.
 
+## Unified engine entry
+
+This branch integrates committed K4 work with main as Kaifra v0.1: one model load, two-request asynchronous execution, adaptive DFlash, streaming/nonstreaming chat, cancellation, bounded admission, health, metrics and orderly shutdown. In the prepared GPU environment:
+
+```bash
+python -m spark_infer_q doctor --root /path/to/prepared/runtime --checkpoint /path/to/local/target
+python -m spark_infer_q serve --root /path/to/prepared/runtime --checkpoint /path/to/local/target
+```
+
+See [usage](docs/ENGINE_V01_USAGE.en.md) and the [validation report](docs/ENGINE_V01_REPORT.md): full-model session and separate cold-start gates passed. Public admission is 1536 tokens including output, with two running requests. The 256K, four-request and compressed-KV studies retain their individual scope and are not integrated service capabilities.
+
 ## Research question
 
 On a desktop machine whose CPU and GPU share 128 GB of memory, can a large MoE model run faster, with longer context and several requests at once, while its **output and committed state match the same quantized target run serially**? Compressed target-KV candidates also face a separate BF16-KV-relative accuracy gate.
@@ -67,7 +78,7 @@ The gains that held came from deciding what to compute (verification budget, dra
 
 - **Memory**: the target is eight concurrent 256K requests under the 88 GiB CUDA allocation cap. Even with INT4 KV the forecast is 92.82 GiB (E55).
 - **KV compression accuracy**: all compressed candidates still miss the pre-registered 3% relative-logit-L2 gate. In E58, BF16 prefill followed by FP8 / INT4 decode gives 4.06% / 7.22% on the same 100 teacher decode positions across six 4K–16K prefixes. This is not a 256K quality result or a throughput measurement.
-- **Multi-request serving**: two-request dynamic DFlash with async SSE runs, but does not yet consistently beat the optimized single-request engine run sequentially ([PR #19](https://github.com/EdwinWang831/spark-infer-q/pull/19), in progress).
+- **Multi-request serving**: this branch integrates two-request adaptive DFlash in v0.1; larger concurrency and long-duration stress remain to be validated. Historical K4 performance has not established a stable win over optimized sequential serving; new API correctness is not a new speedup result.
 - **Native TensorFold comparison**: 45.62 vs native 49.18 tok/s overall in E7; not rerun since.
 
 ## Feedback-driven self-improvement (proposal)

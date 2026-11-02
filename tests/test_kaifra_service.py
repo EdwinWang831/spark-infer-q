@@ -23,7 +23,9 @@ class ServiceTests(unittest.TestCase):
         self.address=self.server.server_address;self.connections=[]
     def tearDown(self):
         for conn in self.connections:conn.close()
-        self.bridge.gate.set();self.worker.close(3);self.server.shutdown();self.server.server_close();self.thread.join(3)
+        self.bridge.gate.set()
+        try:self.worker.close(3)
+        finally:self.server.shutdown();self.server.server_close();self.thread.join(3)
     def request(self,path,body=None):
         conn=http.client.HTTPConnection(*self.address,timeout=4);self.connections.append(conn)
         conn.request('GET' if body is None else 'POST',path,body=None if body is None else json.dumps(body),headers={'Content-Type':'application/json'})

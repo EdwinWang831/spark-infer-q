@@ -2,6 +2,8 @@
 
 首次阅读建议先看[中文研究导览](RESEARCH_OVERVIEW.zh-CN.md)或 [English overview](RESEARCH_OVERVIEW.md)：从 DFlash 预测器、验证预算和请求调度，直接定位实现、实验和 RSI 方案。A [CPU-only example](../examples/adaptive_budget.py) runs the released predictor and budget rule without model weights.
 
+统一服务入口见 [Kaifra v0.1 用法](ENGINE_V01_USAGE.md) / [English usage](ENGINE_V01_USAGE.en.md)，其集成范围和独立验收门槛见[方案](ENGINE_V01_PLAN.md)。
+
 这里按研究主题列出全部实验（E0–E58）和运行时里程碑（K1–K4），每项一句结论。细节见各自的报告，脱敏数据在 [`results/`](../results)，按时间顺序的完整记录见 [EXPERIMENTS.md](EXPERIMENTS.md)。分支和 PR 的位置见 [REPOSITORY_STATUS.md](REPOSITORY_STATUS.md)。
 
 每个实验通常有两份文档：`*_PLAN.md` 是运行前冻结的方案（任务、变量、通过门槛），`*_REPORT.md` 是结果，失败和被否决的结果同样保留。

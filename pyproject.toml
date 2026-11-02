@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "spark-infer-q"
+version = "0.1.0"
+description = "Cost-aware local inference runtime on NVIDIA DGX Spark"
+readme = "README.md"
+requires-python = ">=3.12"
+license = {file = "LICENSE"}
+
+[project.scripts]
+kaifra = "spark_infer_q.cli:main"
+
+[tool.setuptools]
+license-files = ["LICENSE", "THIRD_PARTY_NOTICES.md"]
+
+[tool.setuptools.packages.find]
+include = ["spark_infer_q*"]

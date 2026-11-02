@@ -67,6 +67,12 @@ class AsyncWorker:
         self.condition=Condition();self.pending=deque();self.ids={};self.subscriptions={};self.cancellations=set()
         self.ready=Future();self.thread=None;self.engine=None;self.state='new';self.error=None
         self.active_count=0;self.phase=None;self.capabilities={};self.last_step_metrics=()
+        self.metrics={name:0 for name in ('requests_submitted_total','requests_admitted_total',
+            'requests_completed_total','requests_cancelled_total','requests_failed_total',
+            'admission_rejected_total','output_tokens_total','worker_failures_total',
+            'ttft_seconds_count','request_seconds_count')}
+        self.metrics.update(ttft_seconds_sum=0.,request_seconds_sum=0.)
+        self._metric_handles={}
 
     def start(self,timeout=30):
         with self.condition:
@@ -79,8 +85,13 @@ class AsyncWorker:
         future=Future();command=Submission(request_id,payload,max_tokens,temperature,token_api,future)
         with self.condition:
             if self.state!='ready':raise WorkerFailed(self.error or 'worker is not accepting requests')
-            if request_id in self.ids:raise WorkerBusy('request ID already has an open stream')
-            if len(self.ids)>=self.max_streams:raise WorkerBusy('worker request streams are full')
+            if request_id in self.ids:
+                self.metrics['admission_rejected_total']+=1
+                raise WorkerBusy('request ID already has an open stream')
+            if len(self.ids)>=self.max_streams:
+                self.metrics['admission_rejected_total']+=1
+                raise WorkerBusy('worker request streams are full')
+            self.metrics['requests_submitted_total']+=1
             self.ids[request_id]=command;self.pending.append(command);self.condition.notify_all()
         try:return future.result(timeout=timeout)
         except CancelledError:
@@ -126,7 +137,7 @@ class AsyncWorker:
         with self.condition:
             return dict(status=self.state,error=self.error,active_requests=self.active_count,
                 open_streams=len(self.ids),pending_submissions=len(self.pending),phase=self.phase,
-                capabilities=dict(self.capabilities))
+                capabilities=dict(self.capabilities),metrics=dict(self.metrics))
 
     def wait_idle(self,timeout=30):
         end=time.monotonic()+timeout
@@ -176,8 +187,11 @@ class AsyncWorker:
                 else:handle=self.engine.submit(command.request_id,command.payload,max_tokens=command.max_tokens,temperature=command.temperature)
                 sub=Subscription(self,handle,self.event_capacity)
                 self.subscriptions[handle]=sub;self.ids[command.request_id]=sub
+                self.metrics['requests_admitted_total']+=1
+                self._metric_handles[handle]=False
                 future.set_result(sub)
             except (ValueError,BridgeError) as exc:
+                self.metrics['admission_rejected_total']+=1
                 if self.ids.get(command.request_id) is command:self.ids.pop(command.request_id)
                 future.set_exception(type(exc)(str(exc)))
                 if self.engine.bridge.poisoned:raise
@@ -197,6 +211,19 @@ class AsyncWorker:
 
     def _route(self,events):
         for event in events:
+            if event.handle in self._metric_handles:
+                self.metrics['output_tokens_total']+=len(event.token_ids)
+                if event.token_ids and not self._metric_handles[event.handle]:
+                    self._metric_handles[event.handle]=True
+                    if event.ttft_seconds is not None:
+                        self.metrics['ttft_seconds_sum']+=event.ttft_seconds
+                        self.metrics['ttft_seconds_count']+=1
+                if event.finish_reason is not None:
+                    key='requests_cancelled_total' if event.finish_reason=='cancelled' else 'requests_completed_total'
+                    self.metrics[key]+=1
+                    self.metrics['request_seconds_sum']+=event.elapsed_seconds
+                    self.metrics['request_seconds_count']+=1
+                    del self._metric_handles[event.handle]
             sub=self.subscriptions.get(event.handle)
             if sub is None:
                 if event.finish_reason is None:self.cancellations.add(event.handle)
@@ -252,6 +279,9 @@ class AsyncWorker:
                     self.engine.close()
         except Exception as exc:
             with self.condition:
+                self.metrics['worker_failures_total']+=1
+                self.metrics['requests_failed_total']+=len(self._metric_handles)
+                self._metric_handles.clear()
                 self.error=type(exc).__name__+': '+str(exc);self.state='failed'
                 if not self.ready.done():self.ready.set_exception(WorkerFailed(self.error))
         finally:

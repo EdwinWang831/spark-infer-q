@@ -8,6 +8,17 @@
 
 研究导览按“问题、实现、证据、局限”介绍项目。文档于 2026-11-02 核对；硬件报告覆盖截至 2026-10-28 的 E0–E58，以及 K1–K4 运行时里程碑。
 
+## 统一引擎入口
+
+本分支将已提交的 K4 与主线整合为 Kaifra v0.1：一次加载、双请求异步执行、动态 DFlash、聊天流式/非流式 API、取消、有界等待、健康检查、指标与正常退出。准备好的 GPU 环境中可运行：
+
+```bash
+python -m spark_infer_q doctor --root /path/to/prepared/runtime --checkpoint /path/to/local/target
+python -m spark_infer_q serve --root /path/to/prepared/runtime --checkpoint /path/to/local/target
+```
+
+见[中文用法](docs/ENGINE_V01_USAGE.md)及[真实验收报告](docs/ENGINE_V01_REPORT.md)。完整模型session与独立冷启动验收均已通过。v0.1 公开准入为1536 token（含输出），两个运行请求；256K、四并发和压缩 KV 沿用各自实验范围，尚未并入统一服务。
+
 ## 研究问题
 
 一台 CPU 与 GPU 共享 128 GB 内存的桌面设备，能不能让一个大型 MoE 模型跑得更快、上下文更长、同时服务多个请求，并且**输出和已提交状态与同一个量化 target 的串行执行一致**？压缩 target KV 的候选还需要通过独立的 BF16 KV 相对精度门槛。
@@ -67,7 +78,7 @@
 
 - **内存**：目标是 8 个并发、每个 256K 的请求，放进 88 GiB 的 CUDA 分配上限。即使把 KV 压到 INT4，预计仍需 92.82 GiB（E55）。
 - **KV 压缩精度**：所有压缩候选仍未通过事前定的 3% logit 相对 L2 门槛。E58 中，BF16 prefill 后使用 FP8 / INT4 解码，在六条 4K–16K 前缀的相同 100 个 teacher decode 位置上得到 4.06% / 7.22%；这不是 256K 质量或吞吐结果。
-- **多请求服务**：双请求动态 DFlash 和异步 SSE 已能运行，但还没有稳定超过优化后的单请求顺序处理（[PR #19](https://github.com/EdwinWang831/spark-infer-q/pull/19)，进行中）。
+- **多请求服务**：本分支的 v0.1 整合双请求动态 DFlash 与异步服务；更高并发和长期压力仍需验收。旧 K4 性能结果尚未证明稳定超过优化后的单请求顺序处理，新 API 的功能验收不代表新增提速。
 - **对照原生 TensorFold**：E7 时整体 45.62 vs 原生 49.18 tok/s，之后没有重测。
 
 ## 反馈驱动的自改进（方案）

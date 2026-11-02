@@ -5,6 +5,8 @@ import argparse,hashlib,io,json,pathlib,re,shlex,subprocess,tarfile
 def main():
     p=argparse.ArgumentParser();p.add_argument('version');p.add_argument('job');p.add_argument('runner');p.add_argument('--graphs',action='store_true')
     p.add_argument('--component-root',help='absolute remote path of the sealed draft component result')
+    p.add_argument('--ssh-host',default='robo-dog-f236.local',help='existing SSH host profile')
+    p.add_argument('--stage-only',action='store_true',help='upload and seal without enqueuing a GPU job')
     p.add_argument('--ssh-hostname',help='explicit verified peer address; bypass only this call\'s ProxyCommand');a=p.parse_args()
     if not re.fullmatch(r'[a-z0-9][a-z0-9-]*',a.version):p.error('version must be lowercase letters, digits and hyphens')
     if not re.fullmatch(r'[a-z0-9][a-z0-9-]*\.json',a.job):p.error('job must be a simple unique JSON basename')
@@ -18,6 +20,8 @@ def main():
               'tests/test_compact_target.py','tests/test_kaifra_batch_transactions.py']
     names += ['tests/test_prefill_executor.py','tests/test_prefill_progress.py','tests/test_worker_cpu.py','THIRD_PARTY_NOTICES.md']
     names += ['tests/test_draft_batch_graph.py']
+    names += ['docs/ENGINE_V01_PLAN.md','tests/test_engine_api.py','tests/test_engine_cli.py',
+              'scripts/serve.py','pyproject.toml']
     names += ['results/k4/2026-10-24-joint-costs.json']
     manifest={n:hashlib.sha256((root/n).read_bytes()).hexdigest() for n in names};buf=io.BytesIO()
     with tarfile.open(fileobj=buf,mode='w') as archive:
@@ -25,7 +29,7 @@ def main():
         data=(json.dumps(manifest,indent=2)+'\n').encode();info=tarfile.TarInfo('manifest.json');info.size=len(data);archive.addfile(info,io.BytesIO(data))
     remote='/workspace/e1/k4batch-20261023-'+a.version
     ssh=['ssh','-o','BatchMode=yes','-o','ConnectTimeout=12','-o','ConnectionAttempts=3',
-         '-o','ControlMaster=auto','-o','ControlPersist=600','-o','ControlPath=/tmp/codex-deepinfer-%C','robo-dog-f236.local']
+         '-o','ControlMaster=auto','-o','ControlPersist=600','-o','ControlPath=/tmp/codex-deepinfer-%C',a.ssh_host]
     if a.ssh_hostname:ssh[1:1]=['-o','ProxyCommand=none','-o','Hostname='+a.ssh_hostname]
     payload=buf.getvalue();payload_sha=hashlib.sha256(payload).hexdigest()
     manifest_sha=hashlib.sha256((json.dumps(manifest,indent=2)+'\n').encode()).hexdigest()
@@ -48,6 +52,8 @@ for n,h in json.loads((r/'manifest.json').read_text()).items():assert hashlib.sh
         except subprocess.CalledProcessError as exc:
             if exc.returncode!=255 or attempt==2:raise
     out=root/'results/raw/k4-batch';out.mkdir(parents=True,exist_ok=True);(out/('manifest-'+a.version+'.json')).write_text(json.dumps(manifest,indent=2)+'\n')
+    if a.stage_only:
+        print(remote);return
     module='k4batch_job_'+a.version.replace('-','_')
     script=f'''import hashlib,json,pathlib,shutil
 r=pathlib.Path('/workspace/e1/resident-verification');src=pathlib.Path({(remote+'/scripts/'+a.runner)!r});dest=r/{(module+'.py')!r}

@@ -6,6 +6,7 @@
 
 | Location / 位置 | Contents / 内容 | State / 状态 |
 | --- | --- | --- |
+| `codex/engine-v01` | Current main plus committed K4; unified CLI, chat API, health/metrics and service lifecycle / 主线与已提交K4整合为统一服务 | [Usage / 用法](ENGINE_V01_USAGE.md), [validation plan / 验收方案](ENGINE_V01_PLAN.md); separate from uncommitted four-request work / 与四并发未提交实验分开 |
 | `main` | E0–E58 research records, including E26 cancellation; E33 exact screened head, E34/E35 rejected candidates, E36 exact prefill and E37 profile / 已完成研究与脱敏证据 | Consolidated; per-experiment limits still apply / 已汇总，沿用各实验边界 |
 | `main` | K1 target-only runtime → K2 dynamic DFlash → K3 Graph/E33 profile → single-request overhead reduction / 原生调度运行时演进 | Explicit opt-in APIs/profiles / 显式启用 |
 | `main` | Joint Target, two requests sharing one target forward / 双请求联合 Target | Target-only API; distinct from K4 DFlash service / 独立于 K4 服务研究 |
