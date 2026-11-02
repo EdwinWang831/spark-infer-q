@@ -2,14 +2,28 @@
 
 **English** | [简体中文](README.zh-CN.md)
 
-A research project on accelerating Qwen3.8-Flash-Next inference on a single NVIDIA DGX Spark (GB10 / SM121), borrowing scheduling and speculative verification from [DeepInfer](https://github.com/deepseek-ai/DeepInfer). As of 2026-10-28 it records experiments E0–E58 and runtime milestones K1–K4.
+Research on cost-aware speculative decoding and runtime execution for local large language models on a single NVIDIA DGX Spark (GB10 / SM121). Current hardware experiments use Qwen3.8-Flash-Next and a DFlash2 drafter, integrating scheduling and speculative verification from [DeepInfer](https://github.com/deepseek-ai/DeepInfer).
+
+**Start here:** [research overview](docs/RESEARCH_OVERVIEW.md) · [中文研究导览](docs/RESEARCH_OVERVIEW.zh-CN.md) · [CPU predictor example](examples/adaptive_budget.py) · [experiment index](docs/README.md).
+
+The overview connects the research questions to implementation, measured evidence and remaining limitations. Documentation reviewed on 2026-11-02; hardware reports cover E0–E58 through 2026-10-28, with runtime milestones K1–K4.
 
 ## Research question
 
-On a desktop machine whose CPU and GPU share 128 GB of memory, can a large MoE model run faster, with longer context and several requests at once, while its **output stays token-for-token identical to the original model**?
+On a desktop machine whose CPU and GPU share 128 GB of memory, can a large MoE model run faster, with longer context and several requests at once, while its **output and committed state match the same quantized target run serially**? Compressed target-KV candidates also face a separate BF16-KV-relative accuracy gate.
 
 - Model: Qwen3.8-Flash-Next, NVFP4-quantized, 48 layers (36 GDN linear-attention + 12 QSA sparse-attention), 512 routed experts per layer with top-10 routing, about 70 GiB of target weights.
-- Scope: a single Spark and greedy decoding. No Qwen retraining, no production service, and no speedup claim without a measurement. Experiments choose the inference foundation (DeepInfer, TensorFold, vLLM, SGLang); none is assumed up front.
+- Scope: a single Spark and greedy decoding, with frozen target and draft backbones during predictor training. The current execution layer uses external TensorFold operators and DeepInfer scheduling/budget interfaces. vLLM and SGLang remain unmeasured candidate baselines; a production service and cross-model generalization are not established.
+
+## Project work
+
+| Workstream | What this repository develops | Implementation and evidence |
+| --- | --- | --- |
+| Acceptance prediction | Training, calibration and inference for a lightweight predictor of draft-prefix acceptance, using signals available before target verification | [Predictor](spark_infer_q/confidence_head.py), [features](spark_infer_q/confidence_features.py), [E16](docs/E16_BILINGUAL_EXPANSION_REPORT.md), [E17](docs/E17_COMPLETED_TRAINING_REPORT.md) |
+| Dynamic verification budget | Combine predicted progress and verification cost to select the current verification width; integrate the decision with upstream MTPVarlen | [Budget rule](spark_infer_q/confidence_head.py), [runtime integration](spark_infer_q/kaifra_speculative.py), [K2](docs/K2_DFLASH_SCHEDULER_USAGE.md) |
+| Runtime and evaluation | Request/state ownership, prefill execution, shared target work, lifecycle checks, paired experiments and evidence exports | [Joint target](spark_infer_q/kaifra_joint_target.py), [prefill](spark_infer_q/prefill.py), [E54](docs/E54_REQUEST_DRAFT_CACHE_REPORT.md), [tests](tests) |
+
+The project builds these prediction, execution and evaluation components on upstream model architectures, DFlash2, DeepInfer Scheduler/MTPVarlen and TensorFold operators. See the attribution below for the dependency boundaries.
 
 ## Method
 
@@ -18,6 +32,8 @@ Each decode step has three parts:
 1. **Draft**: the DFlash2 drafter reads the target's committed features and proposes up to seven tokens at once.
 2. **Budget**: from predicted acceptance and measured cost, decide how many rows the target verifies this step (DeepInfer's MTPVarlen).
 3. **Verify and commit**: the target verifies those rows in one forward pass, accepts the longest prefix that matches greedy decoding, and writes only that prefix into the GDN/QSA state.
+
+The predictor estimates progress; it does not generate the answer. The current post-draft policy chooses **verification length**, after drafting has already been paid for. Cross-request scheduling and GPU batching are separate mechanisms, described in the [overview](docs/RESEARCH_OVERVIEW.md).
 
 Every experiment follows the same rules:
 
@@ -39,20 +55,24 @@ Every experiment follows the same rules:
 
 Each number holds only for its report's tasks and timing boundaries; rows are not comparable and gains must not be multiplied. Most tasks are synthetic prompts. **One-line conclusions for every experiment are in [docs/README.md](docs/README.md).**
 
-## What did not work (also a result)
+## Candidates not adopted
 
-- **Kernel-by-kernel tuning gives little.** Target verification is 84% of decode time (E9), and expert kernels are its largest part (E30). Yet 11 candidates — warp and prefetch tuning, staging, weight reuse, dual streams, instruction pipelining (E10, E30–E32, E34, E35, E37–E39, E43, E52) — were not adopted: gains of a few percent at most, or slowdowns.
-- **Bigger predictors did not speed up decode.** After retraining, an MLP was slightly better than the linear model offline (+0.21%), but not in actual decode (E19, E24, E25).
-- **A better cost model alone helps little.** The routed-expert union explains verification cost, but it is only known after verifying (E12).
+- **The tested kernel candidates missed their promotion gates.** Target verification is 84% of decode time in E9, and expert kernels are its largest part in E30. Eleven candidates — warp and prefetch tuning, staging, weight reuse, dual streams, instruction pipelining (E10, E30–E32, E34, E35, E37–E39, E43, E52) — were not adopted. This does not rule out other kernel designs or workloads.
+- **The tested larger predictor has no confirmed decode gain.** After retraining, an MLP was slightly better than the linear model offline (+0.21%), but not in actual decode (E19, E24, E25).
+- **Post-verification features cannot directly make a causal decision.** The routed-expert union explains verification cost, but it is only known after verifying (E12).
 
 The gains that held came from deciding what to compute (verification budget, drafting, head screening) and from restructuring prefill.
 
 ## Current blockers
 
 - **Memory**: the target is eight concurrent 256K requests under the 88 GiB CUDA allocation cap. Even with INT4 KV the forecast is 92.82 GiB (E55).
-- **KV compression accuracy**: FP8 / INT4 KV give 8.42% / 11.23% relative logit error, above the pre-registered 3% gate; protecting sensitive layers, affine codecs and deferred compression did not fix it (E55–E58).
+- **KV compression accuracy**: all compressed candidates still miss the pre-registered 3% relative-logit-L2 gate. In E58, BF16 prefill followed by FP8 / INT4 decode gives 4.06% / 7.22% on the same 100 teacher decode positions across six 4K–16K prefixes. This is not a 256K quality result or a throughput measurement.
 - **Multi-request serving**: two-request dynamic DFlash with async SSE runs, but does not yet consistently beat the optimized single-request engine run sequentially ([PR #19](https://github.com/EdwinWang831/spark-infer-q/pull/19), in progress).
 - **Native TensorFold comparison**: 45.62 vs native 49.18 tok/s overall in E7; not rerun since.
+
+## Feedback-driven self-improvement (proposal)
+
+[PR #15](https://github.com/EdwinWang831/spark-infer-q/pull/15) proposes learning from usage feedback, evaluating candidate policies on temporally held-out data, and promoting or rolling back them based on measured net benefit. Its v2 plan has **no executed EV0–EV7 stages**. Frozen acceptance prediction, manual engineering gains and adaptive width decisions are not evidence of recursive self-improvement. See the [overview](docs/RESEARCH_OVERVIEW.md#feedback-and-rsi) for the connection to scientific agents and the proposed evaluation loop.
 
 ## Repository layout
 
@@ -73,6 +93,10 @@ The scripts below use only Python's standard library and **do not install packag
 ```bash
 git clone https://github.com/EdwinWang831/spark-infer-q.git
 cd spark-infer-q
+
+# Runs the released E17 predictor and budget rule on synthetic features, using only the standard library.
+# No model generation or throughput measurement; see the overview for the input and cost contract.
+python3 -m examples.adaptive_budget
 
 # Prints a JSON environment report without importing PyTorch or probing torch.cuda.
 python3 scripts/probe_environment.py --static-only
