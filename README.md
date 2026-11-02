@@ -2,161 +2,73 @@
 
 **English** | [简体中文](README.zh-CN.md)
 
-A research project on accelerating Qwen inference on a single NVIDIA DGX Spark (GB10 / SM121), inspired by [DeepInfer](https://github.com/deepseek-ai/DeepInfer).
+A research project on accelerating Qwen3.8-Flash-Next inference on a single NVIDIA DGX Spark (GB10 / SM121), borrowing scheduling and speculative verification from [DeepInfer](https://github.com/deepseek-ai/DeepInfer). As of 2026-10-28 it records experiments E0–E58 and runtime milestones K1–K4.
 
-## At a glance
+## Research question
 
-As of 2026-10-28, this branch includes E0–E58 research records (E26 cancelled at the user’s request), the validated K1–K3 native-scheduler runtime, single-request overhead improvements, a two-request target-only API, and an opt-in two-request long-context adaptive path. Experimental candidates retain their individual scope; defaults are unchanged.
+On a desktop machine whose CPU and GPU share 128 GB of memory, can a large MoE model run faster, with longer context and several requests at once, while its **output stays token-for-token identical to the original model**?
 
-See the [repository map](docs/REPOSITORY_STATUS.md) for the consolidated main branch and independent K4/service and self-evolution workstreams.
+- Model: Qwen3.8-Flash-Next, NVFP4-quantized, 48 layers (36 GDN linear-attention + 12 QSA sparse-attention), 512 routed experts per layer with top-10 routing, about 70 GiB of target weights.
+- Scope: a single Spark and greedy decoding. No Qwen retraining, no production service, and no speedup claim without a measurement. Experiments choose the inference foundation (DeepInfer, TensorFold, vLLM, SGLang); none is assumed up front.
 
-E33 preserves the original BF16 target decision through an INT8-assisted head screen: matched W8/linear/Graph decode 46.91→48.51 tok/s (+3.41%, root95% +2.39%…+4.12%) on eight reused engineering roots /64 timings. Tokens, committed logits/features/live state and budget traces match. This remains a research path; E30–E32 and E34–E35 candidates were not promoted.
-
-- **What it does**: Qwen3.8-Flash-Next (NVFP4, TensorFold kernels) runs speculative decoding with the DFlash2 drafter. DeepInfer's MTPVarlen decides how many drafts to verify at each step. Performance studies and the K2 dynamic-budget runtime use synchronous single-request greedy execution.
-- **Largest single decode gain**: a lightweight confidence predictor trained in E15/E16. On separately frozen new tasks it is about 10% faster than the default lagged budget (E16: 44.08 vs 40.21 tok/s). It is opt-in for now.
-- **Prompt processing**: eight-row prompt chunks make complete requests 1.67× faster, cutting summed time to first token from 19.69 s to 4.23 s; decode speed is essentially unchanged (E8).
-- **Two-request GPU batching**: the native DeepInfer scheduler can now send two requests through one target forward. In a controlled target-only test, aggregate decode throughput rose from 23.64 to 38.63 tok/s (+63.4%); this is an explicit synchronous API, without batched DFlash or HTTP validation. See the [report](docs/JOINT_TARGET_EXECUTION_REPORT.md).
-- **Large-chunk prefill (E36)**: a candidate preserving decode arithmetic passed exact logits, all draft features, live-state and eight-step handoff checks on seven prefixes. Prompt-only throughput rose from 110.87 to 889.22 tok/s (8.02×); this is a research adapter, with no full-request or HTTP result yet. See the [report](docs/E36_PREFILL_NUMERICS_REPORT.md).
-- **Prefill profiling (E37)**: routed experts account for 52.5–54.9% of cumulative GPU kernel time on two 512-token probes. GDN scratch reuse increased matched prompt wall by 1.02% and was rejected; E36 remains unchanged. See the [report](docs/E37_PREFILL_PROFILE_REPORT.md).
-- **Owned prefill module (E40)**: the engine owns prompt chunking, workspace lifetime and feature capture, with opt-in target-only/DFlash integration over TensorFold operators. Seven prefixes and 56 decode handoff steps pass exact checks. In matched eager-token-API tests, a controlled 512-token prompt/24-token reply takes 4.839→0.684 s with DFlash; this is against rows8, not the latest native engine or Graph/E33. [Report](docs/E40_PREFILL_EXECUTOR_REPORT.md) · [Usage](docs/E40_PREFILL_EXECUTOR_USAGE.md).
-- **Optimized prefill integration (E41)**: owned prefill passes Graph/E33/W8 handoff, partial commits, cancellation/reuse and loopback HTTP checks, with inputs up to 1,536 tokens. Matched token API requests take 5.464→1.202 s for code513 and 15.347→2.131 s for mixed1536 versus rows8; residual decode is 54.63→54.41 tok/s, with no new decode gain. [Report](docs/E41_PREFILL_GRAPH_REPORT.md).
-- **Wider owned prefill (E42)**: chunk1024 versus the optimized chunk512 path reduces summed long-input prefill wall by 5.80%; complete code1024/mixed1536 requests take 4.58%/1.79% less time. Exact logits/features/state, Graph handoff and lifecycle checks pass. Explicit 1024-row option, default512 retained; residual decode +0.15% is not a confirmed decode gain. [Report](docs/E42_WIDER_PREFILL_REPORT.md).
-- **Mia expert tile integration (E44)**: the MIT-attributed shared-input tile is available through an owned prefill backend. Against optimized chunk1024, long-prefill wall falls 6.97% in aggregate; code1024/mixed1536 TTFT falls 10.60%/3.76%, complete request wall 4.51%/1.47%. Full-model exactness and the final public API pass. Explicit option; no new decode gain or fresh Mia ranking. [Report](docs/E44_MIA_PREFILL_TILE_REPORT.md).
-- **Bounded draft history / 4K (E45)**: a per-request2040-row mirrored ring passes absolute-position cache checks and complete4K Graph/QSA/oracle/lifecycle tests. Raw draft-feature storage is fixed99.61MiB; matched aggregate decode60.001→59.972 tok/s shows no new speed gain. Dual long requests were target-only isolation checks. This is groundwork for per-request1M, with paged/quantized target KV and model-context quality still open. [Report](docs/E45_LONG_CONTEXT_REPORT.md) · [Usage](docs/E45_LONG_CONTEXT_USAGE.md).
-- **Direct 256K execution (E46)**: a single native request processes 262,080 input tokens in 230.4 s (1,137.5 input tok/s), then emits 24 tokens. All three synthetic retrieval keys, 16 long-prefix Graph buckets and target-only continuation checks pass. Peak CUDA allocated is 81.41 GiB; no double-request 256K or 1M claim. [Report](docs/E46_256K_REPORT.md).
-- **Two 256K states / compressed KV (E47)**: two distinct 262,080-token target-only requests share eager buffers, the head and prefill scratch. INT8 KV + QSA indices allocate 4.13 GiB/request; peak CUDA allocated is 82.63 GiB, both retrievals pass 3/3 and private Graph/state/scale checks pass. The original raw-logit precision gate failed, and native prefill priority causes a 225.8 s output gap. Research capacity result, default unchanged. [Report](docs/E47_KV_DUAL_REPORT.md) · [Usage](docs/E47_SHARED_GRAPH_USAGE.md).
-- **Two 256K prefill/decode fairness (E48)**: opt-in native polling interleaves decode with 1024-row prompt plans. In one contemporary matched pair, A’s longest output gap falls 225.42→0.842 s and completion 453.03→241.60 s; total pair wall stays near 453 s. Outputs/full committed state match, B TTFT +0.076%. Target-only token API; INT8 precision gate still failed, no default promotion. [Report](docs/E48_PREFILL_FAIRNESS_REPORT.md) · [Usage](docs/E48_PREFILL_FAIRNESS_USAGE.md).
-- **Long-output adaptive DFlash / four-slot capacity (E49)**: one BF16 261,120-token input /512-token output pair measures target-only16.36→adaptive30.81 decode tok/s (+88.37%), exact outputs/full committed state, complete wall −5.27%. The INT8 pair measures13.29→29.18 tok/s (+119.58%); its output differs from BF16 after326 tokens. Four full INT8 states plus common scratch project to90.14GiB before Graph/head/draft extras, exceeding the current88GiB limit; four long requests were not executed. [Report](docs/E49_LONG_DYNAMIC_REPORT.md).
-- **Owned long-context execution (E50)**: opt-in draft query islands and cached native output publication preserve full outputs/state/budget traces. One contemporary BF16256K/512-output-token native pair measures32.14→34.49 decode tok/s (+7.34%), full wall −1.58%. Eight-state/common-scratch forecasts are106.77GiB with FP8 and95.52GiB with INT4; neither is an eight-request run or INT4 quality result. At E50 the bounded-index route had only a CPU model; E51 below implements and validates the GPU option. [Report](docs/E50_OWN_OPTIMIZATION_REPORT.md).
-- **Bounded raw QSA index (E51)**: an explicit2048-row ring preserves full FP8/BF16 K/V and pooled history, saving0.744GiB tensor storage per request. GPU wrap/Graph/lifecycle checks and same-format256K adaptive outputs/live state match. Eight FP8 states/common scratch forecast100.81GiB before Graph/head/draft extras, still above the current88GiB limit. BF16 decode stays34.44→34.45 tok/s; shared-address AB/BA seeded repeats are38.494→38.490 tok/s (flat), so the first FP8 pair’s large gain is not confirmed. [Report](docs/E51_BOUNDED_INDEX_REPORT.md) · [Usage](docs/E51_BOUNDED_INDEX_USAGE.md).
-- **Decode expert pipeline screen (E52)**: the existing E43 pipeline is exact on96 decode boundaries and24 real complete-MoE cases, but fails the5% performance gate: warm cost+0.787%, cache-perturbed cost−0.007%, both bootstrap intervals cross zero. Rejected before full-model replacement; existing decode/defaults unchanged. [Report](docs/E52_DECODE_PIPELINE_REPORT.md).
-- **Long concurrency accounting (E53)**: two independent261120-token/512-output adaptive requests execute with exact isolated outputs/full committed state at81.14GiB peak allocation. The strict candidate gate fails: request A changes7 verification widths and144 predictor-rate rounds. Research adapter retained, no promotion. Complete eight-slot forecast103.67GiB exceeds the current88GiB cap by15.67GiB; no eight-way run. [Report](docs/E53_LONG_CONCURRENCY_REPORT.md) · [Research usage](docs/E53_LONG_CONCURRENCY_USAGE.md).
-- **Request-owned draft projections (E54)**: retain rolling context/K/V and counters across request switches, adding50MiB/request. Paired rebuild probes reproduce E53 drift; two populated261120-token/512-output adaptive requests now exactly match isolated outputs/full effective state/features/rates/widths/acceptance, and unchanged E53 isolated controls. Peak allocation81.24GiB; strict gate passes with defaults off. Eight-slot forecast104.06GiB remains above88GiB; no new throughput claim. [Report](docs/E54_REQUEST_DRAFT_CACHE_REPORT.md) · [Usage](docs/E54_REQUEST_DRAFT_CACHE_USAGE.md).
-- **Resident storage / INT4 KV (E55)**: unique-storage inventory confirms69.85GiB target weights; cleanup alone cannot fit eight FP8 states under88GiB. Explicit INT4 plus the index ring reduces per-state allocation3.51→2.10GiB;39 GPU differential cases and32 full-model Graph windows pass. The unchanged eight-task BF16-relative gate rejects INT4 (raw logit L2 11.23%, top1 54/54); no default/quality promotion. Single261120/512-output adaptive runs match same-format greedy outputs/full state; INT4/BF16 outputs differ. Eight-slot allocation forecast falls104.06→92.82GiB, still over88GiB. [Report](docs/E55_RESIDENCY_REPORT.md) · [Usage](docs/E55_INT4_KV_USAGE.md).
-- **INT4 precision attribution (E56)**:84 calibration teacher runs rank12 attention layers; frozen BF16 protection of1/2/4 layers is tested on four heldout4K/8K bilingual cases. Protecting4 lowers raw-logit L2 13.82%→10.07% but still fails3%, while worsening the already-over-limit capacity forecast; all four greedy outputs remain BF16-exact in this small screen. Separate K/V reconstruction and scale-search probes remain BF16-storage diagnostics; neither establishes a new kernel or quality win. Identity-hook full-logit parity and resident recovery audits pass. [Report](docs/E56_KV_PRECISION_REPORT.md).
-- **Asymmetric affine KV / deferred compression (E57)**: packed unrotated4-bit codecs pass CPU/GPU, analytic and changed-input codec Graph checks. Six causal reconstruction candidates fail the unchanged3% raw-logit gate; their eight-way layout forecasts also exceed88GiB. In separate real native INT4 decode, BF16 prefill before KV conversion lowers matched decode-only logit L2 9.58%→7.22% and KL by25.1% (100 teacher positions across4K/8K/16K inputs); post-conversion state storage equals native INT4. Both128-token tutorial outputs still differ from BF16, no quality/default or Graph/speculation promotion. [Report](docs/E57_AFFINE_DEFERRED_KV_REPORT.md).
-- **Native KV conversion / mixed decode (E58)**: native INT4/FP8 conversion matches prep in8 offset/shape cases and codec Graph replay; six real prefixes reproduce Torch INT4 full logits/outputs/state exactly. Only6 BF16 prefills feed36 private-clone decodes, with reusable BF16 teacher artifacts. Decode L2 is7.22% forINT4,5.20% for4 FP8 layers plusINT4,4.06% forall-FP8; respective top1 is98/97/100 of100, full greedy parity4/4/5 of6. Every compressed candidate still fails3%; forecasts92.82/96.57/104.07GiB exceed88GiB. No default or runtime-Graph promotion. [Report](docs/E58_NATIVE_CONVERSION_REPORT.md).
-- **Not there yet**: no overall lead over native TensorFold (45.62 vs 49.18 tok/s in E7; not rerun since E8). Multi-request DFlash, long-context HTTP serving, physical KV paging, independent compressed-KV quality calibration, contexts beyond 256K and random sampling remain open.
-
-## Key results
-
-| Experiment | Change | Result | Status |
-| --- | --- | --- | --- |
-| [Joint Target](docs/JOINT_TARGET_EXECUTION_REPORT.md) | Two requests share one target forward under the native scheduler | aggregate decode 23.64 → 38.63 tok/s (+63.4%), two bilingual pairs × four repetitions | Opt-in, synchronous target-only; no batched DFlash |
-| [E36](docs/E36_PREFILL_NUMERICS_REPORT.md) | Large-chunk prefill with matched projection/recurrence/MoE arithmetic | prompt-only 110.87 → 889.22 tok/s (8.02×); seven 4–512-token prefixes, four repetitions | Research adapter; exact gates pass, default integration pending |
-| [E37](docs/E37_PREFILL_PROFILE_REPORT.md) | Prefill profiling and single-variable GDN scratch reuse | reuse wall +1.02% across 48 matched prompt runs; experts dominate two separate GPU profiles | Reuse rejected; no new speed gain or default change |
-| [E38](docs/E38_PREFILL_EXPERT_REPORT.md) | Two groups share packed expert-weight loads and decode | geometry predicts 23.02% fewer weight-load stages, but complete-MoE event cost +3.93% | Rejected before full prompt A/B; exact component gates pass |
-| [E39](docs/E39_PREFILL_CTA_REPORT.md) | CTA-shared packed weights with one 16-row accumulator per warp | lower register usage, but complete-MoE event cost +3.11% | Rejected; no prompt/decode gain or default change |
-| [E41](docs/E41_PREFILL_GRAPH_REPORT.md) | Owned 512-row prefill on the optimized Graph/E33/W8 path | code513 total 5.464→1.202 s; mixed1536 15.347→2.131 s; residual decode −0.41% | Exactness/lifecycle pass; opt-in, ≤1,536-token inputs, no 4K or HTTP speed claim |
-| [E42](docs/E42_WIDER_PREFILL_REPORT.md) | Owned prefill chunk512→1024, same optimized decode and scheduler budget | long-prefill wall −5.80%; complete code1024/mixed1536 −4.58%/−1.79% | Explicit option; short inputs do not improve, no new decode claim |
-| [E43](docs/E43_PREFILL_PIPELINE_REPORT.md) | Single-tile expert MMA/FMA instruction scheduling | complete-MoE perturbed cost +0.143%; exact component gates pass | Rejected; earlier total-allocation audit retains an unresolved32MiB increase |
-| [E44](docs/E44_MIA_PREFILL_TILE_REPORT.md) | Adapt Mia shared-input plan64 / RT4S4 gate-up / RT2S3 down into owned prefill | eligible complete-MoE cost −26.62%; long-prefill wall −6.97%; code1024/mixed1536 TTFT −10.60%/−3.76% | Explicit backend; full-model/public-hook checks and its stable-baseline audit pass, default unchanged |
-| [E45](docs/E45_LONG_CONTEXT_REPORT.md) | Bounded draft history and absolute-position projections; native watermark accounting repair | Exact4K QSA/Graph and complete requests pass; raw feature ring99.61MiB/request; decode60.001→59.972 tok/s | Explicit option; no new speed gain, paged/quantized KV or1M support |
-| [E46](docs/E46_256K_REPORT.md) | Direct 256K native request; compact Graph warmup seed | 262,080 input tokens / 230.4 s; 24 output tokens, retrieval 3/3, exact Graph/state gates; peak allocated 81.41 GiB | Single-request capacity/correctness; BF16 KV, no concurrent 256K or general quality claim |
-| [E47](docs/E47_KV_DUAL_REPORT.md) | INT8/FP8 KV options; two private Graph slots share serial scratch | Two 262,080-token requests, 4.13 GiB KV/index each, 82.63 GiB peak, retrieval 3/3 each | Capacity/isolation passes; original precision gate fails, 225.8 s scheduling gap; target-only |
-| [E48](docs/E48_PREFILL_FAIRNESS_REPORT.md) | Alternate native prefill/decode opportunities for two target-only slots | One matched two256K pair: A max gap 225.42→0.842 s; completion 453.03→241.60 s; total 453.24→452.27 s; full state exact | Opt-in latency improvement; INT8 precision gate still failed, no HTTP/batch or general TPS claim |
-| [E49](docs/E49_LONG_DYNAMIC_REPORT.md) | Long-output target-only vs adaptive DFlash, no fixed arm; four-state allocation check | BF16 single-request decode16.36→30.81 tok/s,512 output tokens, full state exact; total wall −5.27% | One pair; four256K capacity stop90.14GiB >88GiB, INT8 quality not promoted |
-| [E50](docs/E50_OWN_OPTIMIZATION_REPORT.md) | Long draft query Graph islands and bounded native publication reads | Native BF16 single256K decode32.14→34.49 tok/s (+7.34%); full outputs/state/budgets exact; wall −1.58% | Opt-in, one full pair; eight FP8 states106.77GiB forecast, bounded raw-index proposal remains CPU-only |
-| [E6](docs/E6_DRAFT_HEAD_REPORT.md) | Full-vocabulary Q4 draft output head | decode 41.70 → 45.54 tok/s (+9.23%) | Default |
-| [E8](docs/E8_INTEGRATION_REPORT.md) | Eight-row prompt chunks using the decode arithmetic | complete requests 1.67× faster; decode −1.14% | Default |
-| [E13](docs/E13_DRAFT_CACHE_CONFIDENCE_REPORT.md) | Incremental cache for DFlash context projections | +6.27% on 1K–2K inputs; −0.31% on short inputs | Opt-in |
-| [E15](docs/E15_CONFIDENCE_TRAINING_REPORT.md) | Trained seven-depth confidence predictor | +10.00% over the lagged budget and +10.88% over fixed seven drafts, on 6 new tasks | Opt-in |
-| [E16](docs/E16_BILINGUAL_EXPANSION_REPORT.md) | Retrained on 600 English/Chinese prompts | +9.61% over the lagged budget and +3.18% over the E15 predictor (2 tasks slower), on 20 new tasks; English +7.60%, Chinese +10.75% | Opt-in |
-| [E17](docs/E17_COMPLETED_TRAINING_REPORT.md) | Targeted bilingual predictor retraining | 36.83 tok/s; +11.02% vs fixed budget, only +0.09% vs E16 (interval crosses zero), on 20 roots | No confirmed gain over E16 |
-| [E19](docs/E19_MLP_CAPACITY_REPORT.md) | Same-data 11,157-parameter MLP | Offline efficiency −0.55% vs linear; promotion gate failed | E19 candidate not promoted |
-| [E21](docs/E21_ADAPTIVE_COLLECTOR_REPORT.md) | Adaptive training-label collector | Collection computation 21.13% less time on six roots; known Chinese case 2.15% slower | Validated collection entry, not serving TPS |
-| [E22](docs/E22_PREDICTOR_DIAGNOSIS_REPORT.md) | Optional NumPy scalar MLP runtime | Head-only 0.3353→0.0118 ms (28.38×); diagnostic replay still −0.06% vs linear | CPU prototype, no new decode TPS |
-| [E24](docs/E24_COVERAGE_EXPANSION_REPORT.md) | Retrain on 504 new QA/code/math/dialogue/long-input roots | Offline +0.252% vs frozen MLP, +0.212% vs linear; positive intervals | Offline gate passed |
-| [E25](docs/E25_ONLINE_COMPARISON_REPORT.md) | Actual decode, 12 roots / 108 paired runs | New MLP 47.15, frozen MLP 47.28, linear 47.49 tok/s; both relative intervals cross zero | No confirmed online gain |
-| [E27](docs/E27_LINEAR_COST_REPORT.md) | Matched linear weights: NumPy execution and causal live cost control | Original 43.39, NumPy 43.65, live 43.42 tok/s; NumPy +0.60%, repetition-sensitive interval crosses zero | Default unchanged; MLP/hybrid deferred |
-| [E28](docs/DRAFT_BACKBONE_W8_REPORT.md) | Five draft MLP blocks, INT8 weights / BF16 activations | Draft-stage time −6.89%; fixed-budget decode 42.04→42.29 tok/s (+0.61%, interval −0.52%…+1.66%) | Correctness passes; no confirmed decode gain |
-| [E29](docs/E29_TARGET_VERIFICATION_REPORT.md) | Target CUDA Graph with unchanged DFlash feature taps | Matched linear budget: 47.05→47.65 tok/s (+1.28%); Graph＋W8 48.01 (+2.04%); both intervals positive | Controlled gain on 8 reused roots; default unchanged |
-| [E30](docs/E30_TARGET_PROFILE_REPORT.md) | Profile frozen W8/linear/Graph; exact BF16 head weight layout | Target kernel time: experts41.3%, quantized projections26.9%, BF1623.4%; layout head-only+0.8%, below gate | Profile completed; candidate rejected, no new decode TPS |
-| [E31](docs/E31_EXPERT_SCALE_REPORT.md) | Packed FP8 expert-scale conversion, unchanged precision | Conversion instructions halved; expert pair +0.23% warm / −0.18% cache-perturbed, both intervals cross zero | Exact checks pass; candidate rejected, no decode promotion |
-| [E32](docs/E32_COMPACT_STAGING_REPORT.md) | Compact activation staging in MXFP8 projections | Shared memory/CTA −16%…−31%; real projection replay −1.06% warm / −0.92% cache-perturbed | 224 preflight +96 real checks pass; candidate rejected |
-| [E33](docs/E33_EXACT_HEAD_SCREEN_REPORT.md) | INT8-assisted head screening + directed FP64 bounds + original BF16 subset | Complete head time −36.24%; actual decode 46.91→48.51 tok/s (+3.41%, positive interval) | 8 roots /64 runs, exact checks pass; research only, default unchanged |
-| [E34](docs/E34_DEVICE_SCREEN_REPORT.md) | Stable GPU candidate compaction and fixed-capacity exact-head Graph | Complete head time −3.78% versus E33 on32 real windows; exact checks pass after captured-input lifetime repair | Below prespecified5% component gate; no full decode run or promotion |
-| [E35](docs/E35_MOE_OVERLAP_REPORT.md) | Fork/join shared and routed MoE branches on two streams | Complete MoE time −3.04% warm, −0.50% cache-perturbed (interval crosses zero); traces show almost no heavy-kernel overlap | 96 functional +24 real checks pass; rejected before full decode |
-| [E11](docs/E11_PROJECTION_REPORT.md) | MXFP8 split-K projections | decode +0.62%, complete requests −0.64% | Opt-in, default unchanged |
-| [E10](docs/E10_TARGET_KERNEL_REPORT.md) | Expert-kernel warps and staging depth | +0.08% on holdout | Not adopted |
-| [E12](docs/E12_EXPERT_VERIFICATION_REPORT.md) | Verification cost from the routed-expert union | offline cost error −26.17%, but the union is only known after verifying; features available online gave −2.42% | Not adopted |
-| [E14](docs/E14_CONFIDENCE_BUDGET_REPORT.md) | Budget from binned draft margins | +0.065%, interval crosses zero | Not adopted |
-
-**How to read these numbers**
-
-- Each experiment uses its own task set, so tok/s values in different rows are not comparable, and gains must not be multiplied.
-- All results use a single Spark and greedy decoding. Joint Target measures aggregate throughput for two requests; E47/E48 examine two target-only 256K requests. Most earlier tasks are synthetic prompts with context up to about 2K tokens.
-- Generation experiments check output tokens, committed logits and GDN/QSA state against serial execution. CPU-only and collection studies describe their separate validation scope in the linked reports.
-- Feature extraction, CPU transfers and prediction are included in the timings.
-
-The remaining experiments laid groundwork or diagnosed:
-
-| Experiment | Scope | Finding |
-| --- | --- | --- |
-| E0–E2 | Environment audit, DeepInfer build, SM121 kernel probes, model loading and forward pass | Full target weights load and run; native DeepGEMM BF16 rejects SM121 |
-| [E3](docs/E3_WIDE_BLOCK_REPORT.md) | DFlash2 with DeepInfer's native dynamic budget, eight rows / up to seven drafts | State checks pass; with a depth-only prior the dynamic budget ties a suitable fixed length (42.21 vs 42.20 tok/s) |
-| [E4](docs/E4_MATCHED_REPORT.md) | Short-context same-machine comparison | Dynamic +2.12% over fixed six drafts; no lead over native TensorFold MTP |
-| [E5](docs/E5_ENGINE_BRIDGE_REPORT.md) | DeepInfer C++ Scheduler driving Qwen target-only requests | Seven GPU scenario groups pass; GPU requests still run one at a time |
-| [K1](docs/K1_RUNTIME_REPORT.md) | Reusable target-only runtime, output events and cancellation on E5 | Seven real GPU groups pass: 233 full-logit rows and 91 live-state checks; speculative decoding remains separate |
-| [K2](docs/K2_DFLASH_SCHEDULER_REPORT.md) | Q4 DFlash2 and native dynamic budgets on the Scheduler | Current E17 post-draft budget, with native lagged/E16 controls; synchronous execution |
-| [K3](docs/K3_GRAPH_RUNTIME_REPORT.md) | Target CUDA Graph execution for dynamic decoding | Explicit execution option, static workspace and eager fallback; host fences remain |
-| [K3 + E33](docs/K3_E33_RUNTIME_REPORT.md) | Full screened-head/W8/NumPy/Graph profile in native runtime | 47.459 vs contemporaneous E33 48.378 tok/s; 1.90% runtime cost, explicit profile |
-| [K4](docs/K4_RUNTIME_OVERHEAD.md) | Reduce single-slot polling, token-history copies and CPU metadata allocations | 47.282 → 47.994 tok/s (+1.51%); contemporaneous E33 gap 2.36% → 0.89% |
-| [E7](docs/E7_TENSORFOLD_MATCH_REPORT.md) | Warmed comparison with native TensorFold | 45.62 vs 49.18 tok/s overall; 45.57 vs 43.58 on eight natural-completion tasks |
-| [E9](docs/E9_DECODE_PROFILE_REPORT.md) | Nsight profile of decode | Target verification 83.81%, drafting 14.39% |
-
-[E20 fixed-width collection](docs/E20_FAST_COLLECTOR_REPORT.md) remains a research control; the adaptive [collector usage](docs/FAST_COLLECTOR_USAGE.md) is the recommended validated entry. [E18 short drafting](docs/E18_PREDRAFT_COMPUTE_REPORT.md) reduced draft-only time by 0.74% and did not establish an online win.
-
-**E23–E25 (2026-10-23 UTC):** the fixed-data action-regret objective [failed its fresh gate](docs/E23_OBJECTIVE_COMPARISON_REPORT.md). The subsequent [504-prompt coverage retraining](docs/E24_COVERAGE_EXPANSION_REPORT.md) finished and passed its 72-root offline gate. Its [actual decode comparison](docs/E25_ONLINE_COMPARISON_REPORT.md) found −0.263% vs frozen MLP and −0.717% vs linear, with both intervals crossing zero. No confirmed online improvement or policy replacement; offline estimates remain distinct from measured decode.
-
-**E26–E27 (2026-10-23 UTC):** the [hybrid study](docs/E26_RESIDUAL_HYBRID_PLAN.md) was cancelled at the user’s request after 18/108 timings, with no performance conclusion. The [linear online comparison](docs/E27_LINEAR_COST_REPORT.md) completed 12 new roots / 108 timings: live cost control +0.07% vs original and −0.53% vs frozen-cost NumPy; NumPy-only +0.60%, with a repetition-sensitive interval crossing zero. All correctness checks pass; resident weights were retained and the default is unchanged.
-
-**E28 (2026-10-23 UTC):** [draft MLP W8A16](docs/DRAFT_BACKBONE_W8_REPORT.md) completed 8 reused engineering roots / 64 timings, with exact target tokens, committed logits and live state checks. Observed draft acceptance is 73.74%→73.58%; verification rounds increase by 16. BF16 controls remain resident, so packed-weight size is not a measured net memory saving. Fixed budget only; dynamic policy remains untested with this quantization.
-
-**E29 (2026-10-23 UTC):** [target verification](docs/E29_TARGET_VERIFICATION_REPORT.md) completed 32 calibration prefixes / 1,536 width timings, 96 three-arm decode timings and 32 contemporaneous budget-control timings. The existing linear budget reduces computed verification rows 36.72%, verification time 12.70%, and improves decode 42.32→47.31 tok/s (+11.78%) versus fixed seven drafts; this revalidates the existing policy, not a new predictor gain. Pure Graph +1.28% is the new execution result with exactly matched decision/commit traces. The W8/cost change adds +0.75% over Graph alone, but that interval crosses zero. Tokens/logits/features/live state pass; weights stayed resident.
-
-**E30 (2026-10-23 UTC):** [history audit and current-path profile](docs/E30_TARGET_PROFILE_REPORT.md) confirms E10/E11 already tried expert launch/staging and projection tuning. Four reused calibration roots /32 early steps identify actual target GPU kernels; profiler overhead is4.85%–8.67%. A new NK→KN BF16 output-head layout preserves exact logits on32 real activations but saves only0.8% head time while adding1.27GB, so it stops before full decode. Target/draft stay resident; no retraining or precision change.
-
-**E31 (2026-10-23 UTC):** [expert-scale pair conversion](docs/E31_EXPERT_SCALE_REPORT.md) passes all 65,536 scale pairs, 24 real routed expert cases and eight diagnostic Graph/logit/feature/state comparisons. CUDA already provides this packed operation; it is an implementation optimization attempt, not a new algorithm. Static conversion instructions halve, but neither timing regime shows reliable gain, so the candidate stops before full decode. Weights remain resident and the default path is unchanged.
-
-**E32 (2026-10-23 UTC):** [compact staging](docs/E32_COMPACT_STAGING_REPORT.md) removes zero-filled unused rows while retaining exact MMA/accumulation. All 224 arithmetic/guard cases and 96 real inputs pass, plus 8 diagnostic logit/feature/state checks. A first collector missed class-method calls and failed its count assertion; preserved evidence and a private-proxy fix complete the screen. Both timing intervals are negative, so no full-decode promotion. Weights remain resident; default unchanged.
-
-**E33 (2026-10-23 UTC):** [head-screening report](docs/E33_EXACT_HEAD_SCREEN_REPORT.md) preserves the first failed cost gate, then fuses the same conservative interval computation. All 32 calibration windows retain the original winner; complete head time falls 36.24%. Separate full-generation comparison on eight reused engineering roots /64 timings gives +3.41% decode (root95% +2.39%…+4.12%), all four repetitions positive. Both arms verify 12,748 rows with identical acceptance/commit trajectories; screened calls have no natural fallback in 2,596 timed rounds. Original BF16 weights remain authoritative; helper payload adds 641 MB while enabled. No default/service switch or new native-TensorFold ranking claim.
-
-## How it works
+## Method
 
 Each decode step has three parts:
 
-1. **Draft**: DFlash2 reads the target's committed features and proposes up to seven draft tokens at once. The output head is Q4; the default draft backbone and selector stay BF16. E28 separately tests INT8 MLP weights with BF16 activations.
-2. **Budget**: decide how many rows (1–8) the target verifies this step. The K2 server defaults to the existing E17 predictor with current post-draft MTPVarlen budgeting. Native lagged/E16 dynamic budgets remain selectable.
-3. **Verify and commit**: the target verifies those rows at once, accepts the longest prefix that matches greedy decoding, and writes only that prefix into the GDN/QSA state.
+1. **Draft**: the DFlash2 drafter reads the target's committed features and proposes up to seven tokens at once.
+2. **Budget**: from predicted acceptance and measured cost, decide how many rows the target verifies this step (DeepInfer's MTPVarlen).
+3. **Verify and commit**: the target verifies those rows in one forward pass, accepts the longest prefix that matches greedy decoding, and writes only that prefix into the GDN/QSA state.
 
-| Part | Source | Code in this repo |
+Every experiment follows the same rules:
+
+- **Correctness contract**: each candidate is checked against serial token-by-token execution on output tokens, committed logits and the full state; any mismatch is a failure.
+- **Plans frozen in advance**: tasks, variables and pass gates go into `*_PLAN.md` before the run; results go into `*_REPORT.md`.
+- **Negative results are kept**: a candidate that misses its gate is recorded as not adopted; thresholds are not loosened afterwards.
+- **All overheads are timed**: feature extraction, CPU transfers and prediction count toward the measured time.
+
+## Key results
+
+| Area | Result | Experiments |
 | --- | --- | --- |
-| Target execution, CUDA kernels, GDN/QSA commit | TensorFold; optional Mia/TensorFold prefill expert tile with our host/backend integration | `scripts/e3_target.py`, `spark_infer_q/csf_loader.py`, `spark_infer_q/prefill_experts.py` |
-| Drafter | DFlash2 | `spark_infer_q/dflash2_block.py`, `draft_head.py` (Q4 head), `draft_context.py` (context cache) |
-| Verification budget | DeepInfer MTPVarlen | `spark_infer_q/verification_budget.py`, `confidence_head.py`, `confidence_features.py` |
-| Greedy verification contract | this repo | `spark_infer_q/speculative.py` |
-| Prompt chunking | this repo | `spark_infer_q/prompt.py` |
-| Scheduler bridge (E5) | DeepInfer C++ Scheduler | `spark_infer_q/deepinfer_bridge.py`, `executor.py` |
-| Joint target runtime | This repo's execution/ownership adapter over DeepInfer scheduling and TensorFold kernels | `spark_infer_q/kaifra_joint_target.py`, `kaifra_joint_runtime.py` |
+| Decode: verification budget | A trained lightweight acceptance predictor is about 10% faster than the lagged budget (44.08 vs 40.21 tok/s on 20 new tasks) | [E15](docs/E15_CONFIDENCE_TRAINING_REPORT.md), [E16](docs/E16_BILINGUAL_EXPANSION_REPORT.md) |
+| Decode: drafting | Full-vocabulary Q4 draft output head, +9.23% | [E6](docs/E6_DRAFT_HEAD_REPORT.md) |
+| Decode: target execution | Exact screened output head +3.41% (46.91 → 48.51 tok/s); CUDA Graph +1.28% | [E33](docs/E33_EXACT_HEAD_SCREEN_REPORT.md), [E29](docs/E29_TARGET_VERIFICATION_REPORT.md) |
+| Prefill | Eight-row chunks make complete requests 1.67× faster; switching to the owned prefill with 512-row chunks then cuts a 1,536-token request from 15.35 s to 2.13 s | [E8](docs/E8_INTEGRATION_REPORT.md), [E41](docs/E41_PREFILL_GRAPH_REPORT.md) |
+| Long context | A single 256K request (262,080 tokens) runs with 3/3 retrieval; with a 256K input, dynamic DFlash makes decode 88% faster than target-only (16.36 → 30.81 tok/s) | [E46](docs/E46_256K_REPORT.md), [E49](docs/E49_LONG_DYNAMIC_REPORT.md) |
+| Multiple requests | Two requests share one target forward, +63.4% aggregate decode throughput; two 256K requests run together with outputs and state identical to running each alone | [Joint target](docs/JOINT_TARGET_EXECUTION_REPORT.md), [E53](docs/E53_LONG_CONCURRENCY_REPORT.md), [E54](docs/E54_REQUEST_DRAFT_CACHE_REPORT.md) |
 
-The complete executor is [`scripts/e8_ours.py`](scripts/e8_ours.py), which serves SSE. It needs a prepared research environment, external dependencies and checkpoints; see [usage](docs/PROMPT_USAGE.md). A [resident worker](docs/RESIDENT_RESEARCH_WORKER.md) keeps the weights loaded between experiments.
+Each number holds only for its report's tasks and timing boundaries; rows are not comparable and gains must not be multiplied. Most tasks are synthetic prompts. **One-line conclusions for every experiment are in [docs/README.md](docs/README.md).**
 
-The [K1 runtime](docs/K1_RUNTIME_USAGE.md) exposes a native-scheduler target-only API and loopback SSE entry point. [K2](docs/K2_DFLASH_SCHEDULER_USAGE.md) adds DFlash2 and native dynamic budgets to that runtime. K2 admits one request with dynamic verification budgets, and HTTP admits one generation at a time. The separate [joint target API](docs/JOINT_TARGET_EXECUTION_REPORT.md#api-与复现) has passed full-model two-request GPU execution, state, cancellation/reuse and natural-EOS checks. It does not change the default service path.
+## What did not work (also a result)
 
-## Next steps
+- **Kernel-by-kernel tuning gives little.** Target verification is 84% of decode time (E9), and expert kernels are its largest part (E30). Yet 11 candidates — warp and prefetch tuning, staging, weight reuse, dual streams, instruction pipelining (E10, E30–E32, E34, E35, E37–E39, E43, E52) — were not adopted: gains of a few percent at most, or slowdowns.
+- **Bigger predictors did not speed up decode.** After retraining, an MLP was slightly better than the linear model offline (+0.21%), but not in actual decode (E19, E24, E25).
+- **A better cost model alone helps little.** The routed-expert union explains verification cost, but it is only known after verifying (E12).
 
-- Keep the E29 Graph path as an opt-in research candidate. Prioritize target data movement/fusion and real shared GPU compute; isolated W8 benefit beyond Graph is still unconfirmed.
-- Rerun the native TensorFold comparison after E8.
-- Keep MLP/hybrid deferred. Diagnose whether linear budget changes reduce actual verification work before further training; retain independent tests and actual decode gates.
-- Longer context: E50 improves the single256K dynamic chain and accounts for eight full states. Prioritize a bounded raw-index staging proof while retaining FP8 KV, full memory-pool accounting, and multi-request draft/commit isolation; INT4 needs its own quality gate. Per-request1M still needs position/quality evidence beyond the checkpoint's262K configuration.
-- Extend the validated joint target path to multi-request dynamic DFlash, then asynchronous serving and broader workloads. The overall multi-request design is in the [global scheduler RFC](docs/GLOBAL_COST_AWARE_SCHEDULER_RFC.md) (Chinese; design only).
-- The [proposal status table](docs/EXPERIMENTS.md#proposals-without-results-yet) distinguishes unrun or partly evaluated ideas from the later completed experiments.
+The gains that held came from deciding what to compute (verification budget, drafting, head screening) and from restructuring prefill.
+
+## Current blockers
+
+- **Memory**: the target is eight concurrent 256K requests under the 88 GiB CUDA allocation cap. Even with INT4 KV the forecast is 92.82 GiB (E55).
+- **KV compression accuracy**: FP8 / INT4 KV give 8.42% / 11.23% relative logit error, above the pre-registered 3% gate; protecting sensitive layers, affine codecs and deferred compression did not fix it (E55–E58).
+- **Multi-request serving**: two-request dynamic DFlash with async SSE runs, but does not yet consistently beat the optimized single-request engine run sequentially ([PR #19](https://github.com/EdwinWang831/spark-infer-q/pull/19), in progress).
+- **Native TensorFold comparison**: 45.62 vs native 49.18 tok/s overall in E7; not rerun since.
+
+## Repository layout
+
+| Directory | Contents |
+| --- | --- |
+| [`spark_infer_q/`](spark_infer_q) | Reusable library: greedy verification contract, budgets and predictors, draft caches, prefill, long-context state, runtime (`kaifra_*`; Kaifra is the engine's working name) |
+| [`scripts/`](scripts) | Run, collection and export scripts for each experiment, named by experiment number |
+| [`tests/`](tests) | CPU unit tests; no GPU needed |
+| [`docs/`](docs) | Plan and report for every experiment, with a [themed index](docs/README.md) |
+| [`results/`](results) | Sanitized data for every experiment, re-checkable by its export script |
+
+`main` collects finished work; active branches and PRs are listed in the [repository map](docs/REPOSITORY_STATUS.md).
 
 ## Getting started (no GPU, no weights downloaded)
 
-Python 3.12 is the target for eventual DeepInfer builds. The scripts below use only Python's standard library and **do not install packages or modify GPU settings**.
+The scripts below use only Python's standard library and **do not install packages or modify GPU settings**. The research environment targets Python 3.12.
 
 ```bash
 git clone https://github.com/EdwinWang831/spark-infer-q.git
@@ -168,38 +80,23 @@ python3 scripts/probe_environment.py --static-only
 # Point to an existing local Hugging Face config.json; do not download checkpoints.
 python3 scripts/inspect_hf_config.py /path/to/model/config.json
 
-# Unit tests; no GPU needed. A few tests skip without PyTorch.
+# Unit tests; no GPU needed. Some tests skip without PyTorch or NumPy.
 python3 -m unittest discover -s tests -v
 ```
 
+Running the full model on a Spark needs a prepared research environment, external TensorFold source and checkpoints; see the [prompt-chunk executor](docs/PROMPT_USAGE.md), the [K2 runtime](docs/K2_DFLASH_SCHEDULER_USAGE.md) and the [resident worker](docs/RESIDENT_RESEARCH_WORKER.md).
+
 **Privacy:** environment reports are not committed by default. Inspect reports before sharing; never commit API keys, tokens, model weights, private paths or personal identifiers.
-
-## Where to find things
-
-| Looking for | Go to |
-| --- | --- |
-| Plans, pass criteria and conclusions for every experiment | [docs/EXPERIMENTS.md](docs/EXPERIMENTS.md) |
-| A single experiment | `docs/E*_PLAN.md` (frozen plan), `docs/E*_REPORT.md` (report), `results/eN/` (sanitized data) |
-| Usage | [prompt-chunk executor](docs/PROMPT_USAGE.md), [Q4 draft head](docs/DRAFT_HEAD_USAGE.md), [draft context cache](docs/DRAFT_CONTEXT_CACHE_USAGE.md), [projection route](docs/E11_PROJECTION_USAGE.md), [resident worker](docs/RESIDENT_RESEARCH_WORKER.md) |
-| Architecture and porting | [architecture candidates](docs/ARCHITECTURE.md), [adapter interfaces](docs/ADAPTER_INTERFACES.md), [initial source audit](docs/PORTING_MATRIX.md) |
-| Design proposals | [Global scheduler](docs/GLOBAL_COST_AWARE_SCHEDULER_RFC.md), [Kaifra vision](docs/KAIFRA_VISION_RFC.md), [implementation roadmap](docs/KAIFRA_IMPLEMENTATION_ROADMAP.md), [decode frontier](docs/KAIFRA_DECODE_FRONTIER_RFC.md) and [validation matrix](docs/KAIFRA_DECODE_VALIDATION_MATRIX.md). Proposals, not implemented serving capabilities |
-
-## Research question and scope
-
-Can we bring DeepInfer's engine, scheduling, speculative-verification and memory-management strengths to **a single DGX Spark**, while adapting the model executor and GPU kernels to Qwen3.8-Flash-Next? Or does a vLLM / SGLang-based implementation reach verified speed with less engineering effort? **Experiments choose the inference foundation**; none is assumed up front.
-
-- **In scope:** verified SM121 compatibility, Qwen model adapters, GPU-side speculative verification, accurate GDN/QSA state rollback/commit, latency/throughput profiling.
-- **Out of scope (initially):** retraining Qwen, building a production web service, assuming DeepInfer already supports GB10, claims of speedups without measurements.
-- **Baselines:** compare against TensorFold, vLLM and SGLang on the same Spark, input set, sampling settings and checkpoint format. Published results provide context only; matched performance and runtime availability must be verified.
 
 ## Upstreams and attribution
 
-- [DeepSeek DeepInfer](https://github.com/deepseek-ai/DeepInfer) (Apache-2.0)
-- [TensorFold](https://github.com/ashhart/TensorFold) (model execution and CUDA kernels; retain the applicable upstream licenses and notices)
-- [Qwen3.8-Flash-Next-DFlash2](https://huggingface.co/incoai/Qwen3.8-Flash-Next-DFlash2) (externally supplied draft checkpoint and reference implementation)
-- [vLLM](https://github.com/vllm-project/vllm)
-- [SGLang](https://github.com/sgl-project/sglang)
+- [DeepSeek DeepInfer](https://github.com/deepseek-ai/DeepInfer) (Apache-2.0): C++ Scheduler and MTPVarlen verification budget
+- [TensorFold](https://github.com/ashhart/TensorFold): model execution and CUDA kernels; retain the applicable upstream licenses and notices
+- [MiaAI-Lab's TensorFold recipe](https://github.com/MiaAI-Lab/Qwen3.8-Flash-Next-Single-DGX-Spark-TensorFold) (MIT): E43/E44 adapt its prefill expert tiles; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)
+- [Qwen3.8-Flash-Next-DFlash2](https://huggingface.co/incoai/Qwen3.8-Flash-Next-DFlash2): externally supplied draft checkpoint and reference implementation
+- [OASST1](https://huggingface.co/datasets/OpenAssistant/oasst1) (Apache-2.0): prompt source for E17 predictor retraining; see the [attribution](docs/data/OASST1_ATTRIBUTION.md)
+- [vLLM](https://github.com/vllm-project/vllm), [SGLang](https://github.com/sgl-project/sglang): candidate baselines, not yet measured
 
-**Do not vendor upstream source or weights without reviewing the respective licenses and notices.** This repo contains planning notes, diagnostic/build/test harnesses, a bounded experimental request executor, adapters to externally supplied TensorFold blocks and the full target, a bounded eager DFlash2 bridge, and sanitized evidence. It includes an MIT-attributed adaptation of Mia/TensorFold prefill expert tiles; see [third-party notices](THIRD_PARTY_NOTICES.md). It does not include a complete Qwen model implementation or model weights; loading and remaining target operators use externally supplied TensorFold source and checkpoints.
+**Do not vendor upstream source or weights without reviewing the respective licenses and notices.** This repo contains planning notes, diagnostic/build/test harnesses, an experimental request executor and runtime, adapters to externally supplied TensorFold blocks and the full target, a DFlash2 bridge, and sanitized evidence. It does not include a complete Qwen model implementation or model weights; loading and the remaining target operators use externally supplied TensorFold source and checkpoints.
 
 License: [Apache 2.0](LICENSE).
