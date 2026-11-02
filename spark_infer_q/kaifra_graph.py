@@ -91,13 +91,18 @@ class GraphTarget:
             try:
                 # Real bounded eager work initializes a valid one-token context.
                 self.eager.step(state,[0],capture=True)
-                seed=state.clone()
+                # At256K a full cache clone adds about7GiB before capture.
+                # Every warmup writes only rows>=1, so the committed first KV
+                # row stays intact and a recurrent/PLE snapshot is sufficient.
+                compact_seed=self.capacity>8192
+                seed=state.snapshot() if compact_seed else state.clone()
                 torch.cuda.synchronize()
                 start=time.perf_counter()
                 self.pool=torch.cuda.graph_pool_handle()
                 for parity in (0,1):
                     for rows in self.widths:
-                        state.copy_from(seed)
+                        if compact_seed:state.restore(seed)
+                        else:state.copy_from(seed)
                         if state.cur[0]!=parity:
                             state.rec[parity].copy_(state.rec[state.cur[0]])
                             state.cur=[parity]*len(state.cur)

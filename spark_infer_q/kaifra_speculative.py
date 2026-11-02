@@ -36,6 +36,9 @@ class DraftState:
     next_width: int = 1
     current_drafts: tuple = (0,)*7
     cumulative: tuple = ()
+    context_start: int = 0
+    feature_window: object = None
+    projection_cache: object = None
 
 
 @dataclass(frozen=True)
@@ -87,13 +90,38 @@ class PostDraftBudget:
 
 class DFlashProvider:
     """Borrow loaded Q4 weights; optional existing F0/F1 head, no fitting."""
-    def __init__(self, worker, *, model=None, feature_group='f1', budget=None):
+    def __init__(self, worker, *, model=None, feature_group='f1', budget=None,
+                 history_window_rows=None, max_request_context=None,request_projection_cache=False):
         self.worker, self.model, self.feature_group = worker, model, feature_group
-        self.max_context = worker.max_context
+        self.max_context = worker.max_context if max_request_context is None else max_request_context
+        if type(self.max_context) is not int or self.max_context<8:
+            raise ValueError('invalid request context bound')
+        if history_window_rows is not None:
+            if (type(history_window_rows) is not int or history_window_rows<1 or
+                    history_window_rows+worker.block_size>worker.max_context or
+                    not callable(getattr(worker,'set_window',None))):
+                raise ValueError('bounded history requires a positioned rolling drafter')
+        elif self.max_context>worker.max_context:
+            raise ValueError('long requests require bounded positioned draft history')
+        self.history_window_rows=history_window_rows
+        if type(request_projection_cache) is not bool or (request_projection_cache and
+                (history_window_rows is None or not all(hasattr(worker,name) for name in
+                    ('_context_rows','_keys','_values','window_start')))):
+            raise ValueError('request projection cache requires a bounded rolling drafter')
+        self.request_projection_cache=request_projection_cache
         self.budget = budget
         self.deferred_draft = False
 
     def propose(self, handle, state, anchor, remaining):
+        if not self.request_projection_cache or (self.budget is not None and remaining==1):
+            return self._propose(handle,state,anchor,remaining)
+        from .draft_projection_cache import DraftProjectionCache
+        if state.projection_cache is None:
+            state.projection_cache=DraftProjectionCache(self.worker,handle)
+        with state.projection_cache.bind(self.worker,handle):
+            return self._propose(handle,state,anchor,remaining)
+
+    def _propose(self, handle, state, anchor, remaining):
         if self.budget is not None and remaining == 1:
             state.next_width = 1
             state.cumulative = ()
@@ -103,35 +131,46 @@ class DFlashProvider:
             # Its projection cache has one owner. On interleaving, reset the
             # cache before rebuilding from this request's committed context.
             worker.begin(handle)
+        start=getattr(state,'context_start',0)
+        if callable(getattr(worker,'set_window',None)):
+            worker.set_window(start)
+        context_rows=start+len(state.context)
         tokens, info = worker.propose(state.context, anchor)
         rates = None
         if self.model is not None:
             from .confidence_features import feature_vector
-            features = feature_vector(info['signals'], len(state.context),
+            features = feature_vector(info['signals'], context_rows,
                 state.output_tokens, remaining, False, self.feature_group)
             cumulative = self.model.predict(features)
             state.cumulative = tuple(cumulative)
             rates = conditional_rates(cumulative)
             if self.budget is not None:
-                state.next_width = self.budget.choose(cumulative, len(state.context), remaining)
+                state.next_width = self.budget.choose(cumulative, context_rows, remaining)
         return tokens, rates
 
 
 class SpeculativeBackend:
     def __init__(self, target, provider, *, eos_ids, depth, prior,
-                 prefill_rows=8, observer=None):
+                 prefill_rows=8, observer=None, prefill_executor=None):
         if prefill_rows not in (1,2,4,8) or any(r not in target.buffers for r in range(1,9)):
             raise ValueError('K2 requires validated eight-row target buffers')
+        if prefill_executor is not None and observer is not None:
+            raise ValueError('per-row prompt observers require the rows8 path')
         self.target, self.provider, self.depth = target, provider, depth
         self.eos_ids, self.prior = frozenset(eos_ids), tuple(prior)
         if len(self.prior) != 7:
             raise ValueError('seven-depth conditional prior required')
         LaggedAcceptance(self.prior)
         self.prefill_rows, self.observer, self.states = prefill_rows, observer, {}
+        self.prefill_executor = prefill_executor
 
     def create(self, handle):
         with self.target.torch.inference_mode():
             state = DraftState(self.target.state(), LaggedAcceptance(self.prior))
+            window=getattr(self.provider,'history_window_rows',None)
+            if window is not None:
+                from .feature_window import FeatureWindow
+                state.feature_window=FeatureWindow(window)
         self.states[handle] = state
         return state
 
@@ -144,8 +183,20 @@ class SpeculativeBackend:
         release=getattr(self.target,'release_state',None)
         if release is not None:
             release(state.target)
+        if state.projection_cache is not None:
+            state.projection_cache.close()
+            state.projection_cache=None
         del self.states[handle]
         state.context = None
+        state.feature_window = None
+        state.context_start = 0
+
+    def _append_context(self,state,features):
+        if state.feature_window is None:
+            state.context=features if state.context is None else self.target.torch.cat([state.context,features])
+        else:
+            state.context=state.feature_window.append(features)
+            state.context_start=state.feature_window.start
 
     def synchronize(self):
         self.target.torch.cuda.synchronize()
@@ -159,12 +210,19 @@ class SpeculativeBackend:
         accepted=observed=0
         with torch.inference_mode():
             if row.prompt:
-                for begin in range(0,len(row.token_ids),self.prefill_rows):
+                if self.prefill_executor is not None:
+                    t = time.perf_counter()
+                    result = self.prefill_executor.advance(state.target, row.token_ids, capture=True)
+                    logits, features = result.logits, result.features
+                    self._append_context(state,features)
+                    verify_ms += (time.perf_counter()-t)*1000
+                for begin in (() if self.prefill_executor is not None else
+                              range(0,len(row.token_ids),self.prefill_rows)):
                     ids = list(row.token_ids[begin:begin+self.prefill_rows])
                     t = time.perf_counter()
                     logits, features = target.step(state.target, ids, capture=True)
                     verify_ms += (time.perf_counter()-t)*1000
-                    state.context = features if state.context is None else torch.cat([state.context,features])
+                    self._append_context(state,features)
                     if self.observer:
                         self.observer(row.handle, row.position+begin, ids, logits, len(ids), state.target)
                 outputs = (int(logits[-1].argmax()),) if row.last_prompt_chunk else ()
@@ -194,13 +252,13 @@ class SpeculativeBackend:
                 state.policy.observe(observed,accepted)
                 t = time.perf_counter()
                 target.commit(state.target, buffers, len(row.token_ids), keep)
-                state.context = torch.cat([state.context,features[:keep]])
+                self._append_context(state,features[:keep])
                 commit_ms = (time.perf_counter()-t)*1000
                 if self.observer:
                     self.observer(row.handle,row.position,list(row.token_ids),logits,keep,state.target)
                 outputs = tuple(outputs)
             state.output_tokens += len(outputs)
-            if len(state.context) != state.target.pos:
+            if state.context_start+len(state.context) != state.target.pos:
                 raise BridgeError('draft context differs from committed target position')
             next_drafts = [0]*self.depth
             conditional = [0.0]*self.depth
@@ -223,13 +281,24 @@ class SpeculativeBackend:
 
 class SpeculativeSchedulerBridge(SchedulerBridge):
     """Native MTP counters/publishing and accepted-token flat-layout adapter."""
-    def __init__(self, *args, curve=None, postdraft=False, **kwargs):
+    def __init__(self, *args, curve=None, postdraft=False, serialized_postdraft=False, **kwargs):
         if not postdraft and curve is None:
             raise ValueError('a dynamic verification budget is required')
+        if type(serialized_postdraft) is not bool:
+            raise ValueError('serialized_postdraft must be boolean')
+        if serialized_postdraft:
+            backend=args[4]
+            caps=getattr(backend.target,'capabilities',{})
+            if (not postdraft or curve is not None or kwargs.get('max_requests',1)<=1 or
+                    kwargs['max_requests']>caps.get('max_requests',0) or
+                    caps.get('gpu_batch') is not False or
+                    caps.get('graph_scope')!='private_request_Graphs_shared_serial_scratch' or
+                    not getattr(backend.provider,'deferred_draft',False)):
+                raise ValueError('serialized post-draft requires private shared-scratch Graph slots and a deferred provider')
         super().__init__(*args,max_drafts=7,**kwargs)
         self.depth = 7
         self.postdraft = postdraft
-        if postdraft and self.max_requests != 1:
+        if postdraft and self.max_requests != 1 and not serialized_postdraft:
             raise ValueError('post-draft mode requires a single-request measured cost curve')
         if curve is not None:
             if self.max_requests != 1:
@@ -380,6 +449,7 @@ class SpeculativeSchedulerBridge(SchedulerBridge):
                         raise BridgeError('native/device position diverged after speculation')
                     if expected and expected[-1] in self.eos_ids:
                         entry['seq'].status=self.core.SequenceStatus.FINISHED_STOPPED
+                self._cache_published(entry,expected)
                 self.events.append(dict(request_id=row.handle.request_id,published=count))
             if plan.rows and not plan.rows[0].prompt and self.native.decode_perf_curve:
                 self.native.update_mtp_runtime(len(plan.rows),sum(len(r.token_ids) for r in plan.rows),
@@ -396,7 +466,8 @@ class SpeculativeSchedulerBridge(SchedulerBridge):
 
 def speculative_engine(native, target, provider, *, eos_ids, prior, mode='adaptive',
                        capacity=256,max_requests=1,token_budget=32,prefill_rows=8,
-                       tokenizer=None,curve=None,observer=None):
+                       tokenizer=None,curve=None,observer=None,prefill_executor=None,output_cache=False,
+                       serialized_postdraft=False):
     if getattr(native,'max_drafts',None)!=7:
         raise ValueError('speculation requires a native max_drafts=7 context')
     if mode not in ('lagged','confidence','adaptive'):
@@ -412,15 +483,22 @@ def speculative_engine(native, target, provider, *, eos_ids, prior, mode='adapti
         raise ValueError('dynamic mode requires an explicit measured cost curve')
     depth = 7
     backend=SpeculativeBackend(target,provider,eos_ids=eos_ids,depth=depth,prior=prior,
-                               prefill_rows=prefill_rows,observer=observer)
+                               prefill_rows=prefill_rows,observer=observer,prefill_executor=prefill_executor)
     bridge=SpeculativeSchedulerBridge(native.core,native.torch,native.group,native.sampling_class,
         backend,vocab_size=int(target.w.head.b.weight.shape[0]),eos_ids=eos_ids,capacity=capacity,
-        max_requests=max_requests,token_budget=token_budget,curve=curve if dynamic else None,postdraft=mode=='adaptive')
+        max_requests=max_requests,token_budget=token_budget,curve=curve if dynamic else None,postdraft=mode=='adaptive',
+        serialized_postdraft=serialized_postdraft,output_cache=output_cache)
     engine=KaifraEngine(bridge,tokenizer=tokenizer)
     engine.capabilities=dict(engine.capabilities,target_only=False,speculative=True,
+                            native_output_cache=output_cache,
                             draft_depth=depth,verification_budget=('current_postdraft_e17' if mode=='adaptive' else
                                 'native_mtp_varlen'))
     engine.capabilities.update(getattr(target,'capabilities',{}))
+    engine.capabilities['serialized_postdraft']=serialized_postdraft
+    if serialized_postdraft:
+        engine.capabilities['budget_cost_scope']='frozen_per_request_E29; multi-request throughput objective uncalibrated'
+    if prefill_executor is not None:
+        engine.capabilities.update(prefill_executor.capabilities)
     return engine
 
 

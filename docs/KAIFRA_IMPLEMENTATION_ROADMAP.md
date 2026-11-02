@@ -1,5 +1,51 @@
 # Kaifra 实施路线图：从 SparkInfer-Q 实验原型到自主推理引擎
 
+2026-10-24 执行层进展：[E40 PrefillExecutor](E40_PREFILL_EXECUTOR_USAGE.md)将 E36
+策略整理为引擎模块，拥有分块、工作区、特征捕获与失败隔离，并显式接入现有请求后端。
+投影通过只读浅拷贝视图选择已验证算术；不再克隆执行上游前向源码或修改上游全局函数。
+加载器、State/Buffers、多个前向操作和 CUDA 算子仍来自 TensorFold。原始设计提议及其
+历史阶段记录如下；E40 不代表已实现所有提议或已经独立替换整个执行底座。
+
+后续 [E41](E41_PREFILL_GRAPH_REPORT.md) 已验证完整 Graph/E33/W8 链路、1,536-token输入、
+部分提交、取消复用与本机 HTTP 功能。收益来自 prefill；decode 未新增提速，4K仍未验证。
+
+[E42](E42_WIDER_PREFILL_REPORT.md) 继续开放1024行显式分块，长输入prefill耗时减少5.80%；
+默认仍512，decode无新增已证实收益，算子依赖边界不变。
+
+[E44](E44_MIA_PREFILL_TILE_REPORT.md) 已接入Mia共享输入专家tile的可选后端，长输入prefill耗时
+减少6.97%；最终公开接口/Graph状态交接及本轮基线审计通过。CUDA机制保留MIT署名，
+加载器、状态与其他算子依赖仍保留；E43指令流水无收益和更早32MiB审计差额单独记录。
+
+[E45](E45_LONG_CONTEXT_REPORT.md) 已完成有界DFlash后缀、绝对位置投影、4K QSA/Graph与完整请求验证，
+并修复near-capacity原生逻辑块水位停滞；配对decode持平。每请求1M多并发仍是目标：下一步
+做物理KV分页/压缩及8K/32K验证；当前checkpoint位置配置262K，1M质量另设门槛。
+
+[E46](E46_256K_REPORT.md) 按用户要求直接完成单请求256K：262080-token输入/230.4秒，
+24-token输出、合成检索3/3、长程Graph/selector/续写状态验证及独立回收审计通过。
+峰值allocated81.41GiB；下一步转向KV压缩/请求工作区共享，尚无双请求256K或1M证据。
+
+[E47](E47_KV_DUAL_REPORT.md) 已完成INT8双256K状态容量/隔离验证：KV/index每请求4.13GiB，
+峰值allocated82.63GiB；原始精度门槛未过，原生prefill优先还造成225.8秒输出空窗。
+下一优先级是公平调度与独立精度校准，不能将容量通过视为平滑并发服务。
+
+[E48](E48_PREFILL_FAIRNESS_REPORT.md) 已用显式原生轮询阶段完成同期双256K公平调度对照：
+A最长输出停顿225.42→0.842秒，完成453.03→241.60秒，双请求总wall持平。
+输出与完整已提交状态一致，生命周期/回收审计通过。下一步优先独立长文精度/质量校准和
+长请求HTTP生命周期验证；INT8原始精度门槛仍未过，尚无多请求DFlash、GPU batch或1M结论。
+
+[E49](E49_LONG_DYNAMIC_REPORT.md) 完成单请求长输出对照：BF16/512-token配对下，
+target-only16.36→动态DFlash30.81 decode tok/s，完整输出/已提交状态一致，总wall减少5.27%。
+四份完整INT8状态及公共区的分配下界90.14GiB已超过当前88GiB限额，尚未计入Graph/head/草稿，
+因此未执行四路256K。后续需先补容量缺口和长请求草稿/预算/提交隔离，不能直接放宽旧guard。
+
+[E50](E50_OWN_OPTIMIZATION_REPORT.md) 已完成自主长请求query Graph＋原生输出缓存：
+同期单256K/512-token decode32.14→34.49 tok/s，完整输出/状态/预算轨迹一致。
+八FP8状态＋公共区外推106.77GiB，INT4为95.52GiB但质量未测；下一步优先研究保留FP8的
+有界QSA原始索引（CPU模型理论八路约省5.95GiB），再完善资源池、八slot草稿/验证/提交隔离。
+尚无八路GPU执行、INT4质量或1M结果，默认不晋升。
+
+[E51](E51_BOUNDED_INDEX_REPORT.md) 已实现保留FP8/BF16 KV的2048行原始索引环，GPU回绕/Graph/完整动态请求通过；每请求tensor storage减少0.744GiB，八FP8状态＋公共区外推100.81GiB，仍超88GiB限额且不含八路辅助开销。首次FP8完整请求差值另用共享地址AB/BA复核，不认作稳定29.75%提速。后续继续实际256K验证成本/专家投影效率，以及资源预算和多请求隔离；默认不变。
+
 > **状态：设计提议，不包含任何实际实现或新的 GPU 运行结果。**  
 > **基础路线：基于 DeepInfer 原生 C++ Scheduler / MTPVarlen 进行 Qwen 与 Spark 深度适配，不从零实现新的 Scheduler；TensorFold 组件作为可替换执行后端，DFlash2 作为草稿提供者。**  
 > 此文档与 [Kaifra Vision RFC](KAIFRA_VISION_RFC.md) 同 PR，落实“怎样才算自己的引擎”。  
@@ -201,3 +247,9 @@ TensorFold 的**当前**代码已经有：
 - **名字**：Kaifra 是工作名。先不改仓库、产品发布、公司或域名，完成目标市场和商标检索再决定。
 
 **最先值得完成的一步：**E8 分块路径的正确性与端到端实验已完成（2026-10-22 核对）。下一步是**继续扩展现有 E5 DeepInfer C++ Scheduler 桥接**，使其驱动 Kaifra 自己的 Qwen Target-only 执行/状态服务，逐步替换测试 harness 中的单请求生成循环；E16 的置信头预算随后作为 K2 的可选预算接入。
+
+[E52](E52_DECODE_PIPELINE_REPORT.md) 已单独检查E43专家流水在decode plan上的完整MoE成本，边界及选定层数值通过，但热复用+0.787%/扰动−0.007%未过5%门槛，不接入整模。下一步应减少实际验证工作或权重重复读取，优先核对当前256K路径的真实费用曲线；不再重扫相同指令调度参数。
+
+[E53](E53_LONG_CONCURRENCY_REPORT.md) 将当前优先级转向八路256K容量与请求隔离：完整八路预算103.67GiB，超过既有88GiB上限15.67GiB。双路完整长请求输出/有效状态相同，但A有7轮宽度差异，严格候选门槛失败。下一步先隔离草稿projection cache与增量/重建路径，再复验策略；八路仍需减少实际常驻字节并通过资源准入。256K成本校准保留为速度方向，不替代容量或请求隔离。
+
+[E54](E54_REQUEST_DRAFT_CACHE_REPORT.md) 已通过双256K动态路径的严格轨迹门槛：每请求50MiB投影缓存保留增量计算；四处整段重建复现E53概率，修复后两路完整输出/有效状态/概率/宽度/接受轨迹与原独立对照一致，峰值81.24GiB。默认关闭、不声明服务提速。下一阶段转向真实内存削减：当前八路预算104.06GiB，较88GiB上限缺16.06GiB；量化KV质量、公共驻留区、准入及扩槽应分别给证据，不能靠放宽槽数代替容量门槛。

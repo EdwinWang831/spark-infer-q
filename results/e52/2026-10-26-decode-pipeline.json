@@ -1,0 +1,306 @@
+{
+  "status": "PASS_E52_EVIDENCE_REJECTED_CANDIDATE",
+  "date": "2026-10-26",
+  "summary": {
+    "warm": {
+      "sum_median_ms": {
+        "original": 18.04384002685547,
+        "pipeline": 18.185763216018678
+      },
+      "time_reduction": -0.00786546483187478,
+      "speed_change": -0.007804082098583409,
+      "root_bootstrap_gain_95": [
+        -0.01958027327008005,
+        0.007903528788852476
+      ],
+      "per_root": [
+        {
+          "name": "chinese768",
+          "original": 4.001772856712341,
+          "pipeline": 4.094598436355591,
+          "speed_change": -0.022670252305832972
+        },
+        {
+          "name": "code1024",
+          "original": 4.801324772834778,
+          "pipeline": 4.731625604629516,
+          "speed_change": 0.014730490962147513
+        },
+        {
+          "name": "english64",
+          "original": 4.391811180114746,
+          "pipeline": 4.452483129501343,
+          "speed_change": -0.013626542228671434
+        },
+        {
+          "name": "mixed1536",
+          "original": 4.848931217193604,
+          "pipeline": 4.907056045532227,
+          "speed_change": -0.011845152735018072
+        }
+      ]
+    },
+    "evict_128MiB": {
+      "sum_median_ms": {
+        "original": 19.26943999528885,
+        "pipeline": 19.268063992261887
+      },
+      "time_reduction": 7.140856336762536e-05,
+      "speed_change": 7.141366291474327e-05,
+      "root_bootstrap_gain_95": [
+        -0.0051976401733155875,
+        0.009612058153706027
+      ],
+      "per_root": [
+        {
+          "name": "chinese768",
+          "original": 4.401791989803314,
+          "pipeline": 4.338863968849182,
+          "speed_change": 0.014503340368797746
+        },
+        {
+          "name": "code1024",
+          "original": 5.0309440195560455,
+          "pipeline": 5.062400013208389,
+          "speed_change": -0.006213652332939246
+        },
+        {
+          "name": "english64",
+          "original": 4.669231981039047,
+          "pipeline": 4.687840014696121,
+          "speed_change": -0.003969425918704306
+        },
+        {
+          "name": "mixed1536",
+          "original": 5.167472004890442,
+          "pipeline": 5.178959995508194,
+          "speed_change": -0.002218204162170778
+        }
+      ]
+    }
+  },
+  "candidate_gate_passed": false,
+  "decision": "REJECT_DECODE_PIPELINE",
+  "preflight": 96,
+  "real_cases": 24,
+  "diagnostic_windows": 8,
+  "cuda_event_intervals": 576,
+  "timed_complete_moe_calls": 1728,
+  "real_widths": [
+    7,
+    8
+  ],
+  "maximum_expert_members": 8,
+  "all_selected_moe_and_diagnostic_outputs_exact": true,
+  "full_candidate_generation_validated": false,
+  "initial_tail_guard_run": {
+    "summary": {
+      "warm": {
+        "sum_median_ms": {
+          "original": 18.449203181266785,
+          "pipeline": 18.534511923789978
+        },
+        "time_reduction": -0.0046239797830300855,
+        "speed_change": -0.00460269700513094,
+        "root_bootstrap_gain_95": [
+          -0.006032189277734079,
+          -0.0031968842300049705
+        ],
+        "per_root": [
+          {
+            "name": "chinese768",
+            "original": 4.167875218391418,
+            "pipeline": 4.182230353355408,
+            "speed_change": -0.0034324113573687143
+          },
+          {
+            "name": "code1024",
+            "original": 4.772179174423218,
+            "pipeline": 4.786496019363403,
+            "speed_change": -0.0029910909530203034
+          },
+          {
+            "name": "english64",
+            "original": 4.479603171348572,
+            "pipeline": 4.502070355415344,
+            "speed_change": -0.0049904115869152665
+          },
+          {
+            "name": "mixed1536",
+            "original": 5.029545617103577,
+            "pipeline": 5.063715195655822,
+            "speed_change": -0.006747926617508004
+          }
+        ]
+      },
+      "evict_128MiB": {
+        "sum_median_ms": {
+          "original": 19.72742411494255,
+          "pipeline": 19.634895980358124
+        },
+        "time_reduction": 0.004690330275524457,
+        "speed_change": 0.004712433143368111,
+        "root_bootstrap_gain_95": [
+          -0.0012716089745297143,
+          0.010292616377549857
+        ],
+        "per_root": [
+          {
+            "name": "chinese768",
+            "original": 4.462528020143509,
+            "pipeline": 4.479552000761032,
+            "speed_change": -0.003800375710479753
+          },
+          {
+            "name": "code1024",
+            "original": 5.000016033649445,
+            "pipeline": 4.995040029287338,
+            "speed_change": 0.0009961890861596157
+          },
+          {
+            "name": "english64",
+            "original": 4.81479999423027,
+            "pipeline": 4.778512001037598,
+            "speed_change": 0.007593994361590584
+          },
+          {
+            "name": "mixed1536",
+            "original": 5.450080066919327,
+            "pipeline": 5.381791949272156,
+            "speed_change": 0.012688732357334365
+          }
+        ]
+      }
+    },
+    "candidate_gate_passed": false,
+    "decision": "REJECT_DECODE_PIPELINE",
+    "preflight": 96,
+    "real_cases": 24,
+    "diagnostic_windows": 8,
+    "cuda_event_intervals": 576,
+    "timed_complete_moe_calls": 1728,
+    "real_widths": [
+      7,
+      8
+    ],
+    "maximum_expert_members": 8,
+    "all_selected_moe_and_diagnostic_outputs_exact": true,
+    "full_candidate_generation_validated": false
+  },
+  "provenance": {
+    "first": {
+      "job": "588-e52-component-v1.json",
+      "sha256": "cf02f8dd043bcee2a341c039df1f03c1c65bd101720307d78cc8e9aecc7f82a2",
+      "manifest_sha256": "8b707ac525d1464292806b5535bd19e56dcdbf2dfa6153d9a0d8e0617075da2f"
+    },
+    "first_audit": {
+      "job": "590-e52-audit-v1.json",
+      "sha256": "27850d1992d4063a1924837df0b9db6ccdbd617f4f011121951e3291928f38f4",
+      "manifest_sha256": "8b707ac525d1464292806b5535bd19e56dcdbf2dfa6153d9a0d8e0617075da2f"
+    },
+    "component": {
+      "job": "592-e52-component-v2.json",
+      "sha256": "5c5781efc4a656300bb36f929c1f5b803b59120d79c3ed4a8fad5a5d07363fb5",
+      "manifest_sha256": "8c9214521ba621728c13e6e0416d56b1448f6d8fce7d03a1422f0aed71d5829d"
+    },
+    "audit": {
+      "job": "594-e52-audit-v2.json",
+      "sha256": "4d3ddc38d558e457db8421bdc0fa4fa8631d7106ff2a5c468a6d1c4c2c0bf8d2",
+      "manifest_sha256": "8c9214521ba621728c13e6e0416d56b1448f6d8fce7d03a1422f0aed71d5829d"
+    }
+  },
+  "archive": {
+    "sha256": "78e7b339b6f6aaf7b9706de9958130f401d69e0b51aa32f9016a0d5a1d2f914d",
+    "bytes": 2120182,
+    "files": 498,
+    "stages": [
+      [
+        "component-v2",
+        "592-e52-component-v2.json"
+      ],
+      [
+        "audit-v2",
+        "594-e52-audit-v2.json"
+      ],
+      [
+        "component-v1",
+        "588-e52-component-v1.json"
+      ],
+      [
+        "audit-v1",
+        "590-e52-audit-v1.json"
+      ]
+    ]
+  },
+  "resident": {
+    "pid": 46235,
+    "load_count": 1,
+    "allocated_bytes": 77393408000
+  },
+  "candidate_binary_sha256": "0904f92616e76957f2abee8be3973edda77b2946a5f8c0bc9f12deba32a38948",
+  "baseline_binary_sha256": "556ec68bfd476385bde2f142422c77893fa6a02da11b7eb23ff43862dd512985",
+  "final_library_sha256": {
+    "spark_infer_q/__init__.py": "623ddaf4adfbf51e0c029203b0ff1780ebcc5824ff8300de5f1e6d6cd819d5d7",
+    "spark_infer_q/bounded_index.py": "dbda1a72020d9fc07db5edcd535092905bd167a1f717ce64afe9f3267bb4fe08",
+    "spark_infer_q/bounded_index_kernels.py": "ad2c581af22819b821614a067856f7bef271ff8597130ea343ef00e84502f23c",
+    "spark_infer_q/budget_audit.py": "7c2116b666e99c4c07055426733a292e5219ca7b788ce0d0e45f75001640db68",
+    "spark_infer_q/budget_regret.py": "14477f3464091a5eaff1a9cbdb0df045b1c047570fe7a7a782b0c8e63076ba11",
+    "spark_infer_q/checkpoint.py": "d7027b4803ee2564f5a881c3dcbbbb58f0508ee3e8f66d7895fbb7b174aad6b8",
+    "spark_infer_q/collection_budget.py": "4319736e8acfbe4c88911961f37676b188a39a5a6c0a2216a886cb34addbbbb2",
+    "spark_infer_q/collection_trajectory.py": "b528e4e35b8deb7551782d390aee4d4fb40b407e8f966d02fe607c52e844d2f6",
+    "spark_infer_q/collector.py": "dc34bc95c2984ce099a881717c47659e928e89b2ebf55711ac57b291a1ad6677",
+    "spark_infer_q/confidence_budget.py": "b055819b45a2e4d04b773eef34aa0212b140ba3721fbb1f5ad192903463365b9",
+    "spark_infer_q/confidence_features.py": "6d40253da4dad1de1a6866767af154e3a3ce69647a80df0e2e931f5ab53f0fc1",
+    "spark_infer_q/confidence_head.py": "e27c07808689e54f8660ef8068884be874c0fd5045ed2acfa04fc929b286ad28",
+    "spark_infer_q/csf_loader.py": "1dd25c5e9129fc705c285673c68554546cd9b8b0a3b8813e2429fd9f945214cc",
+    "spark_infer_q/decision_head.py": "0d7337f1b3e2d19493dbe543680db32c428bb5c6f565539974954c2ec40d62a4",
+    "spark_infer_q/deepinfer_bridge.py": "37b07de39a1b14628de5c02e3bc6dec9007f9401435a7f094496d36e1b2134c8",
+    "spark_infer_q/dflash2_block.py": "e376a509f046ee41882147b560701029c25a93152b874702863d4875a0013376",
+    "spark_infer_q/dflash2_reference.py": "55863cffcdc7514d9ff9cab16493d77e0a39bb3e69c5565926bd902fb29c5681",
+    "spark_infer_q/dflash2_scored.py": "8175ca379543a27aa6015821f8810c3ff5ba5b197b682da6545377d2b270227b",
+    "spark_infer_q/draft_backbone.py": "e378bbc8ea733abca580955c07b303fb3645783c29f36ba24c8dff0f12520e6c",
+    "spark_infer_q/draft_context.py": "756869e7db93a56329079b7aaf542d25eb6d6858fbbf6f60fb4280f63e6ad3e5",
+    "spark_infer_q/draft_fastpath.py": "ddfc09b065f28ffcecd8a9ad8f7209d3d28fb0de2f8188dbc91bc8d55884fdb8",
+    "spark_infer_q/draft_fidelity.py": "1381ea37bac11e09c45197a35964c3849976d9f3911a171e0984914cedcd3bb0",
+    "spark_infer_q/draft_head.py": "cebeeaf86487f2487783fb0df5af465ce6a5a365f49565997d13bfff14a866a5",
+    "spark_infer_q/draft_signals.py": "5f6a0ea0708498b2aad1ffaab3e913c22891981be4ee7702d553d9851edb9c3a",
+    "spark_infer_q/executor.py": "e2d981663cfa9f71858fc2d8737246b8a10def79c62f6aa3e670ccb75e2bc16e",
+    "spark_infer_q/feature_window.py": "20d4218fa9839ce3836e27196251c43209c7d55eecf43e3d12280cab4fadf7f1",
+    "spark_infer_q/head_screen.py": "9a1859e5543f239653c96124a1b68928bb2b80f10309a30ff19ffb5336147a01",
+    "spark_infer_q/kaifra_graph.py": "ddae0aefd8af9a68eb22fdbcc98c123e57d8f9c5ba123d1eeb7686b1a42ab4bb",
+    "spark_infer_q/kaifra_http.py": "1b136bcf1e69bf43250a404e30791b1f9f34a30b823837112985c3019a12800f",
+    "spark_infer_q/kaifra_joint_runtime.py": "22640599f5692af471687d3d0bddf76080ae9c134d66cf0a8663c2752cf7e4aa",
+    "spark_infer_q/kaifra_joint_target.py": "e80d0386f53d9c0e34dea34fafb680f1a3d87822589c67a044a38aad3ce7083c",
+    "spark_infer_q/kaifra_optimized.py": "04cefcebfc41423ffdc2db8b1761562691f0844a256d66298051f54ec73142a2",
+    "spark_infer_q/kaifra_runtime.py": "7ecc87bc755352139c4c057696787194e9c9a6ed98b184a10f13f43e6416c747",
+    "spark_infer_q/kaifra_speculative.py": "9dab9406da5caf9b5a6f66cf512ea664d85a3c359d87606a7d8190f03d397ed6",
+    "spark_infer_q/linear_runtime.py": "16c8d55fa049d7f4d8985cd24982c653c0805d75a6c94facab9cd9718ad7b01f",
+    "spark_infer_q/local_policy.py": "de7b204f92685dbf68d8769df9bf63608c74c96167aa8cb6a08057f39ff3222f",
+    "spark_infer_q/long_draft_graph.py": "9b84b92b9766027775bfcf2752cca4abd424edb8214ab3f9e46440fc7b5b414d",
+    "spark_infer_q/long_target.py": "b351e631836fc0d083d44493eeb17d2e1d7493891caca4ddfd5043ef1f288749",
+    "spark_infer_q/mlp_head.py": "52e378708572736c18e0d0cc10090b454209b5ac7fc1b5cd9fd689549b960020",
+    "spark_infer_q/mlp_runtime.py": "9a87d1efd104e33cea4a4454016a61df4b4e043f1768411db1764ae71a7b9855",
+    "spark_infer_q/moe_cost.py": "7e06f87b17dc789ba76f19e179962b778b78be937e9dfd59d609b707c08639ca",
+    "spark_infer_q/native_scheduler.py": "bf0c41f628ca6de5b7e873c90e33ec9f40d17731b19c67a3af74529c0b5dd8c7",
+    "spark_infer_q/past_cost.py": "d303247bc62badf4fc3f7d06952d78ba6551290ee8fec7a6d426b7ee9ac6d106",
+    "spark_infer_q/prefill.py": "2063bc06ae774652870c4f7c8915dbcefd1951fc9bfb2fdfe13655a145a9b915",
+    "spark_infer_q/prefill_evidence.py": "6350bdfb1b0feee8eddbb71bb350b6a53408c2248c7f34ff8b9c5573ba10e52c",
+    "spark_infer_q/prefill_experts.py": "ca38e9c6727a0cf3c88d3a2c731af121f5b9b8cb8994e4eebc308a16489b1d28",
+    "spark_infer_q/prefill_scratch.py": "cd13a071268b8f2ac6d110a9fd4e13c0bd16a93b20f5ccc2b2dd94efe0969e43",
+    "spark_infer_q/prefill_tensorfold.py": "b03cf057f3c9f9685005d883e6bdaf6d650698fe07a6a7937b80479e092622b4",
+    "spark_infer_q/prompt.py": "6b997c3c6e6834666dfa0f7d13a7c950f6dc2e9b1d80818e5ee4b08a9b886f58",
+    "spark_infer_q/regret_head.py": "ad23a257754d123d93feb805480e8d717192c9d99e83de5afbcdc0886bc647e0",
+    "spark_infer_q/residual_head.py": "a5f1dfa78560bf216a5a69f1e3a61973041a30bb00d16002dbb01c8be84bef18",
+    "spark_infer_q/rolling_draft.py": "a4b43054502234114ab9ca7eb1eaa7e3baf99e983dbd6aa874b1be0644a3f6ca",
+    "spark_infer_q/screened_head.py": "aaba84b6efd33b247fc9f54dcdda52a3db7c2b1a6d9d3cba6ccff56c1b722052",
+    "spark_infer_q/screened_head_fused.py": "ac963778f7e81a957838ab3443a49c7660ad342128fb9047c73d9b7f8f151bef",
+    "spark_infer_q/shared_graph.py": "75530c1adfe4f6d2a57447d47c98636c5f58964a883ea75503ff5097e1c88628",
+    "spark_infer_q/speculative.py": "ee1c2855cef1f31a868783d00f27cc88eef77f49ff95ff21dc2705d986f12045",
+    "spark_infer_q/tensorfold_block.py": "5527a5f6407c3dbb136003f687151b9754249423f964f71975e4eb9a1b9dadfa",
+    "spark_infer_q/verification_budget.py": "71f28552b8e83f682066edf9e9dd7267e3b54120c5d478949499a443f6eb5c50",
+    "spark_infer_q/wide_budget.py": "5cc2032ce32fd05b019aa90ddc0eefee80df2d2d850ede0e3bda3eedacd854fc"
+  },
+  "default_promoted": false,
+  "full_decode_measured": false,
+  "scope": "real short-context dynamic verification; complete MoE component, not full model candidate generation or256K/HTTP throughput"
+}

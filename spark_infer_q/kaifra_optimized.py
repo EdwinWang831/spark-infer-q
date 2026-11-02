@@ -31,7 +31,10 @@ class E33Budget:
         return choose_rows(cumulative,[v+costs['paid_ms'] for v in costs['verify_commit_ms']],min(8,remaining))
 
 
-def optimized_provider(session):
+def optimized_provider(session, *, history_window_rows=None, max_request_context=None,query_graphs=False,
+                       request_projection_cache=False):
+    if type(query_graphs) is not bool or (query_graphs and history_window_rows is None):
+        raise ValueError('query_graphs requires boolean and bounded rolling history')
     from .draft_head import HeadDraft
     from .draft_backbone import attach_mlp_w8
     from .linear_runtime import NumpyLinearProgressModel
@@ -49,8 +52,16 @@ def optimized_provider(session):
         raise ValueError('W8 binary identity mismatch')
     base=HeadDraft.attach(session.draft,session.projection);base.max_context=2048
     worker=attach_mlp_w8(base,lambda x,p:ext.matmul(x,p.values,p.scales))
+    if history_window_rows is not None:
+        from .rolling_draft import RollingContextDraft
+        worker=RollingContextDraft.attach(worker)
+    if query_graphs:
+        from .long_draft_graph import GraphRollingDraft
+        worker=GraphRollingDraft.attach(worker)
     provider=DFlashProvider(worker,model=NumpyLinearProgressModel(artifact['metadata']),
-                            feature_group='f1',budget=E33Budget(costs))
+                            feature_group='f1',budget=E33Budget(costs),
+                            history_window_rows=history_window_rows,max_request_context=max_request_context,
+                            request_projection_cache=request_projection_cache)
     # Matching E33 requires the first draft to be paid inside decode, after the
     # first token event. Native NEXTN metadata reserves candidate capacity only;
     # prepare() supplies the freshly generated proposals and final selected q.
@@ -60,6 +71,11 @@ def optimized_provider(session):
         draft='W8 MLP / Q4 output head / BF16 attention and selector',predictor='E17 NumPy float64',
         budget='E29 W8 frozen short/long, current post-draft single-request objective',
         first_draft='after first token, inside decode',packed_weights=worker.w8_manifest)
+    if history_window_rows is not None:
+        metadata.update(history_window_rows=history_window_rows,max_request_context=provider.max_context,
+            context_policy='bounded suffix / absolute rotary positions; frozen predictor/costs beyond2K not recalibrated')
+    metadata['draft_query_graphs']=query_graphs
+    metadata['request_projection_cache']=request_projection_cache
     return provider,metadata
 
 
@@ -130,11 +146,15 @@ class ScreenedGraphTarget(GraphTarget):
             self.screen=None
 
 
-def optimized_target(session):
+def optimized_target(session, *, capacity=2048,kv_dtype='bf16',index_ring_rows=None):
     from e3_wide_target import WideTarget
     from .screened_head_fused import FusedScreenedHead
     with session.torch.inference_mode():
         screen=FusedScreenedHead(session.weights.head)
         if not screen.static_ok:
             raise ValueError('E33 frozen head range gate failed')
-        return ScreenedGraphTarget(WideTarget(session.weights,capacity=2048),screen)
+        if capacity>2048 or kv_dtype!='bf16' or index_ring_rows is not None:
+            from .long_target import LongTarget
+            eager=LongTarget(session.weights,capacity=capacity,kv_dtype=kv_dtype,index_ring_rows=index_ring_rows)
+        else:eager=WideTarget(session.weights,capacity=capacity)
+        return ScreenedGraphTarget(eager,screen)
