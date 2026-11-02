@@ -1,6 +1,8 @@
 """Scale storage is part of committed state; softmax shift diagnostics are separate."""
 from types import SimpleNamespace
+import importlib.util
 import unittest
+if not importlib.util.find_spec('numpy'):raise unittest.SkipTest('optional NumPy absent')
 import numpy as np
 from scripts.e47_state import digest,tail,exact,selector
 

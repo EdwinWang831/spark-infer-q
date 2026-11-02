@@ -1,8 +1,10 @@
 """Tamper real archived native-conversion and shared-prefix study records."""
 import copy
 import json
+import importlib.util
 from pathlib import Path
 import unittest
+if not importlib.util.find_spec('numpy'):raise unittest.SkipTest('optional NumPy absent')
 from scripts.e58_export import check_gate,check_study,export
 
 RAW=Path(__file__).resolve().parents[1]/'results/raw/e58/2026-10-28-final/worker'

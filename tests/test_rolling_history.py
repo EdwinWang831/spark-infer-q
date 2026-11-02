@@ -1,9 +1,11 @@
 """Bounded ownership/absolute-position tests; CPU fixtures are not long-model evidence."""
 from contextlib import nullcontext
 from types import SimpleNamespace
+import importlib.util
 import math
 import unittest
 from unittest.mock import Mock,patch
+if not importlib.util.find_spec('numpy'):raise unittest.SkipTest('optional NumPy absent')
 import numpy as np
 
 from spark_infer_q.feature_window import FeatureWindow

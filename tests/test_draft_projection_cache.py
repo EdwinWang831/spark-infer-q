@@ -1,6 +1,8 @@
 """Real CPU arrays test buffer binding; these tests do not prove CUDA parity."""
 from types import SimpleNamespace
+import importlib.util
 import unittest
+if not importlib.util.find_spec('numpy'):raise unittest.SkipTest('optional NumPy absent')
 import numpy as np
 
 from spark_infer_q.draft_projection_cache import DraftProjectionCache

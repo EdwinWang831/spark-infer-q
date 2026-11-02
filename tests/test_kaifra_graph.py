@@ -1,5 +1,6 @@
 from types import SimpleNamespace
 from contextlib import nullcontext
+import importlib.util
 import unittest
 
 from spark_infer_q.kaifra_graph import GraphTarget
@@ -34,6 +35,7 @@ class GraphStateOwnership(unittest.TestCase):
         target=GraphTarget(self.target())
         with self.assertRaisesRegex(RuntimeError,'active request'):target.run(object(),[1])
 
+    @unittest.skipUnless(importlib.util.find_spec('numpy'),'optional NumPy absent')
     def test_large_capture_reuses_committed_kv_prefix_without_full_cache_clone(self):
         import numpy as np
         from tests.test_rolling_history import Rows
