@@ -46,12 +46,19 @@ class Plan:
 class SchedulerBridge:
     def __init__(self, core, torch, group, sampling_class, backend, *, vocab_size,
                  eos_ids, capacity=128, max_requests=2, token_budget=32,
-                 max_drafts=0,prefill_interleave=False,output_cache=False):
+                 max_drafts=0,prefill_interleave=False,output_cache=False,
+                 interleave_prefill=False):
         if type(max_drafts) is not int or not 0 <= max_drafts <= 7:
             raise ValueError('max_drafts must be 0..7')
         if os.environ.get('DEEPINFER_USE_NEXTN_DECODE') != str(max_drafts):
             raise BridgeError('native NEXTN setting does not match bridge')
         self.max_drafts = max_drafts
+        if type(interleave_prefill) is not bool:
+            raise ValueError('interleave_prefill must be boolean')
+        if interleave_prefill and (max_requests!=2 or group.size()!=1):
+            raise ValueError('prefill interleaving requires the two-slot single-rank bridge')
+        self.interleave_prefill=interleave_prefill
+        self._last_prompt=False
         if (any(type(v) is not int for v in (capacity, max_requests, token_budget)) or
                 not (capacity >= 16 and max_requests >= 1 and token_budget >= 16)):
             raise ValueError('unsupported scheduler capacity')
@@ -63,6 +70,8 @@ class SchedulerBridge:
         if prefill_interleave and (max_requests!=2 or group.size()!=1 or max_drafts!=0):
             raise ValueError('prefill interleave requires two single-rank target-only slots')
         self.prefill_interleave=prefill_interleave
+        if prefill_interleave and interleave_prefill:
+            raise ValueError('choose one prefill interleaving policy')
         self._last_prompt=False
         self.interleave_hints=dict(decode_after_prompt=0,prompt_after_decode=0,prompt_without_ready_decode=0)
         self.core, self.torch, self.sampling_class, self.backend = core, torch, sampling_class, backend
@@ -90,7 +99,7 @@ class SchedulerBridge:
         # restarting this polling phase at admission also makes reuse immediate.
         # This counter is separate from native MTP schedule_cnt/process_cnt.
         self.single_slot = max_requests == 1 and group.size() == 1
-        prefill_interval = 2 if prefill_interleave else capacity+1 if self.single_slot else 1
+        prefill_interval = capacity+1 if self.single_slot else (2 if prefill_interleave or interleave_prefill else 1)
         config = SimpleNamespace(max_model_len=capacity, runtime_max_model_len=capacity+2*max_drafts,
             max_num_batched_tokens=token_budget, max_num_seqs=max_requests,
             stop_preempted_request=True, chunked_prefill=True, engine_type=0,
@@ -215,7 +224,18 @@ class SchedulerBridge:
             raise BridgeError('previous plan not completed')
         self._retire()
         self._prefill_phase()
+        if self.interleave_prefill and self._last_prompt:
+            # Native prompt steps reset decode_step to zero. With any ready
+            # decode request, move only this single-rank polling phase to the
+            # non-prefill point. Native scheduling/accounting remains intact;
+            # one decode step then reaches point two and admits prompt work.
+            ready=any(not e['cancelled'] and not self._terminal(e['seq'])
+                and e['seq'].num_cached_tokens>=e['prompt_length']
+                and e['seq'].data.get_len()-e['seq'].num_cached_tokens==1
+                for e in self.requests.values())
+            if ready:self.native.decode_step=1
         metadata, output = self.native.schedule(self.pool)
+        self._last_prompt=bool(output.prompt_run)
         if any(getattr(output, name).size for name in ('clone_states','clone_blocks','zero_states')):
             self.poisoned = True
             raise BridgeError('unsupported native cache clone/zero operation')

@@ -76,6 +76,7 @@ def optimized_provider(session, *, history_window_rows=None, max_request_context
             context_policy='bounded suffix / absolute rotary positions; frozen predictor/costs beyond2K not recalibrated')
     metadata['draft_query_graphs']=query_graphs
     metadata['request_projection_cache']=request_projection_cache
+    provider.profile_metadata=metadata
     return provider,metadata
 
 
