@@ -35,8 +35,8 @@ class ProgressTests(unittest.TestCase):
         self.assertEqual(b.native.decode_step,0);self.assertEqual(observed,[])
 
     def test_reject_cross_rank_or_wrong_slot_count_before_native_construction(self):
-        for slots,ranks in ((1,1),(2,2),(4,1)):
-            with patch.dict('os.environ',{'DEEPINFER_USE_NEXTN_DECODE':'0'}), self.assertRaisesRegex(ValueError,'two-slot single-rank'):
+        for slots,ranks in ((1,1),(2,2),(5,1)):
+            with patch.dict('os.environ',{'DEEPINFER_USE_NEXTN_DECODE':'0'}), self.assertRaisesRegex(ValueError,'2..4 slots on a single rank'):
                 SchedulerBridge(None,None,NS(size=lambda:ranks),None,None,vocab_size=100,eos_ids=(99,),
                     max_requests=slots,interleave_prefill=True)
 

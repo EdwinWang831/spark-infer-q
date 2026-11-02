@@ -50,7 +50,7 @@ def run(session, arguments):
         for mode in ('none', 'adaptive'):
             save('starting:'+mode)
             config = es.ServiceConfig(session.root, session.checkpoint, port=0, capacity=768,
-                                      mode=mode, queue_size=2)
+                                      mode=mode, queue_size=2, max_requests=2)
             with es.open_service(session, config) as service:
                 engine = service.worker.engine
                 backend, target = engine.bridge.backend, engine.bridge.backend.target

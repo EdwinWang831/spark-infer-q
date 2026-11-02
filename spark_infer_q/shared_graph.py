@@ -1,6 +1,6 @@
 """Private request caches and per-slot Graphs over one serialized scratch set.
 
-This is two admitted states, not GPU batching or adaptive multi-request DFlash.
+These are private admitted states, not GPU batching.
 The native Scheduler still owns admission, prompt chunks and output accounting.
 """
 from contextlib import contextmanager
@@ -13,7 +13,7 @@ from .kaifra_runtime import KaifraEngine,QwenTargetBackend
 class SharedGraphTarget:
     def __init__(self,targets):
         targets=tuple(targets)
-        if not 1<=len(targets)<=2:raise ValueError('one or two Graph slots required')
+        if not 1<=len(targets)<=4:raise ValueError('one to four Graph slots required')
         first=targets[0]
         if len({id(t) for t in targets})!=len(targets):raise ValueError('distinct Graph owners required')
         if any(t.eager is not first.eager or t.screen is not first.screen for t in targets):
@@ -23,7 +23,7 @@ class SharedGraphTarget:
 
     @classmethod
     def from_session(cls,session,*,capacity=262160,kv_dtype='int8',slots=2,index_ring_rows=None):
-        if type(slots) is not int or not 1<=slots<=2:raise ValueError('one or two slots required')
+        if type(slots) is not int or not 1<=slots<=4:raise ValueError('one to four slots required')
         from .kaifra_optimized import optimized_target,ScreenedGraphTarget
         first=optimized_target(session,capacity=capacity,kv_dtype=kv_dtype,index_ring_rows=index_ring_rows)
         return cls([first]+[ScreenedGraphTarget(first.eager,first.screen) for _ in range(slots-1)])
@@ -108,16 +108,18 @@ class SharedGraphBackend(QwenTargetBackend):
         return token
 
 
-def shared_graph_engine(native,target,*,eos_ids,capacity=262144,token_budget=1024,tokenizer=None,prefill_executor=None,prefill_interleave=False,output_cache=False):
+def shared_graph_engine(native,target,*,eos_ids,capacity=262144,token_budget=1024,tokenizer=None,prefill_executor=None,prefill_interleave=False,output_cache=False,interleave_prefill=False):
     if getattr(native,'max_drafts',None)!=0:raise ValueError('shared Graph target-only requires NEXTN=0')
     if capacity>target.capacity:raise ValueError('logical capacity exceeds target capacity')
     backend=SharedGraphBackend(target,prefill_executor=prefill_executor)
     bridge=SchedulerBridge(native.core,native.torch,native.group,native.sampling_class,backend,
         vocab_size=int(target.w.head.b.weight.shape[0]),eos_ids=eos_ids,capacity=capacity,
-        max_requests=len(target.targets),token_budget=token_budget,prefill_interleave=prefill_interleave,output_cache=output_cache)
+        max_requests=len(target.targets),token_budget=token_budget,prefill_interleave=prefill_interleave,output_cache=output_cache,
+        interleave_prefill=interleave_prefill)
     engine=KaifraEngine(bridge,tokenizer=tokenizer)
     engine.capabilities=dict(engine.capabilities,**target.capabilities)
     engine.capabilities['prefill_interleave']=prefill_interleave
     engine.capabilities['native_output_cache']=output_cache
+    engine.capabilities['interleave_prefill']=interleave_prefill
     if prefill_executor is not None:engine.capabilities.update(prefill_executor.capabilities)
     return engine

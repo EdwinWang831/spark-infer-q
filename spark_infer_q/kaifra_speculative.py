@@ -504,7 +504,7 @@ class SpeculativeSchedulerBridge(SchedulerBridge):
 def speculative_engine(native, target, provider, *, eos_ids, prior, mode='adaptive',
                        capacity=256,max_requests=1,token_budget=32,prefill_rows=8,
                        tokenizer=None,curve=None,observer=None,prefill_executor=None,output_cache=False,
-                       serialized_postdraft=False):
+                       serialized_postdraft=False,interleave_prefill=False):
     if getattr(native,'max_drafts',None)!=7:
         raise ValueError('speculation requires a native max_drafts=7 context')
     if mode not in ('lagged','confidence','adaptive'):
@@ -524,7 +524,7 @@ def speculative_engine(native, target, provider, *, eos_ids, prior, mode='adapti
     bridge=SpeculativeSchedulerBridge(native.core,native.torch,native.group,native.sampling_class,
         backend,vocab_size=int(target.w.head.b.weight.shape[0]),eos_ids=eos_ids,capacity=capacity,
         max_requests=max_requests,token_budget=token_budget,curve=curve if dynamic else None,postdraft=mode=='adaptive',
-        serialized_postdraft=serialized_postdraft,output_cache=output_cache)
+        serialized_postdraft=serialized_postdraft,output_cache=output_cache,interleave_prefill=interleave_prefill)
     engine=KaifraEngine(bridge,tokenizer=tokenizer)
     engine.capabilities=dict(engine.capabilities,target_only=False,speculative=True,
                             native_output_cache=output_cache,
@@ -532,6 +532,7 @@ def speculative_engine(native, target, provider, *, eos_ids, prior, mode='adapti
                                 'native_mtp_varlen'))
     engine.capabilities.update(getattr(target,'capabilities',{}))
     engine.capabilities['serialized_postdraft']=serialized_postdraft
+    engine.capabilities['interleave_prefill']=interleave_prefill
     if serialized_postdraft:
         engine.capabilities['budget_cost_scope']='frozen_per_request_E29; multi-request throughput objective uncalibrated'
     if prefill_executor is not None:

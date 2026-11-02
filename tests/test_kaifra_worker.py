@@ -31,6 +31,27 @@ class DeferredBridge(ScriptedBridge):
 
 
 class WorkerTests(unittest.TestCase):
+    def test_serial_fenced_executor_uses_same_owner_cancellation_boundary(self):
+        class SerialBridge(DeferredBridge):
+            execute_async=None
+            poll=None
+            def execute(self,plan):
+                self.started.set();self.gate.wait(3);plan.executed=True
+        bridge=SerialBridge();engine=KaifraEngine(bridge)
+        worker=AsyncWorker(lambda:engine,max_streams=4).start()
+        self.addCleanup(self.clean,worker,bridge)
+        sub=worker.submit_tokens('serial',[1],max_tokens=3)
+        self.assertTrue(bridge.started.wait(2))
+        self.assertTrue(sub.cancel())
+        self.assertEqual(bridge.released,[])
+        bridge.gate.set()
+        events=list(sub);worker.wait_idle()
+        self.assertEqual(events[-1].finish_reason,'cancelled')
+        self.assertEqual([t for e in events for t in e.token_ids],[])
+        follow=worker.submit_tokens('serial',[1],max_tokens=2)
+        self.assertEqual([t for e in follow for t in e.token_ids],[3,3])
+        self.assertGreater(follow.handle.generation,sub.handle.generation)
+
     def worker(self,gate=None,capacity=64):
         bridge=DeferredBridge(gate);engine=KaifraEngine(bridge)
         worker=AsyncWorker(lambda:engine,event_capacity=capacity).start()

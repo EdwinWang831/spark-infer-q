@@ -15,7 +15,8 @@ class ServiceConfig:
     checkpoint: Path
     port: int = 8000
     model: str = 'spark-infer-q'
-    capacity: int = 1536
+    capacity: int = 32768
+    max_requests: int = 4
     mode: str = 'adaptive'
     execution: str = 'graph'
     queue_size: int = 4
@@ -24,8 +25,10 @@ class ServiceConfig:
     def __post_init__(self):
         if type(self.port) is not int or not 0 <= self.port <= 65535:
             raise ValueError('port must be 0..65535')
-        if type(self.capacity) is not int or not 16 <= self.capacity <= 1536:
-            raise ValueError('v0.1 context capacity must be 16..1536, including output')
+        if type(self.capacity) is not int or not 16 <= self.capacity <= 32768:
+            raise ValueError('context capacity must be 16..32768, including output')
+        if type(self.max_requests) is not int or not 1 <= self.max_requests <= 4:
+            raise ValueError('running request capacity must be 1..4')
         if type(self.queue_size) is not int or not 0 <= self.queue_size <= 128:
             raise ValueError('queue size must be 0..128')
         if not math.isfinite(self.admission_timeout) or not 0 < self.admission_timeout <= 300:
@@ -83,6 +86,64 @@ class EngineService:
             raise TimeoutError('HTTP listener did not stop')
 
 
+def memory_snapshot(torch):
+    host = {line.split(':')[0]: int(line.split()[1])*1024
+            for line in Path('/proc/meminfo').read_text().splitlines()
+            if line.startswith('MemAvailable:')}
+    return dict(allocated_bytes=torch.cuda.memory_allocated(),
+                reserved_bytes=torch.cuda.memory_reserved(),
+                peak_allocated_bytes=torch.cuda.max_memory_allocated(),
+                peak_reserved_bytes=torch.cuda.max_memory_reserved(),
+                host_available_bytes=host['MemAvailable'])
+
+
+def check_memory(torch):
+    snapshot = memory_snapshot(torch)
+    if (snapshot['reserved_bytes'] > 88*1024**3 or
+            snapshot['host_available_bytes'] < 8*1024**3):
+        raise RuntimeError('service memory limit or host reserve exceeded: '+str(snapshot))
+    return snapshot
+
+
+def warm_long_slots(target, provider, torch, *, graphs=True):
+    """Charge measured first-slot Graph/state bytes before adding more slots."""
+    from .long_capacity import LongCapacityBudget
+    base = check_memory(torch)
+    # The public 32K bound makes the first BF16 slot smaller than this reserve.
+    if (base['allocated_bytes']+2*1024**3 > 88*1024**3 or
+            base['host_available_bytes']-2*1024**3 < 8*1024**3):
+        raise RuntimeError('insufficient memory to measure the first 32K request slot')
+    samples = []
+    feature_bytes = 0
+    if provider is not None:
+        feature_bytes = 2040*12800*2 + sum(getattr(provider.worker, name).numel()
+            *getattr(provider.worker, name).element_size()
+            for name in ('_context_rows', '_keys', '_values'))
+    budget = None
+    for index, slot in enumerate(target.targets):
+        if budget is not None:
+            snap = check_memory(torch)
+            budget.require(len(target.targets), allocated_bytes=snap['allocated_bytes'],
+                reserved_bytes=snap['reserved_bytes'], host_available_bytes=snap['host_available_bytes'])
+        if graphs:
+            slot.warmup()
+        else:
+            state = slot.state()
+            slot.release_state(state)
+        snap = check_memory(torch)
+        samples.append(snap)
+        if index == 0:
+            private = snap['allocated_bytes']-base['allocated_bytes']
+            # Also charge allocator slack: it shares physical RAM with host
+            # MemAvailable and must not be counted as extra free capacity.
+            reserve = max(1024**3, snap['reserved_bytes']-snap['allocated_bytes'])
+            budget = LongCapacityBudget(base['allocated_bytes'], private+feature_bytes,
+                                       reserve, 88*1024**3, 8*1024**3)
+    return dict(budget=vars(budget), slot_samples=samples,
+                admission=budget.require(len(target.targets), allocated_bytes=snap['allocated_bytes'],
+                    reserved_bytes=snap['reserved_bytes'], host_available_bytes=snap['host_available_bytes']))
+
+
 @contextmanager
 def open_service(session, config):
     """Reuse an existing session; the CLI is responsible for loading it once."""
@@ -101,25 +162,46 @@ def open_service(session, config):
     from .prefill_tensorfold import TensorFoldPrefillProvider
     from e3_wide_target import WideTarget
 
-    target = prefill = worker = service = None
+    target = prefill = worker = service = provider = None
+    long_context = config.capacity > 1536 or config.max_requests != 2
     with NativeScheduler(root.parent/'DeepInfer', root.parent/'build-release/lib/deepinfer',
                          max_drafts=7 if config.mode == 'adaptive' else 0) as native:
         torch = session.torch
         try:
             with torch.inference_mode():
-                provider, profile = optimized_provider(session) if config.mode == 'adaptive' else (None, {})
-                head = FusedScreenedHead(session.weights.head)
-                if not head.static_ok:
-                    raise ValueError('target output head does not satisfy the E33 range gate')
-                target = BatchTarget(WideTarget(session.weights, capacity=2048), head,
-                                     graphs=config.execution == 'graph')
-                target.warmup()
+                profile, admission = {}, None
+                if config.mode == 'adaptive':
+                    options = dict(history_window_rows=2040, max_request_context=config.capacity+16,
+                        query_graphs=config.execution == 'graph', request_projection_cache=True) if long_context else {}
+                    provider, profile = optimized_provider(session, **options)
                 # There is one GPU owner. Reusing the caller's stream also
                 # bounds per-stream library workspaces across resident restarts.
                 stream = torch.cuda.current_stream()
                 with torch.cuda.stream(stream):
+                    physical = config.capacity+16 if long_context else 2048
+                    chunk = 512 if long_context else 128
                     prefill = PrefillExecutor(TensorFoldPrefillProvider(session.weights, torch,
-                        capacity=2048), chunk_rows=128)
+                        capacity=physical), chunk_rows=chunk)
+                    if long_context:
+                        from .shared_graph import SharedGraphTarget
+                        target = SharedGraphTarget.from_session(session, capacity=physical,
+                            kv_dtype='bf16', slots=config.max_requests)
+                        # Materialize shared storage before measuring private
+                        # slots. This is one existing stream, never a reload.
+                        prefill.workspace = prefill.provider.allocate(chunk)
+                        if provider is not None and config.execution == 'graph':
+                            provider.worker.warmup()
+                        # Eager mode also allocates stable request state; only
+                        # the graph profile records the sixteen private Graphs.
+                        admission = warm_long_slots(target, provider, torch,
+                                                    graphs=config.execution == 'graph')
+                    else:
+                        head = FusedScreenedHead(session.weights.head)
+                        if not head.static_ok:
+                            raise ValueError('target output head does not satisfy the E33 range gate')
+                        target = BatchTarget(WideTarget(session.weights, capacity=physical), head,
+                                             graphs=config.execution == 'graph')
+                        target.warmup()
 
             @contextmanager
             def context():
@@ -127,21 +209,40 @@ def open_service(session, config):
                     yield
 
             def make():
-                engine = batch_engine(native, target, provider, eos_ids=session.eos,
-                    prior=session.calibration['conditional_prior'], capacity=config.capacity,
-                    tokenizer=session.tokenizer, target_only=config.mode == 'none',
-                    prefill_executor=prefill, prompt_token_budget=128, interleave_prefill=True)
-                engine.capabilities.update(service_version='0.1.0', max_running_requests=2,
-                    max_queued_requests=config.queue_size, protocol='openai_chat_subset')
+                if long_context:
+                    if config.mode == 'adaptive':
+                        from .kaifra_speculative import speculative_engine
+                        engine = speculative_engine(native, target, provider, eos_ids=session.eos,
+                            prior=session.calibration['conditional_prior'], capacity=config.capacity,
+                            max_requests=config.max_requests, token_budget=chunk, tokenizer=session.tokenizer,
+                            prefill_executor=prefill, output_cache=True,
+                            serialized_postdraft=config.max_requests > 1,
+                            interleave_prefill=config.max_requests > 1)
+                    else:
+                        from .shared_graph import shared_graph_engine
+                        engine = shared_graph_engine(native, target, eos_ids=session.eos,
+                            capacity=config.capacity, token_budget=chunk, tokenizer=session.tokenizer,
+                            prefill_executor=prefill, output_cache=True,
+                            interleave_prefill=config.max_requests > 1)
+                else:
+                    engine = batch_engine(native, target, provider, eos_ids=session.eos,
+                        prior=session.calibration['conditional_prior'], capacity=config.capacity,
+                        tokenizer=session.tokenizer, target_only=config.mode == 'none',
+                        prefill_executor=prefill, prompt_token_budget=chunk, interleave_prefill=True)
+                engine.capabilities.update(service_version='0.2.0', max_running_requests=config.max_requests,
+                    context_capacity=config.capacity, target_kv_dtype='bf16',
+                    max_queued_requests=config.queue_size, protocol='openai_chat_subset',
+                    http_async_owner=True, memory_admission=admission)
                 return engine
 
-            worker = AsyncWorker(make, context_factory=context, max_streams=2+config.queue_size)
+            worker = AsyncWorker(make, context_factory=context, max_streams=config.max_requests+config.queue_size)
             worker.start()
             native.bind_worker(worker.thread)
             server = make_server(worker, ('127.0.0.1', config.port), protocol='openai',
                 model_id=config.model, admission_timeout=config.admission_timeout)
             metadata = dict(mode=config.mode, execution=config.execution,
-                            capacity=config.capacity, profile=profile, native=native.metadata)
+                            capacity=config.capacity, max_requests=config.max_requests,
+                            profile=profile, native=native.metadata)
             service = EngineService(worker, server, metadata)
             yield service
         finally:
@@ -159,6 +260,10 @@ def open_service(session, config):
                     finally:
                         if target is not None:
                             target.close()
+                        if provider is not None:
+                            close = getattr(provider.worker, 'close', None)
+                            if close is not None:
+                                close()
 
 
 def run_service(service):

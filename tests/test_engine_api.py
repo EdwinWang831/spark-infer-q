@@ -103,6 +103,21 @@ class EngineApiTests(unittest.TestCase):
                 self.assertIn('message', json.loads(response.read())['error'])
         self.assertEqual(self.worker.snapshot()['metrics']['requests_admitted_total'], 0)
 
+    def test_long_prompt_http_body_and_bounded_oversize_rejection(self):
+        self.bridge.gate.set()
+        _, response = self.generate(messages=[dict(role='user', content='cache '*20000)])
+        self.assertEqual(response.status, 200)
+        response.read()
+        connection = http.client.HTTPConnection(*self.server.server_address, timeout=4)
+        self.connections.append(connection)
+        connection.putrequest('POST', '/v1/chat/completions')
+        connection.putheader('Content-Length', str(2*1024**2+1))
+        connection.endheaders()
+        response = connection.getresponse()
+        self.assertEqual(response.status, 400)
+        self.assertIn('2097152', json.loads(response.read())['error']['message'])
+        self.assertEqual(self.worker.snapshot()['metrics']['requests_admitted_total'], 1)
+
     def test_cancelled_stream_updates_metrics_and_keeps_health_ready(self):
         _, response = self.generate(stream=True)
         request_id = response.getheader('X-Request-Id')

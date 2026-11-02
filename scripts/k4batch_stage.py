@@ -22,6 +22,7 @@ def main():
     names += ['tests/test_draft_batch_graph.py']
     names += ['docs/ENGINE_V01_PLAN.md','tests/test_engine_api.py','tests/test_engine_cli.py',
               'scripts/serve.py','pyproject.toml']
+    names += ['docs/ENGINE_V02_PLAN.md','tests/test_shared_graph.py','tests/test_kaifra_worker.py','tests/test_engine_memory.py']
     names += ['results/k4/2026-10-24-joint-costs.json']
     manifest={n:hashlib.sha256((root/n).read_bytes()).hexdigest() for n in names};buf=io.BytesIO()
     with tarfile.open(fileobj=buf,mode='w') as archive:

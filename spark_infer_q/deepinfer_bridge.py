@@ -55,8 +55,8 @@ class SchedulerBridge:
         self.max_drafts = max_drafts
         if type(interleave_prefill) is not bool:
             raise ValueError('interleave_prefill must be boolean')
-        if interleave_prefill and (max_requests!=2 or group.size()!=1):
-            raise ValueError('prefill interleaving requires the two-slot single-rank bridge')
+        if interleave_prefill and (type(max_requests) is not int or not 2<=max_requests<=4 or group.size()!=1):
+            raise ValueError('prefill interleaving requires 2..4 slots on a single rank')
         self.interleave_prefill=interleave_prefill
         self._last_prompt=False
         if (any(type(v) is not int for v in (capacity, max_requests, token_budget)) or

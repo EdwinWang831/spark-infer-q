@@ -1,0 +1,1668 @@
+{
+  "status": "PASS_ENGINE_V02",
+  "date": "2026-11-02",
+  "cpu": {
+    "status": "PASS",
+    "tests": 491,
+    "passed": 450,
+    "skipped": 41,
+    "log_sha256": "8775d7a1f78a4961bc824c4a2778ae01f7248e1a6bfde500c3c4bc323a2b8de9"
+  },
+  "packaging": {
+    "status": "PASS_PACKAGE",
+    "wheel_sha256": "61c25d4818274c7e1930f990595d9b456c6302a1ef145b45c8ffb9ae5d7b0f5b",
+    "production_source_matches_live": true,
+    "third_party_notice_packaged": true,
+    "installed_cli_outside_checkout": true,
+    "version": "0.2.0"
+  },
+  "scope": {
+    "running_requests": 4,
+    "max_context_including_output": 32768,
+    "waiting_stream_slots": 4,
+    "target_kv": "bf16",
+    "gpu_batch": false,
+    "http_async_owner": true,
+    "decoding": "greedy",
+    "draft": "DFlash2 W8 MLP / Q4 head / 2040-row history / private projection cache",
+    "costs_recalibrated": false,
+    "production_stress_tested": false
+  },
+  "validation": {
+    "component_cases": [
+      {
+        "slot": 0,
+        "parity": 0,
+        "width": 1,
+        "keep": 1,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 0,
+        "parity": 0,
+        "width": 2,
+        "keep": 2,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 0,
+        "parity": 0,
+        "width": 3,
+        "keep": 3,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 0,
+        "parity": 0,
+        "width": 4,
+        "keep": 4,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 0,
+        "parity": 0,
+        "width": 5,
+        "keep": 5,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 0,
+        "parity": 0,
+        "width": 6,
+        "keep": 6,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 0,
+        "parity": 0,
+        "width": 7,
+        "keep": 7,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 0,
+        "parity": 0,
+        "width": 8,
+        "keep": 8,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 0,
+        "parity": 1,
+        "width": 1,
+        "keep": 1,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 0,
+        "parity": 1,
+        "width": 2,
+        "keep": 2,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 0,
+        "parity": 1,
+        "width": 3,
+        "keep": 3,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 0,
+        "parity": 1,
+        "width": 4,
+        "keep": 4,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 0,
+        "parity": 1,
+        "width": 5,
+        "keep": 5,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 0,
+        "parity": 1,
+        "width": 6,
+        "keep": 6,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 0,
+        "parity": 1,
+        "width": 7,
+        "keep": 7,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 0,
+        "parity": 1,
+        "width": 8,
+        "keep": 8,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 1,
+        "parity": 0,
+        "width": 1,
+        "keep": 0,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 1,
+        "parity": 0,
+        "width": 2,
+        "keep": 0,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 1,
+        "parity": 0,
+        "width": 3,
+        "keep": 0,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 1,
+        "parity": 0,
+        "width": 4,
+        "keep": 0,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 1,
+        "parity": 0,
+        "width": 5,
+        "keep": 0,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 1,
+        "parity": 0,
+        "width": 6,
+        "keep": 0,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 1,
+        "parity": 0,
+        "width": 7,
+        "keep": 0,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 1,
+        "parity": 0,
+        "width": 8,
+        "keep": 0,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 1,
+        "parity": 1,
+        "width": 1,
+        "keep": 0,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 1,
+        "parity": 1,
+        "width": 2,
+        "keep": 0,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 1,
+        "parity": 1,
+        "width": 3,
+        "keep": 0,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 1,
+        "parity": 1,
+        "width": 4,
+        "keep": 0,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 1,
+        "parity": 1,
+        "width": 5,
+        "keep": 0,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 1,
+        "parity": 1,
+        "width": 6,
+        "keep": 0,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 1,
+        "parity": 1,
+        "width": 7,
+        "keep": 0,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 1,
+        "parity": 1,
+        "width": 8,
+        "keep": 0,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 2,
+        "parity": 0,
+        "width": 1,
+        "keep": 1,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 2,
+        "parity": 0,
+        "width": 2,
+        "keep": 1,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 2,
+        "parity": 0,
+        "width": 3,
+        "keep": 1,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 2,
+        "parity": 0,
+        "width": 4,
+        "keep": 1,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 2,
+        "parity": 0,
+        "width": 5,
+        "keep": 1,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 2,
+        "parity": 0,
+        "width": 6,
+        "keep": 1,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 2,
+        "parity": 0,
+        "width": 7,
+        "keep": 1,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 2,
+        "parity": 0,
+        "width": 8,
+        "keep": 1,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 2,
+        "parity": 1,
+        "width": 1,
+        "keep": 1,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 2,
+        "parity": 1,
+        "width": 2,
+        "keep": 1,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 2,
+        "parity": 1,
+        "width": 3,
+        "keep": 1,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 2,
+        "parity": 1,
+        "width": 4,
+        "keep": 1,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 2,
+        "parity": 1,
+        "width": 5,
+        "keep": 1,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 2,
+        "parity": 1,
+        "width": 6,
+        "keep": 1,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 2,
+        "parity": 1,
+        "width": 7,
+        "keep": 1,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 2,
+        "parity": 1,
+        "width": 8,
+        "keep": 1,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 3,
+        "parity": 0,
+        "width": 1,
+        "keep": 0,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 3,
+        "parity": 0,
+        "width": 2,
+        "keep": 2,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 3,
+        "parity": 0,
+        "width": 3,
+        "keep": 2,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 3,
+        "parity": 0,
+        "width": 4,
+        "keep": 2,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 3,
+        "parity": 0,
+        "width": 5,
+        "keep": 2,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 3,
+        "parity": 0,
+        "width": 6,
+        "keep": 2,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 3,
+        "parity": 0,
+        "width": 7,
+        "keep": 2,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 3,
+        "parity": 0,
+        "width": 8,
+        "keep": 2,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 3,
+        "parity": 1,
+        "width": 1,
+        "keep": 0,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 3,
+        "parity": 1,
+        "width": 2,
+        "keep": 2,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 3,
+        "parity": 1,
+        "width": 3,
+        "keep": 2,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 3,
+        "parity": 1,
+        "width": 4,
+        "keep": 2,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 3,
+        "parity": 1,
+        "width": 5,
+        "keep": 2,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 3,
+        "parity": 1,
+        "width": 6,
+        "keep": 2,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 3,
+        "parity": 1,
+        "width": 7,
+        "keep": 2,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 3,
+        "parity": 1,
+        "width": 8,
+        "keep": 2,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 0,
+        "position": 32704,
+        "parity": 0,
+        "width": 1,
+        "keep": 0,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 0,
+        "position": 32704,
+        "parity": 0,
+        "width": 2,
+        "keep": 1,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 0,
+        "position": 32704,
+        "parity": 0,
+        "width": 3,
+        "keep": 1,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 0,
+        "position": 32704,
+        "parity": 0,
+        "width": 4,
+        "keep": 2,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 0,
+        "position": 32704,
+        "parity": 0,
+        "width": 5,
+        "keep": 2,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 0,
+        "position": 32704,
+        "parity": 0,
+        "width": 6,
+        "keep": 3,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 0,
+        "position": 32704,
+        "parity": 0,
+        "width": 7,
+        "keep": 3,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 0,
+        "position": 32704,
+        "parity": 0,
+        "width": 8,
+        "keep": 4,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 0,
+        "position": 32704,
+        "parity": 1,
+        "width": 1,
+        "keep": 0,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 0,
+        "position": 32704,
+        "parity": 1,
+        "width": 2,
+        "keep": 1,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 0,
+        "position": 32704,
+        "parity": 1,
+        "width": 3,
+        "keep": 1,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 0,
+        "position": 32704,
+        "parity": 1,
+        "width": 4,
+        "keep": 2,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 0,
+        "position": 32704,
+        "parity": 1,
+        "width": 5,
+        "keep": 2,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 0,
+        "position": 32704,
+        "parity": 1,
+        "width": 6,
+        "keep": 3,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 0,
+        "position": 32704,
+        "parity": 1,
+        "width": 7,
+        "keep": 3,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      },
+      {
+        "slot": 0,
+        "position": 32704,
+        "parity": 1,
+        "width": 8,
+        "keep": 4,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true
+      }
+    ],
+    "matches": [
+      {
+        "index": 0,
+        "target_only_tokens": true,
+        "target_only_state": true,
+        "target_only_features": true,
+        "isolated_tokens": true,
+        "isolated_state": true,
+        "dynamic_trace": true
+      },
+      {
+        "index": 1,
+        "target_only_tokens": true,
+        "target_only_state": true,
+        "target_only_features": true,
+        "isolated_tokens": true,
+        "isolated_state": true,
+        "dynamic_trace": true
+      },
+      {
+        "index": 2,
+        "target_only_tokens": true,
+        "target_only_state": true,
+        "target_only_features": true,
+        "isolated_tokens": true,
+        "isolated_state": true,
+        "dynamic_trace": true
+      },
+      {
+        "index": 3,
+        "target_only_tokens": true,
+        "target_only_state": true,
+        "target_only_features": true,
+        "isolated_tokens": true,
+        "isolated_state": true,
+        "dynamic_trace": true
+      }
+    ],
+    "coincident_populated_probe_positions": [
+      32704,
+      32704,
+      32704,
+      32704
+    ],
+    "http_max_live_states": 4,
+    "http_max_populated_32k_states": 1,
+    "over_capacity_rejected": true,
+    "resumed_lifecycle": {
+      "actual_active_requests": 4,
+      "survivors_exact": 3,
+      "cancellation": true,
+      "same_id_reuse": true,
+      "stale_cancel_rejected": true
+    },
+    "load_count": 1,
+    "loaded_target_layers": 48,
+    "model_ready_events": 1,
+    "numerical_model_reloaded": false,
+    "retained_fixture_failure": {
+      "status": "FAIL_ENGINE_V02_LONG",
+      "error": "AssertionError: could not construct bounded long chat prompt"
+    }
+  },
+  "memory": {
+    "peak_allocated_bytes": 85545188352,
+    "peak_reserved_bytes": 85979037696,
+    "minimum_host_available_bytes": 28150059008,
+    "before_numerical": {
+      "allocated_bytes": 77326299136,
+      "reserved_bytes": 78515273728,
+      "peak_allocated_bytes": 78345123328,
+      "peak_reserved_bytes": 78515273728,
+      "host_available_bytes": 38115647488
+    },
+    "after_previous_cleanup": {
+      "allocated_bytes": 77393408000,
+      "reserved_bytes": 85979037696,
+      "peak_allocated_bytes": 85545188352,
+      "peak_reserved_bytes": 85979037696,
+      "host_available_bytes": 28574625792
+    },
+    "post_lifecycle_allocated_bytes": 77393408000,
+    "startup_admission": {
+      "budget": {
+        "shared_bytes": 78820253696,
+        "slot_bytes": 1397421056,
+        "transient_bytes": 1073741824,
+        "allocation_limit_bytes": 94489280512,
+        "host_reserve_bytes": 8589934592
+      },
+      "slot_samples": [
+        {
+          "allocated_bytes": 80113021952,
+          "reserved_bytes": 80350281728,
+          "peak_allocated_bytes": 85545188352,
+          "peak_reserved_bytes": 85979037696,
+          "host_available_bytes": 34159091712
+        },
+        {
+          "allocated_bytes": 81283694080,
+          "reserved_bytes": 81640030208,
+          "peak_allocated_bytes": 85545188352,
+          "peak_reserved_bytes": 85979037696,
+          "host_available_bytes": 32734085120
+        },
+        {
+          "allocated_bytes": 82452423680,
+          "reserved_bytes": 82864766976,
+          "peak_allocated_bytes": 85545188352,
+          "peak_reserved_bytes": 85979037696,
+          "host_available_bytes": 31637282816
+        },
+        {
+          "allocated_bytes": 83621153280,
+          "reserved_bytes": 84110475264,
+          "peak_allocated_bytes": 85545188352,
+          "peak_reserved_bytes": 85979037696,
+          "host_available_bytes": 30297960448
+        }
+      ],
+      "admission": {
+        "slots": 4,
+        "forecast_peak_bytes": 85483679744,
+        "additional_live_bytes": 1862526464,
+        "process_deficit_bytes": 0,
+        "conservative_host_remaining_bytes": 28435433984,
+        "process_limit_fits": true,
+        "host_reserve_fits": true,
+        "admission_fits": true,
+        "execution_validated": false
+      }
+    }
+  },
+  "live_http": {
+    "status": "PASS_ENGINE_V02_HTTP",
+    "client_sha256": "b8516a7c4c265b3807a3e2dc633b3ee55fca8c8fe2771afb2b0a1caf53230e13",
+    "input_sha256": "e68814c5577b8d41e58a10d26bd5420fe90932b26ceb753152d3a631e528c7be",
+    "reference_sha256": "a70a6870d3ebf035dc2a8bbef1189e64caec18f4eef9cba0946ae75b990f3442",
+    "runs": [
+      {
+        "name": "four-long-uninstrumented",
+        "requests": [
+          {
+            "request_id": "29284e5c147e44dfaba66ba4ee896a16",
+            "text": "In modern software architecture, particularly within distributed systems and high-throughput web applications, the interplay between caching, queuing, and request lifecycle management is fundamental to performance and reliability. The three concepts mentioned—caching reusable results, queuing pending tasks, and request-owned history—represent distinct but complementary mechanisms for managing state",
+            "usage": {
+              "prompt_tokens": 32704,
+              "completion_tokens": 64,
+              "total_tokens": 32768
+            },
+            "finish": "length",
+            "client_seconds": 97.73831926519051,
+            "stream": true,
+            "first_content_seconds": 84.9643648120109,
+            "content_interval_seconds": 12.773939877049997
+          },
+          {
+            "request_id": "d71473b61f96437c95121c6d4db8a690",
+            "text": "尽管您提供的文本中充满了大量重复的语句，但其核心逻辑清晰地指向了现代高性能系统架构中的三个关键支柱：**缓存机制**、**任务队列调度**以及**请求状态隔离**。这三者共同构成了一个高效、稳定且可维护的并发处理模型。\n\n首先，**缓存机制**",
+            "usage": {
+              "prompt_tokens": 32704,
+              "completion_tokens": 64,
+              "total_tokens": 32768
+            },
+            "finish": "length",
+            "client_seconds": 70.86996032414027,
+            "stream": false,
+            "first_content_seconds": null,
+            "content_interval_seconds": null
+          },
+          {
+            "request_id": "00ba5b8052bd496e842ff33d63c79813",
+            "text": "It appears there is a significant disconnect between the code snippet provided and the question asked. The code provided is a Python generator function named `unique` that yields unique items from an iterable while preserving order. It has absolutely no relation to computer architecture, cache coherence, or request ownership mechanisms.\n\nHowever, I will address the",
+            "usage": {
+              "prompt_tokens": 32704,
+              "completion_tokens": 64,
+              "total_tokens": 32768
+            },
+            "finish": "length",
+            "client_seconds": 116.02056873892434,
+            "stream": true,
+            "first_content_seconds": 114.20553198689595,
+            "content_interval_seconds": 1.815013200044632
+          },
+          {
+            "request_id": "2420aa6180054de099f1d9efd192a18a",
+            "text": "In high-performance computing and distributed systems, the interplay between caching and request lifecycle management is critical for maintaining data integrity and system stability. The core principle stated—\"Request isolation keeps cached results separate\"—addresses a fundamental concurrency challenge: how to safely share computed results among multiple concurrent requests without causing race conditions or serving stale, partially",
+            "usage": {
+              "prompt_tokens": 32704,
+              "completion_tokens": 64,
+              "total_tokens": 32768
+            },
+            "finish": "length",
+            "client_seconds": 42.581653408007696,
+            "stream": false,
+            "first_content_seconds": null,
+            "content_interval_seconds": null
+          }
+        ],
+        "wall_seconds": 116.02432954311371,
+        "observed_peaks": {
+          "active": 4,
+          "streams": 4,
+          "pending": 3
+        },
+        "health": {
+          "status": "ready",
+          "error": null,
+          "active_requests": 0,
+          "open_streams": 0,
+          "pending_submissions": 0,
+          "phase": null,
+          "capabilities": {
+            "target_only": false,
+            "greedy": true,
+            "streaming": true,
+            "gpu_batch": false,
+            "asynchronous": false,
+            "speculative": true,
+            "native_output_cache": true,
+            "draft_depth": 7,
+            "verification_budget": "current_postdraft_e17",
+            "max_requests": 4,
+            "graph_scope": "private_request_Graphs_shared_serial_scratch",
+            "graph_captures": 64,
+            "graph_replays": 118,
+            "head_calls": 118,
+            "head_fallbacks": 0,
+            "graph_fallbacks": [
+              {},
+              {},
+              {},
+              {}
+            ],
+            "shared_eager_buffers": true,
+            "shared_screened_head": true,
+            "kv_dtype": "bf16",
+            "serialized_postdraft": true,
+            "interleave_prefill": true,
+            "budget_cost_scope": "frozen_per_request_E29; multi-request throughput objective uncalibrated",
+            "prefill_executor": "owned_chunked_v1",
+            "prefill_chunk_rows": 512,
+            "prefill_cuda_graph": false,
+            "prefill_logits": "final_row_full_vocab",
+            "prefill_arithmetic": "e36_decode_mxfp8_decode_gdn_f32_moe",
+            "service_version": "0.2.0",
+            "max_running_requests": 4,
+            "context_capacity": 32768,
+            "target_kv_dtype": "bf16",
+            "max_queued_requests": 4,
+            "protocol": "openai_chat_subset",
+            "http_async_owner": true,
+            "memory_admission": {
+              "budget": {
+                "shared_bytes": 78820253696,
+                "slot_bytes": 1397421056,
+                "transient_bytes": 1073741824,
+                "allocation_limit_bytes": 94489280512,
+                "host_reserve_bytes": 8589934592
+              },
+              "slot_samples": [
+                {
+                  "allocated_bytes": 80113021952,
+                  "reserved_bytes": 80350281728,
+                  "peak_allocated_bytes": 85545188352,
+                  "peak_reserved_bytes": 85979037696,
+                  "host_available_bytes": 34159091712
+                },
+                {
+                  "allocated_bytes": 81283694080,
+                  "reserved_bytes": 81640030208,
+                  "peak_allocated_bytes": 85545188352,
+                  "peak_reserved_bytes": 85979037696,
+                  "host_available_bytes": 32734085120
+                },
+                {
+                  "allocated_bytes": 82452423680,
+                  "reserved_bytes": 82864766976,
+                  "peak_allocated_bytes": 85545188352,
+                  "peak_reserved_bytes": 85979037696,
+                  "host_available_bytes": 31637282816
+                },
+                {
+                  "allocated_bytes": 83621153280,
+                  "reserved_bytes": 84110475264,
+                  "peak_allocated_bytes": 85545188352,
+                  "peak_reserved_bytes": 85979037696,
+                  "host_available_bytes": 30297960448
+                }
+              ],
+              "admission": {
+                "slots": 4,
+                "forecast_peak_bytes": 85483679744,
+                "additional_live_bytes": 1862526464,
+                "process_deficit_bytes": 0,
+                "conservative_host_remaining_bytes": 28435433984,
+                "process_limit_fits": true,
+                "host_reserve_fits": true,
+                "admission_fits": true,
+                "execution_validated": false
+              }
+            }
+          },
+          "metrics": {
+            "requests_submitted_total": 4,
+            "requests_admitted_total": 4,
+            "requests_completed_total": 4,
+            "requests_cancelled_total": 0,
+            "requests_failed_total": 0,
+            "admission_rejected_total": 0,
+            "output_tokens_total": 256,
+            "worker_failures_total": 0,
+            "ttft_seconds_count": 4,
+            "request_seconds_count": 4,
+            "ttft_seconds_sum": 280.82727000373416,
+            "request_seconds_sum": 325.4935124986805
+          }
+        }
+      },
+      {
+        "name": "four-running-four-queued",
+        "requests": [
+          {
+            "request_id": "3cfd1942e5a74d288354e3d9d6522704",
+            "text": "The text provided presents a repetitive, rhythmic assertion of three fundamental concepts in computer science and software architecture: caching, queuing, and request history. While the repetition might initially appear to be a glitch or a stylistic choice, it serves to emphasize the critical importance of these three pillars in building robust, scalable, and",
+            "usage": {
+              "prompt_tokens": 221,
+              "completion_tokens": 64,
+              "total_tokens": 285
+            },
+            "finish": "length",
+            "client_seconds": 9.791460356907919,
+            "stream": true,
+            "first_content_seconds": 1.8634409098885953,
+            "content_interval_seconds": 7.927756936056539
+          },
+          {
+            "request_id": "454758aaaab74a81ad806d37710e824c",
+            "text": "In modern software architecture, particularly within high-concurrency distributed systems, the concepts of caching, queuing, and state management are foundational pillars that ensure system performance, reliability, and scalability. The statement provided—repeatedly emphasizing that \"caches save reusable calculation results, queues save tasks waiting for execution, and each request",
+            "usage": {
+              "prompt_tokens": 599,
+              "completion_tokens": 64,
+              "total_tokens": 663
+            },
+            "finish": "length",
+            "client_seconds": 9.482684666058049,
+            "stream": false,
+            "first_content_seconds": null,
+            "content_interval_seconds": null
+          },
+          {
+            "request_id": "7aadcc12104048b5b2c1004ed51be779",
+            "text": "The code snippet provided presents a classic Python generator function designed to remove duplicate elements from an iterable while preserving the original order of appearance. Although the code is repeated multiple times in the prompt, the core logic remains identical: it defines a function named `unique` that takes an iterable `items` as input. Inside the function",
+            "usage": {
+              "prompt_tokens": 298,
+              "completion_tokens": 64,
+              "total_tokens": 362
+            },
+            "finish": "length",
+            "client_seconds": 16.616270083002746,
+            "stream": true,
+            "first_content_seconds": 10.960320712067187,
+            "content_interval_seconds": 5.655687035992742
+          },
+          {
+            "request_id": "c7cf138dfaa84e469763e34256d4cb22",
+            "text": "The concept of **Request Isolation** in the context of caching and asynchronous computation is a critical architectural pattern designed to maintain data integrity, prevent race conditions, and ensure system stability. The core principle, as stated, is that \"Request isolation keeps cached results separate,\" and specifically, \"after a request is cancelled, one",
+            "usage": {
+              "prompt_tokens": 315,
+              "completion_tokens": 64,
+              "total_tokens": 379
+            },
+            "finish": "length",
+            "client_seconds": 15.397822187049314,
+            "stream": false,
+            "first_content_seconds": null,
+            "content_interval_seconds": null
+          },
+          {
+            "request_id": "33ead21c51fb43d2b236fc5711689ab2",
+            "text": "The text provided presents a repetitive, rhythmic assertion of three fundamental concepts in computer science and software architecture: caching, queuing, and request history. While the repetition might initially appear to be a glitch or a stylistic choice, it serves to emphasize the critical importance of these three pillars in building robust, scalable, and",
+            "usage": {
+              "prompt_tokens": 221,
+              "completion_tokens": 64,
+              "total_tokens": 285
+            },
+            "finish": "length",
+            "client_seconds": 16.617139839101583,
+            "stream": true,
+            "first_content_seconds": 10.369679088005796,
+            "content_interval_seconds": 6.246784514049068
+          },
+          {
+            "request_id": "b07395d71b8f4adfb145f859ac878fe7",
+            "text": "In modern software architecture, particularly within high-concurrency distributed systems, the concepts of caching, queuing, and state management are foundational pillars that ensure system performance, reliability, and scalability. The statement provided—repeatedly emphasizing that \"caches save reusable calculation results, queues save tasks waiting for execution, and each request",
+            "usage": {
+              "prompt_tokens": 599,
+              "completion_tokens": 64,
+              "total_tokens": 663
+            },
+            "finish": "length",
+            "client_seconds": 16.65519962995313,
+            "stream": false,
+            "first_content_seconds": null,
+            "content_interval_seconds": null
+          },
+          {
+            "request_id": "cc8676fbb20740c381610f43bb8f80a2",
+            "text": "The code snippet provided presents a classic Python generator function designed to remove duplicate elements from an iterable while preserving the original order of appearance. Although the code is repeated multiple times in the prompt, the core logic remains identical: it defines a function named `unique` that takes an iterable `items` as input. Inside the function",
+            "usage": {
+              "prompt_tokens": 298,
+              "completion_tokens": 64,
+              "total_tokens": 362
+            },
+            "finish": "length",
+            "client_seconds": 9.675002047792077,
+            "stream": true,
+            "first_content_seconds": 1.8631590558215976,
+            "content_interval_seconds": 7.811815552180633
+          },
+          {
+            "request_id": "de585ea008ae4aac95ce4ef0ee707f3a",
+            "text": "The concept of **Request Isolation** in the context of caching and asynchronous computation is a critical architectural pattern designed to maintain data integrity, prevent race conditions, and ensure system stability. The core principle, as stated, is that \"Request isolation keeps cached results separate,\" and specifically, \"after a request is cancelled, one",
+            "usage": {
+              "prompt_tokens": 315,
+              "completion_tokens": 64,
+              "total_tokens": 379
+            },
+            "finish": "length",
+            "client_seconds": 8.36034739203751,
+            "stream": false,
+            "first_content_seconds": null,
+            "content_interval_seconds": null
+          }
+        ],
+        "wall_seconds": 16.66065671108663,
+        "observed_peaks": {
+          "active": 4,
+          "streams": 8,
+          "pending": 7,
+          "full_running_with_four_waiting": true
+        },
+        "health": {
+          "status": "ready",
+          "error": null,
+          "active_requests": 0,
+          "open_streams": 0,
+          "pending_submissions": 0,
+          "phase": null,
+          "capabilities": {
+            "target_only": false,
+            "greedy": true,
+            "streaming": true,
+            "gpu_batch": false,
+            "asynchronous": false,
+            "speculative": true,
+            "native_output_cache": true,
+            "draft_depth": 7,
+            "verification_budget": "current_postdraft_e17",
+            "max_requests": 4,
+            "graph_scope": "private_request_Graphs_shared_serial_scratch",
+            "graph_captures": 64,
+            "graph_replays": 733,
+            "head_calls": 733,
+            "head_fallbacks": 0,
+            "graph_fallbacks": [
+              {},
+              {},
+              {},
+              {}
+            ],
+            "shared_eager_buffers": true,
+            "shared_screened_head": true,
+            "kv_dtype": "bf16",
+            "serialized_postdraft": true,
+            "interleave_prefill": true,
+            "budget_cost_scope": "frozen_per_request_E29; multi-request throughput objective uncalibrated",
+            "prefill_executor": "owned_chunked_v1",
+            "prefill_chunk_rows": 512,
+            "prefill_cuda_graph": false,
+            "prefill_logits": "final_row_full_vocab",
+            "prefill_arithmetic": "e36_decode_mxfp8_decode_gdn_f32_moe",
+            "service_version": "0.2.0",
+            "max_running_requests": 4,
+            "context_capacity": 32768,
+            "target_kv_dtype": "bf16",
+            "max_queued_requests": 4,
+            "protocol": "openai_chat_subset",
+            "http_async_owner": true,
+            "memory_admission": {
+              "budget": {
+                "shared_bytes": 78820253696,
+                "slot_bytes": 1397421056,
+                "transient_bytes": 1073741824,
+                "allocation_limit_bytes": 94489280512,
+                "host_reserve_bytes": 8589934592
+              },
+              "slot_samples": [
+                {
+                  "allocated_bytes": 80113021952,
+                  "reserved_bytes": 80350281728,
+                  "peak_allocated_bytes": 85545188352,
+                  "peak_reserved_bytes": 85979037696,
+                  "host_available_bytes": 34159091712
+                },
+                {
+                  "allocated_bytes": 81283694080,
+                  "reserved_bytes": 81640030208,
+                  "peak_allocated_bytes": 85545188352,
+                  "peak_reserved_bytes": 85979037696,
+                  "host_available_bytes": 32734085120
+                },
+                {
+                  "allocated_bytes": 82452423680,
+                  "reserved_bytes": 82864766976,
+                  "peak_allocated_bytes": 85545188352,
+                  "peak_reserved_bytes": 85979037696,
+                  "host_available_bytes": 31637282816
+                },
+                {
+                  "allocated_bytes": 83621153280,
+                  "reserved_bytes": 84110475264,
+                  "peak_allocated_bytes": 85545188352,
+                  "peak_reserved_bytes": 85979037696,
+                  "host_available_bytes": 30297960448
+                }
+              ],
+              "admission": {
+                "slots": 4,
+                "forecast_peak_bytes": 85483679744,
+                "additional_live_bytes": 1862526464,
+                "process_deficit_bytes": 0,
+                "conservative_host_remaining_bytes": 28435433984,
+                "process_limit_fits": true,
+                "host_reserve_fits": true,
+                "admission_fits": true,
+                "execution_validated": false
+              }
+            }
+          },
+          "metrics": {
+            "requests_submitted_total": 28,
+            "requests_admitted_total": 27,
+            "requests_completed_total": 27,
+            "requests_cancelled_total": 0,
+            "requests_failed_total": 0,
+            "admission_rejected_total": 3,
+            "output_tokens_total": 1728,
+            "worker_failures_total": 0,
+            "ttft_seconds_count": 27,
+            "request_seconds_count": 27,
+            "ttft_seconds_sum": 406.5085071460344,
+            "request_seconds_sum": 677.6421054953244
+          }
+        },
+        "overflow_429": true
+      }
+    ],
+    "before": {
+      "status": "ready",
+      "error": null,
+      "active_requests": 0,
+      "open_streams": 0,
+      "pending_submissions": 0,
+      "phase": null,
+      "capabilities": {
+        "target_only": false,
+        "greedy": true,
+        "streaming": true,
+        "gpu_batch": false,
+        "asynchronous": false,
+        "speculative": true,
+        "native_output_cache": true,
+        "draft_depth": 7,
+        "verification_budget": "current_postdraft_e17",
+        "max_requests": 4,
+        "graph_scope": "private_request_Graphs_shared_serial_scratch",
+        "graph_captures": 64,
+        "graph_replays": 0,
+        "head_calls": 0,
+        "head_fallbacks": 0,
+        "graph_fallbacks": [
+          {},
+          {},
+          {},
+          {}
+        ],
+        "shared_eager_buffers": true,
+        "shared_screened_head": true,
+        "kv_dtype": "bf16",
+        "serialized_postdraft": true,
+        "interleave_prefill": true,
+        "budget_cost_scope": "frozen_per_request_E29; multi-request throughput objective uncalibrated",
+        "prefill_executor": "owned_chunked_v1",
+        "prefill_chunk_rows": 512,
+        "prefill_cuda_graph": false,
+        "prefill_logits": "final_row_full_vocab",
+        "prefill_arithmetic": "e36_decode_mxfp8_decode_gdn_f32_moe",
+        "service_version": "0.2.0",
+        "max_running_requests": 4,
+        "context_capacity": 32768,
+        "target_kv_dtype": "bf16",
+        "max_queued_requests": 4,
+        "protocol": "openai_chat_subset",
+        "http_async_owner": true,
+        "memory_admission": {
+          "budget": {
+            "shared_bytes": 78820253696,
+            "slot_bytes": 1397421056,
+            "transient_bytes": 1073741824,
+            "allocation_limit_bytes": 94489280512,
+            "host_reserve_bytes": 8589934592
+          },
+          "slot_samples": [
+            {
+              "allocated_bytes": 80113021952,
+              "reserved_bytes": 80350281728,
+              "peak_allocated_bytes": 85545188352,
+              "peak_reserved_bytes": 85979037696,
+              "host_available_bytes": 34159091712
+            },
+            {
+              "allocated_bytes": 81283694080,
+              "reserved_bytes": 81640030208,
+              "peak_allocated_bytes": 85545188352,
+              "peak_reserved_bytes": 85979037696,
+              "host_available_bytes": 32734085120
+            },
+            {
+              "allocated_bytes": 82452423680,
+              "reserved_bytes": 82864766976,
+              "peak_allocated_bytes": 85545188352,
+              "peak_reserved_bytes": 85979037696,
+              "host_available_bytes": 31637282816
+            },
+            {
+              "allocated_bytes": 83621153280,
+              "reserved_bytes": 84110475264,
+              "peak_allocated_bytes": 85545188352,
+              "peak_reserved_bytes": 85979037696,
+              "host_available_bytes": 30297960448
+            }
+          ],
+          "admission": {
+            "slots": 4,
+            "forecast_peak_bytes": 85483679744,
+            "additional_live_bytes": 1862526464,
+            "process_deficit_bytes": 0,
+            "conservative_host_remaining_bytes": 28435433984,
+            "process_limit_fits": true,
+            "host_reserve_fits": true,
+            "admission_fits": true,
+            "execution_validated": false
+          }
+        }
+      },
+      "metrics": {
+        "requests_submitted_total": 0,
+        "requests_admitted_total": 0,
+        "requests_completed_total": 0,
+        "requests_cancelled_total": 0,
+        "requests_failed_total": 0,
+        "admission_rejected_total": 0,
+        "output_tokens_total": 0,
+        "worker_failures_total": 0,
+        "ttft_seconds_count": 0,
+        "request_seconds_count": 0,
+        "ttft_seconds_sum": 0.0,
+        "request_seconds_sum": 0.0
+      }
+    },
+    "retained_client_failures": [
+      {
+        "status": "FAIL_ENGINE_V02_HTTP",
+        "error": "AssertionError: {'active': 4, 'streams': 8, 'pending': 7}",
+        "client_sha256": "057beb0d9df680a93db1cd155d241f05f9260e7c06165a19890b4dc3cf5718ff",
+        "raw_sha256": "b46dffab93cc5d73cb25c9a23ac19de265ac8af18c0147882dc1af6dd8dbf477"
+      },
+      {
+        "status": "FAIL_ENGINE_V02_HTTP",
+        "error": "AssertionError: (429, b'{\"error\": {\"message\": \"request admission timed out\", \"type\": \"invalid_request_error\", \"param\": null, \"code\": \"429\"}}')",
+        "client_sha256": "962ee9af42da32c1bda69e8c88a14d06535e2464431643ce43e65bbd55c36b63",
+        "raw_sha256": "d227556bcaaf6852c4fe201dd85d8206f13b86fa4aaa23d500e6b0f673537bd6"
+      }
+    ],
+    "phase": "complete",
+    "cancellation": {
+      "actual_active": 4,
+      "survivors_exact": 3,
+      "cancelled_tokens": 0
+    },
+    "disconnect_recovered": true,
+    "after": {
+      "status": "ready",
+      "error": null,
+      "active_requests": 0,
+      "open_streams": 0,
+      "pending_submissions": 0,
+      "phase": null,
+      "capabilities": {
+        "target_only": false,
+        "greedy": true,
+        "streaming": true,
+        "gpu_batch": false,
+        "asynchronous": false,
+        "speculative": true,
+        "native_output_cache": true,
+        "draft_depth": 7,
+        "verification_budget": "current_postdraft_e17",
+        "max_requests": 4,
+        "graph_scope": "private_request_Graphs_shared_serial_scratch",
+        "graph_captures": 64,
+        "graph_replays": 1095,
+        "head_calls": 1095,
+        "head_fallbacks": 0,
+        "graph_fallbacks": [
+          {},
+          {},
+          {},
+          {}
+        ],
+        "shared_eager_buffers": true,
+        "shared_screened_head": true,
+        "kv_dtype": "bf16",
+        "serialized_postdraft": true,
+        "interleave_prefill": true,
+        "budget_cost_scope": "frozen_per_request_E29; multi-request throughput objective uncalibrated",
+        "prefill_executor": "owned_chunked_v1",
+        "prefill_chunk_rows": 512,
+        "prefill_cuda_graph": false,
+        "prefill_logits": "final_row_full_vocab",
+        "prefill_arithmetic": "e36_decode_mxfp8_decode_gdn_f32_moe",
+        "service_version": "0.2.0",
+        "max_running_requests": 4,
+        "context_capacity": 32768,
+        "target_kv_dtype": "bf16",
+        "max_queued_requests": 4,
+        "protocol": "openai_chat_subset",
+        "http_async_owner": true,
+        "memory_admission": {
+          "budget": {
+            "shared_bytes": 78820253696,
+            "slot_bytes": 1397421056,
+            "transient_bytes": 1073741824,
+            "allocation_limit_bytes": 94489280512,
+            "host_reserve_bytes": 8589934592
+          },
+          "slot_samples": [
+            {
+              "allocated_bytes": 80113021952,
+              "reserved_bytes": 80350281728,
+              "peak_allocated_bytes": 85545188352,
+              "peak_reserved_bytes": 85979037696,
+              "host_available_bytes": 34159091712
+            },
+            {
+              "allocated_bytes": 81283694080,
+              "reserved_bytes": 81640030208,
+              "peak_allocated_bytes": 85545188352,
+              "peak_reserved_bytes": 85979037696,
+              "host_available_bytes": 32734085120
+            },
+            {
+              "allocated_bytes": 82452423680,
+              "reserved_bytes": 82864766976,
+              "peak_allocated_bytes": 85545188352,
+              "peak_reserved_bytes": 85979037696,
+              "host_available_bytes": 31637282816
+            },
+            {
+              "allocated_bytes": 83621153280,
+              "reserved_bytes": 84110475264,
+              "peak_allocated_bytes": 85545188352,
+              "peak_reserved_bytes": 85979037696,
+              "host_available_bytes": 30297960448
+            }
+          ],
+          "admission": {
+            "slots": 4,
+            "forecast_peak_bytes": 85483679744,
+            "additional_live_bytes": 1862526464,
+            "process_deficit_bytes": 0,
+            "conservative_host_remaining_bytes": 28435433984,
+            "process_limit_fits": true,
+            "host_reserve_fits": true,
+            "admission_fits": true,
+            "execution_validated": false
+          }
+        }
+      },
+      "metrics": {
+        "requests_submitted_total": 37,
+        "requests_admitted_total": 36,
+        "requests_completed_total": 34,
+        "requests_cancelled_total": 2,
+        "requests_failed_total": 0,
+        "admission_rejected_total": 3,
+        "output_tokens_total": 2561,
+        "worker_failures_total": 0,
+        "ttft_seconds_count": 35,
+        "request_seconds_count": 36,
+        "ttft_seconds_sum": 440.7610842084978,
+        "request_seconds_sum": 764.357334821485
+      }
+    }
+  },
+  "production_source_sha256": {
+    "spark_infer_q/__init__.py": "623ddaf4adfbf51e0c029203b0ff1780ebcc5824ff8300de5f1e6d6cd819d5d7",
+    "spark_infer_q/__main__.py": "0f072f8ce2bda51a814da172ccb15f3d9e10a420e42ea3786522a8141bba60ad",
+    "spark_infer_q/affine_kv.py": "2c0cfa209ddc52488ce8e6e889e447ffc306d69645a153bd40194dc13b52ea7c",
+    "spark_infer_q/bounded_index.py": "9cc785f5ca6831fe7ef45fa3984c648ab27b6f01e0b69157c76e8aeace6eaabb",
+    "spark_infer_q/bounded_index_kernels.py": "6266e6eb7e9486a9651f431775a8677a5295666b6f0c65a7da1bca3e0294d4b3",
+    "spark_infer_q/budget_audit.py": "7c2116b666e99c4c07055426733a292e5219ca7b788ce0d0e45f75001640db68",
+    "spark_infer_q/budget_regret.py": "14477f3464091a5eaff1a9cbdb0df045b1c047570fe7a7a782b0c8e63076ba11",
+    "spark_infer_q/checkpoint.py": "d7027b4803ee2564f5a881c3dcbbbb58f0508ee3e8f66d7895fbb7b174aad6b8",
+    "spark_infer_q/cli.py": "5c598f564521169794ba559093c4e6fecc96be8386e6edcaac57b127414d186a",
+    "spark_infer_q/collection_budget.py": "4319736e8acfbe4c88911961f37676b188a39a5a6c0a2216a886cb34addbbbb2",
+    "spark_infer_q/collection_trajectory.py": "b528e4e35b8deb7551782d390aee4d4fb40b407e8f966d02fe607c52e844d2f6",
+    "spark_infer_q/collector.py": "dc34bc95c2984ce099a881717c47659e928e89b2ebf55711ac57b291a1ad6677",
+    "spark_infer_q/compact_target.py": "1e3b989654d5026b4996de3838afd6e184bcbd4d16f7f20978702575da915b1c",
+    "spark_infer_q/confidence_budget.py": "b055819b45a2e4d04b773eef34aa0212b140ba3721fbb1f5ad192903463365b9",
+    "spark_infer_q/confidence_features.py": "6d40253da4dad1de1a6866767af154e3a3ce69647a80df0e2e931f5ab53f0fc1",
+    "spark_infer_q/confidence_head.py": "e27c07808689e54f8660ef8068884be874c0fd5045ed2acfa04fc929b286ad28",
+    "spark_infer_q/csf_loader.py": "1dd25c5e9129fc705c285673c68554546cd9b8b0a3b8813e2429fd9f945214cc",
+    "spark_infer_q/decision_head.py": "0d7337f1b3e2d19493dbe543680db32c428bb5c6f565539974954c2ec40d62a4",
+    "spark_infer_q/deepinfer_bridge.py": "2306e8a7891a17dd7df81619bb77a9f55137f7ab9cb44e45d27e33ea63fe6df5",
+    "spark_infer_q/dflash2_block.py": "e376a509f046ee41882147b560701029c25a93152b874702863d4875a0013376",
+    "spark_infer_q/dflash2_reference.py": "55863cffcdc7514d9ff9cab16493d77e0a39bb3e69c5565926bd902fb29c5681",
+    "spark_infer_q/dflash2_scored.py": "8175ca379543a27aa6015821f8810c3ff5ba5b197b682da6545377d2b270227b",
+    "spark_infer_q/draft_backbone.py": "e378bbc8ea733abca580955c07b303fb3645783c29f36ba24c8dff0f12520e6c",
+    "spark_infer_q/draft_batch.py": "d76f6c96704ce28a1e0853233dd9883b81c264806a56f7368bb314c6152516e2",
+    "spark_infer_q/draft_batch_graph.py": "a0be47eea1b124ff613101c41a43b30d6e82c2efaa618a0b6ceb75311221a5d5",
+    "spark_infer_q/draft_batch_w8.py": "729c45a0a35d21975b129a819cd6d18735260eb611354393c160dd86eaa576e3",
+    "spark_infer_q/draft_context.py": "756869e7db93a56329079b7aaf542d25eb6d6858fbbf6f60fb4280f63e6ad3e5",
+    "spark_infer_q/draft_fastpath.py": "ddfc09b065f28ffcecd8a9ad8f7209d3d28fb0de2f8188dbc91bc8d55884fdb8",
+    "spark_infer_q/draft_fidelity.py": "1381ea37bac11e09c45197a35964c3849976d9f3911a171e0984914cedcd3bb0",
+    "spark_infer_q/draft_head.py": "cebeeaf86487f2487783fb0df5af465ce6a5a365f49565997d13bfff14a866a5",
+    "spark_infer_q/draft_projection_cache.py": "2ebf83f028b93d1866d6df0626888e6fbaf90e7be77ef37da9447f829294417d",
+    "spark_infer_q/draft_signals.py": "5f6a0ea0708498b2aad1ffaab3e913c22891981be4ee7702d553d9851edb9c3a",
+    "spark_infer_q/engine_server.py": "fa35a030e827ba2b80fe6f109ade7be45f32205630e6da3deac1f5b6694c38bd",
+    "spark_infer_q/executor.py": "e2d981663cfa9f71858fc2d8737246b8a10def79c62f6aa3e670ccb75e2bc16e",
+    "spark_infer_q/feature_window.py": "20d4218fa9839ce3836e27196251c43209c7d55eecf43e3d12280cab4fadf7f1",
+    "spark_infer_q/head_screen.py": "9a1859e5543f239653c96124a1b68928bb2b80f10309a30ff19ffb5336147a01",
+    "spark_infer_q/joint_budget.py": "deeb2ca94c853e3eace69b7323bfdb12e6148437b3b86a44e3b5b0494a4037e6",
+    "spark_infer_q/kaifra_batch.py": "7ebd20dfaee75b6c989da2fb618a92c25f57ccac8a2b37939d2ddb0a898f0d95",
+    "spark_infer_q/kaifra_batch_target.py": "0392c5ccefbfd2e02914529d0575e7cff2f17ef675193681af0bc847d574a148",
+    "spark_infer_q/kaifra_graph.py": "ddae0aefd8af9a68eb22fdbcc98c123e57d8f9c5ba123d1eeb7686b1a42ab4bb",
+    "spark_infer_q/kaifra_http.py": "1b136bcf1e69bf43250a404e30791b1f9f34a30b823837112985c3019a12800f",
+    "spark_infer_q/kaifra_joint_runtime.py": "22640599f5692af471687d3d0bddf76080ae9c134d66cf0a8663c2752cf7e4aa",
+    "spark_infer_q/kaifra_joint_target.py": "e80d0386f53d9c0e34dea34fafb680f1a3d87822589c67a044a38aad3ce7083c",
+    "spark_infer_q/kaifra_optimized.py": "e192046f18fa7c0d15a25ebaa2f242fdb4c0f9d0f4f0cb243acb486c84d53ee9",
+    "spark_infer_q/kaifra_runtime.py": "2a000766ff3c53f64f284ad3b2e67f6115aa95c03a388e54e9c2bbab7c2c5b64",
+    "spark_infer_q/kaifra_service.py": "526164281616d3b7a508f40b32dd4bbf3f6662a66e2800b50e3a4ddaa293f5e5",
+    "spark_infer_q/kaifra_speculative.py": "f428985f5516ff82b7571e9367697fb504776a44324e164dfadcefb9ff717ccb",
+    "spark_infer_q/kaifra_worker.py": "8140c33c1cea3e8449d7d0d44dca58f3d41949d72b3bae5d77a5f4fd7e839072",
+    "spark_infer_q/kv_conversion_kernels.py": "3b4ce89b074078163941183798dbde1f3a9f9d9ccff2d24ca0fa5ea0055ac3db",
+    "spark_infer_q/linear_runtime.py": "16c8d55fa049d7f4d8985cd24982c653c0805d75a6c94facab9cd9718ad7b01f",
+    "spark_infer_q/local_policy.py": "de7b204f92685dbf68d8769df9bf63608c74c96167aa8cb6a08057f39ff3222f",
+    "spark_infer_q/long_capacity.py": "1f24fc4e2f4c74528d75d50f36ab72f4968bcd33a152f9e5cf53c4ae8b928e0e",
+    "spark_infer_q/long_draft_graph.py": "9b84b92b9766027775bfcf2752cca4abd424edb8214ab3f9e46440fc7b5b414d",
+    "spark_infer_q/long_target.py": "2d00587da131fb5235f0a75a8463ad5f440fe1f127c47a142d9d7f626fe8ba7b",
+    "spark_infer_q/mlp_head.py": "52e378708572736c18e0d0cc10090b454209b5ac7fc1b5cd9fd689549b960020",
+    "spark_infer_q/mlp_runtime.py": "9a87d1efd104e33cea4a4454016a61df4b4e043f1768411db1764ae71a7b9855",
+    "spark_infer_q/model_loader.py": "732865d6735d546e1460d0133e191fb80ab2d18a29ae508b9fe289de34a5c376",
+    "spark_infer_q/moe_cost.py": "7e06f87b17dc789ba76f19e179962b778b78be937e9dfd59d609b707c08639ca",
+    "spark_infer_q/native_scheduler.py": "c83c1f731f907bce3125c7bce129da2998e177ae4c46f4efa83d414acf16cb2d",
+    "spark_infer_q/past_cost.py": "d303247bc62badf4fc3f7d06952d78ba6551290ee8fec7a6d426b7ee9ac6d106",
+    "spark_infer_q/prefill.py": "2063bc06ae774652870c4f7c8915dbcefd1951fc9bfb2fdfe13655a145a9b915",
+    "spark_infer_q/prefill_evidence.py": "6350bdfb1b0feee8eddbb71bb350b6a53408c2248c7f34ff8b9c5573ba10e52c",
+    "spark_infer_q/prefill_experts.py": "ca38e9c6727a0cf3c88d3a2c731af121f5b9b8cb8994e4eebc308a16489b1d28",
+    "spark_infer_q/prefill_scratch.py": "cd13a071268b8f2ac6d110a9fd4e13c0bd16a93b20f5ccc2b2dd94efe0969e43",
+    "spark_infer_q/prefill_tensorfold.py": "d4e738875aec6dc8265076517c512771db53370800c7ae4efea087842dacdddd",
+    "spark_infer_q/prompt.py": "6b997c3c6e6834666dfa0f7d13a7c950f6dc2e9b1d80818e5ee4b08a9b886f58",
+    "spark_infer_q/qwen_attention.py": "a5a8bc3340696520fd48d5ae74599cbb49d18af627fc4984fafda9e25a031476",
+    "spark_infer_q/qwen_ple.py": "883da6f074e1d96da395c39325b1a55e8970661b88fecfdb2d8f7b00339be071",
+    "spark_infer_q/qwen_state.py": "c45e9a47a04ae6915a44619c66027211f8cbd09ebfd7b6883120c0b847c47b95",
+    "spark_infer_q/qwen_state_kernel.py": "90f5a201252d2256a71124336a755e9dd8b14ce470ed2c235c577e567bb44dbe",
+    "spark_infer_q/regret_head.py": "ad23a257754d123d93feb805480e8d717192c9d99e83de5afbcdc0886bc647e0",
+    "spark_infer_q/residual_head.py": "a5f1dfa78560bf216a5a69f1e3a61973041a30bb00d16002dbb01c8be84bef18",
+    "spark_infer_q/rolling_draft.py": "a4b43054502234114ab9ca7eb1eaa7e3baf99e983dbd6aa874b1be0644a3f6ca",
+    "spark_infer_q/screened_head.py": "aaba84b6efd33b247fc9f54dcdda52a3db7c2b1a6d9d3cba6ccff56c1b722052",
+    "spark_infer_q/screened_head_fused.py": "ac963778f7e81a957838ab3443a49c7660ad342128fb9047c73d9b7f8f151bef",
+    "spark_infer_q/shared_graph.py": "e5b733a6069a6e1780f80a663de0778ef8856696cc10be41ed0819e701604b79",
+    "spark_infer_q/speculative.py": "ee1c2855cef1f31a868783d00f27cc88eef77f49ff95ff21dc2705d986f12045",
+    "spark_infer_q/tensorfold_block.py": "5527a5f6407c3dbb136003f687151b9754249423f964f71975e4eb9a1b9dadfa",
+    "spark_infer_q/verification_budget.py": "71f28552b8e83f682066edf9e9dd7267e3b54120c5d478949499a443f6eb5c50",
+    "spark_infer_q/wide_budget.py": "5cc2032ce32fd05b019aa90ddc0eefee80df2d2d850ede0e3bda3eedacd854fc",
+    "spark_infer_q/worker_cpu.py": "c2998bbc9d2307cbdecc715ddc517c9135ff87fc6ed13ff6f97befbdee76bdb2"
+  },
+  "raw_sha256": {
+    "numerical.json": "8f4dfe90262579dd93b5a45fe9899d3c0eddbb33302fc30a44542b7bc86c7036",
+    "lifecycle.json": "a70a6870d3ebf035dc2a8bbef1189e64caec18f4eef9cba0946ae75b990f3442",
+    "http.json": "97319a139a8ffc916d746f4cd374131c420d2c0c6f10466359d84ecfdab52b2d",
+    "live-start.json": "0ca592a089c0efe6f2e0da9060377cd9e353106161cddaec678650ea01e7d271",
+    "lifecycle-job.json": "52079b3de438e37cc5e9e053ca0b9bb2d87bed6994b7c0aa644200ed6e4629a7",
+    "startup.json": "c81e02852f630d8bd38e4cd0a6cd526923f4b6578979b940c439793de83d8217",
+    "resident-status.json": "f2e3cec5c6d06f2a7eafde1e7290c9ef1814637f1a2a0b2a808cd931a88d5bf3"
+  }
+}

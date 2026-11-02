@@ -252,8 +252,14 @@ class AsyncWorker:
                             plan=self.engine.bridge.prepare()
                             with self.condition:
                                 self.phase='prepared';self._cancel()
-                            self.engine.bridge.execute_async(plan)
-                        ready=self.engine.bridge.poll(plan)
+                            dispatch=getattr(self.engine.bridge,'execute_async',None)
+                            if dispatch is None:self.engine.bridge.execute(plan)
+                            else:dispatch(plan)
+                        poll=getattr(self.engine.bridge,'poll',None)
+                        # Serial executors fence before execute() returns. The
+                        # HTTP owner still admits/cancels between native plans;
+                        # do not claim device batching or asynchronous kernels.
+                        ready=True if poll is None else poll(plan)
                         with self.condition:
                             self._cancel()
                             if ready:

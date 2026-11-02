@@ -38,7 +38,7 @@ def make_server(worker,address=('127.0.0.1',18084),*,protocol='kaifra',
             self.send_header('Content-Length',str(len(payload)));self.end_headers();self.wfile.write(payload)
         def body(self):
             size=int(self.headers.get('Content-Length','0'))
-            if not 1<=size<=65536:raise ValueError('request body must contain 1..65536 bytes')
+            if not 1<=size<=2*1024**2:raise ValueError('request body must contain 1..2097152 bytes')
             value=json.loads(self.rfile.read(size))
             if not isinstance(value,dict):raise ValueError('request body must be an object')
             return value
