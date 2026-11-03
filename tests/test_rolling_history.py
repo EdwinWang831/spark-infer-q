@@ -32,6 +32,37 @@ class Rows:
 
 
 class RollingHistoryTests(unittest.TestCase):
+    def test_linear_suffix_matches_mirror_with_half_storage(self):
+        for capacity in (1,3,8,31):
+            linear=FeatureWindow(capacity,layout='linear');mirror=FeatureWindow(capacity)
+            history=[];end=0
+            for count in (1,capacity-1 or 1,3,capacity,capacity+1,2*capacity+3,1,7):
+                values=list(range(end,end+count));history+=values;end+=count
+                rows=Rows(np.asarray(values,dtype=np.int32)[:,None])
+                actual=linear.append(rows);expected=mirror.append(rows)
+                np.testing.assert_array_equal(actual.data,expected.data)
+                np.testing.assert_array_equal(actual.data[:,0],history[-capacity:])
+                self.assertEqual((linear.start,linear.end),(mirror.start,mirror.end))
+                self.assertEqual(linear.nbytes,capacity*4)
+
+    def test_linear_append_preserves_incoming_borrowed_views(self):
+        window=FeatureWindow(5,layout='linear')
+        window.append(Rows(np.arange(5,dtype=np.int32)[:,None]))
+        borrowed=window.view()[1:4]
+        actual=window.append(borrowed)
+        np.testing.assert_array_equal(actual.data[:,0],[3,4,1,2,3])
+        self.assertEqual((window.start,window.end),(3,8))
+
+    def test_linear_million_rows_remain_bounded_and_request_private(self):
+        window=FeatureWindow(32,layout='linear');other=FeatureWindow(32,layout='linear')
+        other.append(Rows(np.array([[99]],dtype=np.int32)))
+        for start in range(0,1048576,1024):
+            actual=window.append(Rows(np.arange(start,start+1024,dtype=np.int32)[:,None]))
+        np.testing.assert_array_equal(actual.data[:,0],np.arange(1048576-32,1048576))
+        np.testing.assert_array_equal(other.view().data[:,0],[99])
+        self.assertEqual(window.nbytes,128)
+        with self.assertRaises(ValueError):FeatureWindow(32,layout='unknown')
+
     def test_wrap_tail_large_append_and_exact_storage_bound(self):
         for capacity in (1,3,8,31):
             window=FeatureWindow(capacity);history=[];end=0
@@ -87,7 +118,8 @@ class RollingHistoryTests(unittest.TestCase):
         self.assertAlmostEqual(model.predict.call_args.args[0][21],math.log1p(4096))
         self.assertEqual(budget.choose.call_args.args[1],4096)
         self.assertEqual((provider.max_context,provider.history_window_rows,state.next_width),(4608,2040,4))
-        for kw in (dict(max_request_context=4608),dict(history_window_rows=2041),dict(history_window_rows=True)):
+        for kw in (dict(max_request_context=4608),dict(history_window_rows=2041),dict(history_window_rows=True),
+                   dict(feature_history_layout='linear'),dict(feature_history_layout='unknown')):
             with self.assertRaises(ValueError):DFlashProvider(worker,**kw)
 
     def test_backend_per_request_window_and_release_ownership(self):

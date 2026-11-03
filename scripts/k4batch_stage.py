@@ -7,6 +7,8 @@ def main():
     p.add_argument('--component-root',help='absolute remote path of the sealed draft component result')
     p.add_argument('--prefill-experts',help='absolute remote path of the pinned E44 prefill extension')
     p.add_argument('--capacity',type=int,help='explicit engine input plus output capacity')
+    p.add_argument('--feature-history-layout',choices=('mirrored','linear'))
+    p.add_argument('--prefill-chunk-rows',type=int,choices=(128,256,512,1024))
     p.add_argument('--ssh-host',default='robo-dog-f236.local',help='existing SSH host profile')
     p.add_argument('--stage-only',action='store_true',help='upload and seal without enqueuing a GPU job')
     p.add_argument('--ssh-hostname',help='explicit verified peer address; bypass only this call\'s ProxyCommand');a=p.parse_args()
@@ -29,6 +31,7 @@ def main():
     names += ['docs/ENGINE_V02_PLAN.md','tests/test_shared_graph.py','tests/test_kaifra_worker.py','tests/test_engine_memory.py']
     names += ['docs/ENGINE_V03_PLAN.md']
     names += ['docs/ENGINE_V04_PLAN.md','tests/test_draft_weight_views.py','tests/test_engine_inputs.py']
+    names += ['docs/ENGINE_V05_PLAN.md','tests/test_rolling_history.py']
     names += ['results/k4/2026-10-24-joint-costs.json']
     manifest={n:hashlib.sha256((root/n).read_bytes()).hexdigest() for n in names};buf=io.BytesIO()
     with tarfile.open(fileobj=buf,mode='w') as archive:
@@ -73,6 +76,10 @@ prefill_expert_path={a.prefill_experts!r}
 if prefill_expert_path is not None:job['arguments']['prefill_experts']=prefill_expert_path
 capacity_value={a.capacity!r}
 if capacity_value is not None:job['arguments']['capacity']=capacity_value
+history_layout={a.feature_history_layout!r}
+if history_layout is not None:job['arguments']['feature_history_layout']=history_layout
+prefill_rows={a.prefill_chunk_rows!r}
+if prefill_rows is not None:job['arguments']['prefill_chunk_rows']=prefill_rows
 p=r/'jobs/pending'/{a.job!r}
 definition=r/'jobs/submitted'/p.name;definition.parent.mkdir(exist_ok=True)
 if definition.exists():assert json.loads(definition.read_text())==job

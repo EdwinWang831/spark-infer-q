@@ -13,7 +13,8 @@ class EngineCliTests(unittest.TestCase):
     def test_help_and_version_work_without_site_packages(self):
         for args, expected in ((['--help'], 'doctor'), (['serve', '--help'], '--queue-size'),
                                (['serve', '--help'], '--max-requests'),
-                               (['serve', '--help'], '--prefill-experts'), (['--version'], '0.4.0')):
+                               (['serve', '--help'], '--prefill-experts'),
+                               (['serve','--help'],'--feature-history-layout'), (['--version'], '0.4.1')):
             result = subprocess.run([sys.executable, '-S', '-m', 'spark_infer_q', *args],
                                     capture_output=True, text=True)
             self.assertEqual(result.returncode, 0, result.stderr)
@@ -35,6 +36,8 @@ class EngineCliTests(unittest.TestCase):
             for kwargs in (dict(capacity=131073), dict(capacity=True), dict(queue_size=-1),
                            dict(max_requests=0), dict(max_requests=5), dict(max_requests=True),
                            dict(prefill_chunk_rows=0), dict(prefill_chunk_rows=513), dict(prefill_chunk_rows=True),
+                           dict(feature_history_layout='unknown'),dict(feature_history_layout='linear',mode='none'),
+                           dict(feature_history_layout='linear',capacity=1536,max_requests=2),
                            dict(port=65536), dict(model=''), dict(admission_timeout=float('nan'))):
                 with self.subTest(kwargs=kwargs), self.assertRaises(ValueError):
                     ServiceConfig(Path(directory), Path(directory), **kwargs)

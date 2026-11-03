@@ -6,7 +6,7 @@
 
 | Location / 位置 | Contents / 内容 | State / 状态 |
 | --- | --- | --- |
-| `codex/engine-v01` | Kaifra v0.4, four 128K requests, BF16 KV, adaptive DFlash / 统一服务四请求、每请求 128K | [Usage / 用法](ENGINE_V04_USAGE.md), [report / 报告](ENGINE_V04_REPORT.md), [PR #23](https://github.com/EdwinWang831/spark-infer-q/pull/23) · Serial long GPU path, 512-row 128K prefill / 64K 的 1024 行配置继续开放，另一工作区保留 |
+| `codex/engine-v01` | Kaifra v0.4.1, four 128K requests and optional compact features / 统一服务四请求 128K、紧凑特征与较快 prefill | [Usage / 用法](ENGINE_V05_USAGE.md), [report / 报告](ENGINE_V05_REPORT.md), [PR #23](https://github.com/EdwinWang831/spark-infer-q/pull/23) · Matched complete wall −18.67%, serial long GPU path / 默认镜像／512 行，显式启用单缓冲／1024 行 |
 | `main` | E0–E58 research records, including E26 cancellation; E33 exact screened head, E34/E35 rejected candidates, E36 exact prefill and E37 profile / 已完成研究与脱敏证据 | Consolidated; per-experiment limits still apply / 已汇总，沿用各实验边界 |
 | `main` | K1 target-only runtime → K2 dynamic DFlash → K3 Graph/E33 profile → single-request overhead reduction / 原生调度运行时演进 | Explicit opt-in APIs/profiles / 显式启用 |
 | `main` | Joint Target, two requests sharing one target forward / 双请求联合 Target | Target-only API; distinct from K4 DFlash service / 独立于 K4 服务研究 |

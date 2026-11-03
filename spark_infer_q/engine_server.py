@@ -24,6 +24,7 @@ class ServiceConfig:
     admission_timeout: float = 30.
     prefill_chunk_rows: int | None = None
     prefill_experts: Path | None = None
+    feature_history_layout: str = 'mirrored'
 
     def __post_init__(self):
         if type(self.port) is not int or not 0 <= self.port <= 65535:
@@ -43,6 +44,10 @@ class ServiceConfig:
         if self.prefill_chunk_rows is not None and (type(self.prefill_chunk_rows) is not int
                 or self.prefill_chunk_rows not in (128, 256, 512, 1024)):
             raise ValueError('prefill chunk rows must be 128, 256, 512 or 1024')
+        if self.feature_history_layout not in ('mirrored','linear'):
+            raise ValueError('feature layout must be mirrored or linear')
+        if self.feature_history_layout=='linear' and (self.mode!='adaptive' or self.capacity<=1536 and self.max_requests==2):
+            raise ValueError('linear feature history requires long adaptive serving')
 
     @property
     def prompt_chunk(self):
@@ -141,8 +146,8 @@ def warm_long_slots(target, provider, torch, *, graphs=True):
     samples = []
     feature_bytes = 0
     if provider is not None:
-        # FeatureWindow mirrors its BF16 ring for contiguous suffix views.
-        feature_bytes = 2*provider.history_window_rows*12800*2 + sum(getattr(provider.worker, name).numel()
+        copies = 2 if getattr(provider,'feature_history_layout','mirrored')=='mirrored' else 1
+        feature_bytes = copies*provider.history_window_rows*12800*2 + sum(getattr(provider.worker, name).numel()
             *getattr(provider.worker, name).element_size()
             for name in ('_context_rows', '_keys', '_values'))
     budget = None
@@ -202,7 +207,8 @@ def open_service(session, config):
                     from .dflash2_reference import share_fused_weights
                     share_fused_weights(session.draft)
                     options = dict(history_window_rows=2040, max_request_context=config.capacity+16,
-                        query_graphs=config.execution == 'graph', request_projection_cache=True) if long_context else {}
+                        query_graphs=config.execution == 'graph', request_projection_cache=True,
+                        feature_history_layout=config.feature_history_layout) if long_context else {}
                     provider, profile = optimized_provider(session, **options)
                 # There is one GPU owner. Reusing the caller's stream also
                 # bounds per-stream library workspaces across resident restarts.
@@ -271,9 +277,10 @@ def open_service(session, config):
                         prior=session.calibration['conditional_prior'], capacity=config.capacity,
                         tokenizer=session.tokenizer, target_only=config.mode == 'none',
                         prefill_executor=prefill, prompt_token_budget=chunk, interleave_prefill=True)
-                engine.capabilities.update(service_version='0.4.0', max_running_requests=config.max_requests,
+                engine.capabilities.update(service_version='0.4.1', max_running_requests=config.max_requests,
                     context_capacity=config.capacity, target_kv_dtype='bf16',
                     index_ring_rows=config.index_ring_rows,
+                    feature_history_layout=config.feature_history_layout,
                     max_queued_requests=config.queue_size, protocol='openai_chat_subset',
                     http_async_owner=True, memory_admission=admission)
                 engine.capabilities.update(prefill_expert_backend='original' if expert is None else expert.name,

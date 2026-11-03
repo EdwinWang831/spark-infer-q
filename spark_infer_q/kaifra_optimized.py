@@ -32,7 +32,7 @@ class E33Budget:
 
 
 def optimized_provider(session, *, history_window_rows=None, max_request_context=None,query_graphs=False,
-                       request_projection_cache=False):
+                       request_projection_cache=False,feature_history_layout='mirrored'):
     if type(query_graphs) is not bool or (query_graphs and history_window_rows is None):
         raise ValueError('query_graphs requires boolean and bounded rolling history')
     from .draft_head import HeadDraft
@@ -61,7 +61,7 @@ def optimized_provider(session, *, history_window_rows=None, max_request_context
     provider=DFlashProvider(worker,model=NumpyLinearProgressModel(artifact['metadata']),
                             feature_group='f1',budget=E33Budget(costs),
                             history_window_rows=history_window_rows,max_request_context=max_request_context,
-                            request_projection_cache=request_projection_cache)
+                            request_projection_cache=request_projection_cache,feature_history_layout=feature_history_layout)
     # Matching E33 requires the first draft to be paid inside decode, after the
     # first token event. Native NEXTN metadata reserves candidate capacity only;
     # prepare() supplies the freshly generated proposals and final selected q.
@@ -76,6 +76,7 @@ def optimized_provider(session, *, history_window_rows=None, max_request_context
             context_policy='bounded suffix / absolute rotary positions; frozen predictor/costs beyond2K not recalibrated')
     metadata['draft_query_graphs']=query_graphs
     metadata['request_projection_cache']=request_projection_cache
+    metadata['feature_history_layout']=feature_history_layout
     provider.profile_metadata=metadata
     return provider,metadata
 

@@ -10,7 +10,7 @@
 
 ## 统一引擎入口
 
-本分支将主线与已提交的 K4 整合为 Kaifra v0.4。一次加载模型，每请求 128K 总容量，四个运行请求，接入动态 DFlash、聊天流式/非流式 API、取消、有界等待、健康检查、指标与正常退出。准备好的 GPU 环境中可运行。
+本分支将主线与已提交的 K4 整合为 Kaifra v0.4.1。一次加载模型，每请求 128K 总容量，四个运行请求，接入动态 DFlash、聊天流式/非流式 API、取消、有界等待、健康检查、指标与正常退出。准备好的 GPU 环境中可运行。
 
 ```bash
 python -m spark_infer_q doctor --root /path/to/prepared/runtime --checkpoint /path/to/local/target
@@ -19,7 +19,7 @@ python -m spark_infer_q serve --root /path/to/prepared/runtime --checkpoint /pat
 
 四份 131008-token BF16 缓存同时填满，各生成 64 tokens。一条 128K 前缀与完整索引参考逐块一致。四请求 HTTP 的输出、有效状态、特征及动态轨迹，与逐 token 控制和隔离动态控制一致。128K 配置采用 2048 行原始索引环、草稿融合权重的精确共享视图和 512 行 prefill，保留完整 K/V 与池化历史。长请求 GPU 执行仍串行。配置和证据见[中文用法](docs/ENGINE_V04_USAGE.md)及[验收报告](docs/ENGINE_V04_REPORT.md)。
 
-64K 可继续显式选择已校验的 `--prefill-experts` 扩展与 1024 行 prefill。该配置在此前四请求 32K 配对试验中，使完整 cohort 平均从 114.90 降到 94.99 秒，耗时减少 17.33%。不同容量的计时分别记录。历史证据见 [v0.3](docs/ENGINE_V03_REPORT.md)、[v0.2](docs/ENGINE_V02_REPORT.md)及 [v0.1 冷启动](docs/ENGINE_V01_REPORT.md)。
+可选的单缓冲特征窗口使 128K 四请求的 1024 行 E44 专家配置通过内存准入。同期 ABBA 配对中，完整原生引擎 cohort 平均从 **476.62 降到 387.62 秒，耗时减少 18.67%**，输出、状态、特征与动态轨迹一致。普通启动采用镜像／512 行配置，较快配置通过参数显式选择。有其他 prefill 等待时，最大输出事件间隔约从 0.51 增到 0.80 秒。见[配置说明](docs/ENGINE_V05_USAGE.md)和[完整报告](docs/ENGINE_V05_REPORT.md)。历史记录见 [v0.4](docs/ENGINE_V04_REPORT.md)、[v0.3](docs/ENGINE_V03_REPORT.md)、[v0.2](docs/ENGINE_V02_REPORT.md)及 [v0.1 冷启动](docs/ENGINE_V01_REPORT.md)。
 
 ## 研究问题
 
@@ -80,7 +80,7 @@ python -m spark_infer_q serve --root /path/to/prepared/runtime --checkpoint /pat
 
 - **内存**：目标是 8 个并发、每个 256K 的请求，放进 88 GiB 的 CUDA 分配上限。即使把 KV 压到 INT4，预计仍需 92.82 GiB（E55）。
 - **KV 压缩精度**：所有压缩候选仍未通过事前定的 3% logit 相对 L2 门槛。E58 中，BF16 prefill 后使用 FP8 / INT4 解码，在六条 4K–16K 前缀的相同 100 个 teacher decode 位置上得到 4.06% / 7.22%；这不是 256K 质量或吞吐结果。
-- **多请求效率** 四请求容量已扩大到每请求 128K，长路径共用串行 GPU 工作区。四请求 128K 默认使用 512 行 prefill 以保留内存余量，64K 的 1024 行配置继续开放。长请求 GPU 合批、公平队列和持续压力仍待验证。
+- **多请求效率** 四请求容量已扩大到每请求 128K，长路径共用串行 GPU 工作区。可选单缓冲／1024 行配置减少完整请求耗时，较大分块带来更长的相邻输出间隔。长请求 GPU 合批、公平队列和持续压力仍待验证。
 - **对照原生 TensorFold**：E7 时整体 45.62 vs 原生 49.18 tok/s，之后没有重测。
 
 ## 反馈驱动的自改进（方案）

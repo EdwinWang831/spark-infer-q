@@ -2,7 +2,7 @@
 
 首次阅读建议先看[中文研究导览](RESEARCH_OVERVIEW.zh-CN.md)或 [English overview](RESEARCH_OVERVIEW.md)：从 DFlash 预测器、验证预算和请求调度，直接定位实现、实验和 RSI 方案。A [CPU-only example](../examples/adaptive_budget.py) runs the released predictor and budget rule without model weights.
 
-统一服务入口见 [Kaifra v0.4 用法](ENGINE_V04_USAGE.md) / [English usage](ENGINE_V04_USAGE.en.md)。四个运行请求、每请求 128K、BF16 KV 与动态 DFlash，使用原始索引环和精确权重共享视图控制内存，默认 512 行 prefill，长路径 GPU 仍串行。见[方案](ENGINE_V04_PLAN.md)和[报告](ENGINE_V04_REPORT.md)。64K 的较快 prefill 及此前四请求 32K 配对结果见 [v0.3](ENGINE_V03_REPORT.md)，[v0.2](ENGINE_V02_REPORT.md)及 [v0.1](ENGINE_V01_REPORT.md)保留原验收记录。
+统一服务入口见 [Kaifra v0.4.1 配置](ENGINE_V05_USAGE.md) / [English usage](ENGINE_V05_USAGE.en.md)。四个运行请求、每请求 128K、BF16 KV 与动态 DFlash，可选单缓冲特征／1024 行 prefill 在同期 ABBA 中使完整 cohort 平均 476.62 → 387.62 秒，耗时减少 18.67%。默认镜像／512 行配置及串行长 GPU 路径继续提供。见[方案](ENGINE_V05_PLAN.md)和[报告](ENGINE_V05_REPORT.md)。容量验收见 [v0.4](ENGINE_V04_REPORT.md)，[v0.3](ENGINE_V03_REPORT.md)、[v0.2](ENGINE_V02_REPORT.md)及 [v0.1](ENGINE_V01_REPORT.md)保留原记录。
 
 这里按研究主题列出全部实验（E0–E58）和运行时里程碑（K1–K4），每项一句结论。细节见各自的报告，脱敏数据在 [`results/`](../results)，按时间顺序的完整记录见 [EXPERIMENTS.md](EXPERIMENTS.md)。分支和 PR 的位置见 [REPOSITORY_STATUS.md](REPOSITORY_STATUS.md)。
 

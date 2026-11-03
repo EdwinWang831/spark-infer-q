@@ -5,7 +5,7 @@ import os
 from pathlib import Path
 
 
-VERSION = '0.4.0'
+VERSION = '0.4.1'
 
 
 def main(argv=None):
@@ -28,6 +28,7 @@ def main(argv=None):
             child.add_argument('--queue-size', type=int, default=4)
             child.add_argument('--admission-timeout', type=float, default=30.)
             child.add_argument('--prefill-chunk-rows', type=int, choices=(128, 256, 512, 1024))
+            child.add_argument('--feature-history-layout', choices=('mirrored','linear'), default='mirrored')
             child.add_argument('--prefill-experts', type=Path,
                                help='optional pinned E44 expert extension; selects 1024-row prefill by default')
     args = parser.parse_args(argv)

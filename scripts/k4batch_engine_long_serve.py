@@ -20,6 +20,7 @@ def run(session, arguments):
     expert_path=arguments.get('prefill_experts')
     config=server.ServiceConfig(session.root,session.checkpoint,port=18085,
         capacity=arguments.get('capacity',131072),
+        feature_history_layout=arguments.get('feature_history_layout','mirrored'),
         prefill_experts=None if expert_path is None else Path(expert_path),
         prefill_chunk_rows=arguments.get('prefill_chunk_rows'))
     spec=importlib.util.spec_from_file_location(tag+'.validation',source/'scripts/k4batch_engine_long.py')

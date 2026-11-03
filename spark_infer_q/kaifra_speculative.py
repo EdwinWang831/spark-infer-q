@@ -91,7 +91,8 @@ class PostDraftBudget:
 class DFlashProvider:
     """Borrow loaded Q4 weights; optional existing F0/F1 head, no fitting."""
     def __init__(self, worker, *, model=None, feature_group='f1', budget=None,
-                 history_window_rows=None, max_request_context=None,request_projection_cache=False):
+                 history_window_rows=None, max_request_context=None,request_projection_cache=False,
+                 feature_history_layout='mirrored'):
         self.worker, self.model, self.feature_group = worker, model, feature_group
         self.max_context = worker.max_context if max_request_context is None else max_request_context
         if type(self.max_context) is not int or self.max_context<8:
@@ -104,6 +105,9 @@ class DFlashProvider:
         elif self.max_context>worker.max_context:
             raise ValueError('long requests require bounded positioned draft history')
         self.history_window_rows=history_window_rows
+        if feature_history_layout not in ('mirrored','linear') or (feature_history_layout=='linear' and history_window_rows is None):
+            raise ValueError('linear feature history requires a bounded draft window')
+        self.feature_history_layout=feature_history_layout
         if type(request_projection_cache) is not bool or (request_projection_cache and
                 (history_window_rows is None or not all(hasattr(worker,name) for name in
                     ('_context_rows','_keys','_values','window_start')))):
@@ -172,7 +176,7 @@ class SpeculativeBackend:
             window=getattr(self.provider,'history_window_rows',None)
             if window is not None:
                 from .feature_window import FeatureWindow
-                state.feature_window=FeatureWindow(window)
+                state.feature_window=FeatureWindow(window,layout=getattr(self.provider,'feature_history_layout','mirrored'))
         self.states[handle] = state
         return state
 

@@ -7,6 +7,14 @@ from spark_infer_q.engine_server import check_memory, warm_long_slots
 
 
 class MemoryAdmissionTests(unittest.TestCase):
+    def test_linear_feature_storage_is_charged_once_per_request(self):
+        provider=NS(history_window_rows=2040,feature_history_layout='linear',worker=NS(
+            **{name:NS(numel=lambda:0,element_size=lambda:2) for name in ('_context_rows','_keys','_values')}))
+        target,snapshot,_=self.fixture(70,1)
+        with patch('spark_infer_q.engine_server.memory_snapshot',snapshot):
+            result=warm_long_slots(target,provider,None)
+        self.assertEqual(result['budget']['slot_bytes'],1024**3+2040*12800*2)
+
     def test_budget_charges_actual_mirrored_feature_storage(self):
         try:
             import numpy as np
