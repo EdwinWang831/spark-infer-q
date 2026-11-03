@@ -31,6 +31,13 @@ class MemoryAdmissionTests(unittest.TestCase):
                 warm_long_slots(target,None,None)
         self.assertEqual(calls,[])
 
+    def test_128k_bootstrap_charges_larger_state_before_first_allocation(self):
+        target,snapshot,calls=self.fixture(85,1);target.capacity=131088
+        with patch('spark_infer_q.engine_server.memory_snapshot',snapshot):
+            with self.assertRaisesRegex(RuntimeError,'first request slot'):
+                warm_long_slots(target,None,None)
+        self.assertEqual(calls,[])
+
     def fixture(self,base,private):
         unit=1024**3
         usage=[base*unit];calls=[]

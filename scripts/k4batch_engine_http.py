@@ -44,7 +44,7 @@ def main():
         temp=args.output.with_suffix('.tmp');temp.write_text(json.dumps(report,indent=2)+'\n');temp.replace(args.output)
 
     def get(path='/health',body=None):
-        connection=http.client.HTTPConnection('127.0.0.1',18085,timeout=300)
+        connection=http.client.HTTPConnection('127.0.0.1',18085,timeout=900)
         try:
             connection.request('GET' if body is None else 'POST',path,
                 None if body is None else json.dumps(body).encode(),{'Content-Type':'application/json'})
@@ -52,7 +52,7 @@ def main():
         finally:connection.close()
 
     def open_request(item,stream=True,limit=64):
-        connection=http.client.HTTPConnection('127.0.0.1',18085,timeout=300)
+        connection=http.client.HTTPConnection('127.0.0.1',18085,timeout=900)
         body=dict(messages=item['messages'],max_tokens=limit,stream=stream)
         if stream:body['stream_options']=dict(include_usage=True)
         started=time.perf_counter()
@@ -125,7 +125,7 @@ def main():
                     assert saturated.wait(20),'did not observe eight open streams'
                     status,value=get('/v1/chat/completions',dict(messages=items[0]['messages'],max_tokens=1))
                     assert status==429,(status,value)
-                values=[future.result(600) for future in futures]
+                values=[future.result(900) for future in futures]
         finally:stop.set();thread.join(10)
         health=idle();assert peaks['active']==4,peaks
         result=dict(name=name,requests=values,wall_seconds=time.perf_counter()-start,observed_peaks=peaks,health=health)
@@ -180,7 +180,8 @@ def main():
         assert replay['text']==report['runs'][1]['requests'][0]['text']
         report['disconnect_recovered']=True
         report['after']=idle();assert report['after']['metrics']['worker_failures_total']==0
-        report['status']='PASS_ENGINE_V03_HTTP' if args.expected_capacity==65536 else 'PASS_ENGINE_V02_HTTP'
+        report['status']=('PASS_ENGINE_V04_HTTP' if args.expected_capacity==131072 else
+            'PASS_ENGINE_V03_HTTP' if args.expected_capacity==65536 else 'PASS_ENGINE_V02_HTTP')
         save('complete')
     except BaseException as exc:
         report.update(status='FAIL_ENGINE_V02_HTTP',error=type(exc).__name__+': '+str(exc)[:3000]);save('failed');raise

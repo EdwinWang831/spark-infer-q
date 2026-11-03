@@ -1,0 +1,3109 @@
+{
+  "status": "PASS_ENGINE_V04",
+  "date": "2026-11-03",
+  "cpu": {
+    "status": "PASS",
+    "tests": 500,
+    "passed": 459,
+    "skipped": 41,
+    "log_sha256": "f26efd5a6b750249afeccb1a611117bd9fd9f8c4c1ea43b2b59bbf94102f978c"
+  },
+  "packaging": {
+    "status": "PASS_PACKAGE",
+    "version": "0.4.0",
+    "wheel_sha256": "8308030e98d6fec480c84305a6945eb8cb6d9a0ccd51d0c246631f254778832d",
+    "production_source_matches_live": true,
+    "third_party_notice_packaged": true,
+    "installed_cli_outside_checkout": true
+  },
+  "scope": {
+    "running_requests": 4,
+    "total_tokens_per_request": 131072,
+    "input_tokens_per_request": 131008,
+    "output_tokens_per_request": 64,
+    "target_kv": "bf16",
+    "index_ring_rows": 2048,
+    "prefill_rows": 512,
+    "dynamic_draft": true,
+    "gpu_batch": false,
+    "cost_calibration_changed": false,
+    "sustained_stress_tested": false
+  },
+  "residency": {
+    "load_count": 1,
+    "same_model_process": true,
+    "same_target_and_draft_objects": true
+  },
+  "capacity": {
+    "initial_profiles": [
+      {
+        "index_ring_rows": null,
+        "chunk_rows": 1024,
+        "before": {
+          "allocated_bytes": 77393408000,
+          "reserved_bytes": 88785027072,
+          "peak_allocated_bytes": 89029306880,
+          "peak_reserved_bytes": 89644859392,
+          "host_available_bytes": 24678322176
+        },
+        "shared": {
+          "allocated_bytes": 79224111616,
+          "reserved_bytes": 79366717440,
+          "peak_allocated_bytes": 89029306880,
+          "peak_reserved_bytes": 89644859392,
+          "host_available_bytes": 34260398080
+        },
+        "first_slot": {
+          "allocated_bytes": 83186247680,
+          "reserved_bytes": 83521175552,
+          "peak_allocated_bytes": 89029306880,
+          "peak_reserved_bytes": 89644859392,
+          "host_available_bytes": 30059778048
+        },
+        "private_bytes": 3962136064,
+        "feature_bytes": 156876800,
+        "budget": {
+          "shared_bytes": 79224111616,
+          "slot_bytes": 4119012864,
+          "transient_bytes": 1073741824,
+          "allocation_limit_bytes": 94489280512,
+          "host_reserve_bytes": 8589934592
+        },
+        "admission": {
+          "slots": 4,
+          "forecast_peak_bytes": 96773904896,
+          "additional_live_bytes": 13587657216,
+          "process_deficit_bytes": 2284624384,
+          "conservative_host_remaining_bytes": 16472120832,
+          "process_limit_fits": false,
+          "host_reserve_fits": true,
+          "admission_fits": false,
+          "execution_validated": false
+        },
+        "after_cleanup": {
+          "allocated_bytes": 77393408000,
+          "reserved_bytes": 83521175552,
+          "peak_allocated_bytes": 89029306880,
+          "peak_reserved_bytes": 89644859392,
+          "host_available_bytes": 30073868288
+        }
+      },
+      {
+        "index_ring_rows": 2048,
+        "chunk_rows": 1024,
+        "before": {
+          "allocated_bytes": 77393408000,
+          "reserved_bytes": 83521175552,
+          "peak_allocated_bytes": 89029306880,
+          "peak_reserved_bytes": 89644859392,
+          "host_available_bytes": 30087634944
+        },
+        "shared": {
+          "allocated_bytes": 79224524800,
+          "reserved_bytes": 79364620288,
+          "peak_allocated_bytes": 89029306880,
+          "peak_reserved_bytes": 89644859392,
+          "host_available_bytes": 34350972928
+        },
+        "first_slot": {
+          "allocated_bytes": 82790249984,
+          "reserved_bytes": 83118522368,
+          "peak_allocated_bytes": 89029306880,
+          "peak_reserved_bytes": 89644859392,
+          "host_available_bytes": 30436196352
+        },
+        "private_bytes": 3565725184,
+        "feature_bytes": 156876800,
+        "budget": {
+          "shared_bytes": 79224524800,
+          "slot_bytes": 3722601984,
+          "transient_bytes": 1073741824,
+          "allocation_limit_bytes": 94489280512,
+          "host_reserve_bytes": 8589934592
+        },
+        "admission": {
+          "slots": 4,
+          "forecast_peak_bytes": 95188674560,
+          "additional_live_bytes": 12398424576,
+          "process_deficit_bytes": 699394048,
+          "conservative_host_remaining_bytes": 18037771776,
+          "process_limit_fits": false,
+          "host_reserve_fits": true,
+          "admission_fits": false,
+          "execution_validated": false
+        },
+        "after_cleanup": {
+          "allocated_bytes": 77393408000,
+          "reserved_bytes": 83118522368,
+          "peak_allocated_bytes": 89029306880,
+          "peak_reserved_bytes": 89644859392,
+          "host_available_bytes": 30430355456
+        }
+      },
+      {
+        "index_ring_rows": 2048,
+        "chunk_rows": 512,
+        "before": {
+          "allocated_bytes": 77393408000,
+          "reserved_bytes": 83118522368,
+          "peak_allocated_bytes": 89029306880,
+          "peak_reserved_bytes": 89644859392,
+          "host_available_bytes": 30430081024
+        },
+        "shared": {
+          "allocated_bytes": 78974119936,
+          "reserved_bytes": 79110864896,
+          "peak_allocated_bytes": 89029306880,
+          "peak_reserved_bytes": 89644859392,
+          "host_available_bytes": 34529050624
+        },
+        "first_slot": {
+          "allocated_bytes": 82540222976,
+          "reserved_bytes": 82866864128,
+          "peak_allocated_bytes": 89029306880,
+          "peak_reserved_bytes": 89644859392,
+          "host_available_bytes": 30828326912
+        },
+        "private_bytes": 3566103040,
+        "feature_bytes": 156876800,
+        "budget": {
+          "shared_bytes": 78974119936,
+          "slot_bytes": 3722979840,
+          "transient_bytes": 1073741824,
+          "allocation_limit_bytes": 94489280512,
+          "host_reserve_bytes": 8589934592
+        },
+        "admission": {
+          "slots": 4,
+          "forecast_peak_bytes": 94939781120,
+          "additional_live_bytes": 12399558144,
+          "process_deficit_bytes": 450500608,
+          "conservative_host_remaining_bytes": 18428768768,
+          "process_limit_fits": false,
+          "host_reserve_fits": true,
+          "admission_fits": false,
+          "execution_validated": false
+        },
+        "after_cleanup": {
+          "allocated_bytes": 77393408000,
+          "reserved_bytes": 82866864128,
+          "peak_allocated_bytes": 89029306880,
+          "peak_reserved_bytes": 89644859392,
+          "host_available_bytes": 30774935552
+        }
+      }
+    ],
+    "after_exact_weight_views": [
+      {
+        "index_ring_rows": 2048,
+        "chunk_rows": 1024,
+        "before": {
+          "allocated_bytes": 76837662720,
+          "reserved_bytes": 82866864128,
+          "peak_allocated_bytes": 89029306880,
+          "peak_reserved_bytes": 89644859392,
+          "host_available_bytes": 30754570240
+        },
+        "shared": {
+          "allocated_bytes": 78669026304,
+          "reserved_bytes": 78815166464,
+          "peak_allocated_bytes": 89029306880,
+          "peak_reserved_bytes": 89644859392,
+          "host_available_bytes": 34907119616
+        },
+        "first_slot": {
+          "allocated_bytes": 82234751488,
+          "reserved_bytes": 82569068544,
+          "peak_allocated_bytes": 89029306880,
+          "peak_reserved_bytes": 89644859392,
+          "host_available_bytes": 30942040064
+        },
+        "private_bytes": 3565725184,
+        "feature_bytes": 156876800,
+        "budget": {
+          "shared_bytes": 78669026304,
+          "slot_bytes": 3722601984,
+          "transient_bytes": 1073741824,
+          "allocation_limit_bytes": 94489280512,
+          "host_reserve_bytes": 8589934592
+        },
+        "admission": {
+          "slots": 4,
+          "forecast_peak_bytes": 94633176064,
+          "additional_live_bytes": 12398424576,
+          "process_deficit_bytes": 143895552,
+          "conservative_host_remaining_bytes": 18543615488,
+          "process_limit_fits": false,
+          "host_reserve_fits": true,
+          "admission_fits": false,
+          "execution_validated": false
+        },
+        "after_cleanup": {
+          "allocated_bytes": 76837662720,
+          "reserved_bytes": 82569068544,
+          "peak_allocated_bytes": 89029306880,
+          "peak_reserved_bytes": 89644859392,
+          "host_available_bytes": 30938492928
+        }
+      }
+    ],
+    "final_profile": {
+      "index_ring_rows": 2048,
+      "chunk_rows": 512,
+      "before": {
+        "allocated_bytes": 76837662720,
+        "reserved_bytes": 82569068544,
+        "peak_allocated_bytes": 89029306880,
+        "peak_reserved_bytes": 89644859392,
+        "host_available_bytes": 31053074432
+      },
+      "shared": {
+        "allocated_bytes": 78420714496,
+        "reserved_bytes": 78557216768,
+        "peak_allocated_bytes": 89029306880,
+        "peak_reserved_bytes": 89644859392,
+        "host_available_bytes": 35018596352
+      },
+      "first_slot": {
+        "allocated_bytes": 81986439680,
+        "reserved_bytes": 82313216000,
+        "peak_allocated_bytes": 89029306880,
+        "peak_reserved_bytes": 89644859392,
+        "host_available_bytes": 31491055616
+      },
+      "private_bytes": 3565725184,
+      "feature_bytes": 156876800,
+      "budget": {
+        "shared_bytes": 78420714496,
+        "slot_bytes": 3722601984,
+        "transient_bytes": 1073741824,
+        "allocation_limit_bytes": 94489280512,
+        "host_reserve_bytes": 8589934592
+      },
+      "admission": {
+        "slots": 4,
+        "forecast_peak_bytes": 94384864256,
+        "additional_live_bytes": 12398424576,
+        "process_deficit_bytes": 0,
+        "conservative_host_remaining_bytes": 19092631040,
+        "process_limit_fits": true,
+        "host_reserve_fits": true,
+        "admission_fits": true,
+        "execution_validated": false
+      },
+      "after_cleanup": {
+        "allocated_bytes": 76837662720,
+        "reserved_bytes": 82313216000,
+        "peak_allocated_bytes": 89029306880,
+        "peak_reserved_bytes": 89644859392,
+        "host_available_bytes": 31393931264
+      }
+    },
+    "duplicate_draft_bytes_reclaimed": 555745280
+  },
+  "full_index_reference": {
+    "prefill": [
+      {
+        "position": 1023,
+        "rows": 1023,
+        "exact": true
+      },
+      {
+        "position": 1025,
+        "rows": 2,
+        "exact": true
+      },
+      {
+        "position": 2049,
+        "rows": 1024,
+        "exact": true
+      },
+      {
+        "position": 2056,
+        "rows": 7,
+        "exact": true
+      }
+    ],
+    "rollback": [
+      {
+        "position": 2056,
+        "rows": 8,
+        "keep": 1,
+        "exact": true
+      },
+      {
+        "position": 2056,
+        "rows": 7,
+        "keep": 3,
+        "exact": true
+      },
+      {
+        "position": 2056,
+        "rows": 2,
+        "keep": 1,
+        "exact": true
+      }
+    ],
+    "full_prefix": {
+      "position": 131008,
+      "chunks": 256,
+      "all_chunk_logits_and_features_exact": true,
+      "all_valid_state_exact": true,
+      "diagnostic_seconds": 227.43430435704067
+    },
+    "numeric": [
+      {
+        "position": 131008,
+        "width": 1,
+        "keep": 1,
+        "parity": 0,
+        "exact": true
+      },
+      {
+        "position": 131008,
+        "width": 2,
+        "keep": 1,
+        "parity": 0,
+        "exact": true
+      },
+      {
+        "position": 131008,
+        "width": 3,
+        "keep": 3,
+        "parity": 0,
+        "exact": true
+      },
+      {
+        "position": 131008,
+        "width": 4,
+        "keep": 2,
+        "parity": 0,
+        "exact": true
+      },
+      {
+        "position": 131008,
+        "width": 5,
+        "keep": 5,
+        "parity": 0,
+        "exact": true
+      },
+      {
+        "position": 131008,
+        "width": 6,
+        "keep": 3,
+        "parity": 0,
+        "exact": true
+      },
+      {
+        "position": 131008,
+        "width": 7,
+        "keep": 7,
+        "parity": 0,
+        "exact": true
+      },
+      {
+        "position": 131008,
+        "width": 8,
+        "keep": 4,
+        "parity": 0,
+        "exact": true
+      },
+      {
+        "position": 131008,
+        "width": 1,
+        "keep": 1,
+        "parity": 1,
+        "exact": true
+      },
+      {
+        "position": 131008,
+        "width": 2,
+        "keep": 1,
+        "parity": 1,
+        "exact": true
+      },
+      {
+        "position": 131008,
+        "width": 3,
+        "keep": 3,
+        "parity": 1,
+        "exact": true
+      },
+      {
+        "position": 131008,
+        "width": 4,
+        "keep": 2,
+        "parity": 1,
+        "exact": true
+      },
+      {
+        "position": 131008,
+        "width": 5,
+        "keep": 5,
+        "parity": 1,
+        "exact": true
+      },
+      {
+        "position": 131008,
+        "width": 6,
+        "keep": 3,
+        "parity": 1,
+        "exact": true
+      },
+      {
+        "position": 131008,
+        "width": 7,
+        "keep": 7,
+        "parity": 1,
+        "exact": true
+      },
+      {
+        "position": 131008,
+        "width": 8,
+        "keep": 4,
+        "parity": 1,
+        "exact": true
+      }
+    ]
+  },
+  "context_128k": {
+    "coincident_populated_positions": [
+      131008,
+      131008,
+      131008,
+      131008
+    ],
+    "numeric": [
+      {
+        "position": 131008,
+        "width": 1,
+        "keep": 1,
+        "parity": 0,
+        "exact": true
+      },
+      {
+        "position": 131008,
+        "width": 2,
+        "keep": 1,
+        "parity": 0,
+        "exact": true
+      },
+      {
+        "position": 131008,
+        "width": 3,
+        "keep": 3,
+        "parity": 0,
+        "exact": true
+      },
+      {
+        "position": 131008,
+        "width": 4,
+        "keep": 2,
+        "parity": 0,
+        "exact": true
+      },
+      {
+        "position": 131008,
+        "width": 5,
+        "keep": 5,
+        "parity": 0,
+        "exact": true
+      },
+      {
+        "position": 131008,
+        "width": 6,
+        "keep": 3,
+        "parity": 0,
+        "exact": true
+      },
+      {
+        "position": 131008,
+        "width": 7,
+        "keep": 7,
+        "parity": 0,
+        "exact": true
+      },
+      {
+        "position": 131008,
+        "width": 8,
+        "keep": 4,
+        "parity": 0,
+        "exact": true
+      },
+      {
+        "position": 131008,
+        "width": 1,
+        "keep": 1,
+        "parity": 1,
+        "exact": true
+      },
+      {
+        "position": 131008,
+        "width": 2,
+        "keep": 1,
+        "parity": 1,
+        "exact": true
+      },
+      {
+        "position": 131008,
+        "width": 3,
+        "keep": 3,
+        "parity": 1,
+        "exact": true
+      },
+      {
+        "position": 131008,
+        "width": 4,
+        "keep": 2,
+        "parity": 1,
+        "exact": true
+      },
+      {
+        "position": 131008,
+        "width": 5,
+        "keep": 5,
+        "parity": 1,
+        "exact": true
+      },
+      {
+        "position": 131008,
+        "width": 6,
+        "keep": 3,
+        "parity": 1,
+        "exact": true
+      },
+      {
+        "position": 131008,
+        "width": 7,
+        "keep": 7,
+        "parity": 1,
+        "exact": true
+      },
+      {
+        "position": 131008,
+        "width": 8,
+        "keep": 4,
+        "parity": 1,
+        "exact": true
+      }
+    ],
+    "matches": [
+      {
+        "index": 0,
+        "tokens": true,
+        "state": true,
+        "features": true,
+        "dynamic_trace": true
+      },
+      {
+        "index": 1,
+        "tokens": true,
+        "state": true,
+        "features": true,
+        "dynamic_trace": true
+      },
+      {
+        "index": 2,
+        "tokens": true,
+        "state": true,
+        "features": true,
+        "dynamic_trace": true
+      },
+      {
+        "index": 3,
+        "tokens": true,
+        "state": true,
+        "features": true,
+        "dynamic_trace": true
+      }
+    ],
+    "target_only_controls": {
+      "0": {
+        "tokens": [
+          623,
+          6278,
+          4098,
+          5757,
+          321,
+          1496,
+          55549,
+          23470,
+          74593,
+          11,
+          279,
+          916,
+          1315,
+          1881,
+          45850,
+          11,
+          1649,
+          7236,
+          11,
+          321,
+          1622,
+          45924,
+          6044,
+          369,
+          15346,
+          310,
+          30027,
+          90508,
+          321,
+          29541,
+          13,
+          561,
+          2250,
+          18369,
+          9444,
+          2218,
+          66,
+          13834,
+          48326,
+          59493,
+          2961,
+          11,
+          46490,
+          48326,
+          14836,
+          8806,
+          11,
+          321,
+          7154,
+          38944,
+          836,
+          3712,
+          2218,
+          34099,
+          12103,
+          694,
+          55512,
+          23038,
+          364,
+          17610,
+          1528,
+          11,
+          6195,
+          11
+        ],
+        "state": {
+          "position": 131071,
+          "0.k": "a40a88469403c5b3f9d2324ca34a14d2f7675802606bd918ec21ce6a0e35b95e",
+          "0.v": "ed3f6618571993643c36f09e89f162f9aaf44ac62f1ed680cd9f7be588d044c2",
+          "0.pooled": "636fc6c791eabbd7bb7f56a5578217090da948a319bf17abe52731b8979d825c",
+          "0.raw_tail": "c5bf0ecd323e5ca5dd7d45e97e46a8f6d9067777d1d6d54f7f13ad48931e1c15",
+          "1.k": "0aded9258ecde23b25043309d14f83ef695d4ca17a09a0a43beb9f5ae395953f",
+          "1.v": "8158afe0a300d0c3cc6079592122124c5972b3d5f6808392b262e5298176b358",
+          "1.pooled": "2e36cbecdbe8eb6e6f713ddd7765cfc9a742de5a3124109952fa03c2f3b8036a",
+          "1.raw_tail": "da783e3c7cd6c256a0396af95f15623b72c93a9a66fafe0f009fbcf7b3ed93ff",
+          "2.k": "9fc3d9455accb541d87e44489b69fad34c1632bc3181afcb9e5a7295cc6ee09b",
+          "2.v": "e3d33450b7d6009c518d99eb02505e486a725fbe32bd112a9c764d2604d4ac76",
+          "2.pooled": "6c884efb386ec8b751cea5ad2a21b349d4da10b028edfa210ae596d8770117ba",
+          "2.raw_tail": "eb3405ec177f023bce1c25c507ee36f0cf429dad37a751b17640765ca6b61427",
+          "3.k": "9143387e7f86564cefb9e64940c7ff58977500a0a0eddd4da3019c701bf8bcf8",
+          "3.v": "37cc474d02403cf9055d0c0a51ef6c1f3d2d8441ab325b08a6aa5943477ac671",
+          "3.pooled": "c3203dc75a2690e0f31870f312a1d1eb6c6f6310f3c21a20a71c50683d62e23d",
+          "3.raw_tail": "7d8bff30bccfb592dd4a1300de151a68d43c12c3993091215c86285ffb399153",
+          "4.k": "f6c675d96e5e1ea41033aac644100698cdc4597ce1167fc4bb33233bb628f1b4",
+          "4.v": "4b0b225482eb1ec4ff76154e88ad5d8904c172b605bcbd223e5d2f3e5eeaa239",
+          "4.pooled": "81bcf295868d5e642b860afc5ef96f79cf6b754ee006e0d9455daefa8e15a5fb",
+          "4.raw_tail": "ec2b3dd64629bfbddc0f7cc4a37161c967ce18332eaac4aef810a3e87283e799",
+          "5.k": "eb053660c485d843e7896cf6e3ba53b0d341860bdb882c24360ef3c1247d5798",
+          "5.v": "9bd45a624df1ddcdc2d3e43affb72f9df9b415b73872da097ef93dc772d3791c",
+          "5.pooled": "a9f2858b7fe4c92a4f8fe184e19c691c49eddfcab645e13b08a8120b2325d7f9",
+          "5.raw_tail": "3b4cbda916e3183324882d3a2afa1613450c37991d1f9333b088fc07232d0c0e",
+          "6.k": "76fc43da7fd9ff9c5c1df7dc14944ab20b504be6561e0262bce2c655867da5ba",
+          "6.v": "3fbabb7c10848ced1a62e7402c0e7af47eba076a8d670f7bef2a84311f16ea27",
+          "6.pooled": "73faa32fde64c20e01fee7bc7db46187b781172e4bcfae36b0349109cebd9fe5",
+          "6.raw_tail": "2527bbba0ad10bac535cdec83ac88f0996a82ed5230d2e4c748033a0c953dd1e",
+          "7.k": "f95f5b02ac15bfe99ec1c42fbe5246553079daeb693a9aeca447b01c8f48625c",
+          "7.v": "6332ff945dd07d3169bd6af0ac394490a78a93105d5b1a62810b7d9bbf164048",
+          "7.pooled": "7df136c52087dc8b6cfe0cb387f9cfee66c8bbb8a1682327cec696ee7d28f09a",
+          "7.raw_tail": "81cc338f67cb67a4d6059245d8885d9e1181faa89e58e7604ef455588e87bb58",
+          "8.k": "dc86e69089087ae29f1bd87b651dc771f6e05595f4e0ba5a2141b5494ec41f67",
+          "8.v": "bac3d4d149263c7ff2b5aab063b182d895ddd38d19ee5e64ad53b9da2b1c79a3",
+          "8.pooled": "2b55c7e3ac6f285b66eff965175b50f732673b7b5114da03c4f40f1d90052fcc",
+          "8.raw_tail": "10dd2964315b540cd8cfc173d4c14602e22e67284818d20a2c84143b02181e9f",
+          "9.k": "d616bd026efda77fbaaaafae8a4fb5ebfb33ea97bab9071295a520a45e3bfefc",
+          "9.v": "f502beb5d9b048cd6c6fc39f0c0618e74fc9ce3f54151a78cb424d483c1f0c0c",
+          "9.pooled": "a3bdbf1e775134763ca6b7c454873341bc2ae810343c131b2801b426e0ddaaf2",
+          "9.raw_tail": "37e6c9a2031f99ffe6844e77445f7dafcf425f366d599a67e3687da988121454",
+          "10.k": "b420ba718fe594aabc448c7eb52464bc85b33fe1876c8703eb50b4565db32c39",
+          "10.v": "a4f9657751d48536090979e65cec66d143c4deff48504d6149b6bd428c87091b",
+          "10.pooled": "a3a54f3c1e32db94a5cd90bc200f7b37f3c27793db25d3d12c416f933c3be957",
+          "10.raw_tail": "f329c56bcd56d612897bbfd86d4a5664fe99a0f3adc0db7146fbf4835e1efa92",
+          "11.k": "0710bd47b6d99a320458acf106b4dcba4995ffc9aa304e6ff2e4b9e8bc6ac8c0",
+          "11.v": "15a29e64fa1940585163fef1bb4528de9eaa0fb5ebd4cef0d9f8d163b2a81f38",
+          "11.pooled": "734c3ff969884916da5b764a660b03b5d4a6b2527cbdced5d23e63052ae9352e",
+          "11.raw_tail": "a9371eb125b433e9990868564c9fe3aea8cf8954c23e7cac0c9108a35f71cae2",
+          "rec": "46914d2193a8dbcaf33bfc76a3c12b6491a9634dab84eb878c99316174518300",
+          "conv": "fbb0203ceeb830a7e14cfec88abb364fadce3073a2f8552cb850fdb2a137ce77",
+          "ple_tail": "1fd6ea4fbfb55bb610f24ed24ffbfaf819d6716b69d7b89a0edc698639d65acc",
+          "ple_history": "638e419f015a6a802619e36e171f236ee85296fa2c18a3fc67345d1bebab42f1",
+          "mtp_len": 0
+        },
+        "feature_sha256": "30654a75c3d78c71fabb6607e2cbf701158d34f4ed47cacf1032c169c2510a5f",
+        "text": "In modern distributed systems and high-performance computing architectures, the interplay between caching, queuing, and request lifecycle management is fundamental to achieving scalability and reliability. The three concepts mentioned—caches retaining reusable results, queues retaining pending tasks, and requests owning their history—represent distinct but complementary mechanisms for managing state, flow,"
+      },
+      "1": {
+        "tokens": [
+          103781,
+          96347,
+          103853,
+          109120,
+          95789,
+          109461,
+          101624,
+          108695,
+          95726,
+          110177,
+          3709,
+          115903,
+          98144,
+          101842,
+          124501,
+          111198,
+          95759,
+          97712,
+          113728,
+          97792,
+          96348,
+          112149,
+          111834,
+          98868,
+          125655,
+          100900,
+          109145,
+          245342,
+          111734,
+          9616,
+          7976,
+          203309,
+          5205,
+          332,
+          113165,
+          9616,
+          7315,
+          203309,
+          98404,
+          332,
+          101729,
+          98822,
+          101962,
+          9616,
+          1835,
+          2091,
+          33805,
+          203309,
+          1710,
+          113554,
+          96043,
+          97708,
+          118303,
+          96125,
+          101693,
+          5205,
+          98423,
+          97447,
+          95824,
+          98852,
+          120069,
+          118426,
+          1710,
+          271
+        ],
+        "state": {
+          "position": 131071,
+          "0.k": "5c1c183569ff291a5bc25fcb7bdc70101c70fb9ca11965dbfa99427b1fdb645f",
+          "0.v": "ebef1459d9e63d3d9d9f0c83c601b887ba70c616003d6dd49868037114cd050b",
+          "0.pooled": "19c0ce370154976ed5c3ba9119641940bb59620c163516afc960e288411416f4",
+          "0.raw_tail": "20a1b64fcd5a5c164cbd66fb8e7c510657f85d04bb092849c8ac7fd27bf16c88",
+          "1.k": "a433b434d6e2934244c36eaa6184bf563751dd6e8d1f55c58280eb9033548d0b",
+          "1.v": "8af552502026f4d70a983c7160453e4f4951d5117fbe403d9ca900494e7814a9",
+          "1.pooled": "2135c9f22efa4c97bc4b6e822c59a1dc0b6d8df78ae2744fc543717ac1ba2812",
+          "1.raw_tail": "b3f47c69bb59196c6f57d665af4498ff4179209012cf2de5f3641408fc39ceb4",
+          "2.k": "ab32fb27979beac0c7478f5ca88d41feb08d4ad64616ea0b11c7144d01a62dac",
+          "2.v": "9d0b56ba107ca65c6f866ea570d5cd0c2fcfe018e86e520d89ce668d3d36c48c",
+          "2.pooled": "712630f733e45d997620f164bb54071fccc79461c1a94fce88ade555945ddeea",
+          "2.raw_tail": "2ddb1671a2a111755c3acbf0ec676ebe24e4883ba9cc02144549a1c3fbe483e7",
+          "3.k": "344b51c23ec404f71df569ab8c703950f07543e1b99cb19c500b89f891bcb030",
+          "3.v": "7e46a6e1f5fce182aa163bc7bbe5e3044ae969768997aaf78efcd1ee02a1ff5b",
+          "3.pooled": "412e2886327cba690ff142a221bda860f22fac99b238b3ecf0cdcfae31d5cc48",
+          "3.raw_tail": "ea7e2342f79d9cd2f58568a6243b5f35e706a0b222cc280a81f82f1230c112e3",
+          "4.k": "c5e92eb6a91457242b64cbdf4a9f30bac10177c36fdb09907badce4ffd2bec69",
+          "4.v": "456d9d6e0785e638f17a22090e2641439463324d36cafa4e42c7dd9ed05bc8b7",
+          "4.pooled": "f3db88dacd5b0c1ed1de709816cad21644aa90a2df70504457f91a66909b9a9d",
+          "4.raw_tail": "fada40b0129c05bbea15f9d3626a31acef8fa6a8e59fb012a04f5f198ff217a5",
+          "5.k": "d3d6563bb05cb44fd3845e1afd449836b786871b8272012b0e21dcc883763f9e",
+          "5.v": "bbee90643ea9f8da0d250fab8b659160c43a77287da582797edfcc026019e67a",
+          "5.pooled": "d12347d3d2b21cf7a95ddf22e3a14948d8d56c9da9549e67bfa7dff75cf21eb5",
+          "5.raw_tail": "2b1c2816a449e5c7bcbbcc22d40f594d9e334d13c9b43fb7dd21a048827cb040",
+          "6.k": "000b3d1a0fd2ebf1465382f6702c8fa9deafddf2cc53fd6c9454aec96272147d",
+          "6.v": "86a529c4bbd419d56bba23cadf01bcf35ecaa23509735b1b27201d62eaa0919f",
+          "6.pooled": "31a03e112a07ae84ffea8b64f9bb9e79f49ca5bbcb9e88e90cd8280f9ebefea8",
+          "6.raw_tail": "ffcf792c8207d862ab9724db0d120e7dc1b696ad0410087e43130825e8d3b66e",
+          "7.k": "e98ad535230804a701482cb84d1caadd5630f9286ab3fd7d15d97c9ea943c7d3",
+          "7.v": "5f995e7b2af57899500554a50e26997ece7edc28549d04036e1502ec483f89b9",
+          "7.pooled": "2e445c7b00a6d88041fe6381cb0454fb1031afbc08de7b784e795628efec27ba",
+          "7.raw_tail": "65056757496da5f81e31134a00ed58fac3d59d066b1a00a2be5b8a2e2917dda3",
+          "8.k": "c63143b9cb78e5cda736ff9a1b6b6333b1f21f8818d89d4ede04d069058e31bf",
+          "8.v": "e292739c10b85a4ea64bf4246bc59ff0460f97e6d13a26e8f912519c490d1fcb",
+          "8.pooled": "779850012e0e2ba809a1f286792215224e16d4f47ab87fa073d6ccd9899849da",
+          "8.raw_tail": "96b88ef116cd95f0f48e537ab5fea2c6e8fce0748ac56ab547f69c92734e0499",
+          "9.k": "08aac3b524507351707c6748a6ea73f8f1268b2a1a7185dfff19dd64ffeffea2",
+          "9.v": "bf1b850f2caf939092370a920fe74a0f91a8cae0f66e9b23a629c46e7e193f0f",
+          "9.pooled": "cbe1842ae3d7624a496226881c9335b7cc09b14e4228e19dac6a6a0ef362bc38",
+          "9.raw_tail": "67e945eb834f9eb4b146e1631341eafcfa5cc5076d3b477da125f292c96a7edc",
+          "10.k": "87281b428bcf7f4fb7c3434a931d41088b9a7548c9bc631d93ffda39f7860d89",
+          "10.v": "b5a09487c759fa668d8fde085c3f6359961aed828b0e611e43c2d664c82b817f",
+          "10.pooled": "e260cc6ce3bd012559b2952c764f13286ec2a55f5f167b38fa4bbc977a98b397",
+          "10.raw_tail": "0432a6e0cc3f5879ff700c60e7bcdfc4eeaa25904b323178f0de16f1f8a6f0e0",
+          "11.k": "0472924f16769e9de3e460272a5316a5fc0305f341f79b7116a0ab74afb52615",
+          "11.v": "4ac0edeaae5196225778d5d0583ff2ee1ce10849d58aad95fcb66845bb843cb4",
+          "11.pooled": "5412847180035e72483f2b8a7c6de3406f67f03d4e4ee2687f144dd577adb1c5",
+          "11.raw_tail": "0de6239d63c5028befcb27fb0a28eae3cdff81bbc7d81bd127e0639e679f1e71",
+          "rec": "45663e3a5d0a11eab4eec8754da363f918c7260b7822972a2a141ab8df20a256",
+          "conv": "4542830db29880f377a7db58160860de1834f5cb75e6c46e8f3b80680f3b90d0",
+          "ple_tail": "a72a2573c693db2b5b65439f03bbd3faa428f12a89e49fd5da90ab094d816892",
+          "ple_history": "e599a981af2a8d4c6f46cdf0424e5ada57556a06f167d835d84fc20daad23e1c",
+          "mtp_len": 0
+        },
+        "feature_sha256": "ada2b88d62f6d7a0a38e21ac2609c0dc77e8534d7236debf9e738a03338a00ac",
+        "text": "尽管您提供的文本中充满了大量重复的语句，但其核心逻辑清晰地指向了现代高性能计算或分布式系统中三个至关重要的架构组件：**缓存（Cache）**、**队列（Queue）**以及**请求状态隔离（Request Isolation）**。这三者共同构成了一个高效、稳定且可维护的系统骨架。\n\n"
+      },
+      "2": {
+        "tokens": [
+          760,
+          3766,
+          1970,
+          41643,
+          18091,
+          264,
+          13427,
+          709,
+          1510,
+          9301,
+          63,
+          421,
+          34237,
+          3470,
+          494,
+          449,
+          49124,
+          1345,
+          19720,
+          264,
+          716,
+          314,
+          3753,
+          3470,
+          310,
+          5790,
+          57060,
+          13,
+          4213,
+          11,
+          279,
+          9640,
+          16561,
+          364,
+          449,
+          15673,
+          314,
+          328,
+          9082,
+          321,
+          1622,
+          14834,
+          23038,
+          1288,
+          864,
+          513,
+          18369,
+          10813,
+          5634,
+          440,
+          4098,
+          5757,
+          11,
+          11436,
+          75166,
+          30742,
+          318,
+          4650,
+          89131,
+          40,
+          681,
+          466,
+          3050,
+          3061
+        ],
+        "state": {
+          "position": 131071,
+          "0.k": "d5c8d9946206c74f24a543d2123d49b32389a34e75d51eb43f2ffc2a971bcb53",
+          "0.v": "ea1f79151047984dec2293bb35c3ddcdbf066295df511f1e40f2fd4a7cfbc607",
+          "0.pooled": "b5d5699a1252b33d30000d4ad8f3e14018f878275d94ca571bebd81f7d3a34b8",
+          "0.raw_tail": "944a8b49508a8692387bf232fb2dec2d8e6fbc573f8fbb4af1968a612fc95922",
+          "1.k": "e2acfcade316aaa88193645131c7d732ff11d347d3a0eb449b302993bb359e67",
+          "1.v": "436351d2feb80d2057fef62eec0df1070376ae7c112d4a3c3ecaf2c9209bd12c",
+          "1.pooled": "7d01c8ddf7629e88e3bc5a7c5da6e97719a0d393ae4078b43ffb963f1741cddd",
+          "1.raw_tail": "6ca65c025c2cec3f236af93b07929cb119dbbc8788de71044da9b898b19a0b26",
+          "2.k": "7b0527362d6e754bcf5568403f787f6595d22493e4c1e18bcd69f951e5c5fde7",
+          "2.v": "33e1fa45600ce1e87aa53a20f936d588342840eac280df3081155a4ef39ee56a",
+          "2.pooled": "13456d89bdca5777ed0a0b361bba204f7c57a1061db407aba425792787bd98dc",
+          "2.raw_tail": "12153e337a45e7f4bb6b76e24ccfdf7af843041d82ff1af1911e2a8ded3c9d5c",
+          "3.k": "516ff4da7145b59fb0dbafb21bc64a76c73805c7215a11e7b0cddf8f04def4d0",
+          "3.v": "62f41f2043fd71339af5181c1e46be7d3488c08575aeec6109b3c9722e4e2b84",
+          "3.pooled": "5f2fe99c777826bf0bf9f329e19fe3330c6273cd7b3d0f9013b928fdc262c00f",
+          "3.raw_tail": "290b38623cb3d9a0356ad84a214c9fcbe16e0ae900aaa1b64dde847365d838b1",
+          "4.k": "045e1ae671c65f66de7f6270aff37d36e8817c085582301be34a2032a27317c2",
+          "4.v": "ed267ce5594771edcd4b9f12a7dcbbd53b81766a02f85724cc191c2d170240d7",
+          "4.pooled": "933c8bc75daf0b3cd322b2335171de0fddd7b6ed9340ee486c6b0f5745b6b9ad",
+          "4.raw_tail": "19a91d5ea7a09180d862f454a54991c5c9b7432f4cbe13ed32c36b31c6204f2e",
+          "5.k": "a3e03928ce505134c2b6f5f11d34d4d6d51adc20895f56b51a60959b21b569a9",
+          "5.v": "2f9cd18ba1b64242be20b179cd30068449c5dc2a9de91a37255f279d76d64727",
+          "5.pooled": "c8c8f722f51922358bcf54512f9d90c36bee1d4b71784a75326f48ecb5f2e747",
+          "5.raw_tail": "96c8f9d12e08d7d77654bb4617ddcad8a12472ecc3ed45e20895a652f27af689",
+          "6.k": "a95f7177483e5b6d673a735d0d4e6f786c95501ea88f5a81ffe9ec202de51745",
+          "6.v": "122589b8b67913794e715f1ffba4adff0ad840ca6e6e8421da24f0c0bab9512d",
+          "6.pooled": "e3a9729790f2a206f9434da77b9d949bf6a8017d89a5f8c9a12187839849eac4",
+          "6.raw_tail": "cc98695860e75b003561356e5e0d7ce9206c649ce8a120357cf33f8daf16135e",
+          "7.k": "356841ddac84f644b84fb755729640c98d2d6532f646009220ceb0c55b7e6d00",
+          "7.v": "c999d0433ecddea2a6aa2df3c466eb7091aad933ff77634d3105855df17fbeaf",
+          "7.pooled": "14d0e7ccd5c7c78ebaa2c34802becb6186817f6bf0a9de1d7b148b1fe4b19c4f",
+          "7.raw_tail": "a79ccff0a54d5796e3e61ccab9b7aae4e5d77982c333a978c30164ee20aea6c0",
+          "8.k": "3c4a4da06ccb1c63b5b02e6d263a6d3aa1fa57cd29779dff684c09f2a4a76b6e",
+          "8.v": "0f893bcd0e9c1298042698981f7a1afe113ceafc19b418a5876d6a91d7b5bb31",
+          "8.pooled": "e42b9b3282575b523118e616b0b0dd6420d3f8fe1d989198d947b949773f08db",
+          "8.raw_tail": "bdac1cae83fff00f1b911fc103aad8e3a63892fa5eba1a7c875756688043b0f9",
+          "9.k": "394c34a7588334111b82937d83ba6c0d49cce878348f666b036f68b475ec74f9",
+          "9.v": "08bb4076c753a65815a6568097232b1beaa65fac4b7cc4d41078b7aba38cc406",
+          "9.pooled": "b4b5f1f22a114283914f4d56ba781b3b3ce2feefa92039bbf88ff88be3cbecc3",
+          "9.raw_tail": "008a7ccc5d3de79f1874650de77d45ba2f5b0f2e4f83490490336057774c892c",
+          "10.k": "2ebd2b8a2ccd75015cce665660e57d1622630c08fcab65ae98cabf7840404dad",
+          "10.v": "987a7a4d5be5bb0199f1cb4c2a5f83c429a690cb05bd5e90924abf1733fb81a0",
+          "10.pooled": "2c993826d5294ca3e29fb4e1e814a66ea32b8c86b36952c20f17754f4e4cff9b",
+          "10.raw_tail": "687bee84e4d9c0ae6cff1bc043ffc6a47c1ddc94aba33c88f2a298d0501fd25f",
+          "11.k": "3cf84bc547e0291d4f6c54c4e203b9ba24c7bf146d0dfc8a8cf0350025703fac",
+          "11.v": "152a482adbf89c9c9c7abe4e22dd0f9d5bc5dbf995fec5f97457e65c278f6d64",
+          "11.pooled": "4346fbde1d5a7a9500d4e13cb6264ab40e70efe988d01b72d15c35550e375cd1",
+          "11.raw_tail": "662eee061fe528ac10bd4e090aa991597a2a7caa7ed04806767461585576dbbe",
+          "rec": "0f8219ef67f5a8058d156925bdf83c54d143ea34c0bd5efa5c00872402ef4e8d",
+          "conv": "3c1f2960876b285da3195de1a826d15aaeb7cf20e30e0c6b61f15e0578ba0bef",
+          "ple_tail": "9e4936d484b74524e84ae3d466c9218ecb4822339b94f90c6cac0899e9496ee0",
+          "ple_history": "c4892904306af7b40107ba863a887d2ca85d3386a7fb96db95aed164e80020c1",
+          "mtp_len": 0
+        },
+        "feature_sha256": "be91bb51477a9af663c67d7f7f87817374eaeae68634d652518b9522cfb857c3",
+        "text": "The provided code snippet defines a generator function `unique` that yields items from an iterable while maintaining a set of seen items to ensure uniqueness. However, the prompt asks for an explanation of \"cache and request ownership mechanisms,\" which are concepts typically associated with distributed systems, hardware coherence protocols (like MESI), or specific software"
+      },
+      "3": {
+        "tokens": [
+          623,
+          1496,
+          55549,
+          23470,
+          321,
+          4098,
+          5757,
+          11,
+          279,
+          15752,
+          1881,
+          45850,
+          23038,
+          321,
+          1622,
+          14834,
+          369,
+          8751,
+          364,
+          19720,
+          795,
+          27224,
+          11,
+          1785,
+          19150,
+          11,
+          321,
+          4939,
+          14588,
+          13,
+          561,
+          6007,
+          16988,
+          10661,
+          89534,
+          1835,
+          29310,
+          13205,
+          19954,
+          2961,
+          8387,
+          62804,
+          92448,
+          82,
+          264,
+          2790,
+          1332,
+          1754,
+          1622,
+          466,
+          3669,
+          30941,
+          1141,
+          1765,
+          1593,
+          314,
+          19954,
+          795,
+          310,
+          5190,
+          6741,
+          4530,
+          321,
+          5790
+        ],
+        "state": {
+          "position": 131071,
+          "0.k": "33b0e5fff154c6d22610c2d4c07e38dc40d200110ec5777954e1400849e30ddc",
+          "0.v": "0caa9641f6056e769dc88d2ff74598a4cb04eff9f79c9ae665d62d95c19d147d",
+          "0.pooled": "581eaf0af98704b31570804e6add4b6626eefa32c26d5a67059168a97df5a1fb",
+          "0.raw_tail": "adec081d9a915df0b178c9a68c315e622fa55d7b579a5a43c797031266ae30d8",
+          "1.k": "5497eed70621b97cb4bb6b1383470856e7e209fb88016d69059e6389bc682136",
+          "1.v": "405b9862b7dbc66b0e12ce791581cfd28564396d9a9dd5e80f5ef5a19d3ea476",
+          "1.pooled": "2f9a20592ec36396154634484ea677a62c889aa3deaf4d4f9f0169dd9d62f67e",
+          "1.raw_tail": "4cee0b8e812ae98e0ca692a5f68f0bc3f3a02d029e674943831820fa57833292",
+          "2.k": "e204f738ca3a3d18d369644628063f76fe482f674a2cc08c313b72d299b15c92",
+          "2.v": "0ed1f90febaa200eb82210630992548c5ca2d3d2c077bac3b87160cb9ab7d67d",
+          "2.pooled": "a53e69d22468334c0e1082cdd69411c6138345b056c55e1e903ae8f64fa303ce",
+          "2.raw_tail": "bd7d68323cc0bf6b6f3885ff4a3ac76cd27351d4a8afef1e7ab6826df4be836f",
+          "3.k": "8320d8959bdf0522fdd498a2b3b7bcd3ab7b86dc8fd5af51a022ccd321488821",
+          "3.v": "7f478470f89180428651826493fadc041a9d712812036ae595fd25538ec5e5f2",
+          "3.pooled": "d07ed2ea5e3058ad828af0ca3a018d98152e2e9689c9339ceabec0a27dc6d0d8",
+          "3.raw_tail": "afdb5d18b204967b04a5d6df0a4b410ab3848e2b7235c759dbc1c46af25f247e",
+          "4.k": "373c4f4ed2fe4369ae793676e2b54cb6e8dd33154603b52cd2b09b2f89096f48",
+          "4.v": "ae257a23b9316c25c52f80e65f0758759bc5e9f411641a541565eccf956bf202",
+          "4.pooled": "1a30b19a102c35adc44359d481d212ef60e39ed608d5c64f63902e09efce12d4",
+          "4.raw_tail": "2b00f0017a0cfa87cca5047087c25e9af9024c0b3a4c91890e288106e9e2e794",
+          "5.k": "b136bbcfe124bb28bbbc3ba5e4ed3e49e42117ab3d90668bbad8b34e5f4fa9a6",
+          "5.v": "4e8687dd0cd634523dea3fed80057c9f200add9004f897dcb7afb3a5045763f1",
+          "5.pooled": "5e74e3e7c34d315ff4cd1d0e1651d36016cde6163149c19df8112d0e8a22575e",
+          "5.raw_tail": "379f3d7ffbe67de0638fa9e023b226dc2f9482beb549ff1be52eb2777cdf6ce2",
+          "6.k": "b735aa5a20c3533bbd27c1ebc2758bcbeaa97d45c29aa7e8ebde0623da0b6784",
+          "6.v": "b18f1bbabf294fa131026fb20cd26cffc4d753680196d6d1c2a177a700eea76f",
+          "6.pooled": "4689c37574faa4850caa1802dd2aefdf6d01c744ed37673009a490e760024282",
+          "6.raw_tail": "bca0aa2c0eb0382496b762329c1abb3bfbd32b2437ddc0032acacc9cf9b2a983",
+          "7.k": "168e804fe85bb9499cadec323ad412c487a9a63334716f44f937364148f81d1d",
+          "7.v": "cefddd5f79ea0e2c517c22550067a35856359c01d7035f25aa33fea0ef3541e7",
+          "7.pooled": "b7914bf6f7977c534ace2ef0e11b6f0cb70efaebcc1bcb5ae8fd37ab2ca62f1c",
+          "7.raw_tail": "51b502bfdee395c0c506e5a1f4de4fc045e2def541026bfd7bffeb82477b9f8c",
+          "8.k": "a7c61bb3335813658292d63d43000c4f8fe7d713d512b1a2000379566885cc4e",
+          "8.v": "3e43b3d878c5c99d53436f7926d9b099d308ed2acc6ea724a28ee0c0e8bc1717",
+          "8.pooled": "800e2bcf1d5552e054075880caa4b3fa129ad6061472ba9d0dd964bf8cc2ec47",
+          "8.raw_tail": "beb9a21dc12bfe405f4a9f18c87dea48c17bbaa947ef035f03c7a28dc622d275",
+          "9.k": "caec65de1d2b7146be9e798f035cb5172ee8cef2a8e6ce387bdfdcc5c8cc0f18",
+          "9.v": "b213a204014a9fca675cca591a9e4a8230f3465d7d5afbf664f598d6b4996d57",
+          "9.pooled": "581a062ec26d1e17747def07487b78f4fefcff1fbd3df5fcb5af3f6ca1539dc5",
+          "9.raw_tail": "30a3d85aa55e701cb8177cb86d1f4d748c6d810224df7b3f900397b702614e5f",
+          "10.k": "03c29578658525aab0fb1e089dc0d9784b4fa64a2718915570bafcdc85c49515",
+          "10.v": "bc5819558856cd8b2cee34902d49a06b537046160aa1fe07c1575d02bf232bb3",
+          "10.pooled": "6c4ca55796a1bf771aa432557c2e8b7f9871bd1eed0a490874570098d31be61a",
+          "10.raw_tail": "c12e34ce06de84273c24fe21360a6190f3fb03fdbc4702196bba81e7b5c5b906",
+          "11.k": "9a7a72f5963b5b7cb20141c5a9bfebcf78f25c2c3fc1ce51816296f135a55f3f",
+          "11.v": "04d07045dc499989f522080ff7a735aff1d910ace5e99017bcf1a0c01f1f415e",
+          "11.pooled": "1eee388580b194f3b905169a9a5839102ea97269e6486fb8eb3db4d693d5b659",
+          "11.raw_tail": "1b7e8f4b2b1e861604dfcc2f88d7e32973d99b643a03d758e615820927784fed",
+          "rec": "36a15bc7a8f49cba789b1272a4afc68deb9ef3fddc87494fec7b4e3da903c963",
+          "conv": "963d1ed23a86713a017acc7838b6aa2ba26ee864a1dda978f6666f09f4fd566c",
+          "ple_tail": "d7b22655b1d6b3fa0430848e5394fdda1c1902a7d19d1e310468d2d15e09c7ea",
+          "ple_history": "cb07d470429aa2483571f5486b64f020b7968a429194747c44312389c1be5afe",
+          "mtp_len": 0
+        },
+        "feature_sha256": "76edaed989431a233ea2cda9ca89d2a558ed0bd12b36f9e700c2f32a3d2d543a",
+        "text": "In high-performance computing and distributed systems, the interaction between caching mechanisms and request ownership is critical for maintaining data consistency, system stability, and resource efficiency. The core principle stated—\"Request isolation keeps cached results separate\"—suggests a design where each request or session maintains its own view of cached data to prevent race conditions and ensure"
+      }
+    },
+    "http": {
+      "responses": [
+        {
+          "index": 0,
+          "request_id": "5bbad4a1eb344f0cb9e1583e5660214b",
+          "text": "In modern distributed systems and high-performance computing architectures, the interplay between caching, queuing, and request lifecycle management is fundamental to achieving scalability and reliability. The three concepts mentioned—caches retaining reusable results, queues retaining pending tasks, and requests owning their history—represent distinct but complementary mechanisms for managing state, flow,",
+          "usage": {
+            "prompt_tokens": 131008,
+            "completion_tokens": 64,
+            "total_tokens": 131072
+          },
+          "stream": true,
+          "client_seconds": 474.67238480388187
+        },
+        {
+          "index": 1,
+          "request_id": "57d7eee02e1a402b9f3861316d8ec94a",
+          "text": "尽管您提供的文本中充满了大量重复的语句，但其核心逻辑清晰地指向了现代高性能计算或分布式系统中三个至关重要的架构组件：**缓存（Cache）**、**队列（Queue）**以及**请求状态隔离（Request Isolation）**。这三者共同构成了一个高效、稳定且可维护的系统骨架。\n\n",
+          "usage": {
+            "prompt_tokens": 131008,
+            "completion_tokens": 64,
+            "total_tokens": 131072
+          },
+          "stream": false,
+          "client_seconds": 252.15077331615612
+        },
+        {
+          "index": 2,
+          "request_id": "8797d065b3124b13a1556478c4ace4a4",
+          "text": "The provided code snippet defines a generator function `unique` that yields items from an iterable while maintaining a set of seen items to ensure uniqueness. However, the prompt asks for an explanation of \"cache and request ownership mechanisms,\" which are concepts typically associated with distributed systems, hardware coherence protocols (like MESI), or specific software",
+          "usage": {
+            "prompt_tokens": 131008,
+            "completion_tokens": 64,
+            "total_tokens": 131072
+          },
+          "stream": true,
+          "client_seconds": 132.44946839497425
+        },
+        {
+          "index": 3,
+          "request_id": "32e9c70476284452b6ce7225049c99fc",
+          "text": "In high-performance computing and distributed systems, the interaction between caching mechanisms and request ownership is critical for maintaining data consistency, system stability, and resource efficiency. The core principle stated—\"Request isolation keeps cached results separate\"—suggests a design where each request or session maintains its own view of cached data to prevent race conditions and ensure",
+          "usage": {
+            "prompt_tokens": 131008,
+            "completion_tokens": 64,
+            "total_tokens": 131072
+          },
+          "stream": false,
+          "client_seconds": 369.4931285751518
+        }
+      ],
+      "wall_seconds": 474.67866243002936,
+      "events": {
+        "8797d065b3124b13a1556478c4ace4a4": [
+          {
+            "emitted": 1,
+            "elapsed": 120.73969905194826,
+            "ttft": 120.73969905194826,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 120.81896228389814,
+            "ttft": 120.73969905194826,
+            "finish": null
+          },
+          {
+            "emitted": 3,
+            "elapsed": 121.27641342789866,
+            "ttft": 120.73969905194826,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 121.73883461602964,
+            "ttft": 120.73969905194826,
+            "finish": null
+          },
+          {
+            "emitted": 5,
+            "elapsed": 122.19989593699574,
+            "ttft": 120.73969905194826,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 122.66886261594482,
+            "ttft": 120.73969905194826,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 123.14696828997694,
+            "ttft": 120.73969905194826,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 123.62696374906227,
+            "ttft": 120.73969905194826,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 124.10055328090675,
+            "ttft": 120.73969905194826,
+            "finish": null
+          },
+          {
+            "emitted": 4,
+            "elapsed": 124.5793003779836,
+            "ttft": 120.73969905194826,
+            "finish": null
+          },
+          {
+            "emitted": 4,
+            "elapsed": 125.07271139789373,
+            "ttft": 120.73969905194826,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 125.55087831197307,
+            "ttft": 120.73969905194826,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 126.04463987401687,
+            "ttft": 120.73969905194826,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 126.51527518802322,
+            "ttft": 120.73969905194826,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 126.99578849389218,
+            "ttft": 120.73969905194826,
+            "finish": null
+          },
+          {
+            "emitted": 4,
+            "elapsed": 127.47626693407074,
+            "ttft": 120.73969905194826,
+            "finish": null
+          },
+          {
+            "emitted": 8,
+            "elapsed": 127.96365970000625,
+            "ttft": 120.73969905194826,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 128.45491480687633,
+            "ttft": 120.73969905194826,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 128.93705227505416,
+            "ttft": 120.73969905194826,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 129.41975177591667,
+            "ttft": 120.73969905194826,
+            "finish": null
+          },
+          {
+            "emitted": 3,
+            "elapsed": 129.8936095610261,
+            "ttft": 120.73969905194826,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 130.3743077670224,
+            "ttft": 120.73969905194826,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 130.85179235297255,
+            "ttft": 120.73969905194826,
+            "finish": null
+          },
+          {
+            "emitted": 4,
+            "elapsed": 131.33339854492806,
+            "ttft": 120.73969905194826,
+            "finish": null
+          },
+          {
+            "emitted": 3,
+            "elapsed": 131.81157874804921,
+            "ttft": 120.73969905194826,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 132.26853004097939,
+            "ttft": 120.73969905194826,
+            "finish": "length"
+          }
+        ],
+        "57d7eee02e1a402b9f3861316d8ec94a": [
+          {
+            "emitted": 1,
+            "elapsed": 237.88207900500856,
+            "ttft": 237.88207900500856,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 237.9524878389202,
+            "ttft": 237.88207900500856,
+            "finish": null
+          },
+          {
+            "emitted": 3,
+            "elapsed": 238.4124848099891,
+            "ttft": 237.88207900500856,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 238.87837294396013,
+            "ttft": 237.88207900500856,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 239.34726453293115,
+            "ttft": 237.88207900500856,
+            "finish": null
+          },
+          {
+            "emitted": 3,
+            "elapsed": 239.830999329919,
+            "ttft": 237.88207900500856,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 240.30087700183503,
+            "ttft": 237.88207900500856,
+            "finish": null
+          },
+          {
+            "emitted": 3,
+            "elapsed": 240.76631055190228,
+            "ttft": 237.88207900500856,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 241.2402736649383,
+            "ttft": 237.88207900500856,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 241.71311964886263,
+            "ttft": 237.88207900500856,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 242.20130521501414,
+            "ttft": 237.88207900500856,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 242.68672610702924,
+            "ttft": 237.88207900500856,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 243.17312790104188,
+            "ttft": 237.88207900500856,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 243.65394121594727,
+            "ttft": 237.88207900500856,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 244.13775524892844,
+            "ttft": 237.88207900500856,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 244.62179310503416,
+            "ttft": 237.88207900500856,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 245.112941571977,
+            "ttft": 237.88207900500856,
+            "finish": null
+          },
+          {
+            "emitted": 4,
+            "elapsed": 245.60353664285503,
+            "ttft": 237.88207900500856,
+            "finish": null
+          },
+          {
+            "emitted": 4,
+            "elapsed": 246.0987104868982,
+            "ttft": 237.88207900500856,
+            "finish": null
+          },
+          {
+            "emitted": 4,
+            "elapsed": 246.57555841305293,
+            "ttft": 237.88207900500856,
+            "finish": null
+          },
+          {
+            "emitted": 3,
+            "elapsed": 247.06743746995926,
+            "ttft": 237.88207900500856,
+            "finish": null
+          },
+          {
+            "emitted": 4,
+            "elapsed": 247.5561661410611,
+            "ttft": 237.88207900500856,
+            "finish": null
+          },
+          {
+            "emitted": 4,
+            "elapsed": 248.04658638685942,
+            "ttft": 237.88207900500856,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 248.5284441090189,
+            "ttft": 237.88207900500856,
+            "finish": null
+          },
+          {
+            "emitted": 4,
+            "elapsed": 249.01172172487713,
+            "ttft": 237.88207900500856,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 249.49746053596027,
+            "ttft": 237.88207900500856,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 249.98885041289032,
+            "ttft": 237.88207900500856,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 250.4723385379184,
+            "ttft": 237.88207900500856,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 250.9548547519371,
+            "ttft": 237.88207900500856,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 251.43787472695112,
+            "ttft": 237.88207900500856,
+            "finish": "length"
+          }
+        ],
+        "32e9c70476284452b6ce7225049c99fc": [
+          {
+            "emitted": 1,
+            "elapsed": 356.1505780450534,
+            "ttft": 356.1505780450534,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 356.21861533401534,
+            "ttft": 356.1505780450534,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 356.6619778468739,
+            "ttft": 356.1505780450534,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 357.1188115228433,
+            "ttft": 356.1505780450534,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 357.5754184280522,
+            "ttft": 356.1505780450534,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 358.05486986390315,
+            "ttft": 356.1505780450534,
+            "finish": null
+          },
+          {
+            "emitted": 3,
+            "elapsed": 358.52606385503896,
+            "ttft": 356.1505780450534,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 358.99371710885316,
+            "ttft": 356.1505780450534,
+            "finish": null
+          },
+          {
+            "emitted": 3,
+            "elapsed": 359.46637492789887,
+            "ttft": 356.1505780450534,
+            "finish": null
+          },
+          {
+            "emitted": 4,
+            "elapsed": 359.95342989685014,
+            "ttft": 356.1505780450534,
+            "finish": null
+          },
+          {
+            "emitted": 3,
+            "elapsed": 360.41698079393245,
+            "ttft": 356.1505780450534,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 360.89664219203405,
+            "ttft": 356.1505780450534,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 361.3851529560052,
+            "ttft": 356.1505780450534,
+            "finish": null
+          },
+          {
+            "emitted": 7,
+            "elapsed": 361.8717981900554,
+            "ttft": 356.1505780450534,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 362.33710158686154,
+            "ttft": 356.1505780450534,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 362.8104931770358,
+            "ttft": 356.1505780450534,
+            "finish": null
+          },
+          {
+            "emitted": 3,
+            "elapsed": 363.3084399290383,
+            "ttft": 356.1505780450534,
+            "finish": null
+          },
+          {
+            "emitted": 5,
+            "elapsed": 363.80061148595996,
+            "ttft": 356.1505780450534,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 364.29383650398813,
+            "ttft": 356.1505780450534,
+            "finish": null
+          },
+          {
+            "emitted": 3,
+            "elapsed": 364.7885047409218,
+            "ttft": 356.1505780450534,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 365.2615446290001,
+            "ttft": 356.1505780450534,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 365.74353689001873,
+            "ttft": 356.1505780450534,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 366.2341022109613,
+            "ttft": 356.1505780450534,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 366.70846104389057,
+            "ttft": 356.1505780450534,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 367.2095957370475,
+            "ttft": 356.1505780450534,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 367.6976156020537,
+            "ttft": 356.1505780450534,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 368.1700446328614,
+            "ttft": 356.1505780450534,
+            "finish": null
+          },
+          {
+            "emitted": 3,
+            "elapsed": 368.64435726893134,
+            "ttft": 356.1505780450534,
+            "finish": "length"
+          }
+        ],
+        "5bbad4a1eb344f0cb9e1583e5660214b": [
+          {
+            "emitted": 1,
+            "elapsed": 471.6209331639111,
+            "ttft": 471.6209331639111,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 471.6918822049629,
+            "ttft": 471.6209331639111,
+            "finish": null
+          },
+          {
+            "emitted": 3,
+            "elapsed": 471.76468498213217,
+            "ttft": 471.6209331639111,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 471.83605226594955,
+            "ttft": 471.6209331639111,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 471.9135572530795,
+            "ttft": 471.6209331639111,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 471.98091829707846,
+            "ttft": 471.6209331639111,
+            "finish": null
+          },
+          {
+            "emitted": 4,
+            "elapsed": 472.0527511651162,
+            "ttft": 471.6209331639111,
+            "finish": null
+          },
+          {
+            "emitted": 3,
+            "elapsed": 472.1193188780453,
+            "ttft": 471.6209331639111,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 472.1875966449734,
+            "ttft": 471.6209331639111,
+            "finish": null
+          },
+          {
+            "emitted": 5,
+            "elapsed": 472.2703862921335,
+            "ttft": 471.6209331639111,
+            "finish": null
+          },
+          {
+            "emitted": 3,
+            "elapsed": 472.34075587498955,
+            "ttft": 471.6209331639111,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 472.40391575102694,
+            "ttft": 471.6209331639111,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 472.47088810498826,
+            "ttft": 471.6209331639111,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 472.5448706620373,
+            "ttft": 471.6209331639111,
+            "finish": null
+          },
+          {
+            "emitted": 3,
+            "elapsed": 472.61659081093967,
+            "ttft": 471.6209331639111,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 472.6842449430842,
+            "ttft": 471.6209331639111,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 472.76945245591924,
+            "ttft": 471.6209331639111,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 472.8426804500632,
+            "ttft": 471.6209331639111,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 472.9123499500565,
+            "ttft": 471.6209331639111,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 472.9900561219547,
+            "ttft": 471.6209331639111,
+            "finish": null
+          },
+          {
+            "emitted": 5,
+            "elapsed": 473.061648478033,
+            "ttft": 471.6209331639111,
+            "finish": null
+          },
+          {
+            "emitted": 5,
+            "elapsed": 473.1428536379244,
+            "ttft": 471.6209331639111,
+            "finish": null
+          },
+          {
+            "emitted": 3,
+            "elapsed": 473.2101616091095,
+            "ttft": 471.6209331639111,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 473.27477944199927,
+            "ttft": 471.6209331639111,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 473.3425974790007,
+            "ttft": 471.6209331639111,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 473.4077188021038,
+            "ttft": 471.6209331639111,
+            "finish": null
+          },
+          {
+            "emitted": 3,
+            "elapsed": 473.47235141904093,
+            "ttft": 471.6209331639111,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 473.53754885401577,
+            "ttft": 471.6209331639111,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 473.60126297106035,
+            "ttft": 471.6209331639111,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 473.6440350241028,
+            "ttft": 471.6209331639111,
+            "finish": "length"
+          }
+        ],
+        "cancel-long": [
+          {
+            "emitted": 0,
+            "elapsed": 0.03081114194355905,
+            "ttft": null,
+            "finish": "cancelled"
+          },
+          {
+            "emitted": 1,
+            "elapsed": 0.7946669480297714,
+            "ttft": 0.7946669480297714,
+            "finish": "stop"
+          }
+        ]
+      },
+      "population": {
+        "max_live_states": 4,
+        "max_populated_states": 1
+      }
+    },
+    "cancellation_and_reuse": true,
+    "over_capacity_rejected": true
+  },
+  "isolated_dynamic_decode": {
+    "tokens": 252,
+    "seconds": 8.251553077949211,
+    "tokens_per_second": 30.539705388725498,
+    "runs": {
+      "0": {
+        "decode_seconds": 2.189451202051714,
+        "decode_tokens": 63,
+        "decode_scope": "isolated dynamic adapter loop; prefill and first token excluded; native Scheduler excluded"
+      },
+      "1": {
+        "decode_seconds": 2.0410776659846306,
+        "decode_tokens": 63,
+        "decode_scope": "isolated dynamic adapter loop; prefill and first token excluded; native Scheduler excluded"
+      },
+      "2": {
+        "decode_seconds": 1.9977671089582145,
+        "decode_tokens": 63,
+        "decode_scope": "isolated dynamic adapter loop; prefill and first token excluded; native Scheduler excluded"
+      },
+      "3": {
+        "decode_seconds": 2.023257100954652,
+        "decode_tokens": 63,
+        "decode_scope": "isolated dynamic adapter loop; prefill and first token excluded; native Scheduler excluded"
+      }
+    },
+    "scope": "serial isolated adapter loops, excluding prefill, first token, native Scheduler and HTTP"
+  },
+  "memory": {
+    "peak_allocated_bytes": 93274606080,
+    "peak_reserved_bytes": 94472503296,
+    "minimum_host_available_bytes": 18877526016,
+    "startup_admission": {
+      "budget": {
+        "shared_bytes": 78420099584,
+        "slot_bytes": 3723975168,
+        "transient_bytes": 1073741824,
+        "allocation_limit_bytes": 94489280512,
+        "host_reserve_bytes": 8589934592
+      },
+      "slot_samples": [
+        {
+          "allocated_bytes": 81987197952,
+          "reserved_bytes": 82332090368,
+          "peak_allocated_bytes": 82103721984,
+          "peak_reserved_bytes": 94472503296,
+          "host_available_bytes": 31355695104
+        },
+        {
+          "allocated_bytes": 85553331712,
+          "reserved_bytes": 85960163328,
+          "peak_allocated_bytes": 85669447168,
+          "peak_reserved_bytes": 94472503296,
+          "host_available_bytes": 27775918080
+        },
+        {
+          "allocated_bytes": 89119056896,
+          "reserved_bytes": 89588236288,
+          "peak_allocated_bytes": 89235172352,
+          "peak_reserved_bytes": 94472503296,
+          "host_available_bytes": 24044699648
+        },
+        {
+          "allocated_bytes": 92684782080,
+          "reserved_bytes": 93216309248,
+          "peak_allocated_bytes": 92800897536,
+          "peak_reserved_bytes": 94472503296,
+          "host_available_bytes": 20400152576
+        }
+      ],
+      "admission": {
+        "slots": 4,
+        "forecast_peak_bytes": 94389742080,
+        "additional_live_bytes": 1704960000,
+        "process_deficit_bytes": 0,
+        "conservative_host_remaining_bytes": 18695192576,
+        "process_limit_fits": true,
+        "host_reserve_fits": true,
+        "admission_fits": true,
+        "execution_validated": false
+      }
+    }
+  },
+  "live_http": {
+    "status": "PASS_ENGINE_V04_HTTP",
+    "client_sha256": "6f80d6eced38190948356e747f71b2d2db7d2436692990d6fe1fcc242150d396",
+    "input_sha256": "f9242c5477e520da335ae98d5580c034c3c6950c5036450630e0628368011cac",
+    "reference_sha256": "29af6f3db5da119308458cc21ba736bece52cb7428ef15ec29e5640b862fb913",
+    "runs": [
+      {
+        "name": "four-long-uninstrumented",
+        "requests": [
+          {
+            "request_id": "013d5cde847c4fac8e3c21e28de5b339",
+            "text": "In modern distributed systems and high-performance computing architectures, the interplay between caching, queuing, and request lifecycle management is fundamental to achieving scalability and reliability. The three concepts mentioned—caches retaining reusable results, queues retaining pending tasks, and requests owning their history—represent distinct but complementary mechanisms for managing state, flow,",
+            "usage": {
+              "prompt_tokens": 131008,
+              "completion_tokens": 64,
+              "total_tokens": 131072
+            },
+            "finish": "length",
+            "client_seconds": 364.2574062398635,
+            "stream": true,
+            "first_content_seconds": 350.3954958328977,
+            "content_interval_seconds": 13.86160147911869
+          },
+          {
+            "request_id": "966f6cb8f479466aa0480aa3ae265649",
+            "text": "尽管您提供的文本中充满了大量重复的语句，但其核心逻辑清晰地指向了现代高性能计算或分布式系统中三个至关重要的架构组件：**缓存（Cache）**、**队列（Queue）**以及**请求状态隔离（Request Isolation）**。这三者共同构成了一个高效、稳定且可维护的系统骨架。\n\n",
+            "usage": {
+              "prompt_tokens": 131008,
+              "completion_tokens": 64,
+              "total_tokens": 131072
+            },
+            "finish": "length",
+            "client_seconds": 129.1877143571619,
+            "stream": false,
+            "first_content_seconds": null,
+            "content_interval_seconds": null
+          },
+          {
+            "request_id": "9c7f6bcc05244bbea1e0394a477cf462",
+            "text": "The provided code snippet defines a generator function `unique` that yields items from an iterable while maintaining a set of seen items to ensure uniqueness. However, the prompt asks for an explanation of \"cache and request ownership mechanisms,\" which are concepts typically associated with distributed systems, hardware coherence protocols (like MESI), or specific software",
+            "usage": {
+              "prompt_tokens": 131008,
+              "completion_tokens": 64,
+              "total_tokens": 131072
+            },
+            "finish": "length",
+            "client_seconds": 475.4316824299749,
+            "stream": true,
+            "first_content_seconds": 473.70812873588875,
+            "content_interval_seconds": 1.723528927192092
+          },
+          {
+            "request_id": "e2e8b7f8883541cfa1895409626af55a",
+            "text": "In high-performance computing and distributed systems, the interaction between caching mechanisms and request ownership is critical for maintaining data consistency, system stability, and resource efficiency. The core principle stated—\"Request isolation keeps cached results separate\"—suggests a design where each request or session maintains its own view of cached data to prevent race conditions and ensure",
+            "usage": {
+              "prompt_tokens": 131008,
+              "completion_tokens": 64,
+              "total_tokens": 131072
+            },
+            "finish": "length",
+            "client_seconds": 246.6935691179242,
+            "stream": false,
+            "first_content_seconds": null,
+            "content_interval_seconds": null
+          }
+        ],
+        "wall_seconds": 475.4402468758635,
+        "observed_peaks": {
+          "active": 4,
+          "streams": 4,
+          "pending": 3,
+          "full_running_with_four_waiting": false
+        },
+        "health": {
+          "status": "ready",
+          "error": null,
+          "active_requests": 0,
+          "open_streams": 0,
+          "pending_submissions": 0,
+          "phase": null,
+          "capabilities": {
+            "target_only": false,
+            "greedy": true,
+            "streaming": true,
+            "gpu_batch": false,
+            "asynchronous": false,
+            "speculative": true,
+            "native_output_cache": true,
+            "draft_depth": 7,
+            "verification_budget": "current_postdraft_e17",
+            "max_requests": 4,
+            "graph_scope": "private_request_Graphs_shared_serial_scratch",
+            "graph_captures": 64,
+            "graph_replays": 110,
+            "head_calls": 110,
+            "head_fallbacks": 0,
+            "graph_fallbacks": [
+              {},
+              {},
+              {},
+              {}
+            ],
+            "shared_eager_buffers": true,
+            "shared_screened_head": true,
+            "kv_dtype": "bf16",
+            "serialized_postdraft": true,
+            "interleave_prefill": true,
+            "budget_cost_scope": "frozen_per_request_E29; multi-request throughput objective uncalibrated",
+            "prefill_executor": "owned_chunked_v1",
+            "prefill_chunk_rows": 512,
+            "prefill_cuda_graph": false,
+            "prefill_logits": "final_row_full_vocab",
+            "prefill_arithmetic": "e36_decode_mxfp8_decode_gdn_f32_moe",
+            "service_version": "0.4.0",
+            "max_running_requests": 4,
+            "context_capacity": 131072,
+            "target_kv_dtype": "bf16",
+            "index_ring_rows": 2048,
+            "max_queued_requests": 4,
+            "protocol": "openai_chat_subset",
+            "http_async_owner": true,
+            "memory_admission": {
+              "budget": {
+                "shared_bytes": 78419051008,
+                "slot_bytes": 3723975168,
+                "transient_bytes": 1073741824,
+                "allocation_limit_bytes": 94489280512,
+                "host_reserve_bytes": 8589934592
+              },
+              "slot_samples": [
+                {
+                  "allocated_bytes": 81986149376,
+                  "reserved_bytes": 82365644800,
+                  "peak_allocated_bytes": 93274606080,
+                  "peak_reserved_bytes": 94472503296,
+                  "host_available_bytes": 31330697216
+                },
+                {
+                  "allocated_bytes": 85552283136,
+                  "reserved_bytes": 85993717760,
+                  "peak_allocated_bytes": 93274606080,
+                  "peak_reserved_bytes": 94472503296,
+                  "host_available_bytes": 27724726272
+                },
+                {
+                  "allocated_bytes": 89118938112,
+                  "reserved_bytes": 89621790720,
+                  "peak_allocated_bytes": 93274606080,
+                  "peak_reserved_bytes": 94472503296,
+                  "host_available_bytes": 23925596160
+                },
+                {
+                  "allocated_bytes": 92684663296,
+                  "reserved_bytes": 93249863680,
+                  "peak_allocated_bytes": 93274606080,
+                  "peak_reserved_bytes": 94472503296,
+                  "host_available_bytes": 20294139904
+                }
+              ],
+              "admission": {
+                "slots": 4,
+                "forecast_peak_bytes": 94388693504,
+                "additional_live_bytes": 1704030208,
+                "process_deficit_bytes": 0,
+                "conservative_host_remaining_bytes": 18590109696,
+                "process_limit_fits": true,
+                "host_reserve_fits": true,
+                "admission_fits": true,
+                "execution_validated": false
+              }
+            },
+            "prefill_expert_backend": "original",
+            "prefill_expert_sha256": null
+          },
+          "metrics": {
+            "requests_submitted_total": 4,
+            "requests_admitted_total": 4,
+            "requests_completed_total": 4,
+            "requests_cancelled_total": 0,
+            "requests_failed_total": 0,
+            "admission_rejected_total": 0,
+            "output_tokens_total": 256,
+            "worker_failures_total": 0,
+            "ttft_seconds_count": 4,
+            "request_seconds_count": 4,
+            "ttft_seconds_sum": 1171.178895182209,
+            "request_seconds_sum": 1212.8083138612565
+          }
+        }
+      },
+      {
+        "name": "four-running-four-queued",
+        "requests": [
+          {
+            "request_id": "54f6de816f964f8b837f2df572248fd2",
+            "text": "The text provided presents a repetitive, rhythmic assertion of three fundamental concepts in computer science and software architecture: caching, queuing, and request history. While the repetition might initially appear to be a glitch or a stylistic choice, it serves to emphasize the critical importance of these three pillars in building robust, scalable, and",
+            "usage": {
+              "prompt_tokens": 221,
+              "completion_tokens": 64,
+              "total_tokens": 285
+            },
+            "finish": "length",
+            "client_seconds": 8.26817981293425,
+            "stream": true,
+            "first_content_seconds": 0.9932832641061395,
+            "content_interval_seconds": 7.273923966800794
+          },
+          {
+            "request_id": "46c08795eb374ed89a8e4268ce2b2ce9",
+            "text": "In modern software architecture, particularly within high-concurrency distributed systems, the concepts of caching, queuing, and state management are foundational pillars that ensure system performance, reliability, and scalability. The statement provided—repeatedly emphasizing that \"caches save reusable calculation results, queues save tasks waiting for execution, and each request",
+            "usage": {
+              "prompt_tokens": 599,
+              "completion_tokens": 64,
+              "total_tokens": 663
+            },
+            "finish": "length",
+            "client_seconds": 8.367670656880364,
+            "stream": false,
+            "first_content_seconds": null,
+            "content_interval_seconds": null
+          },
+          {
+            "request_id": "5c97dc107a3f45a2b3def45ea6c10474",
+            "text": "The code snippet provided presents a classic Python generator function designed to remove duplicate elements from an iterable while preserving the original order of appearance. Although the code is repeated multiple times in the prompt, the core logic remains identical: it defines a function named `unique` that takes an iterable `items` as input. Inside the function",
+            "usage": {
+              "prompt_tokens": 298,
+              "completion_tokens": 64,
+              "total_tokens": 362
+            },
+            "finish": "length",
+            "client_seconds": 16.321927595883608,
+            "stream": true,
+            "first_content_seconds": 9.072952807880938,
+            "content_interval_seconds": 7.2489420850761235
+          },
+          {
+            "request_id": "2a15a38c16d84e739a9467cdb3594807",
+            "text": "The concept of **Request Isolation** in the context of caching and asynchronous computation is a critical architectural pattern designed to maintain data integrity, prevent race conditions, and ensure system stability. The core principle, as stated, is that \"Request isolation keeps cached results separate,\" and specifically, \"after a request is cancelled, one",
+            "usage": {
+              "prompt_tokens": 315,
+              "completion_tokens": 64,
+              "total_tokens": 379
+            },
+            "finish": "length",
+            "client_seconds": 16.210988018196076,
+            "stream": false,
+            "first_content_seconds": null,
+            "content_interval_seconds": null
+          },
+          {
+            "request_id": "4c3bdff58d4347f998c8c5cc46dbd949",
+            "text": "The text provided presents a repetitive, rhythmic assertion of three fundamental concepts in computer science and software architecture: caching, queuing, and request history. While the repetition might initially appear to be a glitch or a stylistic choice, it serves to emphasize the critical importance of these three pillars in building robust, scalable, and",
+            "usage": {
+              "prompt_tokens": 221,
+              "completion_tokens": 64,
+              "total_tokens": 285
+            },
+            "finish": "length",
+            "client_seconds": 8.267928543966264,
+            "stream": true,
+            "first_content_seconds": 0.9934803110081702,
+            "content_interval_seconds": 7.273711593123153
+          },
+          {
+            "request_id": "c677e8b0c8734335af78d7245a462b49",
+            "text": "In modern software architecture, particularly within high-concurrency distributed systems, the concepts of caching, queuing, and state management are foundational pillars that ensure system performance, reliability, and scalability. The statement provided—repeatedly emphasizing that \"caches save reusable calculation results, queues save tasks waiting for execution, and each request",
+            "usage": {
+              "prompt_tokens": 599,
+              "completion_tokens": 64,
+              "total_tokens": 663
+            },
+            "finish": "length",
+            "client_seconds": 16.36225713393651,
+            "stream": false,
+            "first_content_seconds": null,
+            "content_interval_seconds": null
+          },
+          {
+            "request_id": "2ff3ecae75dc49e28f2f2bd66927fa4b",
+            "text": "The code snippet provided presents a classic Python generator function designed to remove duplicate elements from an iterable while preserving the original order of appearance. Although the code is repeated multiple times in the prompt, the core logic remains identical: it defines a function named `unique` that takes an iterable `items` as input. Inside the function",
+            "usage": {
+              "prompt_tokens": 298,
+              "completion_tokens": 64,
+              "total_tokens": 362
+            },
+            "finish": "length",
+            "client_seconds": 8.36775862192735,
+            "stream": true,
+            "first_content_seconds": 2.2918062349781394,
+            "content_interval_seconds": 6.07527211192064
+          },
+          {
+            "request_id": "8be994bafbb54f3289986e98a54a37e2",
+            "text": "The concept of **Request Isolation** in the context of caching and asynchronous computation is a critical architectural pattern designed to maintain data integrity, prevent race conditions, and ensure system stability. The core principle, as stated, is that \"Request isolation keeps cached results separate,\" and specifically, \"after a request is cancelled, one",
+            "usage": {
+              "prompt_tokens": 315,
+              "completion_tokens": 64,
+              "total_tokens": 379
+            },
+            "finish": "length",
+            "client_seconds": 16.211527353851125,
+            "stream": false,
+            "first_content_seconds": null,
+            "content_interval_seconds": null
+          }
+        ],
+        "wall_seconds": 16.365198876941577,
+        "observed_peaks": {
+          "active": 4,
+          "streams": 8,
+          "pending": 6,
+          "full_running_with_four_waiting": true
+        },
+        "health": {
+          "status": "ready",
+          "error": null,
+          "active_requests": 0,
+          "open_streams": 0,
+          "pending_submissions": 0,
+          "phase": null,
+          "capabilities": {
+            "target_only": false,
+            "greedy": true,
+            "streaming": true,
+            "gpu_batch": false,
+            "asynchronous": false,
+            "speculative": true,
+            "native_output_cache": true,
+            "draft_depth": 7,
+            "verification_budget": "current_postdraft_e17",
+            "max_requests": 4,
+            "graph_scope": "private_request_Graphs_shared_serial_scratch",
+            "graph_captures": 64,
+            "graph_replays": 306,
+            "head_calls": 306,
+            "head_fallbacks": 0,
+            "graph_fallbacks": [
+              {},
+              {},
+              {},
+              {}
+            ],
+            "shared_eager_buffers": true,
+            "shared_screened_head": true,
+            "kv_dtype": "bf16",
+            "serialized_postdraft": true,
+            "interleave_prefill": true,
+            "budget_cost_scope": "frozen_per_request_E29; multi-request throughput objective uncalibrated",
+            "prefill_executor": "owned_chunked_v1",
+            "prefill_chunk_rows": 512,
+            "prefill_cuda_graph": false,
+            "prefill_logits": "final_row_full_vocab",
+            "prefill_arithmetic": "e36_decode_mxfp8_decode_gdn_f32_moe",
+            "service_version": "0.4.0",
+            "max_running_requests": 4,
+            "context_capacity": 131072,
+            "target_kv_dtype": "bf16",
+            "index_ring_rows": 2048,
+            "max_queued_requests": 4,
+            "protocol": "openai_chat_subset",
+            "http_async_owner": true,
+            "memory_admission": {
+              "budget": {
+                "shared_bytes": 78419051008,
+                "slot_bytes": 3723975168,
+                "transient_bytes": 1073741824,
+                "allocation_limit_bytes": 94489280512,
+                "host_reserve_bytes": 8589934592
+              },
+              "slot_samples": [
+                {
+                  "allocated_bytes": 81986149376,
+                  "reserved_bytes": 82365644800,
+                  "peak_allocated_bytes": 93274606080,
+                  "peak_reserved_bytes": 94472503296,
+                  "host_available_bytes": 31330697216
+                },
+                {
+                  "allocated_bytes": 85552283136,
+                  "reserved_bytes": 85993717760,
+                  "peak_allocated_bytes": 93274606080,
+                  "peak_reserved_bytes": 94472503296,
+                  "host_available_bytes": 27724726272
+                },
+                {
+                  "allocated_bytes": 89118938112,
+                  "reserved_bytes": 89621790720,
+                  "peak_allocated_bytes": 93274606080,
+                  "peak_reserved_bytes": 94472503296,
+                  "host_available_bytes": 23925596160
+                },
+                {
+                  "allocated_bytes": 92684663296,
+                  "reserved_bytes": 93249863680,
+                  "peak_allocated_bytes": 93274606080,
+                  "peak_reserved_bytes": 94472503296,
+                  "host_available_bytes": 20294139904
+                }
+              ],
+              "admission": {
+                "slots": 4,
+                "forecast_peak_bytes": 94388693504,
+                "additional_live_bytes": 1704030208,
+                "process_deficit_bytes": 0,
+                "conservative_host_remaining_bytes": 18590109696,
+                "process_limit_fits": true,
+                "host_reserve_fits": true,
+                "admission_fits": true,
+                "execution_validated": false
+              }
+            },
+            "prefill_expert_backend": "original",
+            "prefill_expert_sha256": null
+          },
+          "metrics": {
+            "requests_submitted_total": 12,
+            "requests_admitted_total": 12,
+            "requests_completed_total": 12,
+            "requests_cancelled_total": 0,
+            "requests_failed_total": 0,
+            "admission_rejected_total": 1,
+            "output_tokens_total": 768,
+            "worker_failures_total": 0,
+            "ttft_seconds_count": 12,
+            "request_seconds_count": 12,
+            "ttft_seconds_sum": 1185.1409143044148,
+            "request_seconds_sum": 1277.828006974887
+          }
+        },
+        "overflow_429": true
+      }
+    ],
+    "before": {
+      "status": "ready",
+      "error": null,
+      "active_requests": 0,
+      "open_streams": 0,
+      "pending_submissions": 0,
+      "phase": null,
+      "capabilities": {
+        "target_only": false,
+        "greedy": true,
+        "streaming": true,
+        "gpu_batch": false,
+        "asynchronous": false,
+        "speculative": true,
+        "native_output_cache": true,
+        "draft_depth": 7,
+        "verification_budget": "current_postdraft_e17",
+        "max_requests": 4,
+        "graph_scope": "private_request_Graphs_shared_serial_scratch",
+        "graph_captures": 64,
+        "graph_replays": 0,
+        "head_calls": 0,
+        "head_fallbacks": 0,
+        "graph_fallbacks": [
+          {},
+          {},
+          {},
+          {}
+        ],
+        "shared_eager_buffers": true,
+        "shared_screened_head": true,
+        "kv_dtype": "bf16",
+        "serialized_postdraft": true,
+        "interleave_prefill": true,
+        "budget_cost_scope": "frozen_per_request_E29; multi-request throughput objective uncalibrated",
+        "prefill_executor": "owned_chunked_v1",
+        "prefill_chunk_rows": 512,
+        "prefill_cuda_graph": false,
+        "prefill_logits": "final_row_full_vocab",
+        "prefill_arithmetic": "e36_decode_mxfp8_decode_gdn_f32_moe",
+        "service_version": "0.4.0",
+        "max_running_requests": 4,
+        "context_capacity": 131072,
+        "target_kv_dtype": "bf16",
+        "index_ring_rows": 2048,
+        "max_queued_requests": 4,
+        "protocol": "openai_chat_subset",
+        "http_async_owner": true,
+        "memory_admission": {
+          "budget": {
+            "shared_bytes": 78419051008,
+            "slot_bytes": 3723975168,
+            "transient_bytes": 1073741824,
+            "allocation_limit_bytes": 94489280512,
+            "host_reserve_bytes": 8589934592
+          },
+          "slot_samples": [
+            {
+              "allocated_bytes": 81986149376,
+              "reserved_bytes": 82365644800,
+              "peak_allocated_bytes": 93274606080,
+              "peak_reserved_bytes": 94472503296,
+              "host_available_bytes": 31330697216
+            },
+            {
+              "allocated_bytes": 85552283136,
+              "reserved_bytes": 85993717760,
+              "peak_allocated_bytes": 93274606080,
+              "peak_reserved_bytes": 94472503296,
+              "host_available_bytes": 27724726272
+            },
+            {
+              "allocated_bytes": 89118938112,
+              "reserved_bytes": 89621790720,
+              "peak_allocated_bytes": 93274606080,
+              "peak_reserved_bytes": 94472503296,
+              "host_available_bytes": 23925596160
+            },
+            {
+              "allocated_bytes": 92684663296,
+              "reserved_bytes": 93249863680,
+              "peak_allocated_bytes": 93274606080,
+              "peak_reserved_bytes": 94472503296,
+              "host_available_bytes": 20294139904
+            }
+          ],
+          "admission": {
+            "slots": 4,
+            "forecast_peak_bytes": 94388693504,
+            "additional_live_bytes": 1704030208,
+            "process_deficit_bytes": 0,
+            "conservative_host_remaining_bytes": 18590109696,
+            "process_limit_fits": true,
+            "host_reserve_fits": true,
+            "admission_fits": true,
+            "execution_validated": false
+          }
+        },
+        "prefill_expert_backend": "original",
+        "prefill_expert_sha256": null
+      },
+      "metrics": {
+        "requests_submitted_total": 0,
+        "requests_admitted_total": 0,
+        "requests_completed_total": 0,
+        "requests_cancelled_total": 0,
+        "requests_failed_total": 0,
+        "admission_rejected_total": 0,
+        "output_tokens_total": 0,
+        "worker_failures_total": 0,
+        "ttft_seconds_count": 0,
+        "request_seconds_count": 0,
+        "ttft_seconds_sum": 0.0,
+        "request_seconds_sum": 0.0
+      }
+    },
+    "expected_prefill_rows": 512,
+    "phase": "complete",
+    "cancellation": {
+      "actual_active": 4,
+      "survivors_exact": 3,
+      "cancelled_tokens": 0
+    },
+    "disconnect_recovered": true,
+    "after": {
+      "status": "ready",
+      "error": null,
+      "active_requests": 0,
+      "open_streams": 0,
+      "pending_submissions": 0,
+      "phase": null,
+      "capabilities": {
+        "target_only": false,
+        "greedy": true,
+        "streaming": true,
+        "gpu_batch": false,
+        "asynchronous": false,
+        "speculative": true,
+        "native_output_cache": true,
+        "draft_depth": 7,
+        "verification_budget": "current_postdraft_e17",
+        "max_requests": 4,
+        "graph_scope": "private_request_Graphs_shared_serial_scratch",
+        "graph_captures": 64,
+        "graph_replays": 668,
+        "head_calls": 668,
+        "head_fallbacks": 0,
+        "graph_fallbacks": [
+          {},
+          {},
+          {},
+          {}
+        ],
+        "shared_eager_buffers": true,
+        "shared_screened_head": true,
+        "kv_dtype": "bf16",
+        "serialized_postdraft": true,
+        "interleave_prefill": true,
+        "budget_cost_scope": "frozen_per_request_E29; multi-request throughput objective uncalibrated",
+        "prefill_executor": "owned_chunked_v1",
+        "prefill_chunk_rows": 512,
+        "prefill_cuda_graph": false,
+        "prefill_logits": "final_row_full_vocab",
+        "prefill_arithmetic": "e36_decode_mxfp8_decode_gdn_f32_moe",
+        "service_version": "0.4.0",
+        "max_running_requests": 4,
+        "context_capacity": 131072,
+        "target_kv_dtype": "bf16",
+        "index_ring_rows": 2048,
+        "max_queued_requests": 4,
+        "protocol": "openai_chat_subset",
+        "http_async_owner": true,
+        "memory_admission": {
+          "budget": {
+            "shared_bytes": 78419051008,
+            "slot_bytes": 3723975168,
+            "transient_bytes": 1073741824,
+            "allocation_limit_bytes": 94489280512,
+            "host_reserve_bytes": 8589934592
+          },
+          "slot_samples": [
+            {
+              "allocated_bytes": 81986149376,
+              "reserved_bytes": 82365644800,
+              "peak_allocated_bytes": 93274606080,
+              "peak_reserved_bytes": 94472503296,
+              "host_available_bytes": 31330697216
+            },
+            {
+              "allocated_bytes": 85552283136,
+              "reserved_bytes": 85993717760,
+              "peak_allocated_bytes": 93274606080,
+              "peak_reserved_bytes": 94472503296,
+              "host_available_bytes": 27724726272
+            },
+            {
+              "allocated_bytes": 89118938112,
+              "reserved_bytes": 89621790720,
+              "peak_allocated_bytes": 93274606080,
+              "peak_reserved_bytes": 94472503296,
+              "host_available_bytes": 23925596160
+            },
+            {
+              "allocated_bytes": 92684663296,
+              "reserved_bytes": 93249863680,
+              "peak_allocated_bytes": 93274606080,
+              "peak_reserved_bytes": 94472503296,
+              "host_available_bytes": 20294139904
+            }
+          ],
+          "admission": {
+            "slots": 4,
+            "forecast_peak_bytes": 94388693504,
+            "additional_live_bytes": 1704030208,
+            "process_deficit_bytes": 0,
+            "conservative_host_remaining_bytes": 18590109696,
+            "process_limit_fits": true,
+            "host_reserve_fits": true,
+            "admission_fits": true,
+            "execution_validated": false
+          }
+        },
+        "prefill_expert_backend": "original",
+        "prefill_expert_sha256": null
+      },
+      "metrics": {
+        "requests_submitted_total": 21,
+        "requests_admitted_total": 21,
+        "requests_completed_total": 19,
+        "requests_cancelled_total": 2,
+        "requests_failed_total": 0,
+        "admission_rejected_total": 1,
+        "output_tokens_total": 1601,
+        "worker_failures_total": 0,
+        "ttft_seconds_count": 20,
+        "request_seconds_count": 21,
+        "ttft_seconds_sum": 1219.9096028809436,
+        "request_seconds_sum": 1366.1820704671554
+      }
+    }
+  },
+  "production_source_sha256": {
+    "spark_infer_q/__init__.py": "623ddaf4adfbf51e0c029203b0ff1780ebcc5824ff8300de5f1e6d6cd819d5d7",
+    "spark_infer_q/__main__.py": "0f072f8ce2bda51a814da172ccb15f3d9e10a420e42ea3786522a8141bba60ad",
+    "spark_infer_q/affine_kv.py": "2c0cfa209ddc52488ce8e6e889e447ffc306d69645a153bd40194dc13b52ea7c",
+    "spark_infer_q/bounded_index.py": "9cc785f5ca6831fe7ef45fa3984c648ab27b6f01e0b69157c76e8aeace6eaabb",
+    "spark_infer_q/bounded_index_kernels.py": "6266e6eb7e9486a9651f431775a8677a5295666b6f0c65a7da1bca3e0294d4b3",
+    "spark_infer_q/budget_audit.py": "7c2116b666e99c4c07055426733a292e5219ca7b788ce0d0e45f75001640db68",
+    "spark_infer_q/budget_regret.py": "14477f3464091a5eaff1a9cbdb0df045b1c047570fe7a7a782b0c8e63076ba11",
+    "spark_infer_q/checkpoint.py": "d7027b4803ee2564f5a881c3dcbbbb58f0508ee3e8f66d7895fbb7b174aad6b8",
+    "spark_infer_q/cli.py": "efec3b2c7e6bf43367a63caae3765bd593d6c9c3c015e80ebf7a8206c6c49e06",
+    "spark_infer_q/collection_budget.py": "4319736e8acfbe4c88911961f37676b188a39a5a6c0a2216a886cb34addbbbb2",
+    "spark_infer_q/collection_trajectory.py": "b528e4e35b8deb7551782d390aee4d4fb40b407e8f966d02fe607c52e844d2f6",
+    "spark_infer_q/collector.py": "dc34bc95c2984ce099a881717c47659e928e89b2ebf55711ac57b291a1ad6677",
+    "spark_infer_q/compact_target.py": "1e3b989654d5026b4996de3838afd6e184bcbd4d16f7f20978702575da915b1c",
+    "spark_infer_q/confidence_budget.py": "b055819b45a2e4d04b773eef34aa0212b140ba3721fbb1f5ad192903463365b9",
+    "spark_infer_q/confidence_features.py": "6d40253da4dad1de1a6866767af154e3a3ce69647a80df0e2e931f5ab53f0fc1",
+    "spark_infer_q/confidence_head.py": "e27c07808689e54f8660ef8068884be874c0fd5045ed2acfa04fc929b286ad28",
+    "spark_infer_q/csf_loader.py": "1dd25c5e9129fc705c285673c68554546cd9b8b0a3b8813e2429fd9f945214cc",
+    "spark_infer_q/decision_head.py": "0d7337f1b3e2d19493dbe543680db32c428bb5c6f565539974954c2ec40d62a4",
+    "spark_infer_q/deepinfer_bridge.py": "2306e8a7891a17dd7df81619bb77a9f55137f7ab9cb44e45d27e33ea63fe6df5",
+    "spark_infer_q/dflash2_block.py": "e376a509f046ee41882147b560701029c25a93152b874702863d4875a0013376",
+    "spark_infer_q/dflash2_reference.py": "0332366299d6a15b4049fa96062f4b390a33e984c3c184e89d4d2a9d2804384e",
+    "spark_infer_q/dflash2_scored.py": "8175ca379543a27aa6015821f8810c3ff5ba5b197b682da6545377d2b270227b",
+    "spark_infer_q/draft_backbone.py": "e378bbc8ea733abca580955c07b303fb3645783c29f36ba24c8dff0f12520e6c",
+    "spark_infer_q/draft_batch.py": "d76f6c96704ce28a1e0853233dd9883b81c264806a56f7368bb314c6152516e2",
+    "spark_infer_q/draft_batch_graph.py": "a0be47eea1b124ff613101c41a43b30d6e82c2efaa618a0b6ceb75311221a5d5",
+    "spark_infer_q/draft_batch_w8.py": "729c45a0a35d21975b129a819cd6d18735260eb611354393c160dd86eaa576e3",
+    "spark_infer_q/draft_context.py": "756869e7db93a56329079b7aaf542d25eb6d6858fbbf6f60fb4280f63e6ad3e5",
+    "spark_infer_q/draft_fastpath.py": "ddfc09b065f28ffcecd8a9ad8f7209d3d28fb0de2f8188dbc91bc8d55884fdb8",
+    "spark_infer_q/draft_fidelity.py": "1381ea37bac11e09c45197a35964c3849976d9f3911a171e0984914cedcd3bb0",
+    "spark_infer_q/draft_head.py": "cebeeaf86487f2487783fb0df5af465ce6a5a365f49565997d13bfff14a866a5",
+    "spark_infer_q/draft_projection_cache.py": "2ebf83f028b93d1866d6df0626888e6fbaf90e7be77ef37da9447f829294417d",
+    "spark_infer_q/draft_signals.py": "5f6a0ea0708498b2aad1ffaab3e913c22891981be4ee7702d553d9851edb9c3a",
+    "spark_infer_q/engine_server.py": "d2d08f3c0527b8eb08c522e21ddf8bf32982d7ab279d43df2488991e340d0f93",
+    "spark_infer_q/executor.py": "e2d981663cfa9f71858fc2d8737246b8a10def79c62f6aa3e670ccb75e2bc16e",
+    "spark_infer_q/feature_window.py": "20d4218fa9839ce3836e27196251c43209c7d55eecf43e3d12280cab4fadf7f1",
+    "spark_infer_q/head_screen.py": "9a1859e5543f239653c96124a1b68928bb2b80f10309a30ff19ffb5336147a01",
+    "spark_infer_q/joint_budget.py": "deeb2ca94c853e3eace69b7323bfdb12e6148437b3b86a44e3b5b0494a4037e6",
+    "spark_infer_q/kaifra_batch.py": "7c445483ed6cf580674739b45ecdcc85e4a76a7abfe9df3a9880b65b7c434361",
+    "spark_infer_q/kaifra_batch_target.py": "0392c5ccefbfd2e02914529d0575e7cff2f17ef675193681af0bc847d574a148",
+    "spark_infer_q/kaifra_graph.py": "ddae0aefd8af9a68eb22fdbcc98c123e57d8f9c5ba123d1eeb7686b1a42ab4bb",
+    "spark_infer_q/kaifra_http.py": "1b136bcf1e69bf43250a404e30791b1f9f34a30b823837112985c3019a12800f",
+    "spark_infer_q/kaifra_joint_runtime.py": "22640599f5692af471687d3d0bddf76080ae9c134d66cf0a8663c2752cf7e4aa",
+    "spark_infer_q/kaifra_joint_target.py": "e80d0386f53d9c0e34dea34fafb680f1a3d87822589c67a044a38aad3ce7083c",
+    "spark_infer_q/kaifra_optimized.py": "e192046f18fa7c0d15a25ebaa2f242fdb4c0f9d0f4f0cb243acb486c84d53ee9",
+    "spark_infer_q/kaifra_runtime.py": "2a000766ff3c53f64f284ad3b2e67f6115aa95c03a388e54e9c2bbab7c2c5b64",
+    "spark_infer_q/kaifra_service.py": "526164281616d3b7a508f40b32dd4bbf3f6662a66e2800b50e3a4ddaa293f5e5",
+    "spark_infer_q/kaifra_speculative.py": "f428985f5516ff82b7571e9367697fb504776a44324e164dfadcefb9ff717ccb",
+    "spark_infer_q/kaifra_worker.py": "8140c33c1cea3e8449d7d0d44dca58f3d41949d72b3bae5d77a5f4fd7e839072",
+    "spark_infer_q/kv_conversion_kernels.py": "3b4ce89b074078163941183798dbde1f3a9f9d9ccff2d24ca0fa5ea0055ac3db",
+    "spark_infer_q/linear_runtime.py": "16c8d55fa049d7f4d8985cd24982c653c0805d75a6c94facab9cd9718ad7b01f",
+    "spark_infer_q/local_policy.py": "de7b204f92685dbf68d8769df9bf63608c74c96167aa8cb6a08057f39ff3222f",
+    "spark_infer_q/long_capacity.py": "1f24fc4e2f4c74528d75d50f36ab72f4968bcd33a152f9e5cf53c4ae8b928e0e",
+    "spark_infer_q/long_draft_graph.py": "9b84b92b9766027775bfcf2752cca4abd424edb8214ab3f9e46440fc7b5b414d",
+    "spark_infer_q/long_target.py": "2d00587da131fb5235f0a75a8463ad5f440fe1f127c47a142d9d7f626fe8ba7b",
+    "spark_infer_q/mlp_head.py": "52e378708572736c18e0d0cc10090b454209b5ac7fc1b5cd9fd689549b960020",
+    "spark_infer_q/mlp_runtime.py": "9a87d1efd104e33cea4a4454016a61df4b4e043f1768411db1764ae71a7b9855",
+    "spark_infer_q/model_loader.py": "732865d6735d546e1460d0133e191fb80ab2d18a29ae508b9fe289de34a5c376",
+    "spark_infer_q/moe_cost.py": "7e06f87b17dc789ba76f19e179962b778b78be937e9dfd59d609b707c08639ca",
+    "spark_infer_q/native_scheduler.py": "c83c1f731f907bce3125c7bce129da2998e177ae4c46f4efa83d414acf16cb2d",
+    "spark_infer_q/past_cost.py": "d303247bc62badf4fc3f7d06952d78ba6551290ee8fec7a6d426b7ee9ac6d106",
+    "spark_infer_q/prefill.py": "2063bc06ae774652870c4f7c8915dbcefd1951fc9bfb2fdfe13655a145a9b915",
+    "spark_infer_q/prefill_evidence.py": "6350bdfb1b0feee8eddbb71bb350b6a53408c2248c7f34ff8b9c5573ba10e52c",
+    "spark_infer_q/prefill_experts.py": "97033110fb33750d0008fe6fec08dee8e2dc548e62d4aaf7c951fb82a63d9a80",
+    "spark_infer_q/prefill_scratch.py": "cd13a071268b8f2ac6d110a9fd4e13c0bd16a93b20f5ccc2b2dd94efe0969e43",
+    "spark_infer_q/prefill_tensorfold.py": "d4e738875aec6dc8265076517c512771db53370800c7ae4efea087842dacdddd",
+    "spark_infer_q/prompt.py": "6b997c3c6e6834666dfa0f7d13a7c950f6dc2e9b1d80818e5ee4b08a9b886f58",
+    "spark_infer_q/qwen_attention.py": "a5a8bc3340696520fd48d5ae74599cbb49d18af627fc4984fafda9e25a031476",
+    "spark_infer_q/qwen_ple.py": "883da6f074e1d96da395c39325b1a55e8970661b88fecfdb2d8f7b00339be071",
+    "spark_infer_q/qwen_state.py": "c45e9a47a04ae6915a44619c66027211f8cbd09ebfd7b6883120c0b847c47b95",
+    "spark_infer_q/qwen_state_kernel.py": "90f5a201252d2256a71124336a755e9dd8b14ce470ed2c235c577e567bb44dbe",
+    "spark_infer_q/regret_head.py": "ad23a257754d123d93feb805480e8d717192c9d99e83de5afbcdc0886bc647e0",
+    "spark_infer_q/residual_head.py": "a5f1dfa78560bf216a5a69f1e3a61973041a30bb00d16002dbb01c8be84bef18",
+    "spark_infer_q/rolling_draft.py": "a4b43054502234114ab9ca7eb1eaa7e3baf99e983dbd6aa874b1be0644a3f6ca",
+    "spark_infer_q/screened_head.py": "aaba84b6efd33b247fc9f54dcdda52a3db7c2b1a6d9d3cba6ccff56c1b722052",
+    "spark_infer_q/screened_head_fused.py": "ac963778f7e81a957838ab3443a49c7660ad342128fb9047c73d9b7f8f151bef",
+    "spark_infer_q/shared_graph.py": "e5b733a6069a6e1780f80a663de0778ef8856696cc10be41ed0819e701604b79",
+    "spark_infer_q/speculative.py": "ee1c2855cef1f31a868783d00f27cc88eef77f49ff95ff21dc2705d986f12045",
+    "spark_infer_q/tensorfold_block.py": "5527a5f6407c3dbb136003f687151b9754249423f964f71975e4eb9a1b9dadfa",
+    "spark_infer_q/verification_budget.py": "71f28552b8e83f682066edf9e9dd7267e3b54120c5d478949499a443f6eb5c50",
+    "spark_infer_q/wide_budget.py": "5cc2032ce32fd05b019aa90ddc0eefee80df2d2d850ede0e3bda3eedacd854fc",
+    "spark_infer_q/worker_cpu.py": "c2998bbc9d2307cbdecc715ddc517c9135ff87fc6ed13ff6f97befbdee76bdb2"
+  },
+  "retained_failures": [
+    {
+      "status": "FAIL_ENGINE_INDEX",
+      "error": "AssertionError: could not construct bounded long chat prompt",
+      "phase": "failed",
+      "source_sha256": {
+        "spark_infer_q/__init__.py": "623ddaf4adfbf51e0c029203b0ff1780ebcc5824ff8300de5f1e6d6cd819d5d7",
+        "spark_infer_q/__main__.py": "0f072f8ce2bda51a814da172ccb15f3d9e10a420e42ea3786522a8141bba60ad",
+        "spark_infer_q/affine_kv.py": "2c0cfa209ddc52488ce8e6e889e447ffc306d69645a153bd40194dc13b52ea7c",
+        "spark_infer_q/bounded_index.py": "9cc785f5ca6831fe7ef45fa3984c648ab27b6f01e0b69157c76e8aeace6eaabb",
+        "spark_infer_q/bounded_index_kernels.py": "6266e6eb7e9486a9651f431775a8677a5295666b6f0c65a7da1bca3e0294d4b3",
+        "spark_infer_q/budget_audit.py": "7c2116b666e99c4c07055426733a292e5219ca7b788ce0d0e45f75001640db68",
+        "spark_infer_q/budget_regret.py": "14477f3464091a5eaff1a9cbdb0df045b1c047570fe7a7a782b0c8e63076ba11",
+        "spark_infer_q/checkpoint.py": "d7027b4803ee2564f5a881c3dcbbbb58f0508ee3e8f66d7895fbb7b174aad6b8",
+        "spark_infer_q/cli.py": "efec3b2c7e6bf43367a63caae3765bd593d6c9c3c015e80ebf7a8206c6c49e06",
+        "spark_infer_q/collection_budget.py": "4319736e8acfbe4c88911961f37676b188a39a5a6c0a2216a886cb34addbbbb2",
+        "spark_infer_q/collection_trajectory.py": "b528e4e35b8deb7551782d390aee4d4fb40b407e8f966d02fe607c52e844d2f6",
+        "spark_infer_q/collector.py": "dc34bc95c2984ce099a881717c47659e928e89b2ebf55711ac57b291a1ad6677",
+        "spark_infer_q/compact_target.py": "1e3b989654d5026b4996de3838afd6e184bcbd4d16f7f20978702575da915b1c",
+        "spark_infer_q/confidence_budget.py": "b055819b45a2e4d04b773eef34aa0212b140ba3721fbb1f5ad192903463365b9",
+        "spark_infer_q/confidence_features.py": "6d40253da4dad1de1a6866767af154e3a3ce69647a80df0e2e931f5ab53f0fc1",
+        "spark_infer_q/confidence_head.py": "e27c07808689e54f8660ef8068884be874c0fd5045ed2acfa04fc929b286ad28",
+        "spark_infer_q/csf_loader.py": "1dd25c5e9129fc705c285673c68554546cd9b8b0a3b8813e2429fd9f945214cc",
+        "spark_infer_q/decision_head.py": "0d7337f1b3e2d19493dbe543680db32c428bb5c6f565539974954c2ec40d62a4",
+        "spark_infer_q/deepinfer_bridge.py": "2306e8a7891a17dd7df81619bb77a9f55137f7ab9cb44e45d27e33ea63fe6df5",
+        "spark_infer_q/dflash2_block.py": "e376a509f046ee41882147b560701029c25a93152b874702863d4875a0013376",
+        "spark_infer_q/dflash2_reference.py": "0332366299d6a15b4049fa96062f4b390a33e984c3c184e89d4d2a9d2804384e",
+        "spark_infer_q/dflash2_scored.py": "8175ca379543a27aa6015821f8810c3ff5ba5b197b682da6545377d2b270227b",
+        "spark_infer_q/draft_backbone.py": "e378bbc8ea733abca580955c07b303fb3645783c29f36ba24c8dff0f12520e6c",
+        "spark_infer_q/draft_batch.py": "d76f6c96704ce28a1e0853233dd9883b81c264806a56f7368bb314c6152516e2",
+        "spark_infer_q/draft_batch_graph.py": "a0be47eea1b124ff613101c41a43b30d6e82c2efaa618a0b6ceb75311221a5d5",
+        "spark_infer_q/draft_batch_w8.py": "729c45a0a35d21975b129a819cd6d18735260eb611354393c160dd86eaa576e3",
+        "spark_infer_q/draft_context.py": "756869e7db93a56329079b7aaf542d25eb6d6858fbbf6f60fb4280f63e6ad3e5",
+        "spark_infer_q/draft_fastpath.py": "ddfc09b065f28ffcecd8a9ad8f7209d3d28fb0de2f8188dbc91bc8d55884fdb8",
+        "spark_infer_q/draft_fidelity.py": "1381ea37bac11e09c45197a35964c3849976d9f3911a171e0984914cedcd3bb0",
+        "spark_infer_q/draft_head.py": "cebeeaf86487f2487783fb0df5af465ce6a5a365f49565997d13bfff14a866a5",
+        "spark_infer_q/draft_projection_cache.py": "2ebf83f028b93d1866d6df0626888e6fbaf90e7be77ef37da9447f829294417d",
+        "spark_infer_q/draft_signals.py": "5f6a0ea0708498b2aad1ffaab3e913c22891981be4ee7702d553d9851edb9c3a",
+        "spark_infer_q/engine_server.py": "d2d08f3c0527b8eb08c522e21ddf8bf32982d7ab279d43df2488991e340d0f93",
+        "spark_infer_q/executor.py": "e2d981663cfa9f71858fc2d8737246b8a10def79c62f6aa3e670ccb75e2bc16e",
+        "spark_infer_q/feature_window.py": "20d4218fa9839ce3836e27196251c43209c7d55eecf43e3d12280cab4fadf7f1",
+        "spark_infer_q/head_screen.py": "9a1859e5543f239653c96124a1b68928bb2b80f10309a30ff19ffb5336147a01",
+        "spark_infer_q/joint_budget.py": "deeb2ca94c853e3eace69b7323bfdb12e6148437b3b86a44e3b5b0494a4037e6",
+        "spark_infer_q/kaifra_batch.py": "7c445483ed6cf580674739b45ecdcc85e4a76a7abfe9df3a9880b65b7c434361",
+        "spark_infer_q/kaifra_batch_target.py": "0392c5ccefbfd2e02914529d0575e7cff2f17ef675193681af0bc847d574a148",
+        "spark_infer_q/kaifra_graph.py": "ddae0aefd8af9a68eb22fdbcc98c123e57d8f9c5ba123d1eeb7686b1a42ab4bb",
+        "spark_infer_q/kaifra_http.py": "1b136bcf1e69bf43250a404e30791b1f9f34a30b823837112985c3019a12800f",
+        "spark_infer_q/kaifra_joint_runtime.py": "22640599f5692af471687d3d0bddf76080ae9c134d66cf0a8663c2752cf7e4aa",
+        "spark_infer_q/kaifra_joint_target.py": "e80d0386f53d9c0e34dea34fafb680f1a3d87822589c67a044a38aad3ce7083c",
+        "spark_infer_q/kaifra_optimized.py": "e192046f18fa7c0d15a25ebaa2f242fdb4c0f9d0f4f0cb243acb486c84d53ee9",
+        "spark_infer_q/kaifra_runtime.py": "2a000766ff3c53f64f284ad3b2e67f6115aa95c03a388e54e9c2bbab7c2c5b64",
+        "spark_infer_q/kaifra_service.py": "526164281616d3b7a508f40b32dd4bbf3f6662a66e2800b50e3a4ddaa293f5e5",
+        "spark_infer_q/kaifra_speculative.py": "f428985f5516ff82b7571e9367697fb504776a44324e164dfadcefb9ff717ccb",
+        "spark_infer_q/kaifra_worker.py": "8140c33c1cea3e8449d7d0d44dca58f3d41949d72b3bae5d77a5f4fd7e839072",
+        "spark_infer_q/kv_conversion_kernels.py": "3b4ce89b074078163941183798dbde1f3a9f9d9ccff2d24ca0fa5ea0055ac3db",
+        "spark_infer_q/linear_runtime.py": "16c8d55fa049d7f4d8985cd24982c653c0805d75a6c94facab9cd9718ad7b01f",
+        "spark_infer_q/local_policy.py": "de7b204f92685dbf68d8769df9bf63608c74c96167aa8cb6a08057f39ff3222f",
+        "spark_infer_q/long_capacity.py": "1f24fc4e2f4c74528d75d50f36ab72f4968bcd33a152f9e5cf53c4ae8b928e0e",
+        "spark_infer_q/long_draft_graph.py": "9b84b92b9766027775bfcf2752cca4abd424edb8214ab3f9e46440fc7b5b414d",
+        "spark_infer_q/long_target.py": "2d00587da131fb5235f0a75a8463ad5f440fe1f127c47a142d9d7f626fe8ba7b",
+        "spark_infer_q/mlp_head.py": "52e378708572736c18e0d0cc10090b454209b5ac7fc1b5cd9fd689549b960020",
+        "spark_infer_q/mlp_runtime.py": "9a87d1efd104e33cea4a4454016a61df4b4e043f1768411db1764ae71a7b9855",
+        "spark_infer_q/model_loader.py": "732865d6735d546e1460d0133e191fb80ab2d18a29ae508b9fe289de34a5c376",
+        "spark_infer_q/moe_cost.py": "7e06f87b17dc789ba76f19e179962b778b78be937e9dfd59d609b707c08639ca",
+        "spark_infer_q/native_scheduler.py": "c83c1f731f907bce3125c7bce129da2998e177ae4c46f4efa83d414acf16cb2d",
+        "spark_infer_q/past_cost.py": "d303247bc62badf4fc3f7d06952d78ba6551290ee8fec7a6d426b7ee9ac6d106",
+        "spark_infer_q/prefill.py": "2063bc06ae774652870c4f7c8915dbcefd1951fc9bfb2fdfe13655a145a9b915",
+        "spark_infer_q/prefill_evidence.py": "6350bdfb1b0feee8eddbb71bb350b6a53408c2248c7f34ff8b9c5573ba10e52c",
+        "spark_infer_q/prefill_experts.py": "97033110fb33750d0008fe6fec08dee8e2dc548e62d4aaf7c951fb82a63d9a80",
+        "spark_infer_q/prefill_scratch.py": "cd13a071268b8f2ac6d110a9fd4e13c0bd16a93b20f5ccc2b2dd94efe0969e43",
+        "spark_infer_q/prefill_tensorfold.py": "d4e738875aec6dc8265076517c512771db53370800c7ae4efea087842dacdddd",
+        "spark_infer_q/prompt.py": "6b997c3c6e6834666dfa0f7d13a7c950f6dc2e9b1d80818e5ee4b08a9b886f58",
+        "spark_infer_q/qwen_attention.py": "a5a8bc3340696520fd48d5ae74599cbb49d18af627fc4984fafda9e25a031476",
+        "spark_infer_q/qwen_ple.py": "883da6f074e1d96da395c39325b1a55e8970661b88fecfdb2d8f7b00339be071",
+        "spark_infer_q/qwen_state.py": "c45e9a47a04ae6915a44619c66027211f8cbd09ebfd7b6883120c0b847c47b95",
+        "spark_infer_q/qwen_state_kernel.py": "90f5a201252d2256a71124336a755e9dd8b14ce470ed2c235c577e567bb44dbe",
+        "spark_infer_q/regret_head.py": "ad23a257754d123d93feb805480e8d717192c9d99e83de5afbcdc0886bc647e0",
+        "spark_infer_q/residual_head.py": "a5f1dfa78560bf216a5a69f1e3a61973041a30bb00d16002dbb01c8be84bef18",
+        "spark_infer_q/rolling_draft.py": "a4b43054502234114ab9ca7eb1eaa7e3baf99e983dbd6aa874b1be0644a3f6ca",
+        "spark_infer_q/screened_head.py": "aaba84b6efd33b247fc9f54dcdda52a3db7c2b1a6d9d3cba6ccff56c1b722052",
+        "spark_infer_q/screened_head_fused.py": "ac963778f7e81a957838ab3443a49c7660ad342128fb9047c73d9b7f8f151bef",
+        "spark_infer_q/shared_graph.py": "e5b733a6069a6e1780f80a663de0778ef8856696cc10be41ed0819e701604b79",
+        "spark_infer_q/speculative.py": "ee1c2855cef1f31a868783d00f27cc88eef77f49ff95ff21dc2705d986f12045",
+        "spark_infer_q/tensorfold_block.py": "5527a5f6407c3dbb136003f687151b9754249423f964f71975e4eb9a1b9dadfa",
+        "spark_infer_q/verification_budget.py": "71f28552b8e83f682066edf9e9dd7267e3b54120c5d478949499a443f6eb5c50",
+        "spark_infer_q/wide_budget.py": "5cc2032ce32fd05b019aa90ddc0eefee80df2d2d850ede0e3bda3eedacd854fc",
+        "spark_infer_q/worker_cpu.py": "c2998bbc9d2307cbdecc715ddc517c9135ff87fc6ed13ff6f97befbdee76bdb2",
+        "scripts/k4batch_audit.py": "46051cc52c7a8429fc8a219d7c13fa7fbd5550909272c8362f2885d8cd0ec34e",
+        "scripts/k4batch_core_probe.py": "44e37d4f4c9cd42029606c6ba7045ce6dfb8780acc4a25b4a9f8a3dbf6503a16",
+        "scripts/k4batch_cpu_validate.py": "6a4fffee3f2922b1e505c86802d9baf77bd024d1f2aed10883055b4e1bec908d",
+        "scripts/k4batch_dispatch_profile.py": "988a94292ca68dc9ffffc19c8bfb436269d6f9f671298da77d32ce73a23ecee1",
+        "scripts/k4batch_draft_audit.py": "4262f76556ba4879e65b414d9d3ddfde901002e21aeeecc1fab4112b0b6efce8",
+        "scripts/k4batch_draft_export.py": "81d6569ef3cbb3188bc1b7f597b93a4f2db41b07b2cfec5c8624334820c926b5",
+        "scripts/k4batch_draft_graph_component.py": "f1c729edcc9af46c272e305b1188b9edd8c074503aa65899f60977d3be072aa0",
+        "scripts/k4batch_draft_graph_cpu.py": "4627971b05b5a900fde7e36ab602873e65df5d22593d1a0dc3eae3cc6adf0699",
+        "scripts/k4batch_draft_graph_export.py": "cfb03efa0c58dc4383887cb789bfc4f15405d017d3f2640f46304b8212f8489b",
+        "scripts/k4batch_draft_graph_lifecycle.py": "54388851d5786a53ac9ba4fb98365bc60ccad9cdbfae03cdca8a8b7335a4f814",
+        "scripts/k4batch_draft_graph_service.py": "49416d7d9ec549a6159b0e3d37395b81c4822c7e006fffd1be050c0a081122d7",
+        "scripts/k4batch_draft_isolation.py": "6473abe3bb0a3534672da1db922b989dd3f2a45cb9d4f497538335996c7302ca",
+        "scripts/k4batch_draft_lifecycle.py": "0df73cd74b20e0e40bb3e52ca3d5243e439342b1690ef9a40d6aeb33a08ad549",
+        "scripts/k4batch_draft_math_probe.py": "1df3e32f979c88b8f7cfeba9930e51235e6142ebffc326fce80517005d1daab4",
+        "scripts/k4batch_draft_probe.py": "4e41f983f27746f5bc57d74d111381b5f26db6645d8e64bc29f41d07dffbed69",
+        "scripts/k4batch_draft_service.py": "1592ca5e4d0224d9ffd69a78ccfdb9ae3ffa2b58b9d52af35711ee9a01bc8e4a",
+        "scripts/k4batch_draft_validate.py": "edd9ebb0e728713fb01698bcdfcff643231566309e6a3723e558f42ca2a83dda",
+        "scripts/k4batch_engine_capacity.py": "6ed6ec816b149ba0ede030eb5aff0c170ce415b7720b686465947c3b463c1949",
+        "scripts/k4batch_engine_context.py": "65a7447d1e653f72dddaa814f1240214c543dea2d5a429a1bcd9120486182f2c",
+        "scripts/k4batch_engine_http.py": "6f80d6eced38190948356e747f71b2d2db7d2436692990d6fe1fcc242150d396",
+        "scripts/k4batch_engine_index.py": "df7d77d91aee4d0f635e3deecc3098a87938d5bd0a9241dd2f621020f8465abf",
+        "scripts/k4batch_engine_long.py": "bb2932630025bbeb4543ec7dad88b92ef4529b66c04dea4e7e76fcaba28772f8",
+        "scripts/k4batch_engine_long_serve.py": "1927f1b75f515d761c2003c6f89a9f1b1b96fc2107997cafe9a90aff3e5c38e7",
+        "scripts/k4batch_engine_prefill.py": "5477fd60e2d7e67e3e2792a110423c60f4dde29172b892be3c1542541beb42d4",
+        "scripts/k4batch_engine_service.py": "0d139ba4743427316a6be2ea334b2b03067cbb00652929eb466532d9973f26c5",
+        "scripts/k4batch_export.py": "713042a446b2ad2689c07091023cc7087c536c4e4466997bda362c9bdfe765fa",
+        "scripts/k4batch_gpu_validate.py": "89ad5e8c97eec8e61f58a4305608c0f58d066d0e1a74e4f7ef01c4787bfe34a6",
+        "scripts/k4batch_joint_cost.py": "eac1e96647f933949193a14ee5bada2f8478eb9145873599be621d804518ba38",
+        "scripts/k4batch_joint_export.py": "d7022dfd85520a933c3bef6a741b46c2eacf10f987b8cd3234f3d5b2a671f056",
+        "scripts/k4batch_joint_lifecycle.py": "c42eeb81de26eb41c0c8c56dc93d284d5bd93c7b5b14e3ea80f672c1cf5f6e32",
+        "scripts/k4batch_joint_service_probe.py": "8d16ddbcbaa99fdb8fc0cf35da3f264355f62bad667338cd6cbd84a6ff67a820",
+        "scripts/k4batch_joint_validate.py": "e68b16592effbcfc7ee2f5b6922c524c38a1ad83a62465bc2744ce8e3d059f84",
+        "scripts/k4batch_lifecycle_validate.py": "22ecaeabfa6a131ece18fa4b9e77faffeb6111489167a2b30cef9516bd491fe2",
+        "scripts/k4batch_memory_probe.py": "df5678a7e3efc5db8d6c87ea497710c3e4bac9202377170eac85d56e711bfb0d",
+        "scripts/k4batch_overlap_validate.py": "fd7d911f46e54fa9e8b38bf083cf4d620419c17a869aacc30b430bb8b8119a41",
+        "scripts/k4batch_probe_validate.py": "7f284273462fb0fa953c350b39de17d6faeb3c6b0b3f66448f64c0fbfaaa71e9",
+        "scripts/k4batch_progress_affinity.py": "fab8b2bf82dbb2999ba1e9f1d3ba6b6ea5665c5f930cf86188b04ea91e8f1c0f",
+        "scripts/k4batch_progress_audit.py": "2ecc23ac7f694ed469c29e30292ef92e0078910c10ae5379752c04c5bcb8ace1",
+        "scripts/k4batch_progress_cpu.py": "781925d6f28108b48c973cc8eed9a21c90c7f4dcd3d3df29056fa2653c0d56ab",
+        "scripts/k4batch_progress_cpu_service.py": "1bcda088c00420002291869700ab588b3bcbf0f9c1db5ef5975f4bc932f7313b",
+        "scripts/k4batch_progress_draft.py": "56b616e371447008a3a5c9cf011ed5f67ef27e26ae564c4df99c59aee9367f2d",
+        "scripts/k4batch_progress_export.py": "df33b768ad6aab34e369afc124d38e6a9d875b0ba9eb429adffc879458a8e627",
+        "scripts/k4batch_progress_lifecycle.py": "dafc709ea92afb096457f0884813d8cd95982defbcabe873227a0fbace56862e",
+        "scripts/k4batch_progress_native.py": "28785871eb3e4c4f3205d45719b6461542b5d6b8d6e4303b729573e27f7f3e48",
+        "scripts/k4batch_progress_validate.py": "59c48fb208cd251df92f6220f435f74fcc6327fb58694b3390d98c93570a5534",
+        "scripts/k4batch_scaling_audit.py": "de9dcc5bdc2caa1cb83597dfbb5c87c9d18fc2181047badb01c7dcd99a820f51",
+        "scripts/k4batch_scaling_export.py": "388997849cc052677ccffd3eaf71cb37cc5ff4a693c8e3a01d41028258003d25",
+        "scripts/k4batch_scaling_profile.py": "20fa22c831941a0b4accb7ee8de818c24aee8a3b28405fe0c8ab915ea5c54bc7",
+        "scripts/k4batch_scaling_validate.py": "d22e4414ba70b54222a585eef09d767999593ffaf88b632f5b322e72e51e220a",
+        "scripts/k4batch_serve.py": "5970d7d5f9e2d549b0cd0e5f5ffb4a420a1dfb44ffd22d5fe8b2055bbe6e487a",
+        "scripts/k4batch_stage.py": "4a5388941dea58986e0407e17fd91d6a5604d6a84017b60a67c340e9f7f9bcbd",
+        "scripts/k4batch_target_breakdown.py": "cd34ea4c306ad6435f434e8d15689d8ebf279b463b7e7e343b3f720b523e8e7a",
+        "scripts/k4batch_target_component.py": "dd36db553217d1685cccae021687858b29769b3b54fe6c8818dd33e1256e6676",
+        "scripts/k4batch_target_cpu.py": "f66a65a12fa1f3cee7f943197365eb63b5a7be62d81d1b75c4c22bb0e396abbd",
+        "scripts/k4batch_target_export.py": "90d1485ce32c0bad1fbb2947d1366cc0ed8e7f9ad159d87542a50d2f8de456b5",
+        "scripts/k4batch_target_lifecycle.py": "fd0761b34ff2212048f7b88323d5c147775ced967ae7917ea9f35be322334e12",
+        "scripts/k4batch_target_probe.py": "c5438d1f59dcea1ab58c654982f8b91230129b3dfff0a1fd63996974e1aa8ce1",
+        "scripts/k4batch_target_service.py": "a6da3e8c05e51e312fd999809b12c0c825dfa17117a7354bdb3c09204ae390b3",
+        "scripts/k4batch_target_trace.py": "afe85ddc7c12e91877449e0e663145f723812c0bce299840f9421e4b8294e514",
+        "scripts/k4batch_wait_fix_audit.py": "33726f69399b955aab8e4da6802db01550dfef27a3d921e46ed2089529f42f91",
+        "scripts/k4batch_wait_fix_export.py": "982592153443ff998096127051cef147e0a05151b40f2d80ec23489c00ff45f7",
+        "scripts/k4batch_wait_fix_validate.py": "0e6c02ea446a744fcffaf5a3f976690d3c467cccfa53957959fb901f111a4900",
+        "scripts/k4batch_wait_probe.py": "cfe7da1aa639818bbbb1695727a3467593414bc3095d95b0911ea9eaf608c941",
+        "scripts/k4batch_wait_service_validate.py": "9ce14e67c7dfd064227c62a504588d83dd6004239c217afe3df40b6d881a150e",
+        "scripts/k4batch_draft_w8.cu": "bed35d108f06aad2d16e7eaed7365285398b43abc9418484e40a348668b1e335",
+        "scripts/k4batch_target_state.cu": "80899a88984f7cf395f02a8f1f6ab264699dec9bf3e8091924916641cc30f7f1",
+        "scripts/k2_native_validate.py": "3842a3827a462c44165407a243013e2a36d1c1523f24a72028d50833f20f0f8f",
+        "docs/K4_BATCH_RUNTIME_PLAN.md": "16caa661fede509152fc478cabcc40098e78b8d420ac1dca2e5948711724ed67",
+        "tests/test_draft_batch.py": "3c709853458283c9801ce01f6d9e7133da9edbec4f301e0ed8d2b1fdad770bfa",
+        "tests/test_compact_target.py": "6a6f8886a70cfa1dcfcdc19df25fbc5ca530645297f3afb966a533e54e79116d",
+        "tests/test_kaifra_batch_transactions.py": "2f5772932f720ca14342c0e7e29aa76b4780c55e4289226734715156a36d2a6e",
+        "tests/test_prefill_executor.py": "1f322fb55986552d787b1f02dc379a3eaf419f87bc8c7555c4ebb7dfc29ec912",
+        "tests/test_prefill_progress.py": "832b292a3f3f48c8b6ccafe146f4de9ad77ec6744c97b0b054d49e72f9488b3b",
+        "tests/test_worker_cpu.py": "608a244d123d08151f5895cb0c32a1d3a894683bb2705eed7642fbe085b56c7e",
+        "THIRD_PARTY_NOTICES.md": "0ab847d3e4eee1b7882fde1e2f1ca99eb67afe52f59a8e1f49a7ff34794ba28b",
+        "tests/test_draft_batch_graph.py": "fa7dfe66f32d35a12488f00c13abe6b61c515abe1ca4823a268e31e9f0ae8319",
+        "docs/ENGINE_V01_PLAN.md": "b134b9fabd0ad70a4bbaa3e1cbc3ba3f9788ebc1bc3dea40b2d476c35987c4f7",
+        "tests/test_engine_api.py": "52a23beaa158c52ef4c710c7f47bbb6d1b64e74aeb36623bb9babbce6d235394",
+        "tests/test_engine_cli.py": "09270574424954b757c0e65efe64cb059cc21ea8b8b4fd83bb3c1c366b2f4074",
+        "scripts/serve.py": "7176ca667b64a41c00e61a71ff384d5d04dac45f1badecccaab86c8691bbc2a7",
+        "pyproject.toml": "6259bdc163817648a800c9f2d5ba361673f62dbdba7fdd8d8d4cce93da788e55",
+        "docs/ENGINE_V02_PLAN.md": "e375eaed55c1b2b791634a40a8e640308bd219e374712166cd3f54bf5ba30cf5",
+        "tests/test_shared_graph.py": "c98d7012a67a84dc66ffb6dc448d8d26752386e74d1997040fafed9e953e35e1",
+        "tests/test_kaifra_worker.py": "9a7020a997cb62ec29c3f38284f9df9db2d1373965397b07a3c1c322d9b2d2a9",
+        "tests/test_engine_memory.py": "e5b12becf9929ea0e23c905e64c3dfc243a50afea2e6c55c57171c0a253a6fa4",
+        "docs/ENGINE_V03_PLAN.md": "8004c321d446b39f581d7768b67e4e55fc5385795452a84418824eb939feb598",
+        "docs/ENGINE_V04_PLAN.md": "93b22eda7f3f18ad8c4a8af6009de8563cd00ae5e5d0bd8afa4550effa892589",
+        "tests/test_draft_weight_views.py": "c5d62c792e80bde4524ca371c3acea7045303e1ace6c9ee379d3dca6e11d91ec",
+        "results/k4/2026-10-24-joint-costs.json": "494337bd1dcfa027041e65d3d2669687d8b01fb26d4e36f458143670f842390a"
+      }
+    },
+    {
+      "status": "FAIL_ENGINE_CONTEXT",
+      "error": "OutOfMemoryError: CUDA out of memory. Tried to allocate 32.00 MiB. GPU 0 has a total capacity of 121.63 GiB of which 6.00 GiB is free. Including non-PyTorch memory, this process has 88.68 GiB memory in use. 88.00 GiB allowed; Of the allocated memory 87.68 GiB is allocated by PyTorch, with 110.25 MiB allocated in private pools (e.g., CUDA Graphs), and 310.96 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)",
+      "phase": "failed",
+      "source_sha256": {
+        "spark_infer_q/__init__.py": "623ddaf4adfbf51e0c029203b0ff1780ebcc5824ff8300de5f1e6d6cd819d5d7",
+        "spark_infer_q/__main__.py": "0f072f8ce2bda51a814da172ccb15f3d9e10a420e42ea3786522a8141bba60ad",
+        "spark_infer_q/affine_kv.py": "2c0cfa209ddc52488ce8e6e889e447ffc306d69645a153bd40194dc13b52ea7c",
+        "spark_infer_q/bounded_index.py": "9cc785f5ca6831fe7ef45fa3984c648ab27b6f01e0b69157c76e8aeace6eaabb",
+        "spark_infer_q/bounded_index_kernels.py": "6266e6eb7e9486a9651f431775a8677a5295666b6f0c65a7da1bca3e0294d4b3",
+        "spark_infer_q/budget_audit.py": "7c2116b666e99c4c07055426733a292e5219ca7b788ce0d0e45f75001640db68",
+        "spark_infer_q/budget_regret.py": "14477f3464091a5eaff1a9cbdb0df045b1c047570fe7a7a782b0c8e63076ba11",
+        "spark_infer_q/checkpoint.py": "d7027b4803ee2564f5a881c3dcbbbb58f0508ee3e8f66d7895fbb7b174aad6b8",
+        "spark_infer_q/cli.py": "efec3b2c7e6bf43367a63caae3765bd593d6c9c3c015e80ebf7a8206c6c49e06",
+        "spark_infer_q/collection_budget.py": "4319736e8acfbe4c88911961f37676b188a39a5a6c0a2216a886cb34addbbbb2",
+        "spark_infer_q/collection_trajectory.py": "b528e4e35b8deb7551782d390aee4d4fb40b407e8f966d02fe607c52e844d2f6",
+        "spark_infer_q/collector.py": "dc34bc95c2984ce099a881717c47659e928e89b2ebf55711ac57b291a1ad6677",
+        "spark_infer_q/compact_target.py": "1e3b989654d5026b4996de3838afd6e184bcbd4d16f7f20978702575da915b1c",
+        "spark_infer_q/confidence_budget.py": "b055819b45a2e4d04b773eef34aa0212b140ba3721fbb1f5ad192903463365b9",
+        "spark_infer_q/confidence_features.py": "6d40253da4dad1de1a6866767af154e3a3ce69647a80df0e2e931f5ab53f0fc1",
+        "spark_infer_q/confidence_head.py": "e27c07808689e54f8660ef8068884be874c0fd5045ed2acfa04fc929b286ad28",
+        "spark_infer_q/csf_loader.py": "1dd25c5e9129fc705c285673c68554546cd9b8b0a3b8813e2429fd9f945214cc",
+        "spark_infer_q/decision_head.py": "0d7337f1b3e2d19493dbe543680db32c428bb5c6f565539974954c2ec40d62a4",
+        "spark_infer_q/deepinfer_bridge.py": "2306e8a7891a17dd7df81619bb77a9f55137f7ab9cb44e45d27e33ea63fe6df5",
+        "spark_infer_q/dflash2_block.py": "e376a509f046ee41882147b560701029c25a93152b874702863d4875a0013376",
+        "spark_infer_q/dflash2_reference.py": "0332366299d6a15b4049fa96062f4b390a33e984c3c184e89d4d2a9d2804384e",
+        "spark_infer_q/dflash2_scored.py": "8175ca379543a27aa6015821f8810c3ff5ba5b197b682da6545377d2b270227b",
+        "spark_infer_q/draft_backbone.py": "e378bbc8ea733abca580955c07b303fb3645783c29f36ba24c8dff0f12520e6c",
+        "spark_infer_q/draft_batch.py": "d76f6c96704ce28a1e0853233dd9883b81c264806a56f7368bb314c6152516e2",
+        "spark_infer_q/draft_batch_graph.py": "a0be47eea1b124ff613101c41a43b30d6e82c2efaa618a0b6ceb75311221a5d5",
+        "spark_infer_q/draft_batch_w8.py": "729c45a0a35d21975b129a819cd6d18735260eb611354393c160dd86eaa576e3",
+        "spark_infer_q/draft_context.py": "756869e7db93a56329079b7aaf542d25eb6d6858fbbf6f60fb4280f63e6ad3e5",
+        "spark_infer_q/draft_fastpath.py": "ddfc09b065f28ffcecd8a9ad8f7209d3d28fb0de2f8188dbc91bc8d55884fdb8",
+        "spark_infer_q/draft_fidelity.py": "1381ea37bac11e09c45197a35964c3849976d9f3911a171e0984914cedcd3bb0",
+        "spark_infer_q/draft_head.py": "cebeeaf86487f2487783fb0df5af465ce6a5a365f49565997d13bfff14a866a5",
+        "spark_infer_q/draft_projection_cache.py": "2ebf83f028b93d1866d6df0626888e6fbaf90e7be77ef37da9447f829294417d",
+        "spark_infer_q/draft_signals.py": "5f6a0ea0708498b2aad1ffaab3e913c22891981be4ee7702d553d9851edb9c3a",
+        "spark_infer_q/engine_server.py": "d2d08f3c0527b8eb08c522e21ddf8bf32982d7ab279d43df2488991e340d0f93",
+        "spark_infer_q/executor.py": "e2d981663cfa9f71858fc2d8737246b8a10def79c62f6aa3e670ccb75e2bc16e",
+        "spark_infer_q/feature_window.py": "20d4218fa9839ce3836e27196251c43209c7d55eecf43e3d12280cab4fadf7f1",
+        "spark_infer_q/head_screen.py": "9a1859e5543f239653c96124a1b68928bb2b80f10309a30ff19ffb5336147a01",
+        "spark_infer_q/joint_budget.py": "deeb2ca94c853e3eace69b7323bfdb12e6148437b3b86a44e3b5b0494a4037e6",
+        "spark_infer_q/kaifra_batch.py": "7c445483ed6cf580674739b45ecdcc85e4a76a7abfe9df3a9880b65b7c434361",
+        "spark_infer_q/kaifra_batch_target.py": "0392c5ccefbfd2e02914529d0575e7cff2f17ef675193681af0bc847d574a148",
+        "spark_infer_q/kaifra_graph.py": "ddae0aefd8af9a68eb22fdbcc98c123e57d8f9c5ba123d1eeb7686b1a42ab4bb",
+        "spark_infer_q/kaifra_http.py": "1b136bcf1e69bf43250a404e30791b1f9f34a30b823837112985c3019a12800f",
+        "spark_infer_q/kaifra_joint_runtime.py": "22640599f5692af471687d3d0bddf76080ae9c134d66cf0a8663c2752cf7e4aa",
+        "spark_infer_q/kaifra_joint_target.py": "e80d0386f53d9c0e34dea34fafb680f1a3d87822589c67a044a38aad3ce7083c",
+        "spark_infer_q/kaifra_optimized.py": "e192046f18fa7c0d15a25ebaa2f242fdb4c0f9d0f4f0cb243acb486c84d53ee9",
+        "spark_infer_q/kaifra_runtime.py": "2a000766ff3c53f64f284ad3b2e67f6115aa95c03a388e54e9c2bbab7c2c5b64",
+        "spark_infer_q/kaifra_service.py": "526164281616d3b7a508f40b32dd4bbf3f6662a66e2800b50e3a4ddaa293f5e5",
+        "spark_infer_q/kaifra_speculative.py": "f428985f5516ff82b7571e9367697fb504776a44324e164dfadcefb9ff717ccb",
+        "spark_infer_q/kaifra_worker.py": "8140c33c1cea3e8449d7d0d44dca58f3d41949d72b3bae5d77a5f4fd7e839072",
+        "spark_infer_q/kv_conversion_kernels.py": "3b4ce89b074078163941183798dbde1f3a9f9d9ccff2d24ca0fa5ea0055ac3db",
+        "spark_infer_q/linear_runtime.py": "16c8d55fa049d7f4d8985cd24982c653c0805d75a6c94facab9cd9718ad7b01f",
+        "spark_infer_q/local_policy.py": "de7b204f92685dbf68d8769df9bf63608c74c96167aa8cb6a08057f39ff3222f",
+        "spark_infer_q/long_capacity.py": "1f24fc4e2f4c74528d75d50f36ab72f4968bcd33a152f9e5cf53c4ae8b928e0e",
+        "spark_infer_q/long_draft_graph.py": "9b84b92b9766027775bfcf2752cca4abd424edb8214ab3f9e46440fc7b5b414d",
+        "spark_infer_q/long_target.py": "2d00587da131fb5235f0a75a8463ad5f440fe1f127c47a142d9d7f626fe8ba7b",
+        "spark_infer_q/mlp_head.py": "52e378708572736c18e0d0cc10090b454209b5ac7fc1b5cd9fd689549b960020",
+        "spark_infer_q/mlp_runtime.py": "9a87d1efd104e33cea4a4454016a61df4b4e043f1768411db1764ae71a7b9855",
+        "spark_infer_q/model_loader.py": "732865d6735d546e1460d0133e191fb80ab2d18a29ae508b9fe289de34a5c376",
+        "spark_infer_q/moe_cost.py": "7e06f87b17dc789ba76f19e179962b778b78be937e9dfd59d609b707c08639ca",
+        "spark_infer_q/native_scheduler.py": "c83c1f731f907bce3125c7bce129da2998e177ae4c46f4efa83d414acf16cb2d",
+        "spark_infer_q/past_cost.py": "d303247bc62badf4fc3f7d06952d78ba6551290ee8fec7a6d426b7ee9ac6d106",
+        "spark_infer_q/prefill.py": "2063bc06ae774652870c4f7c8915dbcefd1951fc9bfb2fdfe13655a145a9b915",
+        "spark_infer_q/prefill_evidence.py": "6350bdfb1b0feee8eddbb71bb350b6a53408c2248c7f34ff8b9c5573ba10e52c",
+        "spark_infer_q/prefill_experts.py": "97033110fb33750d0008fe6fec08dee8e2dc548e62d4aaf7c951fb82a63d9a80",
+        "spark_infer_q/prefill_scratch.py": "cd13a071268b8f2ac6d110a9fd4e13c0bd16a93b20f5ccc2b2dd94efe0969e43",
+        "spark_infer_q/prefill_tensorfold.py": "d4e738875aec6dc8265076517c512771db53370800c7ae4efea087842dacdddd",
+        "spark_infer_q/prompt.py": "6b997c3c6e6834666dfa0f7d13a7c950f6dc2e9b1d80818e5ee4b08a9b886f58",
+        "spark_infer_q/qwen_attention.py": "a5a8bc3340696520fd48d5ae74599cbb49d18af627fc4984fafda9e25a031476",
+        "spark_infer_q/qwen_ple.py": "883da6f074e1d96da395c39325b1a55e8970661b88fecfdb2d8f7b00339be071",
+        "spark_infer_q/qwen_state.py": "c45e9a47a04ae6915a44619c66027211f8cbd09ebfd7b6883120c0b847c47b95",
+        "spark_infer_q/qwen_state_kernel.py": "90f5a201252d2256a71124336a755e9dd8b14ce470ed2c235c577e567bb44dbe",
+        "spark_infer_q/regret_head.py": "ad23a257754d123d93feb805480e8d717192c9d99e83de5afbcdc0886bc647e0",
+        "spark_infer_q/residual_head.py": "a5f1dfa78560bf216a5a69f1e3a61973041a30bb00d16002dbb01c8be84bef18",
+        "spark_infer_q/rolling_draft.py": "a4b43054502234114ab9ca7eb1eaa7e3baf99e983dbd6aa874b1be0644a3f6ca",
+        "spark_infer_q/screened_head.py": "aaba84b6efd33b247fc9f54dcdda52a3db7c2b1a6d9d3cba6ccff56c1b722052",
+        "spark_infer_q/screened_head_fused.py": "ac963778f7e81a957838ab3443a49c7660ad342128fb9047c73d9b7f8f151bef",
+        "spark_infer_q/shared_graph.py": "e5b733a6069a6e1780f80a663de0778ef8856696cc10be41ed0819e701604b79",
+        "spark_infer_q/speculative.py": "ee1c2855cef1f31a868783d00f27cc88eef77f49ff95ff21dc2705d986f12045",
+        "spark_infer_q/tensorfold_block.py": "5527a5f6407c3dbb136003f687151b9754249423f964f71975e4eb9a1b9dadfa",
+        "spark_infer_q/verification_budget.py": "71f28552b8e83f682066edf9e9dd7267e3b54120c5d478949499a443f6eb5c50",
+        "spark_infer_q/wide_budget.py": "5cc2032ce32fd05b019aa90ddc0eefee80df2d2d850ede0e3bda3eedacd854fc",
+        "spark_infer_q/worker_cpu.py": "c2998bbc9d2307cbdecc715ddc517c9135ff87fc6ed13ff6f97befbdee76bdb2",
+        "scripts/k4batch_audit.py": "46051cc52c7a8429fc8a219d7c13fa7fbd5550909272c8362f2885d8cd0ec34e",
+        "scripts/k4batch_core_probe.py": "44e37d4f4c9cd42029606c6ba7045ce6dfb8780acc4a25b4a9f8a3dbf6503a16",
+        "scripts/k4batch_cpu_validate.py": "6a4fffee3f2922b1e505c86802d9baf77bd024d1f2aed10883055b4e1bec908d",
+        "scripts/k4batch_dispatch_profile.py": "988a94292ca68dc9ffffc19c8bfb436269d6f9f671298da77d32ce73a23ecee1",
+        "scripts/k4batch_draft_audit.py": "4262f76556ba4879e65b414d9d3ddfde901002e21aeeecc1fab4112b0b6efce8",
+        "scripts/k4batch_draft_export.py": "81d6569ef3cbb3188bc1b7f597b93a4f2db41b07b2cfec5c8624334820c926b5",
+        "scripts/k4batch_draft_graph_component.py": "f1c729edcc9af46c272e305b1188b9edd8c074503aa65899f60977d3be072aa0",
+        "scripts/k4batch_draft_graph_cpu.py": "4627971b05b5a900fde7e36ab602873e65df5d22593d1a0dc3eae3cc6adf0699",
+        "scripts/k4batch_draft_graph_export.py": "cfb03efa0c58dc4383887cb789bfc4f15405d017d3f2640f46304b8212f8489b",
+        "scripts/k4batch_draft_graph_lifecycle.py": "54388851d5786a53ac9ba4fb98365bc60ccad9cdbfae03cdca8a8b7335a4f814",
+        "scripts/k4batch_draft_graph_service.py": "49416d7d9ec549a6159b0e3d37395b81c4822c7e006fffd1be050c0a081122d7",
+        "scripts/k4batch_draft_isolation.py": "6473abe3bb0a3534672da1db922b989dd3f2a45cb9d4f497538335996c7302ca",
+        "scripts/k4batch_draft_lifecycle.py": "0df73cd74b20e0e40bb3e52ca3d5243e439342b1690ef9a40d6aeb33a08ad549",
+        "scripts/k4batch_draft_math_probe.py": "1df3e32f979c88b8f7cfeba9930e51235e6142ebffc326fce80517005d1daab4",
+        "scripts/k4batch_draft_probe.py": "4e41f983f27746f5bc57d74d111381b5f26db6645d8e64bc29f41d07dffbed69",
+        "scripts/k4batch_draft_service.py": "1592ca5e4d0224d9ffd69a78ccfdb9ae3ffa2b58b9d52af35711ee9a01bc8e4a",
+        "scripts/k4batch_draft_validate.py": "edd9ebb0e728713fb01698bcdfcff643231566309e6a3723e558f42ca2a83dda",
+        "scripts/k4batch_engine_capacity.py": "6ed6ec816b149ba0ede030eb5aff0c170ce415b7720b686465947c3b463c1949",
+        "scripts/k4batch_engine_context.py": "f957976a0cb745c21e7d76bacf354f5b32c66053ab201792f9c13701fc0b5567",
+        "scripts/k4batch_engine_http.py": "6f80d6eced38190948356e747f71b2d2db7d2436692990d6fe1fcc242150d396",
+        "scripts/k4batch_engine_index.py": "df7d77d91aee4d0f635e3deecc3098a87938d5bd0a9241dd2f621020f8465abf",
+        "scripts/k4batch_engine_long.py": "d87ac569c513193a99d0f149f775776f8fdae633d7866b76c6834217e7d349f3",
+        "scripts/k4batch_engine_long_serve.py": "1927f1b75f515d761c2003c6f89a9f1b1b96fc2107997cafe9a90aff3e5c38e7",
+        "scripts/k4batch_engine_prefill.py": "5477fd60e2d7e67e3e2792a110423c60f4dde29172b892be3c1542541beb42d4",
+        "scripts/k4batch_engine_service.py": "0d139ba4743427316a6be2ea334b2b03067cbb00652929eb466532d9973f26c5",
+        "scripts/k4batch_export.py": "713042a446b2ad2689c07091023cc7087c536c4e4466997bda362c9bdfe765fa",
+        "scripts/k4batch_gpu_validate.py": "89ad5e8c97eec8e61f58a4305608c0f58d066d0e1a74e4f7ef01c4787bfe34a6",
+        "scripts/k4batch_joint_cost.py": "eac1e96647f933949193a14ee5bada2f8478eb9145873599be621d804518ba38",
+        "scripts/k4batch_joint_export.py": "d7022dfd85520a933c3bef6a741b46c2eacf10f987b8cd3234f3d5b2a671f056",
+        "scripts/k4batch_joint_lifecycle.py": "c42eeb81de26eb41c0c8c56dc93d284d5bd93c7b5b14e3ea80f672c1cf5f6e32",
+        "scripts/k4batch_joint_service_probe.py": "8d16ddbcbaa99fdb8fc0cf35da3f264355f62bad667338cd6cbd84a6ff67a820",
+        "scripts/k4batch_joint_validate.py": "e68b16592effbcfc7ee2f5b6922c524c38a1ad83a62465bc2744ce8e3d059f84",
+        "scripts/k4batch_lifecycle_validate.py": "22ecaeabfa6a131ece18fa4b9e77faffeb6111489167a2b30cef9516bd491fe2",
+        "scripts/k4batch_memory_probe.py": "df5678a7e3efc5db8d6c87ea497710c3e4bac9202377170eac85d56e711bfb0d",
+        "scripts/k4batch_overlap_validate.py": "fd7d911f46e54fa9e8b38bf083cf4d620419c17a869aacc30b430bb8b8119a41",
+        "scripts/k4batch_probe_validate.py": "7f284273462fb0fa953c350b39de17d6faeb3c6b0b3f66448f64c0fbfaaa71e9",
+        "scripts/k4batch_progress_affinity.py": "fab8b2bf82dbb2999ba1e9f1d3ba6b6ea5665c5f930cf86188b04ea91e8f1c0f",
+        "scripts/k4batch_progress_audit.py": "2ecc23ac7f694ed469c29e30292ef92e0078910c10ae5379752c04c5bcb8ace1",
+        "scripts/k4batch_progress_cpu.py": "781925d6f28108b48c973cc8eed9a21c90c7f4dcd3d3df29056fa2653c0d56ab",
+        "scripts/k4batch_progress_cpu_service.py": "1bcda088c00420002291869700ab588b3bcbf0f9c1db5ef5975f4bc932f7313b",
+        "scripts/k4batch_progress_draft.py": "56b616e371447008a3a5c9cf011ed5f67ef27e26ae564c4df99c59aee9367f2d",
+        "scripts/k4batch_progress_export.py": "df33b768ad6aab34e369afc124d38e6a9d875b0ba9eb429adffc879458a8e627",
+        "scripts/k4batch_progress_lifecycle.py": "dafc709ea92afb096457f0884813d8cd95982defbcabe873227a0fbace56862e",
+        "scripts/k4batch_progress_native.py": "28785871eb3e4c4f3205d45719b6461542b5d6b8d6e4303b729573e27f7f3e48",
+        "scripts/k4batch_progress_validate.py": "59c48fb208cd251df92f6220f435f74fcc6327fb58694b3390d98c93570a5534",
+        "scripts/k4batch_scaling_audit.py": "de9dcc5bdc2caa1cb83597dfbb5c87c9d18fc2181047badb01c7dcd99a820f51",
+        "scripts/k4batch_scaling_export.py": "388997849cc052677ccffd3eaf71cb37cc5ff4a693c8e3a01d41028258003d25",
+        "scripts/k4batch_scaling_profile.py": "20fa22c831941a0b4accb7ee8de818c24aee8a3b28405fe0c8ab915ea5c54bc7",
+        "scripts/k4batch_scaling_validate.py": "d22e4414ba70b54222a585eef09d767999593ffaf88b632f5b322e72e51e220a",
+        "scripts/k4batch_serve.py": "5970d7d5f9e2d549b0cd0e5f5ffb4a420a1dfb44ffd22d5fe8b2055bbe6e487a",
+        "scripts/k4batch_stage.py": "cd664d8ed1204a5d25cc95928b6aee9314fb8b36d68e1b13fb873f587ad318bf",
+        "scripts/k4batch_target_breakdown.py": "cd34ea4c306ad6435f434e8d15689d8ebf279b463b7e7e343b3f720b523e8e7a",
+        "scripts/k4batch_target_component.py": "dd36db553217d1685cccae021687858b29769b3b54fe6c8818dd33e1256e6676",
+        "scripts/k4batch_target_cpu.py": "f66a65a12fa1f3cee7f943197365eb63b5a7be62d81d1b75c4c22bb0e396abbd",
+        "scripts/k4batch_target_export.py": "90d1485ce32c0bad1fbb2947d1366cc0ed8e7f9ad159d87542a50d2f8de456b5",
+        "scripts/k4batch_target_lifecycle.py": "fd0761b34ff2212048f7b88323d5c147775ced967ae7917ea9f35be322334e12",
+        "scripts/k4batch_target_probe.py": "c5438d1f59dcea1ab58c654982f8b91230129b3dfff0a1fd63996974e1aa8ce1",
+        "scripts/k4batch_target_service.py": "a6da3e8c05e51e312fd999809b12c0c825dfa17117a7354bdb3c09204ae390b3",
+        "scripts/k4batch_target_trace.py": "afe85ddc7c12e91877449e0e663145f723812c0bce299840f9421e4b8294e514",
+        "scripts/k4batch_wait_fix_audit.py": "33726f69399b955aab8e4da6802db01550dfef27a3d921e46ed2089529f42f91",
+        "scripts/k4batch_wait_fix_export.py": "982592153443ff998096127051cef147e0a05151b40f2d80ec23489c00ff45f7",
+        "scripts/k4batch_wait_fix_validate.py": "0e6c02ea446a744fcffaf5a3f976690d3c467cccfa53957959fb901f111a4900",
+        "scripts/k4batch_wait_probe.py": "cfe7da1aa639818bbbb1695727a3467593414bc3095d95b0911ea9eaf608c941",
+        "scripts/k4batch_wait_service_validate.py": "9ce14e67c7dfd064227c62a504588d83dd6004239c217afe3df40b6d881a150e",
+        "scripts/k4batch_draft_w8.cu": "bed35d108f06aad2d16e7eaed7365285398b43abc9418484e40a348668b1e335",
+        "scripts/k4batch_target_state.cu": "80899a88984f7cf395f02a8f1f6ab264699dec9bf3e8091924916641cc30f7f1",
+        "scripts/k2_native_validate.py": "3842a3827a462c44165407a243013e2a36d1c1523f24a72028d50833f20f0f8f",
+        "docs/K4_BATCH_RUNTIME_PLAN.md": "16caa661fede509152fc478cabcc40098e78b8d420ac1dca2e5948711724ed67",
+        "tests/test_draft_batch.py": "3c709853458283c9801ce01f6d9e7133da9edbec4f301e0ed8d2b1fdad770bfa",
+        "tests/test_compact_target.py": "6a6f8886a70cfa1dcfcdc19df25fbc5ca530645297f3afb966a533e54e79116d",
+        "tests/test_kaifra_batch_transactions.py": "2f5772932f720ca14342c0e7e29aa76b4780c55e4289226734715156a36d2a6e",
+        "tests/test_prefill_executor.py": "1f322fb55986552d787b1f02dc379a3eaf419f87bc8c7555c4ebb7dfc29ec912",
+        "tests/test_prefill_progress.py": "832b292a3f3f48c8b6ccafe146f4de9ad77ec6744c97b0b054d49e72f9488b3b",
+        "tests/test_worker_cpu.py": "608a244d123d08151f5895cb0c32a1d3a894683bb2705eed7642fbe085b56c7e",
+        "THIRD_PARTY_NOTICES.md": "0ab847d3e4eee1b7882fde1e2f1ca99eb67afe52f59a8e1f49a7ff34794ba28b",
+        "tests/test_draft_batch_graph.py": "fa7dfe66f32d35a12488f00c13abe6b61c515abe1ca4823a268e31e9f0ae8319",
+        "docs/ENGINE_V01_PLAN.md": "b134b9fabd0ad70a4bbaa3e1cbc3ba3f9788ebc1bc3dea40b2d476c35987c4f7",
+        "tests/test_engine_api.py": "52a23beaa158c52ef4c710c7f47bbb6d1b64e74aeb36623bb9babbce6d235394",
+        "tests/test_engine_cli.py": "09270574424954b757c0e65efe64cb059cc21ea8b8b4fd83bb3c1c366b2f4074",
+        "scripts/serve.py": "7176ca667b64a41c00e61a71ff384d5d04dac45f1badecccaab86c8691bbc2a7",
+        "pyproject.toml": "6259bdc163817648a800c9f2d5ba361673f62dbdba7fdd8d8d4cce93da788e55",
+        "docs/ENGINE_V02_PLAN.md": "e375eaed55c1b2b791634a40a8e640308bd219e374712166cd3f54bf5ba30cf5",
+        "tests/test_shared_graph.py": "c98d7012a67a84dc66ffb6dc448d8d26752386e74d1997040fafed9e953e35e1",
+        "tests/test_kaifra_worker.py": "9a7020a997cb62ec29c3f38284f9df9db2d1373965397b07a3c1c322d9b2d2a9",
+        "tests/test_engine_memory.py": "e5b12becf9929ea0e23c905e64c3dfc243a50afea2e6c55c57171c0a253a6fa4",
+        "docs/ENGINE_V03_PLAN.md": "8004c321d446b39f581d7768b67e4e55fc5385795452a84418824eb939feb598",
+        "docs/ENGINE_V04_PLAN.md": "93b22eda7f3f18ad8c4a8af6009de8563cd00ae5e5d0bd8afa4550effa892589",
+        "tests/test_draft_weight_views.py": "c5d62c792e80bde4524ca371c3acea7045303e1ace6c9ee379d3dca6e11d91ec",
+        "tests/test_engine_inputs.py": "773201762c10b337ac0aaaf842facf31ba26b3d8240a003b1c520a714823821d",
+        "results/k4/2026-10-24-joint-costs.json": "494337bd1dcfa027041e65d3d2669687d8b01fb26d4e36f458143670f842390a"
+      }
+    }
+  ],
+  "raw_sha256": {
+    "capacity-dedup.json": "3017bab6ddf7d5ab48722ca7042e35dff7ce45daaa73516980ad89cd503758fd",
+    "capacity-initial.json": "f1bae1be9cdffeefb0aade8b2a987268194168a2a671c6d0874b708b5aa841ea",
+    "capacity-job.json": "dbcb54b6c5f92ad3d6ee72c52db6ad288bd417da3cf9f505545381f3a1612983",
+    "capacity.json": "9899bb2ce4d0264fff87a5e0635715549a447352baf123f38aee35468aaa9d23",
+    "context-failed-job.json": "382aa29d477b87ecc7607915679b3ea0d29698f801eea2879a2f7fdb4f481d4f",
+    "context-failed.json": "13a3d5a37ae1d7c0cb4a7a170a31268fc62410ef3a1150f513f3c6ae8d2e463e",
+    "context-job.json": "500e68df1f28221c358c906176c5df745bfb376080e722e9e9958b386acdb64b",
+    "context.json": "29af6f3db5da119308458cc21ba736bece52cb7428ef15ec29e5640b862fb913",
+    "cpu.json": "f81f83b8e47d3fd8f875989ef652d38d34322ad0f06f98cf6841827e9944e156",
+    "http.json": "9a5af449455f29bc5984fa0fe80d28cd9f8b780f046d40beea284e74a2c9ae2a",
+    "index-failed-job.json": "9caf4558d511fe27794129e84eaf3645d0a7f1a5f85be867eb3da15ba3184d01",
+    "index-failed.json": "58092b1b48faca9008405c4297276d37530511d6c8fd5297d119d035d956f1d1",
+    "index-job.json": "226bb51c9472ca89a9960663a2ed0a0cdbb58c0a0621059b623a57ab180156b5",
+    "index.json": "fe0d31a49abbd02be5c7c4c95940faea0acb1137939eea9877ed04da1d5f6cc6",
+    "live-start.json": "1524bb658d13337e54be154fbadbfaf5ef6fd6edc01def2690d7218a2b5a97b8",
+    "package.json": "9b090b5b0555ff23d88254c6b8b033187c52df0b751aea654422eb4c7de40b79",
+    "resident-status.json": "69ee27ca722e54a4d02549d263115814851086f7684fb51ae4f4ffc8a87708f0"
+  }
+}

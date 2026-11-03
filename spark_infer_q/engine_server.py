@@ -16,7 +16,7 @@ class ServiceConfig:
     checkpoint: Path
     port: int = 8000
     model: str = 'spark-infer-q'
-    capacity: int = 65536
+    capacity: int = 131072
     max_requests: int = 4
     mode: str = 'adaptive'
     execution: str = 'graph'
@@ -28,8 +28,8 @@ class ServiceConfig:
     def __post_init__(self):
         if type(self.port) is not int or not 0 <= self.port <= 65535:
             raise ValueError('port must be 0..65535')
-        if type(self.capacity) is not int or not 16 <= self.capacity <= 65536:
-            raise ValueError('context capacity must be 16..65536, including output')
+        if type(self.capacity) is not int or not 16 <= self.capacity <= 131072:
+            raise ValueError('context capacity must be 16..131072, including output')
         if type(self.max_requests) is not int or not 1 <= self.max_requests <= 4:
             raise ValueError('running request capacity must be 1..4')
         if type(self.queue_size) is not int or not 0 <= self.queue_size <= 128:
@@ -48,9 +48,15 @@ class ServiceConfig:
     def prompt_chunk(self):
         if self.prefill_chunk_rows is not None:
             return self.prefill_chunk_rows
+        if self.capacity > 65536 and self.max_requests == 4:
+            return 512
         if self.prefill_experts is not None:
             return 1024
         return 512 if self.capacity > 1536 or self.max_requests != 2 else 128
+
+    @property
+    def index_ring_rows(self):
+        return 2048 if self.capacity > 65536 else None
 
 
 def inspect_environment(config):
@@ -127,7 +133,8 @@ def warm_long_slots(target, provider, torch, *, graphs=True):
     """Charge measured first-slot Graph/state bytes before adding more slots."""
     from .long_capacity import LongCapacityBudget
     base = check_memory(torch)
-    initial_reserve = (3 if getattr(target, 'capacity', 32784) > 32784 else 2)*1024**3
+    physical = getattr(target, 'capacity', 32784)
+    initial_reserve = (4 if physical > 65552 else 3 if physical > 32784 else 2)*1024**3
     if (base['allocated_bytes']+initial_reserve > 88*1024**3 or
             base['host_available_bytes']-initial_reserve < 8*1024**3):
         raise RuntimeError('insufficient memory to measure the first request slot')
@@ -190,6 +197,10 @@ def open_service(session, config):
             with torch.inference_mode():
                 profile, admission = {}, None
                 if config.mode == 'adaptive':
+                    # Resident sessions created before v0.4 may retain separate
+                    # copies of the exact parameters already in fused matrices.
+                    from .dflash2_reference import share_fused_weights
+                    share_fused_weights(session.draft)
                     options = dict(history_window_rows=2040, max_request_context=config.capacity+16,
                         query_graphs=config.execution == 'graph', request_projection_cache=True) if long_context else {}
                     provider, profile = optimized_provider(session, **options)
@@ -205,16 +216,23 @@ def open_service(session, config):
                         expert = PrefillExpertTile.from_file(config.prefill_experts,
                                                            expected_sha256=E44_BINARY_SHA256)
                     prefill = PrefillExecutor(TensorFoldPrefillProvider(session.weights, torch,
-                        capacity=physical, expert_backend=expert), chunk_rows=chunk)
+                        capacity=physical, expert_backend=expert,
+                        index_ring_rows=config.index_ring_rows), chunk_rows=chunk)
                     if long_context:
                         from .shared_graph import SharedGraphTarget
                         target = SharedGraphTarget.from_session(session, capacity=physical,
-                            kv_dtype='bf16', slots=config.max_requests)
+                            kv_dtype='bf16', slots=config.max_requests,
+                            index_ring_rows=config.index_ring_rows)
                         # Materialize shared storage before measuring private
                         # slots. This is one existing stream, never a reload.
                         prefill.workspace = prefill.provider.allocate(chunk)
                         if provider is not None and config.execution == 'graph':
                             provider.worker.warmup()
+                        if config.execution == 'graph':
+                            # These head Graphs are shared by all request slots.
+                            # Materialize them before measuring private growth.
+                            for width in range(1, 9):
+                                target.screen.prepare(width)
                         # Eager mode also allocates stable request state; only
                         # the graph profile records the sixteen private Graphs.
                         admission = warm_long_slots(target, provider, torch,
@@ -253,8 +271,9 @@ def open_service(session, config):
                         prior=session.calibration['conditional_prior'], capacity=config.capacity,
                         tokenizer=session.tokenizer, target_only=config.mode == 'none',
                         prefill_executor=prefill, prompt_token_budget=chunk, interleave_prefill=True)
-                engine.capabilities.update(service_version='0.3.0', max_running_requests=config.max_requests,
+                engine.capabilities.update(service_version='0.4.0', max_running_requests=config.max_requests,
                     context_capacity=config.capacity, target_kv_dtype='bf16',
+                    index_ring_rows=config.index_ring_rows,
                     max_queued_requests=config.queue_size, protocol='openai_chat_subset',
                     http_async_owner=True, memory_admission=admission)
                 engine.capabilities.update(prefill_expert_backend='original' if expert is None else expert.name,

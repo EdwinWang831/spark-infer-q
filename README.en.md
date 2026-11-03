@@ -6,18 +6,20 @@ Research on cost-aware speculative decoding and runtime execution for local larg
 
 **Start here:** [research overview](docs/RESEARCH_OVERVIEW.md) · [中文研究导览](docs/RESEARCH_OVERVIEW.zh-CN.md) · [CPU predictor example](examples/adaptive_budget.py) · [experiment index](docs/README.md).
 
-The overview connects the research questions to implementation, measured evidence and remaining limitations. Documentation reviewed on 2026-11-02; hardware reports cover E0–E58 through 2026-10-28, with runtime milestones K1–K4.
+The overview connects research questions to implementation, evidence and limitations. Documentation reviewed on 2026-11-03, covering E0–E58, runtime milestones K1–K4 and four-request 128K engine validation.
 
 ## Unified engine entry
 
-This branch integrates main and committed K4 work as Kaifra v0.3: one model load, 64K total tokens per request, four running requests, adaptive DFlash, streaming/nonstreaming chat, cancellation, bounded admission, health, metrics and orderly shutdown. In the prepared GPU environment:
+This branch integrates main and committed K4 work as Kaifra v0.4, with one model load, 128K total tokens per request, four running requests, adaptive DFlash, streaming/nonstreaming chat, cancellation, bounded admission, health, metrics and orderly shutdown. Run these commands in the prepared GPU environment.
 
 ```bash
 python -m spark_infer_q doctor --root /path/to/prepared/runtime --checkpoint /path/to/local/target
 python -m spark_infer_q serve --root /path/to/prepared/runtime --checkpoint /path/to/local/target
 ```
 
-Four 65,472-token BF16 KV caches were populated simultaneously, each producing 64 tokens. HTTP outputs, state, features and dynamic traces match controls. In a paired four-request 32K study, the optional 1,024-row expert tile reduced mean complete-cohort time from 114.90 to 94.99 seconds, a 17.33% reduction. Select it with the verified `--prefill-experts` extension. Ordinary startup uses compatible 512-row prefill. Long requests execute serially on the GPU, and short two-request GPU batching remains available. Configuration and measurements appear in the [usage guide](docs/ENGINE_V03_USAGE.en.md) and [validation report](docs/ENGINE_V03_REPORT.md). Historical evidence remains in the [v0.2 report](docs/ENGINE_V02_REPORT.md) and [v0.1 cold-start report](docs/ENGINE_V01_REPORT.md).
+Four 131,008-token BF16 caches were populated simultaneously, each producing 64 tokens. One 128K prefix matches the full-index reference at every chunk. Four-request HTTP outputs, valid state, features and dynamic traces match token-by-token and isolated dynamic controls. The 128K profile uses a 2,048-row raw index ring, exact shared views of fused draft weights and 512-row prefill, preserving full K/V and pooled history. Long GPU execution remains serial. See the [usage guide](docs/ENGINE_V04_USAGE.en.md) and [validation report](docs/ENGINE_V04_REPORT.md).
+
+At 64K, the verified `--prefill-experts` extension continues to select 1,024-row prefill. In the earlier paired four-request 32K study, that profile reduced mean complete-cohort time from 114.90 to 94.99 seconds, a 17.33% reduction. Each capacity has separate timing evidence. Historical reports remain available for [v0.3](docs/ENGINE_V03_REPORT.md), [v0.2](docs/ENGINE_V02_REPORT.md) and [v0.1 cold startup](docs/ENGINE_V01_REPORT.md).
 
 ## Research question
 
@@ -78,7 +80,7 @@ The gains that held came from deciding what to compute (verification budget, dra
 
 - **Memory**: the target is eight concurrent 256K requests under the 88 GiB CUDA allocation cap. Even with INT4 KV the forecast is 92.82 GiB (E55).
 - **KV compression accuracy**: all compressed candidates still miss the pre-registered 3% relative-logit-L2 gate. In E58, BF16 prefill followed by FP8 / INT4 decode gives 4.06% / 7.22% on the same 100 teacher decode positions across six 4K–16K prefixes. This is not a 256K quality result or a throughput measurement.
-- v0.3 supports four 64K requests and faster prefill, with serial long-path GPU execution. Larger prompt chunks increase individual output gaps while prefill waits. Long GPU batching, fair queues and sustained stress remain open. Historical K4 performance has not established a stable win over optimized sequential serving.
+- Four-request capacity now reaches 128K per request, sharing serial GPU scratch. This profile defaults to 512-row prefill to retain memory headroom. The 64K profile continues to support 1,024-row prefill. Long GPU batching, fair queues and sustained stress remain open.
 - **Native TensorFold comparison**: 45.62 vs native 49.18 tok/s overall in E7; not rerun since.
 
 ## Feedback-driven self-improvement (proposal)

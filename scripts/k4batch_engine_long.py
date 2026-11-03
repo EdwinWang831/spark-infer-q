@@ -28,7 +28,8 @@ def state_sha(torch, state):
             result[f'{index}.{name}'] = tensor_sha(torch, getattr(cache, name)[:state.pos])
         result[f'{index}.pooled'] = tensor_sha(torch, state.pooled[index][:state.pos//state.ratio])
         start = state.pos//state.ratio*state.ratio
-        result[f'{index}.raw_tail'] = tensor_sha(torch, state.ikc[index][start:state.pos])
+        offset = start % state.index_ring_rows if getattr(state,'index_ring_rows',None) is not None else start
+        result[f'{index}.raw_tail'] = tensor_sha(torch, state.ikc[index][offset:offset+state.pos-start])
     snapshot = state.snapshot()
     for name in ('rec', 'conv', 'ple_tail'):
         result[name] = tensor_sha(torch, snapshot[name])
@@ -45,8 +46,12 @@ def make_messages(session, index, long=True, *, prompt_tokens=None):
     tail = ('\nExplain the cache and request ownership mechanisms in detail, with examples, in at least 500 words. '
             'Continue until all important tradeoffs are explained.' if index != 1 else
             '\n请用中文详细说明上文的缓存、请求隔离和调度机制，举例分析，至少写五百字。')
-    tokens = session.tokenizer.encode(fillers[index]*(6000 if long else 400), add_special_tokens=False)
     wanted = prompt_tokens if prompt_tokens is not None else 32704 if long else 4096
+    repeats = 6000 if long else 400
+    tokens = session.tokenizer.encode(fillers[index]*repeats, add_special_tokens=False)
+    while len(tokens) < wanted+128:
+        repeats *= 2
+        tokens = session.tokenizer.encode(fillers[index]*repeats, add_special_tokens=False)
     count = wanted-80
     for _ in range(10):
         text = session.tokenizer.decode(tokens[:count], skip_special_tokens=False)+tail

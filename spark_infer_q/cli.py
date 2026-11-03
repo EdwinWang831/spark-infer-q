@@ -5,7 +5,7 @@ import os
 from pathlib import Path
 
 
-VERSION = '0.3.0'
+VERSION = '0.4.0'
 
 
 def main(argv=None):
@@ -19,8 +19,8 @@ def main(argv=None):
         if command == 'serve':
             child.add_argument('--port', type=int, default=8000)
             child.add_argument('--model', default='spark-infer-q')
-            child.add_argument('--capacity', type=int, default=65536,
-                               help='per-request input plus output tokens (maximum 65536)')
+            child.add_argument('--capacity', type=int, default=131072,
+                               help='per-request input plus output tokens (maximum 131072)')
             child.add_argument('--max-requests', type=int, default=4,
                                help='running request slots, separate from the waiting queue')
             child.add_argument('--mode', choices=('adaptive', 'none'), default='adaptive')

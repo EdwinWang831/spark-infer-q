@@ -6,6 +6,7 @@ def main():
     p=argparse.ArgumentParser();p.add_argument('version');p.add_argument('job');p.add_argument('runner');p.add_argument('--graphs',action='store_true')
     p.add_argument('--component-root',help='absolute remote path of the sealed draft component result')
     p.add_argument('--prefill-experts',help='absolute remote path of the pinned E44 prefill extension')
+    p.add_argument('--capacity',type=int,help='explicit engine input plus output capacity')
     p.add_argument('--ssh-host',default='robo-dog-f236.local',help='existing SSH host profile')
     p.add_argument('--stage-only',action='store_true',help='upload and seal without enqueuing a GPU job')
     p.add_argument('--ssh-hostname',help='explicit verified peer address; bypass only this call\'s ProxyCommand');a=p.parse_args()
@@ -14,6 +15,7 @@ def main():
     if not re.fullmatch(r'k4batch_[a-z_]+\.py',a.runner):p.error('runner must be a K4 batch script basename')
     if a.component_root and not a.component_root.startswith('/'):p.error('component root must be absolute')
     if a.prefill_experts and not a.prefill_experts.startswith('/'):p.error('prefill experts path must be absolute')
+    if a.capacity is not None and not 16<=a.capacity<=131072:p.error('capacity must be16..131072')
     root=pathlib.Path(__file__).resolve().parents[1]
     names=[str(f.relative_to(root)) for f in sorted((root/'spark_infer_q').glob('*.py'))]
     names += [str(f.relative_to(root)) for f in sorted((root/'scripts').glob('k4batch*.py'))]
@@ -26,6 +28,7 @@ def main():
               'scripts/serve.py','pyproject.toml']
     names += ['docs/ENGINE_V02_PLAN.md','tests/test_shared_graph.py','tests/test_kaifra_worker.py','tests/test_engine_memory.py']
     names += ['docs/ENGINE_V03_PLAN.md']
+    names += ['docs/ENGINE_V04_PLAN.md','tests/test_draft_weight_views.py','tests/test_engine_inputs.py']
     names += ['results/k4/2026-10-24-joint-costs.json']
     manifest={n:hashlib.sha256((root/n).read_bytes()).hexdigest() for n in names};buf=io.BytesIO()
     with tarfile.open(fileobj=buf,mode='w') as archive:
@@ -64,9 +67,12 @@ r=pathlib.Path('/workspace/e1/resident-verification');src=pathlib.Path({(remote+
 if not dest.exists():shutil.copyfile(src,dest)
 assert hashlib.sha256(dest.read_bytes()).hexdigest()==hashlib.sha256(src.read_bytes()).hexdigest()
 job=dict(module={module!r},sha256=hashlib.sha256(dest.read_bytes()).hexdigest(),arguments=dict(source_root={remote!r},graphs={a.graphs!r}))
-if {a.component_root!r} is not None:job['arguments']['component_root']={a.component_root!r}
+component_path={a.component_root!r}
+if component_path is not None:job['arguments']['component_root']=component_path
 prefill_expert_path={a.prefill_experts!r}
 if prefill_expert_path is not None:job['arguments']['prefill_experts']=prefill_expert_path
+capacity_value={a.capacity!r}
+if capacity_value is not None:job['arguments']['capacity']=capacity_value
 p=r/'jobs/pending'/{a.job!r}
 definition=r/'jobs/submitted'/p.name;definition.parent.mkdir(exist_ok=True)
 if definition.exists():assert json.loads(definition.read_text())==job
