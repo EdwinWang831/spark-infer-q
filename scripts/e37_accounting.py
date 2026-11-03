@@ -20,7 +20,7 @@ def family(name):
     return 'other'
 
 
-def analyze_trace(trace,root_name):
+def analyze_trace(trace,root_name,*,classifier=None):
     events=trace['traceEvents']
     roots=[e for e in events if e.get('cat')=='user_annotation' and e.get('ph')=='X' and e.get('name')==root_name]
     if len(roots)!=1:raise ValueError('one prompt diagnostic range required')
@@ -31,9 +31,10 @@ def analyze_trace(trace,root_name):
     memory=[e for e in events if e.get('cat') in ('gpu_memcpy','gpu_memset') and within(e)]
     api=[e for e in events if e.get('cat')=='cuda_runtime' and within(e)]
     groups={}
+    classify=family if classifier is None else classifier
     for e in kernels:
         if not math.isfinite(e['dur']) or e['dur']<0:raise ValueError('invalid kernel time')
-        name=family(e['name']);row=groups.setdefault(name,dict(calls=0,kernel_ms=0))
+        name=classify(e['name']);row=groups.setdefault(name,dict(calls=0,kernel_ms=0))
         row['calls']+=1;row['kernel_ms']+=e['dur']/1000
     total=sum(e['dur'] for e in kernels)/1000
     top={}

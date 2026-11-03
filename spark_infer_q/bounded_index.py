@@ -22,10 +22,12 @@ def kernels():
     return bounded_index_kernels
 
 
-def build_forward(ring_rows, max_prepare=1024):
+def build_forward(ring_rows, max_prepare=1024, *, qsa_rows=None):
     """Clone Python call globals, borrowing unchanged external operators."""
     from tensorfold.families.qwen4_exp.cuda import forward as original
     validate_geometry(ring_rows, max_prepare)
+    if qsa_rows is not None and not callable(qsa_rows):
+        raise ValueError('QSA rows backend must be callable')
     module = ModuleType(__name__ + '.private_forward')
     module.__dict__.update(original.__dict__)
     def clone(fn, namespace):
@@ -39,6 +41,8 @@ def build_forward(ring_rows, max_prepare=1024):
     ops = kernels()
     attention = SimpleNamespace(**vars(original.attn_mod))
     attention.qsa_pool, attention.qsa_select = ops.qsa_pool, ops.qsa_select
+    if qsa_rows is not None:
+        attention.qsa_rows = qsa_rows
     kv = SimpleNamespace(**vars(original.kv8))
     kv.attn_prep = ops.attn_prep
     namespace = dict(module.__dict__, attn_mod=attention, kv8=kv)

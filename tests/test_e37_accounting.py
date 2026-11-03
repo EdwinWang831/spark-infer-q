@@ -16,6 +16,17 @@ def timings():
 
 
 class AccountingTests(unittest.TestCase):
+    def test_explicit_classifier_preserves_historical_accounting(self):
+        trace = dict(traceEvents=[
+            dict(cat='user_annotation', name='prompt', ts=0, dur=20, ph='X'),
+            dict(cat='kernel', name='fn_tile4_gu_rt4_s4', ts=2, dur=10, ph='X')])
+        original = analyze_trace(trace, 'prompt')
+        classified = analyze_trace(trace, 'prompt', classifier=lambda name: 'routed_experts')
+        self.assertEqual(set(original['by_kernel_family']), {'other'})
+        self.assertEqual(set(classified['by_kernel_family']), {'routed_experts'})
+        self.assertEqual(original['kernel_duration_sum_ms'], classified['kernel_duration_sum_ms'])
+        self.assertEqual(analyze_trace(trace, 'prompt'), original)
+
     def test_actual_kernel_intervals_exclude_annotations_and_outside_work(self):
         def event(cat, name, ts, dur):
             return dict(cat=cat, name=name, ts=ts, dur=dur, ph='X')

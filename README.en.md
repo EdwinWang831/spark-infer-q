@@ -21,6 +21,8 @@ Four 131,008-token BF16 caches were populated simultaneously, each producing 64 
 
 Optional single-buffer features make four-request 128K serving with the 1,024-row E44 profile pass memory admission. In a matched ABBA study, mean complete native-engine cohort time falls from **476.62 to 387.62 seconds, an 18.67% reduction**, with identical outputs, state, features and dynamic traces. Ordinary startup selects mirrored features and 512 rows. The faster profile uses explicit parameters. Maximum output-event gaps while prefill waits grow from about 0.51 to 0.80 seconds. See the [configuration guide](docs/ENGINE_V05_USAGE.en.md) and [report](docs/ENGINE_V05_REPORT.md). Historical reports remain available for [v0.4](docs/ENGINE_V04_REPORT.md), [v0.3](docs/ENGINE_V03_REPORT.md), [v0.2](docs/ENGINE_V02_REPORT.md) and [v0.1 cold startup](docs/ENGINE_V01_REPORT.md).
 
+The latest 128K profile and QSA study is complete. QSA component time falls 23.05%, while the matched four-request ABBA mean is **386.67 → 378.99 seconds, a 1.99% elapsed reduction**, with identical numerical results and dynamic traces. The candidate misses the predeclared 3% promotion gate and remains a research interface. The live service runs the restored v0.4.1 profile. See the [report](docs/ENGINE_V06_REPORT.md) and [sanitized evidence](results/engine/2026-11-03-v06.json).
+
 ## Research question
 
 On a desktop machine whose CPU and GPU share 128 GB of memory, can a large MoE model run faster, with longer context and several requests at once, while its **output and committed state match the same quantized target run serially**? Compressed target-KV candidates also face a separate BF16-KV-relative accuracy gate.

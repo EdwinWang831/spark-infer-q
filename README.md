@@ -21,6 +21,8 @@ python -m spark_infer_q serve --root /path/to/prepared/runtime --checkpoint /pat
 
 可选的单缓冲特征窗口使 128K 四请求的 1024 行 E44 专家配置通过内存准入。同期 ABBA 配对中，完整原生引擎 cohort 平均从 **476.62 降到 387.62 秒，耗时减少 18.67%**，输出、状态、特征与动态轨迹一致。普通启动采用镜像／512 行配置，较快配置通过参数显式选择。有其他 prefill 等待时，最大输出事件间隔约从 0.51 增到 0.80 秒。见[配置说明](docs/ENGINE_V05_USAGE.md)和[完整报告](docs/ENGINE_V05_REPORT.md)。历史记录见 [v0.4](docs/ENGINE_V04_REPORT.md)、[v0.3](docs/ENGINE_V03_REPORT.md)、[v0.2](docs/ENGINE_V02_REPORT.md)及 [v0.1 冷启动](docs/ENGINE_V01_REPORT.md)。
 
+最新 128K 剖析与 QSA 候选已完成。QSA 组件耗时减少 23.05%，完整四请求 ABBA 平均 **386.67 → 378.99 秒，耗时减少 1.99%**，数值与动态轨迹一致。候选低于事前 3% 晋升门槛，保留为研究接口。线上采用已恢复的 v0.4.1 配置。见[本轮报告](docs/ENGINE_V06_REPORT.md)与[脱敏证据](results/engine/2026-11-03-v06.json)。
+
 ## 研究问题
 
 一台 CPU 与 GPU 共享 128 GB 内存的桌面设备，能不能让一个大型 MoE 模型跑得更快、上下文更长、同时服务多个请求，并且**输出和已提交状态与同一个量化 target 的串行执行一致**？压缩 target KV 的候选还需要通过独立的 BF16 KV 相对精度门槛。

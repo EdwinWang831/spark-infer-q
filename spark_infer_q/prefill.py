@@ -37,6 +37,7 @@ class PrefillExecutor:
     def capabilities(self):
         return dict(prefill_executor='owned_chunked_v1', prefill_chunk_rows=self.chunk_rows,
                     prefill_cuda_graph=False, prefill_logits='final_row_full_vocab',
+                    prefill_qsa=getattr(self.provider, 'qsa_backend', 'reference'),
                     prefill_arithmetic=self.provider.arithmetic)
 
     def advance(self, state, token_ids, *, capture=True):

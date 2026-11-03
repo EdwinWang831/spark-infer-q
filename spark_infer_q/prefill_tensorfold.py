@@ -46,7 +46,8 @@ class TensorFoldPrefillProvider:
     max_chunk_rows = 1024
     arithmetic = 'e36_decode_mxfp8_decode_gdn_f32_moe'
 
-    def __init__(self, weights, torch, *, capacity, expert_backend=None,kv_dtype='bf16',index_ring_rows=None):
+    def __init__(self, weights, torch, *, capacity, expert_backend=None,kv_dtype='bf16',index_ring_rows=None,
+                 qsa_backend='reference'):
         from tensorfold.families.qwen4_exp.cuda import forward, gdn
         from tensorfold.families.qwen4_exp.cuda.state import Buffers, _MoECfg
         if expert_backend is not None and not callable(expert_backend):
@@ -62,10 +63,19 @@ class TensorFoldPrefillProvider:
             raise ValueError('bounded prefill capacity must be 8..262160')
         if kv_dtype not in ('bf16','int8','fp8','int4'):
             raise ValueError('prefill KV dtype must be bf16, int8, fp8 or int4')
+        if qsa_backend not in ('reference', 'grouped'):
+            raise ValueError('prefill QSA backend must be reference or grouped')
+        if qsa_backend == 'grouped' and (index_ring_rows is None or
+                (weights.cfg.index_heads, weights.cfg.index_dim) != (4, 128)):
+            raise ValueError('grouped prefill QSA requires the bounded 4-head 128-dimension indexer')
         self.torch, self.ops, self.gdn, self.Buffers = torch, forward, gdn, Buffers
+        self.qsa_backend = qsa_backend
         if index_ring_rows is not None:
             from .bounded_index import build_forward
-            self.ops=build_forward(index_ring_rows)
+            qsa_rows = None
+            if qsa_backend == 'grouped':
+                from .prefill_qsa import qsa_rows
+            self.ops=build_forward(index_ring_rows, qsa_rows=qsa_rows)
         self.expert_backend, self.MoECfg = expert_backend, _MoECfg
         self.capacity = capacity
         self.kv_dtype = kv_dtype

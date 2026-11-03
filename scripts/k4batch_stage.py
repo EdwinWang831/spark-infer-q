@@ -32,6 +32,7 @@ def main():
     names += ['docs/ENGINE_V03_PLAN.md']
     names += ['docs/ENGINE_V04_PLAN.md','tests/test_draft_weight_views.py','tests/test_engine_inputs.py']
     names += ['docs/ENGINE_V05_PLAN.md','tests/test_rolling_history.py']
+    names += ['docs/ENGINE_V06_PLAN.md','scripts/e37_model.py','scripts/e37_accounting.py']
     names += ['results/k4/2026-10-24-joint-costs.json']
     manifest={n:hashlib.sha256((root/n).read_bytes()).hexdigest() for n in names};buf=io.BytesIO()
     with tarfile.open(fileobj=buf,mode='w') as archive:

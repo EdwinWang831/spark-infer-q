@@ -29,6 +29,11 @@ arithmetic is still executed by the external original JIT bodies; only the raw
 index pointer is translated. Full KV and pooled index history remain external
 TensorFold layouts and operators.
 
+`prefill_qsa.py` adapts TensorFold's `attention._scores` into a grouped-query
+Gluon kernel. Its explicit reduction layout preserves the ordered FP32 score
+arithmetic. The deterministic radix selector remains an external TensorFold
+operator and is dispatched for measured long-prefill shapes.
+
 `kv_conversion_kernels.py` calls the pinned TensorFold `quant_groups_4` and
 `store_kv` JIT bodies to encode already prepared BF16 cache rows. Conversion
 ownership and destination dispatch are local; quantizer arithmetic remains

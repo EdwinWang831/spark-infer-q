@@ -4,6 +4,8 @@
 
 统一服务入口见 [Kaifra v0.4.1 配置](ENGINE_V05_USAGE.md) / [English usage](ENGINE_V05_USAGE.en.md)。四个运行请求、每请求 128K、BF16 KV 与动态 DFlash，可选单缓冲特征／1024 行 prefill 在同期 ABBA 中使完整 cohort 平均 476.62 → 387.62 秒，耗时减少 18.67%。默认镜像／512 行配置及串行长 GPU 路径继续提供。见[方案](ENGINE_V05_PLAN.md)和[报告](ENGINE_V05_REPORT.md)。容量验收见 [v0.4](ENGINE_V04_REPORT.md)，[v0.3](ENGINE_V03_REPORT.md)、[v0.2](ENGINE_V02_REPORT.md)及 [v0.1](ENGINE_V01_REPORT.md)保留原记录。
 
+[后续 128K 剖析与 QSA 研究](ENGINE_V06_REPORT.md)已完成，QSA 组件耗时减少 23.05%，完整 cohort 耗时减少 1.99%，低于事前 3% 晋升门槛，未采用。包含自动布局数值失败、HC 小幅收益和寄存器 radix 变慢的封存记录，服务恢复为 v0.4.1。
+
 这里按研究主题列出全部实验（E0–E58）和运行时里程碑（K1–K4），每项一句结论。细节见各自的报告，脱敏数据在 [`results/`](../results)，按时间顺序的完整记录见 [EXPERIMENTS.md](EXPERIMENTS.md)。分支和 PR 的位置见 [REPOSITORY_STATUS.md](REPOSITORY_STATUS.md)。
 
 每个实验通常有两份文档：`*_PLAN.md` 是运行前冻结的方案（任务、变量、通过门槛），`*_REPORT.md` 是结果，失败和被否决的结果同样保留。
