@@ -6,7 +6,24 @@
 
 **从这里开始：** [中文研究导览](docs/RESEARCH_OVERVIEW.zh-CN.md) · [English overview](docs/RESEARCH_OVERVIEW.md) · [CPU 预测器示例](examples/adaptive_budget.py) · [实验索引](docs/README.md)。
 
-研究导览按“问题、实现、证据、局限”介绍项目。文档于 2026-11-02 核对；硬件报告覆盖截至 2026-10-28 的 E0–E58，以及 K1–K4 运行时里程碑。
+研究导览按“问题、实现、证据、局限”介绍项目。文档于 2026-11-03 核对，覆盖 E0–E58、K1–K4 运行时里程碑和四请求 128K 统一引擎验收。
+
+## 统一引擎入口
+
+本分支将主线与已提交的 K4 整合为 Kaifra v0.4.1。一次加载模型，每请求 128K 总容量，四个运行请求，接入动态 DFlash、聊天流式/非流式 API、取消、有界等待、健康检查、指标与正常退出。准备好的 GPU 环境中可运行。
+
+```bash
+python -m spark_infer_q doctor --root /path/to/prepared/runtime --checkpoint /path/to/local/target
+python -m spark_infer_q serve --root /path/to/prepared/runtime --checkpoint /path/to/local/target
+```
+
+四份 131008-token BF16 缓存同时填满，各生成 64 tokens。一条 128K 前缀与完整索引参考逐块一致。四请求 HTTP 的输出、有效状态、特征及动态轨迹，与逐 token 控制和隔离动态控制一致。128K 基础配置采用 2048 行原始索引环、草稿融合权重的精确共享视图和 512 行串行 prefill，保留完整 K/V 与池化历史。配置和证据见[中文用法](docs/ENGINE_V04_USAGE.md)及[验收报告](docs/ENGINE_V04_REPORT.md)。
+
+可选的单缓冲特征窗口使 128K 四请求的 1024 行 E44 专家配置通过内存准入。同期 ABBA 配对中，完整原生引擎 cohort 平均从 **476.62 降到 387.62 秒，耗时减少 18.67%**，输出、状态、特征与动态轨迹一致。普通启动采用镜像／512 行配置，较快配置通过参数显式选择。有其他 prefill 等待时，最大输出事件间隔约从 0.51 增到 0.80 秒。见[配置说明](docs/ENGINE_V05_USAGE.md)和[完整报告](docs/ENGINE_V05_REPORT.md)。历史记录见 [v0.4](docs/ENGINE_V04_REPORT.md)、[v0.3](docs/ENGINE_V03_REPORT.md)、[v0.2](docs/ENGINE_V02_REPORT.md)及 [v0.1 冷启动](docs/ENGINE_V01_REPORT.md)。
+
+128K 剖析与 QSA 候选已完成。QSA 组件耗时减少 23.05%，完整四请求 ABBA 平均 **386.67 → 378.99 秒，耗时减少 1.99%**，数值与动态轨迹一致。候选低于事前 3% 晋升门槛，保留为研究接口，该轮恢复 v0.4.1 服务。见[报告](docs/ENGINE_V06_REPORT.md)与[脱敏证据](results/engine/2026-11-03-v06.json)。
+
+最新的四请求 prefill 合批使用每请求至多 1024 行、总计至多 4096 行的单次前向。完整四请求 128K ABBA 平均 **386.55 → 346.79 秒，耗时减少 10.29%**，通过事前 10% 门槛，输出、状态、特征与动态轨迹一致。每轮 128 个 prompt 计划全部四请求合批。四请求首 token 约同时出现在 339 秒，串行对照依次约为 93、189、289、385 秒。该显式配置优化整体完成时间，decode 采用逐请求串行执行。见[中文配置](docs/ENGINE_V07_USAGE.md)、[English usage](docs/ENGINE_V07_USAGE.en.md)、[报告](docs/ENGINE_V07_REPORT.md)和[证据](results/engine/2026-11-03-v07.json)。
 
 ## 研究问题
 
@@ -67,7 +84,7 @@
 
 - **内存**：目标是 8 个并发、每个 256K 的请求，放进 88 GiB 的 CUDA 分配上限。即使把 KV 压到 INT4，预计仍需 92.82 GiB（E55）。
 - **KV 压缩精度**：所有压缩候选仍未通过事前定的 3% logit 相对 L2 门槛。E58 中，BF16 prefill 后使用 FP8 / INT4 解码，在六条 4K–16K 前缀的相同 100 个 teacher decode 位置上得到 4.06% / 7.22%；这不是 256K 质量或吞吐结果。
-- **多请求服务**：双请求动态 DFlash 和异步 SSE 已能运行，但还没有稳定超过优化后的单请求顺序处理（[PR #19](https://github.com/EdwinWang831/spark-infer-q/pull/19)，进行中）。
+- **多请求效率** 四请求容量达到每请求 128K，显式 prefill 合批使完整 cohort 耗时减少 10.29%，较早请求的首 token 延迟增加。decode 使用私有 Graph 槽和串行共享工作区，持续压力仍待验证。
 - **对照原生 TensorFold**：E7 时整体 45.62 vs 原生 49.18 tok/s，之后没有重测。
 
 ## 反馈驱动的自改进（方案）

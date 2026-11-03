@@ -5,6 +5,11 @@ transitions from TensorFold, `families/qwen4_exp/cuda/forward.py`:
 <https://github.com/ashhart/TensorFold>. TensorFold operators and weights remain
 external dependencies. This notice covers the adapted portions of that file.
 
+`spark_infer_q/prefill_workspace.py` adapts buffer field geometry from
+TensorFold's `families/qwen4_exp/cuda/state.py`. Its phase lifetimes and shared
+storage layout are supplied by this project. `prefill_batch.py` sequences the
+external stage, layer, final-head and commit operators across private requests.
+
 `scripts/e43_compute.cuh` applies the instruction-pipeline pattern from MiaAI-Lab
 TensorFold `fn_experts_tile.cu` to the pinned Python engine expert kernel. The
 research build transforms an externally supplied source with its original
@@ -28,6 +33,11 @@ allocation and attention dispatch to a bounded raw-index ring. Prep and pool
 arithmetic is still executed by the external original JIT bodies; only the raw
 index pointer is translated. Full KV and pooled index history remain external
 TensorFold layouts and operators.
+
+`prefill_qsa.py` adapts TensorFold's `attention._scores` into a grouped-query
+Gluon kernel. Its explicit reduction layout preserves the ordered FP32 score
+arithmetic. The deterministic radix selector remains an external TensorFold
+operator and is dispatched for measured long-prefill shapes.
 
 `kv_conversion_kernels.py` calls the pinned TensorFold `quant_groups_4` and
 `store_kv` JIT bodies to encode already prepared BF16 cache rows. Conversion

@@ -10,6 +10,31 @@ import json
 from pathlib import Path
 
 
+def share_fused_weights(draft):
+    """Keep each original parameter as an exact view of its fused matrix."""
+    replacements = {}
+    for layer in range(5):
+        prefix = f'layers.{layer}.'
+        for fused_name, names in (
+            ('qkv', [prefix+'self_attn.'+name+'_proj.weight' for name in ('q', 'k', 'v')]),
+            ('gate_up', [prefix+'mlp.'+name+'_proj.weight' for name in ('gate', 'up')]),
+        ):
+            matrix = draft.fused[prefix+fused_name]
+            at = 0
+            for name in names:
+                original = draft.weights[name]
+                view = matrix[at:at+len(original)]
+                if (view.shape != original.shape or view.dtype != original.dtype
+                        or not draft.torch.equal(view, original)):
+                    raise ValueError('fused draft parameter differs: '+name)
+                replacements[name] = view
+                at += len(original)
+            if at != len(matrix):
+                raise ValueError('fused draft matrix has extra rows: '+prefix+fused_name)
+    # Validate all matrices first, so a rejected input leaves the draft intact.
+    draft.weights.update(replacements)
+
+
 def upstream_helpers(path, expected_sha256):
     import torch
     import torch.nn.functional as F
@@ -57,6 +82,7 @@ class Draft:
             p = f'layers.{i}.'
             self.fused[p+'qkv'] = torch.cat([self.get(p+'self_attn.'+n+'_proj.weight') for n in ('q','k','v')])
             self.fused[p+'gate_up'] = torch.cat([self.get(p+'mlp.'+n+'_proj.weight') for n in ('gate','up')])
+        share_fused_weights(self)
 
     def get(self, name):
         self.used.add(name)

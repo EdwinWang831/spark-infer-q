@@ -16,6 +16,18 @@ class PrefillResult:
     chunks: tuple[int, ...]
 
 
+def validate_prefill_input(provider, state, token_ids, capture):
+    ids = tuple(token_ids)
+    if not ids or any(type(t) is not int or not 0 <= t < provider.vocab_size for t in ids):
+        raise ValueError('prefill requires nonempty in-vocabulary integer tokens')
+    start = state.pos
+    if start < 0 or start+len(ids) > min(state.capacity, getattr(state,'limit',state.capacity),provider.capacity):
+        raise ValueError('prefill exceeds state capacity')
+    if type(capture) is not bool:
+        raise ValueError('capture must be boolean')
+    return ids, start
+
+
 class PrefillExecutor:
     """One serial workspace, caller-owned state, eager prompt execution.
 
@@ -28,6 +40,7 @@ class PrefillExecutor:
             raise ValueError('unsupported prefill chunk size')
         self.provider = provider
         self.chunk_rows = chunk_rows
+        self.workspace_rows = chunk_rows
         self.workspace = None
         self.stream = provider.stream_id()
         self.closed = self.failed = False
@@ -37,6 +50,7 @@ class PrefillExecutor:
     def capabilities(self):
         return dict(prefill_executor='owned_chunked_v1', prefill_chunk_rows=self.chunk_rows,
                     prefill_cuda_graph=False, prefill_logits='final_row_full_vocab',
+                    prefill_qsa=getattr(self.provider, 'qsa_backend', 'reference'),
                     prefill_arithmetic=self.provider.arithmetic)
 
     def advance(self, state, token_ids, *, capture=True):
@@ -47,18 +61,10 @@ class PrefillExecutor:
                 raise RuntimeError('prefill executor is closed or quarantined')
             if self.provider.stream_id() != self.stream:
                 raise RuntimeError('prefill workspace belongs to a different CUDA stream')
-            ids = tuple(token_ids)
-            if not ids or any(type(t) is not int or not 0 <= t < self.provider.vocab_size for t in ids):
-                raise ValueError('prefill requires nonempty in-vocabulary integer tokens')
-            start = state.pos
-            if start < 0 or start + len(ids) > min(state.capacity, getattr(state, 'limit', state.capacity),
-                                                   self.provider.capacity):
-                raise ValueError('prefill exceeds state capacity')
-            if type(capture) is not bool:
-                raise ValueError('capture must be boolean')
+            ids, start = validate_prefill_input(self.provider,state,token_ids,capture)
             try:
                 if self.workspace is None:
-                    self.workspace = self.provider.allocate(self.chunk_rows)
+                    self.workspace = self.provider.allocate(self.workspace_rows)
                 features, chunks = [], []
                 for at in range(0, len(ids), self.chunk_rows):
                     piece = ids[at:at + self.chunk_rows]

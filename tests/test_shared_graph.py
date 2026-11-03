@@ -24,12 +24,26 @@ class Slot:
     def close(self):self.workspace=None
 
 
-def fixture():
+def fixture(count=2):
     eager=SimpleNamespace(capacity=262160,kv_dtype='int8',buffers={i:object() for i in range(1,9)})
-    screen=object();slots=[Slot(eager,screen),Slot(eager,screen)];return SharedGraphTarget(slots)
+    screen=object();slots=[Slot(eager,screen) for _ in range(count)];return SharedGraphTarget(slots)
 
 
 class SharedScratchOwnership(unittest.TestCase):
+    def test_four_live_owners_release_one_and_preserve_all_survivors(self):
+        target=fixture(4);target.warmup()
+        states=[target.state() for _ in range(4)]
+        self.assertEqual(len({id(s) for s in states}),4)
+        self.assertEqual(target.capabilities['max_requests'],4)
+        self.assertEqual(target.capabilities['graph_captures'],64)
+        self.assertFalse(target.capabilities['gpu_batch'])
+        for i,state in enumerate(states):target.commit(state,None,i+1,i+1)
+        target.release_state(states[1]);new=target.state()
+        self.assertIs(new,states[1])
+        self.assertEqual([s.pos for s in states],[1,0,3,4])
+        for state in states:target.release_state(state)
+        target.close()
+
     def test_two_private_states_share_buffers_and_isolated_release_reuse(self):
         t=fixture();t.warmup();a,b=t.state(),t.state()
         self.assertIsNot(a,b);self.assertEqual(t.capabilities['graph_captures'],32)

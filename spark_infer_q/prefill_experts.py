@@ -8,6 +8,9 @@ import importlib.util
 from pathlib import Path
 
 
+E44_BINARY_SHA256 = 'a5b15bc9ad18e7aea4008f3aba0210856b9b4a4bd764580cbd987b64659b0977'
+
+
 class PrefillExpertTile:
     name = "mia_shared_input_tile64_rt4s4_rt2s3"
 

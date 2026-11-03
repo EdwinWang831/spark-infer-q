@@ -4,7 +4,7 @@
 > 面向：单台 NVIDIA DGX Spark（GB10 / SM121）、Qwen3.8-Flash-Next、DFlash2、DeepInfer-derived MTPVarlen。  
 > 日期：2026-10-20；2026-10-22 按 `main` @ `51828be`（E4–E16 已合入）核对事实，并相应修订证据、约束和阶段状态。用途：评审接口、实验和实施顺序；**不是**性能成果报告。
 >
-> 本 RFC 不预先选择 DeepInfer、TensorFold、vLLM 或 SGLang 作为最终底座；要求在同机对照、正确性和工程成本核算之后决策。
+> 历史范围：本 RFC 的 2026-10-22 快照没有预先选择最终底座。2026-10-24 用户已明确后续采用 **DeepInfer 调度底座 + 自有 Qwen/Spark 执行后端**，TensorFold 作为过渡适配与参考；见[当前实施方向](DEEPINFER_OWN_BACKEND_PLAN.md)。下文实现状态和非目标保留当时快照，不作为当前 K4 状态；最新结果见 [K4 联合预算报告](K4_JOINT_BUDGET_REPORT.md)。
 
 ## 0. 摘要和核心判断
 

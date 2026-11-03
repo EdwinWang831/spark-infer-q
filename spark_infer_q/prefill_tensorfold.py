@@ -46,7 +46,8 @@ class TensorFoldPrefillProvider:
     max_chunk_rows = 1024
     arithmetic = 'e36_decode_mxfp8_decode_gdn_f32_moe'
 
-    def __init__(self, weights, torch, *, capacity, expert_backend=None,kv_dtype='bf16',index_ring_rows=None):
+    def __init__(self, weights, torch, *, capacity, expert_backend=None,kv_dtype='bf16',index_ring_rows=None,
+                 qsa_backend='reference'):
         from tensorfold.families.qwen4_exp.cuda import forward, gdn
         from tensorfold.families.qwen4_exp.cuda.state import Buffers, _MoECfg
         if expert_backend is not None and not callable(expert_backend):
@@ -62,10 +63,19 @@ class TensorFoldPrefillProvider:
             raise ValueError('bounded prefill capacity must be 8..262160')
         if kv_dtype not in ('bf16','int8','fp8','int4'):
             raise ValueError('prefill KV dtype must be bf16, int8, fp8 or int4')
+        if qsa_backend not in ('reference', 'grouped'):
+            raise ValueError('prefill QSA backend must be reference or grouped')
+        if qsa_backend == 'grouped' and (index_ring_rows is None or
+                (weights.cfg.index_heads, weights.cfg.index_dim) != (4, 128)):
+            raise ValueError('grouped prefill QSA requires the bounded 4-head 128-dimension indexer')
         self.torch, self.ops, self.gdn, self.Buffers = torch, forward, gdn, Buffers
+        self.qsa_backend = qsa_backend
         if index_ring_rows is not None:
             from .bounded_index import build_forward
-            self.ops=build_forward(index_ring_rows)
+            qsa_rows = None
+            if qsa_backend == 'grouped':
+                from .prefill_qsa import qsa_rows
+            self.ops=build_forward(index_ring_rows, qsa_rows=qsa_rows)
         self.expert_backend, self.MoECfg = expert_backend, _MoECfg
         self.capacity = capacity
         self.kv_dtype = kv_dtype
@@ -105,28 +115,32 @@ class TensorFoldPrefillProvider:
                             m.experts, b.moe, self.MoECfg(self.w.cfg))
         return 2, b.moe.y[:rows], b.moe.wts[:rows]
 
-    def _gdn_block(self, layer, state, b, rows):
+    def _gdn_block(self, layer, segs, b, rows):
         w, f, g, cfg = self.w, self.ops, layer.gdn, self.w.cfg
-        li = state.lin_index[layer.index]
         f._mm(b.mixed[:rows], g.proj, b.xs_mixed[:rows], b.proj[0, :rows], b)
-        parity = state.cur[li]
-        p = b.proj[0, :rows]
-        # E37 rejected pooling; retain fresh full-chunk scratch for E36 parity.
-        scratch = self.gdn.GDNScratch(rows, p.device, cfg.nk, cfg.nv)
-        self.gdn.chain(p, state.conv[li], g.conv, state.rec[parity, li], g.a_log,
-                       g.dt_bias, g.norm, cfg.eps, rows, scratch,
-                       state.rec[1 - parity, li], b.gout[:rows], b.gxs[:rows])
-        state.cur[li] = 1 - parity
-        f.shift_windows(state.conv[li:li + 1], b.proj[0:1, :rows], rows, cfg.conv_dim)
+        for state, first, end in segs:
+            li = state.lin_index[layer.index]
+            parity = state.cur[li]
+            p = b.proj[0, first:end]
+            # E37 rejected pooling. Each private segment uses fresh scratch.
+            scratch = self.gdn.GDNScratch(end-first, p.device, cfg.nk, cfg.nv)
+            self.gdn.chain(p, state.conv[li], g.conv, state.rec[parity, li], g.a_log,
+                           g.dt_bias, g.norm, cfg.eps, end-first, scratch,
+                           state.rec[1-parity, li], b.gout[first:end], b.gxs[first:end])
+            state.cur[li] = 1-parity
+            f.shift_windows(state.conv[li:li+1], b.proj[0:1, first:end], end-first, cfg.conv_dim)
         return f._out_proj(w, b, b.gout[:rows], g.out, b.gxs[:rows], rows)
 
-    def _layer(self, layer, state, segs, b, rows, pending):
+    def _ple_block(self, layer, segs, buffers, rows):
+        self.ops.ple_block(layer,self.w,segs,buffers,rows)
+
+    def _layer(self, layer, segs, b, rows, pending):
         w, f, cfg = self.w, self.ops, self.w.cfg
         if layer.ple is not None:
             if pending is not None:
                 f._writeback(b.h, b, rows, cfg, pending)
                 pending = None
-            f.ple_block(layer, w, segs, b, rows)
+            self._ple_block(layer,segs,b,rows)
         args = (cfg.eps, cfg.streams, cfg.low)
         if pending is None:
             f.hc_block(layer.attn_hc, b, rows, *args, 0, None, b.inj_a, b.h)
@@ -134,7 +148,7 @@ class TensorFoldPrefillProvider:
             mode, branch, weights, inject = pending
             kw = dict(y=branch, wts=weights) if mode == 2 else dict(branch=branch)
             f.hc_block(layer.attn_hc, b, rows, *args, mode, inject[:rows], b.inj_a, b.h, **kw)
-        mode, branch = (self._gdn_block(layer, state, b, rows) if layer.linear else
+        mode, branch = (self._gdn_block(layer, segs, b, rows) if layer.linear else
                         f.attn_block(layer, w, segs, b, rows, False))
         f.hc_block(layer.mlp_hc, b, rows, *args, mode, b.inj_a[:rows], b.inj_m, b.h, branch=branch)
         mode, branch, weights = self._moe_block(layer, b, rows)
@@ -153,7 +167,7 @@ class TensorFoldPrefillProvider:
             f._embed(w, b.ids[:rows], w.cfg.streams, b.h[:rows])
             pending, features = None, []
             for layer in w.layers:
-                pending = self._layer(layer, state, segs, b, rows, pending)
+                pending = self._layer(layer, segs, b, rows, pending)
                 if capture and layer.index in (5, 15, 25, 35, 45):
                     shadow = b.h[:rows].clone()
                     proxy = copy.copy(b)
