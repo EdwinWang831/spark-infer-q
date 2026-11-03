@@ -17,6 +17,7 @@ def main():
     parser.add_argument('--output',type=Path,required=True)
     parser.add_argument('--resume-client',type=Path)
     parser.add_argument('--expected-prefill-rows',type=int)
+    parser.add_argument('--expected-prefill-batch-requests',type=int)
     parser.add_argument('--expected-capacity',type=int,default=32768)
     args=parser.parse_args()
     inputs=json.loads(args.inputs.read_text());reference=json.loads(args.reference.read_text())
@@ -145,6 +146,11 @@ def main():
         if args.expected_prefill_rows is not None:
             assert caps['prefill_chunk_rows']==args.expected_prefill_rows
             report['expected_prefill_rows']=args.expected_prefill_rows
+        if args.expected_prefill_batch_requests is not None:
+            assert caps['prefill_gpu_batch'] is True
+            assert caps['prefill_batch_requests']==args.expected_prefill_batch_requests
+            assert caps['prefill_workspace_rows']==caps['prefill_chunk_rows']*args.expected_prefill_batch_requests
+            report['expected_prefill_batch_requests']=args.expected_prefill_batch_requests
         long=report['runs'][0] if args.resume_client is not None else cohort('four-long-uninstrumented',inputs['long'])
         for index,value in enumerate(long['requests']):
             gold=reference['target_only_controls'][str(index)]

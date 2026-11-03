@@ -22,6 +22,7 @@ def run(session, arguments):
         capacity=arguments.get('capacity',131072),
         feature_history_layout=arguments.get('feature_history_layout','mirrored'),
         prefill_experts=None if expert_path is None else Path(expert_path),
+        prefill_batch_control=None if arguments.get('prefill_batch_control') is None else Path(arguments['prefill_batch_control']),
         prefill_chunk_rows=arguments.get('prefill_chunk_rows'))
     spec=importlib.util.spec_from_file_location(tag+'.validation',source/'scripts/k4batch_engine_long.py')
     validation=importlib.util.module_from_spec(spec);spec.loader.exec_module(validation)

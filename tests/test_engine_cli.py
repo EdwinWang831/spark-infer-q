@@ -14,6 +14,7 @@ class EngineCliTests(unittest.TestCase):
         for args, expected in ((['--help'], 'doctor'), (['serve', '--help'], '--queue-size'),
                                (['serve', '--help'], '--max-requests'),
                                (['serve', '--help'], '--prefill-experts'),
+                               (['serve', '--help'], '--prefill-batch-control'),
                                (['serve','--help'],'--feature-history-layout'), (['--version'], '0.4.1')):
             result = subprocess.run([sys.executable, '-S', '-m', 'spark_infer_q', *args],
                                     capture_output=True, text=True)
@@ -68,6 +69,25 @@ class EngineCliTests(unittest.TestCase):
             root=Path(directory);path=root/'wrong.so';path.write_bytes(b'not the pinned library')
             report=inspect_environment(ServiceConfig(root,root,prefill_experts=path))
             self.assertFalse(report['checks']['prefill_expert_identity'])
+            self.assertFalse(report['gpu_checked'])
+
+    def test_prompt_batch_profile_is_explicit_and_bounded(self):
+        options = dict(prefill_experts=Path('/tile.so'), prefill_batch_control=Path('/control.so'),
+                       feature_history_layout='linear')
+        config = ServiceConfig(Path('/prepared'), Path('/checkpoint'), **options)
+        self.assertEqual(config.prompt_chunk, 1024)
+        for extra in (dict(capacity=65536), dict(max_requests=3), dict(mode='none'),
+                      dict(execution='eager'), dict(feature_history_layout='mirrored'),
+                      dict(prefill_experts=None), dict(prefill_chunk_rows=512)):
+            with self.subTest(extra=extra), self.assertRaisesRegex(ValueError, 'batch prefill|linear feature'):
+                ServiceConfig(config.root, config.checkpoint, **(options | extra))
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory)/'wrong.so'
+            path.write_bytes(b'wrong control')
+            report = inspect_environment(ServiceConfig(Path(directory), Path(directory),
+                **(options | dict(prefill_batch_control=path))))
+            self.assertFalse(report['checks']['prompt_control_identity'])
+            self.assertFalse(report['checks']['prompt_control_headers'])
             self.assertFalse(report['gpu_checked'])
 
 

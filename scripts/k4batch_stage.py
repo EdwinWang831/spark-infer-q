@@ -6,6 +6,7 @@ def main():
     p=argparse.ArgumentParser();p.add_argument('version');p.add_argument('job');p.add_argument('runner');p.add_argument('--graphs',action='store_true')
     p.add_argument('--component-root',help='absolute remote path of the sealed draft component result')
     p.add_argument('--prefill-experts',help='absolute remote path of the pinned E44 prefill extension')
+    p.add_argument('--prefill-batch-control',help='absolute remote path of the pinned prompt-phase extension')
     p.add_argument('--capacity',type=int,help='explicit engine input plus output capacity')
     p.add_argument('--feature-history-layout',choices=('mirrored','linear'))
     p.add_argument('--prefill-chunk-rows',type=int,choices=(128,256,512,1024))
@@ -17,11 +18,13 @@ def main():
     if not re.fullmatch(r'k4batch_[a-z_]+\.py',a.runner):p.error('runner must be a K4 batch script basename')
     if a.component_root and not a.component_root.startswith('/'):p.error('component root must be absolute')
     if a.prefill_experts and not a.prefill_experts.startswith('/'):p.error('prefill experts path must be absolute')
+    if a.prefill_batch_control and not a.prefill_batch_control.startswith('/'):p.error('prompt control path must be absolute')
     if a.capacity is not None and not 16<=a.capacity<=131072:p.error('capacity must be16..131072')
     root=pathlib.Path(__file__).resolve().parents[1]
     names=[str(f.relative_to(root)) for f in sorted((root/'spark_infer_q').glob('*.py'))]
     names += [str(f.relative_to(root)) for f in sorted((root/'scripts').glob('k4batch*.py'))]
     names += [str(f.relative_to(root)) for f in sorted((root/'scripts').glob('k4batch*.cu'))]
+    names += [str(f.relative_to(root)) for f in sorted((root/'scripts').glob('k4batch*.cpp'))]
     names += ['scripts/k2_native_validate.py','docs/K4_BATCH_RUNTIME_PLAN.md','tests/test_draft_batch.py',
               'tests/test_compact_target.py','tests/test_kaifra_batch_transactions.py']
     names += ['tests/test_prefill_executor.py','tests/test_prefill_progress.py','tests/test_worker_cpu.py','THIRD_PARTY_NOTICES.md']
@@ -33,6 +36,8 @@ def main():
     names += ['docs/ENGINE_V04_PLAN.md','tests/test_draft_weight_views.py','tests/test_engine_inputs.py']
     names += ['docs/ENGINE_V05_PLAN.md','tests/test_rolling_history.py']
     names += ['docs/ENGINE_V06_PLAN.md','scripts/e37_model.py','scripts/e37_accounting.py']
+    names += ['docs/ENGINE_V07_PLAN.md']
+    names += ['tests/test_prefill_batch.py']
     names += ['results/k4/2026-10-24-joint-costs.json']
     manifest={n:hashlib.sha256((root/n).read_bytes()).hexdigest() for n in names};buf=io.BytesIO()
     with tarfile.open(fileobj=buf,mode='w') as archive:
@@ -75,6 +80,8 @@ component_path={a.component_root!r}
 if component_path is not None:job['arguments']['component_root']=component_path
 prefill_expert_path={a.prefill_experts!r}
 if prefill_expert_path is not None:job['arguments']['prefill_experts']=prefill_expert_path
+prompt_control_path={a.prefill_batch_control!r}
+if prompt_control_path is not None:job['arguments']['prefill_batch_control']=prompt_control_path
 capacity_value={a.capacity!r}
 if capacity_value is not None:job['arguments']['capacity']=capacity_value
 history_layout={a.feature_history_layout!r}

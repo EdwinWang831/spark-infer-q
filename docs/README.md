@@ -6,6 +6,8 @@
 
 [后续 128K 剖析与 QSA 研究](ENGINE_V06_REPORT.md)已完成，QSA 组件耗时减少 23.05%，完整 cohort 耗时减少 1.99%，低于事前 3% 晋升门槛，未采用。包含自动布局数值失败、HC 小幅收益和寄存器 radix 变慢的封存记录，服务恢复为 v0.4.1。
 
+[四请求 prefill 合批](ENGINE_V07_REPORT.md)使完整 128K cohort 的同期 ABBA 平均 **386.55 → 346.79 秒，耗时减少 10.29%**，通过事前门槛。每请求 1024 行、总计 4096 行，数值和动态轨迹一致，decode 按请求串行执行。较早请求的首 token 延迟增加，逐请求数据见报告。[中文配置](ENGINE_V07_USAGE.md) / [English usage](ENGINE_V07_USAGE.en.md)。
+
 这里按研究主题列出全部实验（E0–E58）和运行时里程碑（K1–K4），每项一句结论。细节见各自的报告，脱敏数据在 [`results/`](../results)，按时间顺序的完整记录见 [EXPERIMENTS.md](EXPERIMENTS.md)。分支和 PR 的位置见 [REPOSITORY_STATUS.md](REPOSITORY_STATUS.md)。
 
 每个实验通常有两份文档：`*_PLAN.md` 是运行前冻结的方案（任务、变量、通过门槛），`*_REPORT.md` 是结果，失败和被否决的结果同样保留。

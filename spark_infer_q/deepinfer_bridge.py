@@ -47,7 +47,7 @@ class SchedulerBridge:
     def __init__(self, core, torch, group, sampling_class, backend, *, vocab_size,
                  eos_ids, capacity=128, max_requests=2, token_budget=32,
                  max_drafts=0,prefill_interleave=False,output_cache=False,
-                 interleave_prefill=False):
+                 interleave_prefill=False, prefill_batch_rows=0, prompt_control=None):
         if type(max_drafts) is not int or not 0 <= max_drafts <= 7:
             raise ValueError('max_drafts must be 0..7')
         if os.environ.get('DEEPINFER_USE_NEXTN_DECODE') != str(max_drafts):
@@ -67,6 +67,14 @@ class SchedulerBridge:
         if type(output_cache) is not bool:
             raise ValueError('output_cache must be boolean')
         self.output_cache=output_cache
+        if type(prefill_batch_rows) is not int or prefill_batch_rows not in (0, 1024):
+            raise ValueError('prefill batch rows must be 0 or 1024')
+        if bool(prefill_batch_rows) != (prompt_control is not None):
+            raise ValueError('prefill batching requires its pinned prompt control')
+        if prefill_batch_rows and (max_requests != 4 or group.size() != 1 or
+                token_budget != 4*prefill_batch_rows or not interleave_prefill or prefill_interleave):
+            raise ValueError('prefill batching requires four single-rank interleaved 1024-row chunks')
+        self.prefill_batch_rows, self.prompt_control = prefill_batch_rows, prompt_control
         if prefill_interleave and (max_requests!=2 or group.size()!=1 or max_drafts!=0):
             raise ValueError('prefill interleave requires two single-rank target-only slots')
         self.prefill_interleave=prefill_interleave
@@ -158,6 +166,8 @@ class SchedulerBridge:
         prompt = np.asarray(ids, dtype=np.int32)
         seq = self.core.Sequence(self.sequence_id, prompt, prompt, None, 16,
             request_id, 'e5', params, time.time()*1000, None)
+        if self.prefill_batch_rows:
+            seq.chunk_checkpoints = list(range(self.prefill_batch_rows, len(ids), self.prefill_batch_rows))
         state = self.backend.create(handle)
         try:
             self.native.add_sequence(seq)
@@ -224,6 +234,7 @@ class SchedulerBridge:
             raise BridgeError('previous plan not completed')
         self._retire()
         self._prefill_phase()
+        yield_decode = False
         if self.interleave_prefill and self._last_prompt:
             # Native prompt steps reset decode_step to zero. With any ready
             # decode request, move only this single-rank polling phase to the
@@ -233,8 +244,19 @@ class SchedulerBridge:
                 and e['seq'].num_cached_tokens>=e['prompt_length']
                 and e['seq'].data.get_len()-e['seq'].num_cached_tokens==1
                 for e in self.requests.values())
-            if ready:self.native.decode_step=1
-        metadata, output = self.native.schedule(self.pool)
+            if ready:
+                self.native.decode_step=1
+                yield_decode=True
+        try:
+            control = getattr(self, 'prompt_control', None)
+            prompt_waiting = control is not None and any(
+                not e['cancelled'] and e['seq'].status == self.core.SequenceStatus.WAITING
+                for e in self.requests.values())
+            metadata, output = (control.schedule(self.native, self.pool)
+                if prompt_waiting and not yield_decode else self.native.schedule(self.pool))
+        except BaseException:
+            self.poisoned = True
+            raise
         self._last_prompt=bool(output.prompt_run)
         if any(getattr(output, name).size for name in ('clone_states','clone_blocks','zero_states')):
             self.poisoned = True

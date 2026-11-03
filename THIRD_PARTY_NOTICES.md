@@ -5,6 +5,11 @@ transitions from TensorFold, `families/qwen4_exp/cuda/forward.py`:
 <https://github.com/ashhart/TensorFold>. TensorFold operators and weights remain
 external dependencies. This notice covers the adapted portions of that file.
 
+`spark_infer_q/prefill_workspace.py` adapts buffer field geometry from
+TensorFold's `families/qwen4_exp/cuda/state.py`. Its phase lifetimes and shared
+storage layout are supplied by this project. `prefill_batch.py` sequences the
+external stage, layer, final-head and commit operators across private requests.
+
 `scripts/e43_compute.cuh` applies the instruction-pipeline pattern from MiaAI-Lab
 TensorFold `fn_experts_tile.cu` to the pinned Python engine expert kernel. The
 research build transforms an externally supplied source with its original

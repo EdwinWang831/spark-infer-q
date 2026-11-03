@@ -31,6 +31,8 @@ def main(argv=None):
             child.add_argument('--feature-history-layout', choices=('mirrored','linear'), default='mirrored')
             child.add_argument('--prefill-experts', type=Path,
                                help='optional pinned E44 expert extension; selects 1024-row prefill by default')
+            child.add_argument('--prefill-batch-control', type=Path,
+                               help='pinned prompt control for four-request 128K adaptive prefill')
     args = parser.parse_args(argv)
     from .engine_server import ServiceConfig, inspect_environment
     settings = {k: v for k, v in vars(args).items() if k != 'command'}

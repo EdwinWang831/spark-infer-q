@@ -207,6 +207,36 @@ class SpeculativeBackend:
     def synchronize(self):
         self.target.torch.cuda.synchronize()
 
+    def advance_prefill_many(self, requests):
+        if not getattr(self.provider, 'deferred_draft', False) or self.prefill_executor is None:
+            raise BridgeError('batch prefill requires a deferred drafter and owned executor')
+        requests = tuple(requests)
+        for row, state, max_tokens in requests:
+            if (not row.prompt or self.states.get(row.handle) is not state
+                    or state.target.pos != row.position or state.output_tokens >= max_tokens):
+                raise BridgeError('batch prompt ownership/position/output budget mismatch')
+        with self.target.torch.inference_mode():
+            started = time.perf_counter()
+            values = self.prefill_executor.advance_many(
+                [(state.target, row.token_ids) for row, state, _ in requests], capture=True)
+            if len(values) != len(requests):
+                raise BridgeError('batch prefill returned wrong request count')
+            outputs = []
+            for (row, state, _), value in zip(requests, values, strict=True):
+                self._append_context(state, value.features)
+                emitted = (int(value.logits[-1].argmax()),) if row.last_prompt_chunk else ()
+                state.output_tokens += len(emitted)
+                if state.context_start+len(state.context) != state.target.pos:
+                    raise BridgeError('batch draft context differs from target position')
+                outputs.append(emitted)
+            self.synchronize()
+            elapsed = (time.perf_counter()-started)*1000
+            total_rows = sum(len(row.token_ids) for row, _, _ in requests)
+            # Charge the shared forward, feature copies and fence exactly once.
+            return tuple(VerifiedStep(emitted, len(row.token_ids), (0,)*self.depth,
+                (0.,)*self.depth, 0., elapsed*len(row.token_ids)/total_rows, 0.)
+                for (row, _, _), emitted in zip(requests, outputs, strict=True))
+
     def advance(self, row, state, max_tokens):
         if self.states.get(row.handle) is not state or state.target.pos != row.position:
             raise BridgeError('speculative state ownership/position mismatch')
@@ -415,12 +445,26 @@ class SpeculativeSchedulerBridge(SchedulerBridge):
             raise BridgeError('plan already executed')
         results = []
         try:
-            for row in plan.rows:
+            batched = {}
+            if self.prefill_batch_rows and plan.rows and plan.rows[0].prompt:
+                active = [(i, row, self._entry(row.handle)) for i, row in enumerate(plan.rows)
+                    if not self._entry(row.handle)['cancelled']]
+                if active:
+                    batch_results = self.backend.advance_prefill_many([
+                        (row, entry['state'], entry['seq'].sampling_params.max_tokens)
+                        for _, row, entry in active])
+                    if len(batch_results) != len(active):
+                        raise BridgeError('batch prompt returned wrong request count')
+                    batched = dict(zip((i for i, _, _ in active), batch_results, strict=True))
+                plan.prefill_batch_size = len(active)
+                plan.prefill_batch_rows = sum(len(row.token_ids) for _, row, _ in active)
+            for i, row in enumerate(plan.rows):
                 entry = self._entry(row.handle)
                 if entry['cancelled']:
                     results.append(None)
                     continue
-                result = self.backend.advance(row,entry['state'],entry['seq'].sampling_params.max_tokens)
+                result = (batched[i] if i in batched else
+                    self.backend.advance(row,entry['state'],entry['seq'].sampling_params.max_tokens))
                 if self.backend.position(entry['state']) != row.position+result.keep:
                     raise BridgeError('speculative backend committed wrong position')
                 if any(type(t) is not int or not 0<=t<self.vocab_size
@@ -468,6 +512,9 @@ class SpeculativeSchedulerBridge(SchedulerBridge):
                     draft_batch_size=getattr(plan,'draft_batch_size',None),
                     draft_ms_is_amortized=hasattr(plan,'draft_batch_ms'),
                     verify_ms=result.verify_ms if live else 0.0,
+                    prefill_batch_size=getattr(plan,'prefill_batch_size',None),
+                    prefill_batch_rows=getattr(plan,'prefill_batch_rows',None),
+                    prefill_ms_is_amortized=hasattr(plan,'prefill_batch_size'),
                     commit_ms=result.commit_ms if live else 0.0))
             # Publish the new draft while native bookkeeping still describes the
             # input plan. This advances native process_cnt even for prompt chunks
@@ -508,7 +555,7 @@ class SpeculativeSchedulerBridge(SchedulerBridge):
 def speculative_engine(native, target, provider, *, eos_ids, prior, mode='adaptive',
                        capacity=256,max_requests=1,token_budget=32,prefill_rows=8,
                        tokenizer=None,curve=None,observer=None,prefill_executor=None,output_cache=False,
-                       serialized_postdraft=False,interleave_prefill=False):
+                       serialized_postdraft=False,interleave_prefill=False, prompt_control=None):
     if getattr(native,'max_drafts',None)!=7:
         raise ValueError('speculation requires a native max_drafts=7 context')
     if mode not in ('lagged','confidence','adaptive'):
@@ -523,12 +570,18 @@ def speculative_engine(native, target, provider, *, eos_ids, prior, mode='adapti
     if dynamic and curve is None:
         raise ValueError('dynamic mode requires an explicit measured cost curve')
     depth = 7
+    if prompt_control is not None and (mode != 'adaptive' or max_requests != 4 or
+            not getattr(provider, 'deferred_draft', False) or prefill_executor is None or
+            not prefill_executor.capabilities.get('prefill_gpu_batch', False)):
+        raise ValueError('prompt batching requires the four-request adaptive prefill executor')
     backend=SpeculativeBackend(target,provider,eos_ids=eos_ids,depth=depth,prior=prior,
                                prefill_rows=prefill_rows,observer=observer,prefill_executor=prefill_executor)
     bridge=SpeculativeSchedulerBridge(native.core,native.torch,native.group,native.sampling_class,
         backend,vocab_size=int(target.w.head.b.weight.shape[0]),eos_ids=eos_ids,capacity=capacity,
         max_requests=max_requests,token_budget=token_budget,curve=curve if dynamic else None,postdraft=mode=='adaptive',
-        serialized_postdraft=serialized_postdraft,output_cache=output_cache,interleave_prefill=interleave_prefill)
+        serialized_postdraft=serialized_postdraft,output_cache=output_cache,interleave_prefill=interleave_prefill,
+        prefill_batch_rows=0 if prompt_control is None else prefill_executor.chunk_rows,
+        prompt_control=prompt_control)
     engine=KaifraEngine(bridge,tokenizer=tokenizer)
     engine.capabilities=dict(engine.capabilities,target_only=False,speculative=True,
                             native_output_cache=output_cache,

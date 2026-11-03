@@ -24,6 +24,7 @@ class ServiceConfig:
     admission_timeout: float = 30.
     prefill_chunk_rows: int | None = None
     prefill_experts: Path | None = None
+    prefill_batch_control: Path | None = None
     feature_history_layout: str = 'mirrored'
 
     def __post_init__(self):
@@ -48,9 +49,15 @@ class ServiceConfig:
             raise ValueError('feature layout must be mirrored or linear')
         if self.feature_history_layout=='linear' and (self.mode!='adaptive' or self.capacity<=1536 and self.max_requests==2):
             raise ValueError('linear feature history requires long adaptive serving')
+        if self.prefill_batch_control is not None and (self.capacity != 131072 or self.max_requests != 4
+                or self.mode != 'adaptive' or self.execution != 'graph' or self.prefill_experts is None
+                or self.feature_history_layout != 'linear' or self.prefill_chunk_rows not in (None, 1024)):
+            raise ValueError('batch prefill requires the four-slot 128K adaptive Graph/E44/linear profile')
 
     @property
     def prompt_chunk(self):
+        if self.prefill_batch_control is not None:
+            return 1024
         if self.prefill_chunk_rows is not None:
             return self.prefill_chunk_rows
         if self.capacity > 65536 and self.max_requests == 4:
@@ -87,6 +94,13 @@ def inspect_environment(config):
         from .prefill_experts import E44_BINARY_SHA256
         path = config.prefill_experts.resolve()
         checks['prefill_expert_identity'] = path.is_file() and hashlib.sha256(path.read_bytes()).hexdigest() == E44_BINARY_SHA256
+    if config.prefill_batch_control is not None:
+        from .prompt_batch import CONTROL_SHA256, HEADER_SHA256
+        path = config.prefill_batch_control.resolve()
+        checks['prompt_control_identity'] = path.is_file() and hashlib.sha256(path.read_bytes()).hexdigest() == CONTROL_SHA256
+        checks['prompt_control_headers'] = all((root.parent/'DeepInfer'/name).is_file()
+            and hashlib.sha256((root.parent/'DeepInfer'/name).read_bytes()).hexdigest() == digest
+            for name, digest in HEADER_SHA256.items())
     checks['q4_extension'] = any((root/'build/qmm').glob('spark_q_e6_qmm*.so'))
     checks['varlen_extension'] = any((root/'build/varlen').glob('spark_q_e3_varlen*.so'))
     if config.mode == 'adaptive':
@@ -199,6 +213,10 @@ def open_service(session, config):
                          max_drafts=7 if config.mode == 'adaptive' else 0) as native:
         torch = session.torch
         try:
+            control = None
+            if config.prefill_batch_control is not None:
+                from .prompt_batch import PromptBatchControl
+                control = PromptBatchControl.from_file(config.prefill_batch_control, native)
             with torch.inference_mode():
                 profile, admission = {}, None
                 if config.mode == 'adaptive':
@@ -221,7 +239,11 @@ def open_service(session, config):
                         from .prefill_experts import E44_BINARY_SHA256, PrefillExpertTile
                         expert = PrefillExpertTile.from_file(config.prefill_experts,
                                                            expected_sha256=E44_BINARY_SHA256)
-                    prefill = PrefillExecutor(TensorFoldPrefillProvider(session.weights, torch,
+                    executor_class, provider_class = PrefillExecutor, TensorFoldPrefillProvider
+                    if control is not None:
+                        from .prefill_batch import BatchPrefillExecutor, BatchPrefillProvider
+                        executor_class, provider_class = BatchPrefillExecutor, BatchPrefillProvider
+                    prefill = executor_class(provider_class(session.weights, torch,
                         capacity=physical, expert_backend=expert,
                         index_ring_rows=config.index_ring_rows), chunk_rows=chunk)
                     if long_context:
@@ -231,7 +253,7 @@ def open_service(session, config):
                             index_ring_rows=config.index_ring_rows)
                         # Materialize shared storage before measuring private
                         # slots. This is one existing stream, never a reload.
-                        prefill.workspace = prefill.provider.allocate(chunk)
+                        prefill.workspace = prefill.provider.allocate(prefill.workspace_rows)
                         if provider is not None and config.execution == 'graph':
                             provider.worker.warmup()
                         if config.execution == 'graph':
@@ -262,7 +284,8 @@ def open_service(session, config):
                         from .kaifra_speculative import speculative_engine
                         engine = speculative_engine(native, target, provider, eos_ids=session.eos,
                             prior=session.calibration['conditional_prior'], capacity=config.capacity,
-                            max_requests=config.max_requests, token_budget=chunk, tokenizer=session.tokenizer,
+                            max_requests=config.max_requests, token_budget=chunk if control is None else 4*chunk,
+                            tokenizer=session.tokenizer, prompt_control=control,
                             prefill_executor=prefill, output_cache=True,
                             serialized_postdraft=config.max_requests > 1,
                             interleave_prefill=config.max_requests > 1)
