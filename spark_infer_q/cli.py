@@ -5,7 +5,7 @@ import os
 from pathlib import Path
 
 
-VERSION = '0.2.0'
+VERSION = '0.3.0'
 
 
 def main(argv=None):
@@ -19,14 +19,17 @@ def main(argv=None):
         if command == 'serve':
             child.add_argument('--port', type=int, default=8000)
             child.add_argument('--model', default='spark-infer-q')
-            child.add_argument('--capacity', type=int, default=32768,
-                               help='per-request input plus output tokens (maximum 32768)')
+            child.add_argument('--capacity', type=int, default=65536,
+                               help='per-request input plus output tokens (maximum 65536)')
             child.add_argument('--max-requests', type=int, default=4,
                                help='running request slots, separate from the waiting queue')
             child.add_argument('--mode', choices=('adaptive', 'none'), default='adaptive')
             child.add_argument('--execution', choices=('graph', 'eager'), default='graph')
             child.add_argument('--queue-size', type=int, default=4)
             child.add_argument('--admission-timeout', type=float, default=30.)
+            child.add_argument('--prefill-chunk-rows', type=int, choices=(128, 256, 512, 1024))
+            child.add_argument('--prefill-experts', type=Path,
+                               help='optional pinned E44 expert extension; selects 1024-row prefill by default')
     args = parser.parse_args(argv)
     from .engine_server import ServiceConfig, inspect_environment
     settings = {k: v for k, v in vars(args).items() if k != 'command'}

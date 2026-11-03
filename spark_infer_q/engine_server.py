@@ -1,6 +1,7 @@
 """One prepared model, one GPU owner and one bounded local inference service."""
 from contextlib import contextmanager
 from dataclasses import dataclass
+import hashlib
 import json
 import math
 from pathlib import Path
@@ -15,18 +16,20 @@ class ServiceConfig:
     checkpoint: Path
     port: int = 8000
     model: str = 'spark-infer-q'
-    capacity: int = 32768
+    capacity: int = 65536
     max_requests: int = 4
     mode: str = 'adaptive'
     execution: str = 'graph'
     queue_size: int = 4
     admission_timeout: float = 30.
+    prefill_chunk_rows: int | None = None
+    prefill_experts: Path | None = None
 
     def __post_init__(self):
         if type(self.port) is not int or not 0 <= self.port <= 65535:
             raise ValueError('port must be 0..65535')
-        if type(self.capacity) is not int or not 16 <= self.capacity <= 32768:
-            raise ValueError('context capacity must be 16..32768, including output')
+        if type(self.capacity) is not int or not 16 <= self.capacity <= 65536:
+            raise ValueError('context capacity must be 16..65536, including output')
         if type(self.max_requests) is not int or not 1 <= self.max_requests <= 4:
             raise ValueError('running request capacity must be 1..4')
         if type(self.queue_size) is not int or not 0 <= self.queue_size <= 128:
@@ -37,6 +40,17 @@ class ServiceConfig:
             raise ValueError('nonempty served model name required')
         if self.mode not in ('adaptive', 'none') or self.execution not in ('graph', 'eager'):
             raise ValueError('unsupported mode or execution backend')
+        if self.prefill_chunk_rows is not None and (type(self.prefill_chunk_rows) is not int
+                or self.prefill_chunk_rows not in (128, 256, 512, 1024)):
+            raise ValueError('prefill chunk rows must be 128, 256, 512 or 1024')
+
+    @property
+    def prompt_chunk(self):
+        if self.prefill_chunk_rows is not None:
+            return self.prefill_chunk_rows
+        if self.prefill_experts is not None:
+            return 1024
+        return 512 if self.capacity > 1536 or self.max_requests != 2 else 128
 
 
 def inspect_environment(config):
@@ -58,6 +72,10 @@ def inspect_environment(config):
                         linear_model=root/'artifacts/e27-linear-model.json',
                         w8_source=root/'draft_w8_kernel.cu')
     checks = {key: path.exists() for key, path in required.items()}
+    if config.prefill_experts is not None:
+        from .prefill_experts import E44_BINARY_SHA256
+        path = config.prefill_experts.resolve()
+        checks['prefill_expert_identity'] = path.is_file() and hashlib.sha256(path.read_bytes()).hexdigest() == E44_BINARY_SHA256
     checks['q4_extension'] = any((root/'build/qmm').glob('spark_q_e6_qmm*.so'))
     checks['varlen_extension'] = any((root/'build/varlen').glob('spark_q_e3_varlen*.so'))
     if config.mode == 'adaptive':
@@ -109,14 +127,15 @@ def warm_long_slots(target, provider, torch, *, graphs=True):
     """Charge measured first-slot Graph/state bytes before adding more slots."""
     from .long_capacity import LongCapacityBudget
     base = check_memory(torch)
-    # The public 32K bound makes the first BF16 slot smaller than this reserve.
-    if (base['allocated_bytes']+2*1024**3 > 88*1024**3 or
-            base['host_available_bytes']-2*1024**3 < 8*1024**3):
-        raise RuntimeError('insufficient memory to measure the first 32K request slot')
+    initial_reserve = (3 if getattr(target, 'capacity', 32784) > 32784 else 2)*1024**3
+    if (base['allocated_bytes']+initial_reserve > 88*1024**3 or
+            base['host_available_bytes']-initial_reserve < 8*1024**3):
+        raise RuntimeError('insufficient memory to measure the first request slot')
     samples = []
     feature_bytes = 0
     if provider is not None:
-        feature_bytes = 2040*12800*2 + sum(getattr(provider.worker, name).numel()
+        # FeatureWindow mirrors its BF16 ring for contiguous suffix views.
+        feature_bytes = 2*provider.history_window_rows*12800*2 + sum(getattr(provider.worker, name).numel()
             *getattr(provider.worker, name).element_size()
             for name in ('_context_rows', '_keys', '_values'))
     budget = None
@@ -179,9 +198,14 @@ def open_service(session, config):
                 stream = torch.cuda.current_stream()
                 with torch.cuda.stream(stream):
                     physical = config.capacity+16 if long_context else 2048
-                    chunk = 512 if long_context else 128
+                    chunk = config.prompt_chunk
+                    expert = None
+                    if config.prefill_experts is not None:
+                        from .prefill_experts import E44_BINARY_SHA256, PrefillExpertTile
+                        expert = PrefillExpertTile.from_file(config.prefill_experts,
+                                                           expected_sha256=E44_BINARY_SHA256)
                     prefill = PrefillExecutor(TensorFoldPrefillProvider(session.weights, torch,
-                        capacity=physical), chunk_rows=chunk)
+                        capacity=physical, expert_backend=expert), chunk_rows=chunk)
                     if long_context:
                         from .shared_graph import SharedGraphTarget
                         target = SharedGraphTarget.from_session(session, capacity=physical,
@@ -229,10 +253,12 @@ def open_service(session, config):
                         prior=session.calibration['conditional_prior'], capacity=config.capacity,
                         tokenizer=session.tokenizer, target_only=config.mode == 'none',
                         prefill_executor=prefill, prompt_token_budget=chunk, interleave_prefill=True)
-                engine.capabilities.update(service_version='0.2.0', max_running_requests=config.max_requests,
+                engine.capabilities.update(service_version='0.3.0', max_running_requests=config.max_requests,
                     context_capacity=config.capacity, target_kv_dtype='bf16',
                     max_queued_requests=config.queue_size, protocol='openai_chat_subset',
                     http_async_owner=True, memory_admission=admission)
+                engine.capabilities.update(prefill_expert_backend='original' if expert is None else expert.name,
+                    prefill_expert_sha256=None if expert is None else E44_BINARY_SHA256)
                 return engine
 
             worker = AsyncWorker(make, context_factory=context, max_streams=config.max_requests+config.queue_size)

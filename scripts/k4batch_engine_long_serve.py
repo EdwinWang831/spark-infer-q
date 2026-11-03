@@ -1,5 +1,6 @@
 """Start the unified service with already loaded weights and a sealed source."""
 import hashlib
+import gc
 import importlib
 import importlib.util
 import json
@@ -16,13 +17,17 @@ def run(session, arguments):
     tag='_engine_live_'+hashlib.sha256((source/'manifest.json').read_bytes()).hexdigest()[:16]
     package=ModuleType(tag);package.__path__=[str(source/'spark_infer_q')];sys.modules[tag]=package
     server=importlib.import_module(tag+'.engine_server')
-    config=server.ServiceConfig(session.root,session.checkpoint,port=18085)
+    expert_path=arguments.get('prefill_experts')
+    config=server.ServiceConfig(session.root,session.checkpoint,port=18085,
+        prefill_experts=None if expert_path is None else Path(expert_path),
+        prefill_chunk_rows=arguments.get('prefill_chunk_rows'))
     spec=importlib.util.spec_from_file_location(tag+'.validation',source/'scripts/k4batch_engine_long.py')
     validation=importlib.util.module_from_spec(spec);spec.loader.exec_module(validation)
-    inputs=dict(long=[validation.make_messages(session,index) for index in range(4)],
+    inputs=dict(long=[validation.make_messages(session,index,prompt_tokens=config.capacity-64) for index in range(4)],
                 short=[validation.make_messages(session,index,False) for index in range(4)])
     (source/'live-inputs.json').write_text(json.dumps(inputs,ensure_ascii=False)+'\n')
     try:
+        gc.collect();session.torch.cuda.synchronize()
         with server.open_service(session,config) as service:
             status=dict(status='READY',address=service.server.server_address,metadata=service.metadata,
                         source_sha256=manifest,worker=service.worker.snapshot(),model_reloaded=False)

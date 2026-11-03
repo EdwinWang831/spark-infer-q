@@ -10,14 +10,14 @@
 
 ## 统一引擎入口
 
-本分支将主线与已提交的 K4 整合为 Kaifra v0.2：一次加载、每请求 32K 总容量、四个运行请求、动态 DFlash、聊天流式/非流式 API、取消、有界等待、健康检查、指标与正常退出。准备好的 GPU 环境中可运行：
+本分支将主线与已提交的 K4 整合为 Kaifra v0.3：一次加载、每请求 64K 总容量、四个运行请求、动态 DFlash、聊天流式/非流式 API、取消、有界等待、健康检查、指标与正常退出。准备好的 GPU 环境中可运行：
 
 ```bash
 python -m spark_infer_q doctor --root /path/to/prepared/runtime --checkpoint /path/to/local/target
 python -m spark_infer_q serve --root /path/to/prepared/runtime --checkpoint /path/to/local/target
 ```
 
-见[中文用法](docs/ENGINE_V02_USAGE.md)及[真实验收报告](docs/ENGINE_V02_REPORT.md)。BF16 KV 下，四份 32704-token 缓存同时填满，四请求 HTTP 的 token、状态、特征和动态预算轨迹与隔离执行一致。长路径共享串行 GPU 工作区，**四个在途请求不代表四路 GPU 合批或新增吞吐收益**；原有 1536-token 双请求 GPU batch 仍可选。256K 与压缩 KV 仍沿用各自实验范围。[v0.1 独立冷启动记录](docs/ENGINE_V01_REPORT.md)继续保留。
+BF16 KV 下，四份 65472-token 缓存同时填满，各生成64 tokens。HTTP输出、状态、特征与动态轨迹和控制执行一致。可选的1024行专家tile配置在同期四请求32K试验中，使完整cohort平均从114.90降到94.99秒，耗时减少17.33%。使用该配置需显式传入已校验的 `--prefill-experts` 扩展。普通启动采用512行兼容路径，长请求GPU目前串行执行，短双请求GPU batch可显式选择。配置与数据见[中文用法](docs/ENGINE_V03_USAGE.md)及[验收报告](docs/ENGINE_V03_REPORT.md)。历史证据见[v0.2](docs/ENGINE_V02_REPORT.md)及[v0.1冷启动](docs/ENGINE_V01_REPORT.md)。
 
 ## 研究问题
 
@@ -78,7 +78,7 @@ python -m spark_infer_q serve --root /path/to/prepared/runtime --checkpoint /pat
 
 - **内存**：目标是 8 个并发、每个 256K 的请求，放进 88 GiB 的 CUDA 分配上限。即使把 KV 压到 INT4，预计仍需 92.82 GiB（E55）。
 - **KV 压缩精度**：所有压缩候选仍未通过事前定的 3% logit 相对 L2 门槛。E58 中，BF16 prefill 后使用 FP8 / INT4 解码，在六条 4K–16K 前缀的相同 100 个 teacher decode 位置上得到 4.06% / 7.22%；这不是 256K 质量或吞吐结果。
-- **多请求效率**：v0.2 扩展到四请求、每请求 32K，但长路径仍串行执行，HTTP cohort 中最多一份前缀同时达到 32K；四份填满的容量由独立实跑证明。长请求的 GPU 合批、公平 prefill 和长期压力仍需推进。旧 K4 性能结果尚未证明稳定超过优化后的单请求顺序处理。
+- **多请求效率**：v0.3支持四请求、每请求64K并接入较快prefill，但GPU长路径仍串行。较大prompt块也使有prefill等待时的单次输出间隔变长；长请求GPU合批、公平队列和长期压力仍需推进。旧K4性能结果尚未证明稳定超过优化后的单请求顺序处理。
 - **对照原生 TensorFold**：E7 时整体 45.62 vs 原生 49.18 tok/s，之后没有重测。
 
 ## 反馈驱动的自改进（方案）

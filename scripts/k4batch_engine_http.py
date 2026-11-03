@@ -16,9 +16,11 @@ def main():
     parser.add_argument('--reference',type=Path,required=True)
     parser.add_argument('--output',type=Path,required=True)
     parser.add_argument('--resume-client',type=Path)
+    parser.add_argument('--expected-prefill-rows',type=int)
+    parser.add_argument('--expected-capacity',type=int,default=32768)
     args=parser.parse_args()
     inputs=json.loads(args.inputs.read_text());reference=json.loads(args.reference.read_text())
-    assert reference['status']=='PASS_ENGINE_V02_LONG'
+    assert reference['status'] in ('PASS_ENGINE_V02_LONG','PASS_ENGINE_CONTEXT')
     report=dict(status='RUNNING',client_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
         input_sha256=hashlib.sha256(args.inputs.read_bytes()).hexdigest(),
         reference_sha256=hashlib.sha256(args.reference.read_bytes()).hexdigest(),runs=[])
@@ -138,8 +140,11 @@ def main():
     try:
         if args.resume_client is None:report['before']=idle()
         caps=report['before']['capabilities']
-        assert caps['max_running_requests']==4 and caps['context_capacity']==32768
+        assert caps['max_running_requests']==4 and caps['context_capacity']==args.expected_capacity
         assert caps['gpu_batch'] is False and caps['target_kv_dtype']=='bf16'
+        if args.expected_prefill_rows is not None:
+            assert caps['prefill_chunk_rows']==args.expected_prefill_rows
+            report['expected_prefill_rows']=args.expected_prefill_rows
         long=report['runs'][0] if args.resume_client is not None else cohort('four-long-uninstrumented',inputs['long'])
         for index,value in enumerate(long['requests']):
             gold=reference['target_only_controls'][str(index)]
@@ -175,7 +180,8 @@ def main():
         assert replay['text']==report['runs'][1]['requests'][0]['text']
         report['disconnect_recovered']=True
         report['after']=idle();assert report['after']['metrics']['worker_failures_total']==0
-        report['status']='PASS_ENGINE_V02_HTTP';save('complete')
+        report['status']='PASS_ENGINE_V03_HTTP' if args.expected_capacity==65536 else 'PASS_ENGINE_V02_HTTP'
+        save('complete')
     except BaseException as exc:
         report.update(status='FAIL_ENGINE_V02_HTTP',error=type(exc).__name__+': '+str(exc)[:3000]);save('failed');raise
 

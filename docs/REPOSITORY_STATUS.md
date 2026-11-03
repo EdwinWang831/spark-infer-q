@@ -6,7 +6,7 @@
 
 | Location / 位置 | Contents / 内容 | State / 状态 |
 | --- | --- | --- |
-| `codex/engine-v01` | Kaifra v0.2: four running requests, 32K total tokens each, BF16 KV, adaptive DFlash / 统一服务四请求、每请求32K | [Usage / 用法](ENGINE_V02_USAGE.md), [report / 报告](ENGINE_V02_REPORT.md); serial GPU long path, short two-way GPU batch retained; separate worktree's uncommitted CompactTarget preserved / 保留另一工作区未提交实现 |
+| `codex/engine-v01` | Kaifra v0.3: four64K requests, BF16 KV, adaptive DFlash, optional faster prefill / 统一服务四请求、每请求64K及较快prefill | [Usage / 用法](ENGINE_V03_USAGE.md), [report / 报告](ENGINE_V03_REPORT.md); serial long GPU path,32K paired wall−17.33%, short two-way batch retained / 保留另一工作区未提交CompactTarget |
 | `main` | E0–E58 research records, including E26 cancellation; E33 exact screened head, E34/E35 rejected candidates, E36 exact prefill and E37 profile / 已完成研究与脱敏证据 | Consolidated; per-experiment limits still apply / 已汇总，沿用各实验边界 |
 | `main` | K1 target-only runtime → K2 dynamic DFlash → K3 Graph/E33 profile → single-request overhead reduction / 原生调度运行时演进 | Explicit opt-in APIs/profiles / 显式启用 |
 | `main` | Joint Target, two requests sharing one target forward / 双请求联合 Target | Target-only API; distinct from K4 DFlash service / 独立于 K4 服务研究 |

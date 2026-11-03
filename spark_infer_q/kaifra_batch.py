@@ -350,8 +350,8 @@ def batch_engine(native,target,provider,*,eos_ids,prior,capacity=1536,tokenizer=
         if capacity+8>provider.max_context:raise ValueError('insufficient draft context')
         if not isinstance(provider,RequestDraftProvider):provider=RequestDraftProvider(provider)
     else:provider=SimpleNamespace(deferred_draft=True)
-    if type(prompt_token_budget) is not int or not 16<=prompt_token_budget<=512:
-        raise ValueError('prompt token budget must be 16..512')
+    if type(prompt_token_budget) is not int or not 16<=prompt_token_budget<=1024:
+        raise ValueError('prompt token budget must be 16..1024')
     backend=BatchBackend(target,provider,eos_ids=eos_ids,depth=depth,prior=prior,observer=observer,prefill_executor=prefill_executor)
     backend.joint_decode=joint_decode
     args=(native.core,native.torch,native.group,native.sampling_class,backend)

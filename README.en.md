@@ -10,14 +10,14 @@ The overview connects the research questions to implementation, measured evidenc
 
 ## Unified engine entry
 
-This branch integrates main and committed K4 work as Kaifra v0.2: one model load, 32K total tokens per request, four running requests, adaptive DFlash, streaming/nonstreaming chat, cancellation, bounded admission, health, metrics and orderly shutdown. In the prepared GPU environment:
+This branch integrates main and committed K4 work as Kaifra v0.3: one model load, 64K total tokens per request, four running requests, adaptive DFlash, streaming/nonstreaming chat, cancellation, bounded admission, health, metrics and orderly shutdown. In the prepared GPU environment:
 
 ```bash
 python -m spark_infer_q doctor --root /path/to/prepared/runtime --checkpoint /path/to/local/target
 python -m spark_infer_q serve --root /path/to/prepared/runtime --checkpoint /path/to/local/target
 ```
 
-See [usage](docs/ENGINE_V02_USAGE.en.md) and the [validation report](docs/ENGINE_V02_REPORT.md). With BF16 KV, four 32704-token caches were populated together; four-request HTTP tokens, state, features and dynamic traces match isolated runs. The long path shares serial GPU scratch: **four in-flight requests do not establish four-way GPU batching or a throughput gain**. The 1536-token two-request GPU batch path remains available. The 256K and compressed-KV studies retain their own scope. [v0.1 cold-start evidence](docs/ENGINE_V01_REPORT.md) is preserved.
+Four 65,472-token BF16 KV caches were populated simultaneously, each producing 64 tokens. HTTP outputs, state, features and dynamic traces match controls. In a paired four-request 32K study, the optional 1,024-row expert tile reduced mean complete-cohort time from 114.90 to 94.99 seconds, a 17.33% reduction. Select it with the verified `--prefill-experts` extension. Ordinary startup uses compatible 512-row prefill. Long requests execute serially on the GPU, and short two-request GPU batching remains available. Configuration and measurements appear in the [usage guide](docs/ENGINE_V03_USAGE.en.md) and [validation report](docs/ENGINE_V03_REPORT.md). Historical evidence remains in the [v0.2 report](docs/ENGINE_V02_REPORT.md) and [v0.1 cold-start report](docs/ENGINE_V01_REPORT.md).
 
 ## Research question
 
@@ -78,7 +78,7 @@ The gains that held came from deciding what to compute (verification budget, dra
 
 - **Memory**: the target is eight concurrent 256K requests under the 88 GiB CUDA allocation cap. Even with INT4 KV the forecast is 92.82 GiB (E55).
 - **KV compression accuracy**: all compressed candidates still miss the pre-registered 3% relative-logit-L2 gate. In E58, BF16 prefill followed by FP8 / INT4 decode gives 4.06% / 7.22% on the same 100 teacher decode positions across six 4K–16K prefixes. This is not a 256K quality result or a throughput measurement.
-- **Multi-request efficiency**: v0.2 serves four requests with 32K total tokens each, using serial GPU execution. At most one HTTP prefix reached 32K simultaneously; a separate populated-state run proves four-cache capacity. Long-request GPU batching, fair prefill and sustained stress remain open. Historical K4 performance has not established a stable win over optimized sequential serving.
+- v0.3 supports four 64K requests and faster prefill, with serial long-path GPU execution. Larger prompt chunks increase individual output gaps while prefill waits. Long GPU batching, fair queues and sustained stress remain open. Historical K4 performance has not established a stable win over optimized sequential serving.
 - **Native TensorFold comparison**: 45.62 vs native 49.18 tok/s overall in E7; not rerun since.
 
 ## Feedback-driven self-improvement (proposal)

@@ -1,0 +1,2609 @@
+{
+  "status": "PASS_ENGINE_V03",
+  "date": "2026-11-02",
+  "cpu": {
+    "status": "PASS",
+    "tests": 495,
+    "passed": 454,
+    "skipped": 41,
+    "log_sha256": "ed9cde8362b467914ef7bc2ea39242e6fc52e07d2c6219cfc73cbe9782490e17"
+  },
+  "packaging": {
+    "status": "PASS_PACKAGE",
+    "version": "0.3.0",
+    "wheel_sha256": "e4fb2efb7be0c7a65bee6867623df9f50e914a22517061779d6b312b2908628b",
+    "production_source_matches_live": true,
+    "third_party_notice_packaged": true,
+    "installed_cli_outside_checkout": true
+  },
+  "scope": {
+    "running_requests": 4,
+    "total_tokens_per_request": 65536,
+    "target_kv": "bf16",
+    "gpu_batch": false,
+    "prefill_rows": 1024,
+    "prefill_experts": "a5b15bc9ad18e7aea4008f3aba0210856b9b4a4bd764580cbd987b64659b0977",
+    "dynamic_draft": true,
+    "cost_calibration_changed": false,
+    "production_stress_tested": false
+  },
+  "residency": {
+    "load_count": 1,
+    "same_model_process": true,
+    "same_target_and_draft_objects": true
+  },
+  "prefill_32k": {
+    "wall_reduction": 0.17333755655398497,
+    "baseline_mean_seconds": 114.90477117849514,
+    "candidate_mean_seconds": 94.98745890602004,
+    "baseline_mean_phase_ms": {
+      "prefill": 106601.88619408291,
+      "draft": 1707.563320407644,
+      "verify": 6050.831854809076,
+      "commit": 129.1311407694593
+    },
+    "candidate_mean_phase_ms": {
+      "prefill": 86796.3434769772,
+      "draft": 1713.5719859506935,
+      "verify": 6063.9434872427955,
+      "commit": 129.13322413805872
+    },
+    "runs": [
+      {
+        "name": "0:baseline",
+        "arm": "baseline",
+        "wall_seconds": 114.47387540107593,
+        "last_ttft_seconds": 112.28003073483706,
+        "max_output_gaps_seconds": {
+          "0": 0.4898587048519403,
+          "1": 0.4941090801730752,
+          "2": 0.49768863478675485,
+          "3": 0.07649952103383839
+        },
+        "phase_ms": {
+          "prefill": 106178.63152129576,
+          "draft": 1707.1705618873239,
+          "verify": 6050.080141983926,
+          "commit": 128.8064767140895
+        },
+        "expert_calls": 0,
+        "expert_fallbacks": 0,
+        "head_kernels_unchanged": true,
+        "memory": {
+          "allocated_bytes": 84594359296,
+          "reserved_bytes": 85368766464,
+          "peak_allocated_bytes": 84766391296,
+          "peak_reserved_bytes": 85368766464,
+          "host_available_bytes": 28932685824
+        }
+      },
+      {
+        "name": "1:tile1024",
+        "arm": "tile1024",
+        "wall_seconds": 94.96319061587565,
+        "last_ttft_seconds": 92.770666860044,
+        "max_output_gaps_seconds": {
+          "0": 0.7554432931356132,
+          "1": 0.7836607061326504,
+          "2": 0.7665300921071321,
+          "3": 0.07772900303825736
+        },
+        "phase_ms": {
+          "prefill": 86783.26036618091,
+          "draft": 1713.5236198082566,
+          "verify": 6052.8013948351145,
+          "commit": 128.85876093059778
+        },
+        "expert_calls": 5952,
+        "expert_fallbacks": 336,
+        "head_kernels_unchanged": true,
+        "memory": {
+          "allocated_bytes": 84594359296,
+          "reserved_bytes": 85368766464,
+          "peak_allocated_bytes": 84766391296,
+          "peak_reserved_bytes": 85368766464,
+          "host_available_bytes": 28606771200
+        }
+      },
+      {
+        "name": "2:tile1024",
+        "arm": "tile1024",
+        "wall_seconds": 95.01172719616443,
+        "last_ttft_seconds": 92.79811983695254,
+        "max_output_gaps_seconds": {
+          "0": 0.7688752999529243,
+          "1": 0.7806880560237914,
+          "2": 0.7645321791060269,
+          "3": 0.07839408097788692
+        },
+        "phase_ms": {
+          "prefill": 86809.42658777349,
+          "draft": 1713.6203520931304,
+          "verify": 6075.085579650477,
+          "commit": 129.40768734551966
+        },
+        "expert_calls": 5952,
+        "expert_fallbacks": 336,
+        "head_kernels_unchanged": true,
+        "memory": {
+          "allocated_bytes": 84594359296,
+          "reserved_bytes": 85368766464,
+          "peak_allocated_bytes": 84766391296,
+          "peak_reserved_bytes": 85368766464,
+          "host_available_bytes": 28610015232
+        }
+      },
+      {
+        "name": "3:baseline",
+        "arm": "baseline",
+        "wall_seconds": 115.33566695591435,
+        "last_ttft_seconds": 113.15270510897972,
+        "max_output_gaps_seconds": {
+          "0": 0.4973155139014125,
+          "1": 0.5072655528783798,
+          "2": 0.5034674420021474,
+          "3": 0.07783451792784035
+        },
+        "phase_ms": {
+          "prefill": 107025.14086687006,
+          "draft": 1707.956078927964,
+          "verify": 6051.583567634225,
+          "commit": 129.4558048248291
+        },
+        "expert_calls": 0,
+        "expert_fallbacks": 0,
+        "head_kernels_unchanged": true,
+        "memory": {
+          "allocated_bytes": 84594359296,
+          "reserved_bytes": 85368766464,
+          "peak_allocated_bytes": 84766391296,
+          "peak_reserved_bytes": 85368766464,
+          "host_available_bytes": 28758876160
+        }
+      }
+    ],
+    "numeric": [
+      {
+        "input_tokens": 1024,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true,
+        "windows": [
+          {
+            "width": 1,
+            "keep": 1,
+            "exact": true
+          },
+          {
+            "width": 2,
+            "keep": 1,
+            "exact": true
+          },
+          {
+            "width": 3,
+            "keep": 3,
+            "exact": true
+          },
+          {
+            "width": 4,
+            "keep": 2,
+            "exact": true
+          },
+          {
+            "width": 5,
+            "keep": 5,
+            "exact": true
+          },
+          {
+            "width": 6,
+            "keep": 3,
+            "exact": true
+          },
+          {
+            "width": 7,
+            "keep": 7,
+            "exact": true
+          },
+          {
+            "width": 8,
+            "keep": 4,
+            "exact": true
+          }
+        ]
+      },
+      {
+        "input_tokens": 1025,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true,
+        "windows": [
+          {
+            "width": 1,
+            "keep": 1,
+            "exact": true
+          },
+          {
+            "width": 2,
+            "keep": 1,
+            "exact": true
+          },
+          {
+            "width": 3,
+            "keep": 3,
+            "exact": true
+          },
+          {
+            "width": 4,
+            "keep": 2,
+            "exact": true
+          },
+          {
+            "width": 5,
+            "keep": 5,
+            "exact": true
+          },
+          {
+            "width": 6,
+            "keep": 3,
+            "exact": true
+          },
+          {
+            "width": 7,
+            "keep": 7,
+            "exact": true
+          },
+          {
+            "width": 8,
+            "keep": 4,
+            "exact": true
+          }
+        ]
+      },
+      {
+        "input_tokens": 4096,
+        "logits_exact": true,
+        "features_exact": true,
+        "state_exact": true,
+        "windows": [
+          {
+            "width": 1,
+            "keep": 1,
+            "exact": true
+          },
+          {
+            "width": 2,
+            "keep": 1,
+            "exact": true
+          },
+          {
+            "width": 3,
+            "keep": 3,
+            "exact": true
+          },
+          {
+            "width": 4,
+            "keep": 2,
+            "exact": true
+          },
+          {
+            "width": 5,
+            "keep": 5,
+            "exact": true
+          },
+          {
+            "width": 6,
+            "keep": 3,
+            "exact": true
+          },
+          {
+            "width": 7,
+            "keep": 7,
+            "exact": true
+          },
+          {
+            "width": 8,
+            "keep": 4,
+            "exact": true
+          }
+        ]
+      }
+    ],
+    "tokens_state_features_dynamic_trace_exact": true
+  },
+  "context_64k": {
+    "coincident_populated_positions": [
+      65472,
+      65472,
+      65472,
+      65472
+    ],
+    "numeric": [
+      {
+        "position": 65472,
+        "width": 1,
+        "keep": 1,
+        "parity": 0,
+        "exact": true
+      },
+      {
+        "position": 65472,
+        "width": 2,
+        "keep": 1,
+        "parity": 0,
+        "exact": true
+      },
+      {
+        "position": 65472,
+        "width": 3,
+        "keep": 3,
+        "parity": 0,
+        "exact": true
+      },
+      {
+        "position": 65472,
+        "width": 4,
+        "keep": 2,
+        "parity": 0,
+        "exact": true
+      },
+      {
+        "position": 65472,
+        "width": 5,
+        "keep": 5,
+        "parity": 0,
+        "exact": true
+      },
+      {
+        "position": 65472,
+        "width": 6,
+        "keep": 3,
+        "parity": 0,
+        "exact": true
+      },
+      {
+        "position": 65472,
+        "width": 7,
+        "keep": 7,
+        "parity": 0,
+        "exact": true
+      },
+      {
+        "position": 65472,
+        "width": 8,
+        "keep": 4,
+        "parity": 0,
+        "exact": true
+      },
+      {
+        "position": 65472,
+        "width": 1,
+        "keep": 1,
+        "parity": 1,
+        "exact": true
+      },
+      {
+        "position": 65472,
+        "width": 2,
+        "keep": 1,
+        "parity": 1,
+        "exact": true
+      },
+      {
+        "position": 65472,
+        "width": 3,
+        "keep": 3,
+        "parity": 1,
+        "exact": true
+      },
+      {
+        "position": 65472,
+        "width": 4,
+        "keep": 2,
+        "parity": 1,
+        "exact": true
+      },
+      {
+        "position": 65472,
+        "width": 5,
+        "keep": 5,
+        "parity": 1,
+        "exact": true
+      },
+      {
+        "position": 65472,
+        "width": 6,
+        "keep": 3,
+        "parity": 1,
+        "exact": true
+      },
+      {
+        "position": 65472,
+        "width": 7,
+        "keep": 7,
+        "parity": 1,
+        "exact": true
+      },
+      {
+        "position": 65472,
+        "width": 8,
+        "keep": 4,
+        "parity": 1,
+        "exact": true
+      }
+    ],
+    "matches": [
+      {
+        "index": 0,
+        "tokens": true,
+        "state": true,
+        "features": true,
+        "dynamic_trace": true
+      },
+      {
+        "index": 1,
+        "tokens": true,
+        "state": true,
+        "features": true,
+        "dynamic_trace": true
+      },
+      {
+        "index": 2,
+        "tokens": true,
+        "state": true,
+        "features": true,
+        "dynamic_trace": true
+      },
+      {
+        "index": 3,
+        "tokens": true,
+        "state": true,
+        "features": true,
+        "dynamic_trace": true
+      }
+    ],
+    "target_only_controls": {
+      "0": {
+        "tokens": [
+          760,
+          41052,
+          12261,
+          7246,
+          2218,
+          66,
+          11490,
+          11,
+          1649,
+          7236,
+          11,
+          321,
+          1622,
+          14834,
+          2218,
+          610,
+          279,
+          53566,
+          314,
+          6278,
+          4098,
+          5757,
+          11,
+          7695,
+          303,
+          1496,
+          41332,
+          611,
+          21066,
+          1040,
+          378,
+          40210,
+          14960,
+          11,
+          3471,
+          3561,
+          33254,
+          11,
+          321,
+          1865,
+          7019,
+          26970,
+          20459,
+          13,
+          1946,
+          3418,
+          836,
+          38833,
+          11,
+          799,
+          1902,
+          1353,
+          7551,
+          836,
+          16954,
+          321,
+          20321,
+          1204,
+          781,
+          15803,
+          310,
+          7915,
+          37972,
+          11
+        ],
+        "state": {
+          "position": 65535,
+          "0.k": "bc0fbb938a94bf778a776dd9c8303c0f5c13f4c6534c00dcb211730f8fc25566",
+          "0.v": "3bcc7a9489814019b5dda078451e1a90df131b8cbf79268f5e28d00c667997a8",
+          "0.pooled": "067e5139e4826c8dedb50e5c479233da6450d2e7b86f5831495c730c9f580657",
+          "0.raw_tail": "514b03f318d67e0ea755e40bba01046694916ece6d289873e168d0b4dfa0be00",
+          "1.k": "730d9b7a04a0780258976b32a0474c75095b4fbb77226de034fb3773374432cb",
+          "1.v": "655f55723560a885d687663c32f788f076861b000b4f3252044559e89537d1ca",
+          "1.pooled": "f9092f43517b53c5b35be7c8bcf6342af58fca81f0e118a26b8c078081157dc9",
+          "1.raw_tail": "47c8e7bb42d3dbc12bf256323dc78efed2d691169b0850f98f404a491ec5f621",
+          "2.k": "d6b64a019f2e3cc672c38cb4f5d632a45bbe88358cac8c037e52e1e7b755913f",
+          "2.v": "4fea06e19ce12381bb2bce8e67420136fb1e3b0bfe01c91b170a52fe30d4d61e",
+          "2.pooled": "ac19b93766bcfc68f2b6a8bd93098ec200776634fb9b628d740a09917ffddfa8",
+          "2.raw_tail": "81673280e326d034fb24b645aca1fd6155b9bc129d8b4d85689b122df20e9cee",
+          "3.k": "c7480dfb47934105ba8c278f5a3fa183211c9f2d1d862031f22c5e21ecb24fba",
+          "3.v": "9016827d7f84bb76807a741deacbb559e82d6c5a869c5c831a516725b12e1473",
+          "3.pooled": "adf4c1ac95e10594cda696c4c5f8bcac2857e66098e4102e4277e1bea787e4a6",
+          "3.raw_tail": "e5bb3bee8e6b6af1af5d959cfd00a29daa19315ddd651388ddec4dc5f0b9ada5",
+          "4.k": "ff1d1ee0cdf91d0992bf25ede6e954b554b625f7e3f5260edf6d4da958316155",
+          "4.v": "ab753dff42032e2689b2d7fc53f0a73c7b48b71f0c0791c86d4409cb6a70f033",
+          "4.pooled": "39a26f5127f08a7c4ac1b6be8c5054739ffdf442ae5432cc3c9b97633c10a662",
+          "4.raw_tail": "71a1bdf7bb909900a021963769e2216eccd5260ba5e7c51020456dfaf772cd3e",
+          "5.k": "3881a22e7b494b9275d2768268f0217a37102c6da89cfbd6bc33fe66df8f0d0c",
+          "5.v": "b89afbfd59f4a883f4cd28bd566b05e27228ff3e480ee14872100d6235a07fe2",
+          "5.pooled": "a1a1a0571d87f4cfeb8e2e2733e6d1f29bae256e2b02b4f2867b580302dfcd80",
+          "5.raw_tail": "dd556b3e94d865799cee789b316d1fd1771d1f6fb464298851e70dcefa62ede5",
+          "6.k": "401762378d66e6eb395a85a4521e86ddebe03d487c68d563bec247e583890656",
+          "6.v": "ec75ab274044d438454c9a429d5b69fff73e2b92fe6f4226b29583e9fd1af242",
+          "6.pooled": "d94a22edd2edc24ea9b02cdd38bfb386b700b603e9dee1766dc888fd464ed2b6",
+          "6.raw_tail": "7f156242acd603ae9c729177e2e08c01c198eb9136c80b7d6174e3af8e58e02c",
+          "7.k": "51cc1cfad905bf17ff445ee36cf1e565fad0395113817860a516a79b3f10c29a",
+          "7.v": "ecefcd6c8b4d7fff6bcdbe8a7c0325b2bc83d0c0b6b781c82f45edb8829bf90f",
+          "7.pooled": "e3e05657f283983a92d3bf773c59e7da9730a348432e87023c66b66823a024ea",
+          "7.raw_tail": "a22175ac3345d59bbb35a7132a8b1f0a8a6c0f841d2dd85ef4abed8e3dc0ead0",
+          "8.k": "fbb1e959c94827906b4c7ba5d731a6792b83dc790e1030fd189234d6e0ccbcab",
+          "8.v": "e9b0bee258e296143ced13ecf1a48ced7693c492980baf8953ab34ece24e4613",
+          "8.pooled": "97e7224ee4e4e398022ab4c790562f02b9a09c9c6354e5dd241a4933dd0188e2",
+          "8.raw_tail": "70d89e44adfd6cebd37e3c4c9ac527f674864c8f1582ebe3200a5a4422373eb7",
+          "9.k": "aafec7192697547646ce54442b3848978b24546048985329ff37325964a210e6",
+          "9.v": "2e7099a724db27f25d30104932f3b2891c5464d95e07a5bde13d2d2f18dcd902",
+          "9.pooled": "3a2a89a4114efb77f68ca2df14c265248d259eee35e8181a8d7739ec17fb10c1",
+          "9.raw_tail": "6e596bdab6a5eebfbe48f0e224ba303cb6d05fd4dbd89641bb5c2d1a11f2d524",
+          "10.k": "50c4bfb695c55714f3a4d03168f0cf885140a7486a311064f8de861c94a3ce5c",
+          "10.v": "14fefd80aff82f3b179607f6e7ffe95ba2658746bad39ca09b6107dc594ddeee",
+          "10.pooled": "2a4f345f5dde326bc1b86e015f3a738e03293f551c90f1a3241d071ed3d385f2",
+          "10.raw_tail": "60d4b4e4e471e35da748c60f8c970c22b00858957ec08b0b5e8273723c32d8f0",
+          "11.k": "330c86c293e692f7c32d16c0b3bdca9aeae0517b75c489741e72d2fcef351499",
+          "11.v": "5b0d4735083cfac9424a6af4edd8ed15466c68f30f30a964d5bb4029b10a59ea",
+          "11.pooled": "33201ac0f44e3d0ffd9837512da49942f3ee4caca363a9ab1591be177f60e2d9",
+          "11.raw_tail": "220a12a341a077899dbf81f6060eea7ec34ceefd05ff823574a991c8719b94eb",
+          "rec": "58aa8cd703c9794f7bad3ceaf736b85fc85152387d191e3634131778ac9e3809",
+          "conv": "eb19c1a596f14774a77d5c83e4ba4373fff1638d8153414dda78ca70350812c7",
+          "ple_tail": "c73358d47580e7e086a2e12ddf903e27b10cdb749b7186a0a32b382e1d76b96c",
+          "ple_history": "6451b575a7d3fb5dda89b03399845e281bf6e328f356b4a62dd547be38e81cdd",
+          "mtp_len": 0
+        },
+        "feature_sha256": "fb8a435f4b4e580acb29cbfe79c4c8babafb3877399186340061e92ab81ca2a3",
+        "text": "The architectural patterns described—caching, queuing, and request ownership—form the backbone of modern distributed systems, particularly in high-throughput environments like e-commerce platforms, social media feeds, and real-time analytics engines. To understand their efficacy, one must look beyond their definitions and examine how they interact to balance latency,"
+      },
+      "1": {
+        "tokens": [
+          132174,
+          98251,
+          95828,
+          108695,
+          95726,
+          109120,
+          98132,
+          103783,
+          3709,
+          115903,
+          98144,
+          101842,
+          124501,
+          106718,
+          124482,
+          113728,
+          119935,
+          96961,
+          108572,
+          108698,
+          105923,
+          245342,
+          111734,
+          98853,
+          332,
+          5205,
+          332,
+          113165,
+          110057,
+          332,
+          98404,
+          332,
+          101729,
+          98822,
+          101962,
+          221794,
+          113554,
+          96043,
+          104216,
+          96069,
+          3709,
+          109238,
+          97488,
+          95883,
+          104942,
+          100653,
+          98276,
+          99454,
+          114520,
+          95999,
+          96902,
+          98696,
+          122500,
+          1710,
+          271,
+          99924,
+          3709,
+          332,
+          111734,
+          98853,
+          332,
+          95761,
+          96746,
+          132821
+        ],
+        "state": {
+          "position": 65535,
+          "0.k": "949643b1216812d6b062f1685829f4272d006c697dcdf8a017c66535a32bf82a",
+          "0.v": "913a979f6414976491499f7ca4ec940bd108f08f0d96a65b07b59334c3b4f658",
+          "0.pooled": "778eefe805abb5be62d643a6cc4b04e43fd78396b4b57afd5d4bf71534112687",
+          "0.raw_tail": "944755c2e7614f908a83f32f520811ab9b29f83974ca324e5637fb7a45539cff",
+          "1.k": "31889ba5adfd48a86d042eb5e692e3eb6daa9f9e923e4f146a64a1f13c5b112f",
+          "1.v": "2fc743881ee860b06ce19d6ef8b3c1190840886a3ed2bf2739b3001d1ec422d5",
+          "1.pooled": "3c6944b31ef6e7815ef309a603a428d92fee7802a806cdf2e4022dfc90c249ad",
+          "1.raw_tail": "137aedbf82c57824d6df36ed6dc31ef20b61bb8353aaaa7ede97d390a0c5b4c7",
+          "2.k": "80f48a08753709399e8a6c618f792f6510b987a2b4adacdaf381be3b1989719a",
+          "2.v": "79fd96b48a8b3058dfee9d99e23cac9547fd56eddeded8c116f85aeb02bc6fae",
+          "2.pooled": "4c26e6348e7770c3af6fc052c8f21d75a28d44007b25526ececadd3e2167132b",
+          "2.raw_tail": "4b9df7b776e76bdf12b260fe6a5cbdc6cd25d08779ccd7313939b0a9dc3cca81",
+          "3.k": "723601ade4de64b694dc56700f496f8684098ae810033158ae7c1446bfb7b55f",
+          "3.v": "9f1d1fcaae037f7ae1fb801b078cec2d96ba2fa7266fd34acca68c0fc8e5ca77",
+          "3.pooled": "bd1f617b43d2186705d20313c719379a5b1631161b74f0fab8c0c5b5793d36ef",
+          "3.raw_tail": "62f7dc540a29c100bc61b1be1589697271b0d4de42ca6ce5d43c74ee132e9ae0",
+          "4.k": "beecafeb520805b8d1d031516b11e841b9762cabbc3082e5565407d4932407c5",
+          "4.v": "633ae40a0dca8a81adfbc1159e68b86b84345af8784398f109df89fd452ad7d6",
+          "4.pooled": "22ed6e6f5e41a33bf5c17cdee8230f794e35db14e50ba0e552ae0a158ee5b0d4",
+          "4.raw_tail": "37f7ec2b75ab5ca9a931052fee33f67b3609b0f77847b7c71f53698899d951e6",
+          "5.k": "f44ef4609e48706775596bab220758f68297388759fb67631787da204399d4be",
+          "5.v": "f03904d9a1e296fcc7d54771524b6dd9155736dc26c37961cc3a011f2acd8674",
+          "5.pooled": "2bd2f44dd74cf361b802eb08fdae8bdaeecb2300c509b3905dffc7e6f58c0f83",
+          "5.raw_tail": "a7971be72c8282dc5d7e0c654b9737226d2b761dc3d18e7dfd42b58395077f1f",
+          "6.k": "33243168b84feaba6b066c9b0908c2699ff2032620823c7dfe4745468f8f1db3",
+          "6.v": "f6c76e4d9e06e463660d1b8bb725612db046d3d171bca7c846e053a643e5ef84",
+          "6.pooled": "374738a7bcab6891dd84be955b24489f0d375bfe9cdfc6b810adf03967558874",
+          "6.raw_tail": "0831a8c2c52395de864b6ec034466c87027bde134db185d24dd0570d6dbb70be",
+          "7.k": "7bf3bc42491b75160901ce2fe14902269a28d92a5ea7bae9cb00dc07ddf03416",
+          "7.v": "448e67ae1d7dc6fa4ec04b8577fe1ddcaf6f83791d4cd5a6543676c4cd68c3b9",
+          "7.pooled": "a1ec0bf8cce31007f7d9b7512eb533c9829b88b9ce95c2f9152c9d459ca4cc41",
+          "7.raw_tail": "194c3d7266393f042aa1fe3b07d660d988695ae1aa435dfee83db2197ed8f50e",
+          "8.k": "df3a2b4cdfececda973edfd4e3d89aef666574ac8a30097e6ea5c0ef9285e077",
+          "8.v": "de94a6031e7fc9acd7894983b7a1f98f7086dabae464d2d059acc600227cb6d9",
+          "8.pooled": "425202d205984b98f93ca660c6d3a796a6b7c648714750a73e40981561d56ca3",
+          "8.raw_tail": "b20d2704ac42597209ad3c47020be920e7a7a67a7830be722add12f0914cdb65",
+          "9.k": "297903761de2b4124fb3e758e78a8f4821f27a21fbe88b12d2a9bc9c1fd13f4d",
+          "9.v": "9b581ded09addbf8f67a2c9bbce111a71a9835b2cac54b44c83c69829f2e7501",
+          "9.pooled": "e56f0083ee72bd7207f85078794c5f7397289c16bc5d601f9cd212b8fda398af",
+          "9.raw_tail": "1f7f7b57c9888e2a8035683c12977bfa87383bd1568a3615b1b0312a29d66ac9",
+          "10.k": "9a21faaaa4663c2a6fa15ba62f8dece2b74c381c317ba4942c3d93839bfa446c",
+          "10.v": "2ecd86523a81ac0bb70724e360b7c6b18b316db8f3bd5487f20e9118909c17ab",
+          "10.pooled": "c732dbc667813494d45950fdf37053db60afeda02f833aba6eb85840ba1cfaf1",
+          "10.raw_tail": "af7e57d8b9b898c0b3ea609ed1cca02866a5b4ea3d5a51f9d5479a6695c2664f",
+          "11.k": "46a516d90607235e26140cbaa4cb594f0f93631234e75e69b3c3d26686301abe",
+          "11.v": "f6566c969e5c03d6cb517a8e588ff4eea75672c0613e28698664524e92c63141",
+          "11.pooled": "bbfd741e579bb18206bdebc8f05edc9d87b28e508c980db27525030dba0543e9",
+          "11.raw_tail": "f83a9f37d510352f38806c2e631702b50088593a680a2d392fe30878cccf4f48",
+          "rec": "4cf5bea0b8ebcace8a70ef00235537fdd9d618db5304f34434156be3dbd00a89",
+          "conv": "ad35ce82cbfe816ac27942680ae2809aca27774e31809c77609c2f605eeab83c",
+          "ple_tail": "b72dd4cd597aec536474d6c5362d9f54ac2209a306476989de86bea4d0b16397",
+          "ple_history": "07c25b0108c5052e1d7e203f866b1d09b9bba1175283cd022cd8f0e1509b4c68",
+          "mtp_len": 0
+        },
+        "feature_sha256": "5c3629e4dec1a60352c4dd36c0fca5135dee65859edd6284e4b90fe746b7449f",
+        "text": "上文虽然以重复的文本形式呈现，但其核心逻辑清晰地勾勒出了一个高性能异步处理系统的三大支柱：**缓存机制**、**队列调度**以及**请求状态隔离**。这三者协同工作，旨在解决高并发场景下的性能瓶颈与数据一致性问题。\n\n首先，**缓存机制**是系统性能的"
+      },
+      "2": {
+        "tokens": [
+          623,
+          6278,
+          7072,
+          22728,
+          17128,
+          74593,
+          11,
+          19720,
+          795,
+          27224,
+          3808,
+          5081,
+          13540,
+          34523,
+          369,
+          264,
+          8751,
+          8381,
+          13,
+          8439,
+          1754,
+          6007,
+          10813,
+          682,
+          1141,
+          1765,
+          843,
+          6297,
+          318,
+          43,
+          16,
+          321,
+          436,
+          17,
+          681,
+          279,
+          1788,
+          795,
+          628,
+          2905,
+          303,
+          5081,
+          10155,
+          23540,
+          13,
+          1368,
+          799,
+          6007,
+          80086,
+          1141,
+          2880,
+          314,
+          279,
+          795,
+          11,
+          279,
+          975,
+          34523,
+          515,
+          10672,
+          3512,
+          48659,
+          11,
+          6187
+        ],
+        "state": {
+          "position": 65535,
+          "0.k": "539e5f277cbcb577eb40254ef1e622fdb3d27e047672ed80808467f75cb690e7",
+          "0.v": "2a467b0bfe401179403bd49566cad96333e9cfaaabbf4a5eb53c3b4b3f2bedfc",
+          "0.pooled": "4201d547b8f98f4a0c551a2f8ce65caa80a5520e41d5ce97cedc1ef9afd50003",
+          "0.raw_tail": "e638c7629102d51e37fb0cdd5318e2e875997ed618ad2e24ac268cd5ef9ebde0",
+          "1.k": "1939123cfdcd1c2e04988223db724add911b6255ce90361562f1fc59251b268d",
+          "1.v": "17b0450bc717090f83807132e587ff65ddfbecc9d0c9aad2e748217b66e8a400",
+          "1.pooled": "890ceb1eb3f37b2e4dd14a731d0efb4b5a6403d207d72fe7edd4492be999dd9d",
+          "1.raw_tail": "4396d814ce330c2921a2c926145b8a3cd69626dd6419d3c1a32e53d3a1a047fc",
+          "2.k": "ce86c1964d5b72e0bf01c2200467ae9f04f14e08ddefa4436c0b694a94c9db41",
+          "2.v": "ea7de9893fe2ddaf38d223751bc4245ad3cd8d7b7789367a4d88baaa896c0c3d",
+          "2.pooled": "c6e620fc6a9379d930a5a2b71996bf3adb908b6b27857ce3f89c09b832e0b83b",
+          "2.raw_tail": "f0e5df3cefd7bd0bdc617c7a9369e45ebf083b2bfa4a21484a17a05f6faedc56",
+          "3.k": "1f19566213ad13c2b19f2b7f98d98d3b045fee27103d51e5dc515b7a9035def9",
+          "3.v": "5ad1e326b8a01ce986b85e5ef11613625b266789f8a78d52d3ffd4cf357473d8",
+          "3.pooled": "348226d3709ae0d139d24d99500bde3236ce4d021b247d6526038d1ec63ce5bd",
+          "3.raw_tail": "121d626b27db814dc1f3d8905aec3d61c279730486bed897f7258af8554d4ffb",
+          "4.k": "adddc2f11ed2918b69c7d424f68903f388ae32b34db8979fcedf2793fb1a1425",
+          "4.v": "95f7b337ce5f62df81ec8940d784bda622beeeadeb0841e0afb2a0b50fe02480",
+          "4.pooled": "3d817583840a79d3a0a9c70febb15dd284f1ca72a63debaa2596633e26b740ff",
+          "4.raw_tail": "165e602e444bc040a14b040406e51be3839010dc38755dbf48fe80353454b309",
+          "5.k": "c1344947ec6259648c22635a6af6f2b4fe86196288635cb66cfc7379006d39c3",
+          "5.v": "70b90232b78a38fbe8a55bb80065ff381e58de6b919206a73a4e987a4219a7f7",
+          "5.pooled": "3d039baa128e194f82fab93285feda4d3c7c6812a5a228842b9d785d990b2a77",
+          "5.raw_tail": "b7e75e742ed8e82b698780e0e52f2c74beb3d45287d54c4d05a960b659f73336",
+          "6.k": "c891d41794d9aaad10c5cb712c259b984809174c140e57ced97ddf002b2121b0",
+          "6.v": "2a7ae8f46a9b7292ae847a3cee62b000e75b3c47e77209f1337a68c6693b2fcf",
+          "6.pooled": "28330108e176f19a9719993c52567b7981acbe4a03f2e9ef7a1e37dc15e92fc1",
+          "6.raw_tail": "76b9065421c782439c8070d2e31c6114d81d1eb4ed7771f7affc3b4eda5beb20",
+          "7.k": "bfc3a56c1e47f589b3feaba3d5e964c06134cd84b05a251263808653caa880cd",
+          "7.v": "db0242f70f75163b6b55b0f3d8c453213d0f9d0eb298c19564a5ebf4b6a8f888",
+          "7.pooled": "c5e6d212813100c9e89a5a973f73e8d0bf736e21a6f93c88747ac7ac5422fd48",
+          "7.raw_tail": "8ef8ab620575972d2248ca38dd2b46383c9219c3c3a9f3437cc81f3a95738b36",
+          "8.k": "b319072df209fd75a146665d5687caac4460b1ce7ef6184c0e0d18b4e12295bf",
+          "8.v": "5c92152e9520c090c089dd66afa6c73da54bc57d1e6c853d83bda063dfae5a1e",
+          "8.pooled": "64d3e3116a4b2c0b4ba028bb7abb5708317094782c893a7e26223fbc0e6f3a52",
+          "8.raw_tail": "d9b5b1feeecaec9681f9f783a8f1d1efca989bd329484ecc4266db8c4257ede9",
+          "9.k": "0d1149b44893c80aca1c3dc175e3a0315ca2aa7a535b68b1c71065d857fed4ea",
+          "9.v": "6a3de253f30320a894351b347d294ffcc4a74e3c3a84b99c160d3d56c096f5fb",
+          "9.pooled": "0fd840265d16bc3abcd29adde74074e3ed21d2c55126b85bc758529e7afb2dcf",
+          "9.raw_tail": "c6193cefc9a228618382b528d0a5e78feef763fa2209136aa1322fa1bc765b38",
+          "10.k": "714b7a9848c8025a54d1d43a3e763d19502b4dd97724051992dffb0c14361aa3",
+          "10.v": "3cdcaef694136ffe244405f1ba28c646c230a55c1435f94e8cb52b5fd56a97e2",
+          "10.pooled": "d362f61e4f2ac2c206589bb45583175a42bf17ae2edf4fa45c60b2a8b4f6a338",
+          "10.raw_tail": "e5d235c56b3bc9c22a76f186540447aeb01114dca3b70b9a7a847a094a2ea8ee",
+          "11.k": "b2e113568a53f7eea901993de5ec00af082f5a76b0b280dfa0068061f5257fc4",
+          "11.v": "269249cb5f12458cfb2171c06c9f13cb85792621b9412c090ff8bb7951d05fa3",
+          "11.pooled": "4999edbfb21ad0f2ebccb4640e8ce3cc446049c12f6acb748443298c75e76bd3",
+          "11.raw_tail": "b74b9781f82b749dd3783355408b20c94c42dd2827bf054cdd5f4fe73ce9db77",
+          "rec": "0eb3109878c6e8869877a67589429d4ab478894cf79435aa7df7083e284b0320",
+          "conv": "ae6ee0debed419d2d1c6158114b5ad56c8a37d487a86c537444d946d56782172",
+          "ple_tail": "ebe1cae76d157b8738f4e621968df3518dbd0b40bced442d10216f82b834c38b",
+          "ple_history": "4c783dc694eb20fc15862c414eeadebc6bb8a5dcdbb8509a371ee002c4d06e62",
+          "mtp_len": 0
+        },
+        "feature_sha256": "f17fc81822782fdb90d1d135daf6343293ec161acf14d44e1e3c7e5218dd7b62",
+        "text": "In modern multi-core processor architectures, maintaining data consistency across multiple CPU cores is a critical challenge. Since each core typically has its own private cache (L1 and L2), the same data can exist in multiple locations simultaneously. If one core modifies its copy of the data, the other cores’ copies become stale, leading"
+      },
+      "3": {
+        "tokens": [
+          623,
+          1496,
+          55549,
+          23470,
+          321,
+          4098,
+          5757,
+          11,
+          279,
+          15752,
+          1881,
+          45850,
+          23038,
+          321,
+          1622,
+          45924,
+          6044,
+          369,
+          8751,
+          364,
+          19720,
+          795,
+          16126,
+          321,
+          1785,
+          19150,
+          13,
+          561,
+          6007,
+          16988,
+          10661,
+          89534,
+          1835,
+          29310,
+          13205,
+          19954,
+          2961,
+          8387,
+          13,
+          5952,
+          34647,
+          7225,
+          8318,
+          364,
+          33303,
+          9463,
+          1518,
+          20359,
+          311,
+          940,
+          279,
+          6297,
+          62804,
+          51983,
+          264,
+          15346,
+          6741,
+          2876,
+          3750,
+          430,
+          279,
+          328,
+          267,
+          1519
+        ],
+        "state": {
+          "position": 65535,
+          "0.k": "16e84e3cacaa7ae8c6faba051b7091e9e39d28089e88b682916cb6f4c42d29ea",
+          "0.v": "fc45d2ab0fba54f41bf758da60fd5cb1fb8e7448165d2cd6d8450b0dda7b75a3",
+          "0.pooled": "f0b7bbeecea503469d58037c9454064b5c1172fabee1ffa88f46ddf198d96ed3",
+          "0.raw_tail": "ed2e65ff50bd54e455a388736297a292f125179ac4851b8bdb448e3f65824301",
+          "1.k": "1670676d2da1ca191e67d2bd223b45cc0766a760ad72c795306754f3422a01b0",
+          "1.v": "d74e5ae7c2d1bf59100f85999312060a136a9e8d8e2fb313b4aa997ae5d41b90",
+          "1.pooled": "837d0f157d8a5f0acf2e0c823a53d4ede56c38085cd98674a42f8fe905498447",
+          "1.raw_tail": "fc65fe03f37397cb45ed8367f49236fec90e1ced1d40fbcb4c0f00717364613e",
+          "2.k": "0bfce12473ce5bf4b9d3048d6eee7aae5bdb3152edf126d6f92c840b398c5755",
+          "2.v": "8051b81389ceb1aca560954794f2e4e3b44f3137dedf8707c8b9fc365d913f20",
+          "2.pooled": "7180aebe8b113d5f05b8ee6068577599e98b3f3baee1ef81cdf8708fed77f652",
+          "2.raw_tail": "9a9b8e925fc83f81dcd2e03ce84c83875b20cab7a08499f3df9e178b0b078d19",
+          "3.k": "d0dd6e63e5a406b5e0933d1a13174fcd17e876c07a17b78d754a12ff3d28e870",
+          "3.v": "269593021e7588a7e9155c5ad8ca33817082cfa24be56b46ecab0265f0368680",
+          "3.pooled": "981042f856a871bd4cd6c06366299aeb78a985dc4380a55674ccd1d607101d9e",
+          "3.raw_tail": "550c6b17fe3d27f55655b69d1e48d18dcf95f3f395fa1389afacdf3d6c1e40f6",
+          "4.k": "53206515ab206f848e62d8568a1cbd7324cc6e31d64f2aeecf80643072ba918d",
+          "4.v": "96ebcbaf1a22a0131c20df2de553d5e73d2c6832ffef39488b51268fc8104447",
+          "4.pooled": "4531aebb534e3656935b7b15747951646c8491842c3e3272ce1cc4081ff3a77b",
+          "4.raw_tail": "19f6fce2d1882ac7f56dc313b78b1ba7132d3cfbc709fa58cf0671dc5b5c6aca",
+          "5.k": "098c4adf54166daa314e9ff13ea389604bea21b899c0d5fc479979fa560f65e1",
+          "5.v": "180139c86747d715aaefc10925436b8bfd5cc785fddc78c2a54a51a71f049224",
+          "5.pooled": "df2a139318a5a602a25e97d138ffc03d41c34eea9b0d4d5e322aa538a3354c11",
+          "5.raw_tail": "ba700e98afa55caf49e9d29208f71d5518a5cbcafdfe59bd0cf9406b94f16773",
+          "6.k": "49129032d7e6f222d6d27b8ceb05d7c29e34f7cbf40f9a9302506fff8f2a4d99",
+          "6.v": "7eb1648491f05aaac084008e6ad6b983d1710b2c0fa09a9bb3fe44c8f66b2ec3",
+          "6.pooled": "5193aeba4d1859b70740a55a8f466deed99fef5bdc9c2e6104cad3fff8592718",
+          "6.raw_tail": "37706edae3f7c0ced37a4dc885f19d86ea360cfb0f7f755791a37ef668ca500c",
+          "7.k": "419a87520ef1faa33482d229b881b03f9fe9258c39b29216504d6d86b66e6152",
+          "7.v": "ff140c2cfb0a805d36f4152c3e38a88fa5d6c5654c645f4c60f6724a23aa01c5",
+          "7.pooled": "d62e89ce4f0c8c143c733cfc021427481ad7fcc67d1b5aee7d0bf6f58592fcb4",
+          "7.raw_tail": "0e9edf501686c84f864070f7785d3d2787dc3b9291d8d614cd67bb4fad5afee0",
+          "8.k": "5991e867991091f200be43f1fc5f6b73cbf9b9666088e5cd1fe8fce41c932abd",
+          "8.v": "7e0a7e76d420d4b722be0ac5afed9129fcd637bc97572684b8643e7870ddc160",
+          "8.pooled": "dcdb9ffed5afc9d5b7cbc422e1652a3a99e95fa518fdea7186178be43a7e2579",
+          "8.raw_tail": "052ae45b5f772a253ccf3cbd03bf4dbf20c214ab79ceaebb1118389b924ed0db",
+          "9.k": "f80937d18ffaa74be75fad3cc53c99f13e448f47992eff69b5bf63315318ade4",
+          "9.v": "827623245bc3efd91d3e0fa95d25fb943295708dda4c7a5df4c336c1d87d8b1f",
+          "9.pooled": "13e29cd7a6684aa88eb1a3b6fa19ef772cd99c7ca79be5139597ba24a04a4940",
+          "9.raw_tail": "643c84fac87b83a9faa8552ec40f0b232436de96046851d8a828fdaab18a6b12",
+          "10.k": "cb40a3d395439dd1a0303ea469514824ef6e8ccee7495cfc695966a3c28a9b6b",
+          "10.v": "fec09fa44167d153c009f0c4b0b5be422ae3acf68a55cef20160076e3dae53a3",
+          "10.pooled": "c1b31a0429ecb2aae190190aef5df42956f9ce6d094fc6e758ec3a00bbc8202e",
+          "10.raw_tail": "11a11c7df5136ea26368eb2267ea614d21860cea9302397f89b7a33f620abb3a",
+          "11.k": "5f7198229277e79a70417ab93da225f4dbf154017337205b07fe24bb189a5631",
+          "11.v": "2b36b449506c160ad893eac3e86318ee75c496b8a9ad7d06a42d91c9ba8028a5",
+          "11.pooled": "bf90f8ad533d9039b5b5b4cd783672495932ca6acac2e5feaba9e9e4dafa3d80",
+          "11.raw_tail": "d0d684c05b5fd8b4a0117f5ad21bea909c354741cfe110ea88057a671d0fff80",
+          "rec": "5a3f998dba68a940b335915e243baf00b8295be4b85dea3eb83b1d1c87fc3504",
+          "conv": "0079b8318a8fe014676205cff2a3ac678a6b140c69ce5805550996e5d2bb2ec8",
+          "ple_tail": "8ee50c01275b93c98b5df26cce06bd27679639d8b8a7badc9b7de0488ae44f09",
+          "ple_history": "b86411fe080b5d587d1e5c08249a444bb26d73038496d6147523c4d94931f80c",
+          "mtp_len": 0
+        },
+        "feature_sha256": "3c9b1cd0bdd61694e8dbdc21b218dd51326635325c90d194b65195c5cc12ec74",
+        "text": "In high-performance computing and distributed systems, the interaction between caching mechanisms and request lifecycle management is critical for maintaining data integrity and system stability. The core principle stated—\"Request isolation keeps cached results separate. Request cancellation requires waiting for computation completion before safely reusing the cache\"—addresses a fundamental race condition known as the \"stale"
+      }
+    },
+    "http": {
+      "responses": [
+        {
+          "index": 0,
+          "request_id": "8110cee490c64544b47c0a99d833a4a8",
+          "text": "The architectural patterns described—caching, queuing, and request ownership—form the backbone of modern distributed systems, particularly in high-throughput environments like e-commerce platforms, social media feeds, and real-time analytics engines. To understand their efficacy, one must look beyond their definitions and examine how they interact to balance latency,",
+          "usage": {
+            "prompt_tokens": 65472,
+            "completion_tokens": 64,
+            "total_tokens": 65536
+          },
+          "stream": true,
+          "client_seconds": 112.81274072197266
+        },
+        {
+          "index": 1,
+          "request_id": "1050ab146d7a45849507d6aa5b1f7360",
+          "text": "上文虽然以重复的文本形式呈现，但其核心逻辑清晰地勾勒出了一个高性能异步处理系统的三大支柱：**缓存机制**、**队列调度**以及**请求状态隔离**。这三者协同工作，旨在解决高并发场景下的性能瓶颈与数据一致性问题。\n\n首先，**缓存机制**是系统性能的",
+          "usage": {
+            "prompt_tokens": 65472,
+            "completion_tokens": 64,
+            "total_tokens": 65536
+          },
+          "stream": false,
+          "client_seconds": 160.72214675997384
+        },
+        {
+          "index": 2,
+          "request_id": "e1935664dc8a4385a6ec0e7187e07fe2",
+          "text": "In modern multi-core processor architectures, maintaining data consistency across multiple CPU cores is a critical challenge. Since each core typically has its own private cache (L1 and L2), the same data can exist in multiple locations simultaneously. If one core modifies its copy of the data, the other cores’ copies become stale, leading",
+          "usage": {
+            "prompt_tokens": 65472,
+            "completion_tokens": 64,
+            "total_tokens": 65536
+          },
+          "stream": true,
+          "client_seconds": 65.34996444918215
+        },
+        {
+          "index": 3,
+          "request_id": "f4dac836112049da9abd39da5cc23546",
+          "text": "In high-performance computing and distributed systems, the interaction between caching mechanisms and request lifecycle management is critical for maintaining data integrity and system stability. The core principle stated—\"Request isolation keeps cached results separate. Request cancellation requires waiting for computation completion before safely reusing the cache\"—addresses a fundamental race condition known as the \"stale",
+          "usage": {
+            "prompt_tokens": 65472,
+            "completion_tokens": 64,
+            "total_tokens": 65536
+          },
+          "stream": false,
+          "client_seconds": 186.00703487102874
+        }
+      ],
+      "wall_seconds": 186.008354711812,
+      "events": {
+        "e1935664dc8a4385a6ec0e7187e07fe2": [
+          {
+            "emitted": 1,
+            "elapsed": 45.48937989096157,
+            "ttft": 45.48937989096157,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 45.55846161884256,
+            "ttft": 45.48937989096157,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 46.24664100701921,
+            "ttft": 45.48937989096157,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 46.93563591293059,
+            "ttft": 45.48937989096157,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 47.65185201680288,
+            "ttft": 45.48937989096157,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 48.37289160396904,
+            "ttft": 45.48937989096157,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 49.09712947602384,
+            "ttft": 45.48937989096157,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 49.80718732601963,
+            "ttft": 45.48937989096157,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 50.5381517210044,
+            "ttft": 45.48937989096157,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 51.25861354591325,
+            "ttft": 45.48937989096157,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 51.988378228852525,
+            "ttft": 45.48937989096157,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 52.72185989981517,
+            "ttft": 45.48937989096157,
+            "finish": null
+          },
+          {
+            "emitted": 4,
+            "elapsed": 53.44472168991342,
+            "ttft": 45.48937989096157,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 54.15978753287345,
+            "ttft": 45.48937989096157,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 54.894752288935706,
+            "ttft": 45.48937989096157,
+            "finish": null
+          },
+          {
+            "emitted": 3,
+            "elapsed": 55.6328236348927,
+            "ttft": 45.48937989096157,
+            "finish": null
+          },
+          {
+            "emitted": 4,
+            "elapsed": 56.38639063294977,
+            "ttft": 45.48937989096157,
+            "finish": null
+          },
+          {
+            "emitted": 4,
+            "elapsed": 57.12566962395795,
+            "ttft": 45.48937989096157,
+            "finish": null
+          },
+          {
+            "emitted": 6,
+            "elapsed": 57.86354171996936,
+            "ttft": 45.48937989096157,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 58.595615963917226,
+            "ttft": 45.48937989096157,
+            "finish": null
+          },
+          {
+            "emitted": 4,
+            "elapsed": 59.32738289493136,
+            "ttft": 45.48937989096157,
+            "finish": null
+          },
+          {
+            "emitted": 3,
+            "elapsed": 60.05868596886285,
+            "ttft": 45.48937989096157,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 60.79508540802635,
+            "ttft": 45.48937989096157,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 61.54169503087178,
+            "ttft": 45.48937989096157,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 62.29094436299056,
+            "ttft": 45.48937989096157,
+            "finish": null
+          },
+          {
+            "emitted": 4,
+            "elapsed": 63.02862274297513,
+            "ttft": 45.48937989096157,
+            "finish": null
+          },
+          {
+            "emitted": 3,
+            "elapsed": 63.76814510580152,
+            "ttft": 45.48937989096157,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 64.51105597685091,
+            "ttft": 45.48937989096157,
+            "finish": null
+          },
+          {
+            "emitted": 3,
+            "elapsed": 65.25015806593001,
+            "ttft": 45.48937989096157,
+            "finish": "length"
+          }
+        ],
+        "8110cee490c64544b47c0a99d833a4a8": [
+          {
+            "emitted": 1,
+            "elapsed": 90.48956398805603,
+            "ttft": 90.48956398805603,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 90.56785533693619,
+            "ttft": 90.48956398805603,
+            "finish": null
+          },
+          {
+            "emitted": 3,
+            "elapsed": 91.27514432603493,
+            "ttft": 90.48956398805603,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 91.98670044890605,
+            "ttft": 90.48956398805603,
+            "finish": null
+          },
+          {
+            "emitted": 3,
+            "elapsed": 92.70512939686887,
+            "ttft": 90.48956398805603,
+            "finish": null
+          },
+          {
+            "emitted": 4,
+            "elapsed": 93.43814946105704,
+            "ttft": 90.48956398805603,
+            "finish": null
+          },
+          {
+            "emitted": 3,
+            "elapsed": 94.16810679086484,
+            "ttft": 90.48956398805603,
+            "finish": null
+          },
+          {
+            "emitted": 4,
+            "elapsed": 94.89895182894543,
+            "ttft": 90.48956398805603,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 95.62269752589054,
+            "ttft": 90.48956398805603,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 96.34418728598393,
+            "ttft": 90.48956398805603,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 97.0930051188916,
+            "ttft": 90.48956398805603,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 97.83287252299488,
+            "ttft": 90.48956398805603,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 98.55888081993908,
+            "ttft": 90.48956398805603,
+            "finish": null
+          },
+          {
+            "emitted": 3,
+            "elapsed": 99.29315894492902,
+            "ttft": 90.48956398805603,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 100.01887097791769,
+            "ttft": 90.48956398805603,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 100.75872341706418,
+            "ttft": 90.48956398805603,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 101.48270794283599,
+            "ttft": 90.48956398805603,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 102.23511403799057,
+            "ttft": 90.48956398805603,
+            "finish": null
+          },
+          {
+            "emitted": 3,
+            "elapsed": 102.98395880684257,
+            "ttft": 90.48956398805603,
+            "finish": null
+          },
+          {
+            "emitted": 3,
+            "elapsed": 103.75048468098976,
+            "ttft": 90.48956398805603,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 104.49038326204754,
+            "ttft": 90.48956398805603,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 105.24519346095622,
+            "ttft": 90.48956398805603,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 106.00206805602647,
+            "ttft": 90.48956398805603,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 106.75337309692986,
+            "ttft": 90.48956398805603,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 107.49926876300015,
+            "ttft": 90.48956398805603,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 108.24895934900269,
+            "ttft": 90.48956398805603,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 108.98583031794988,
+            "ttft": 90.48956398805603,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 109.7380640800111,
+            "ttft": 90.48956398805603,
+            "finish": null
+          },
+          {
+            "emitted": 3,
+            "elapsed": 110.49086561985314,
+            "ttft": 90.48956398805603,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 111.22502572601661,
+            "ttft": 90.48956398805603,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 111.96267248992808,
+            "ttft": 90.48956398805603,
+            "finish": "length"
+          }
+        ],
+        "1050ab146d7a45849507d6aa5b1f7360": [
+          {
+            "emitted": 1,
+            "elapsed": 136.76265260903165,
+            "ttft": 136.76265260903165,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 136.83055239892565,
+            "ttft": 136.76265260903165,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 137.52223464404233,
+            "ttft": 136.76265260903165,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 138.24096204689704,
+            "ttft": 136.76265260903165,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 138.96512472792529,
+            "ttft": 136.76265260903165,
+            "finish": null
+          },
+          {
+            "emitted": 3,
+            "elapsed": 139.67803946998902,
+            "ttft": 136.76265260903165,
+            "finish": null
+          },
+          {
+            "emitted": 3,
+            "elapsed": 140.40683791507035,
+            "ttft": 136.76265260903165,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 141.13523831195198,
+            "ttft": 136.76265260903165,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 141.87294290494174,
+            "ttft": 136.76265260903165,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 142.5918226679787,
+            "ttft": 136.76265260903165,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 143.3280330679845,
+            "ttft": 136.76265260903165,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 144.04997724108398,
+            "ttft": 136.76265260903165,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 144.77626922004856,
+            "ttft": 136.76265260903165,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 145.52170943887904,
+            "ttft": 136.76265260903165,
+            "finish": null
+          },
+          {
+            "emitted": 3,
+            "elapsed": 146.2607572809793,
+            "ttft": 136.76265260903165,
+            "finish": null
+          },
+          {
+            "emitted": 4,
+            "elapsed": 147.0069719250314,
+            "ttft": 136.76265260903165,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 147.76339540001936,
+            "ttft": 136.76265260903165,
+            "finish": null
+          },
+          {
+            "emitted": 3,
+            "elapsed": 148.51446732506156,
+            "ttft": 136.76265260903165,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 149.25182707305066,
+            "ttft": 136.76265260903165,
+            "finish": null
+          },
+          {
+            "emitted": 3,
+            "elapsed": 149.9952236530371,
+            "ttft": 136.76265260903165,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 150.74897131789476,
+            "ttft": 136.76265260903165,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 151.49529457697645,
+            "ttft": 136.76265260903165,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 152.2512745729182,
+            "ttft": 136.76265260903165,
+            "finish": null
+          },
+          {
+            "emitted": 3,
+            "elapsed": 152.99711512192152,
+            "ttft": 136.76265260903165,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 153.73634284804575,
+            "ttft": 136.76265260903165,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 154.4953508230392,
+            "ttft": 136.76265260903165,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 155.2390804339666,
+            "ttft": 136.76265260903165,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 155.98436546395533,
+            "ttft": 136.76265260903165,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 156.73472141986713,
+            "ttft": 136.76265260903165,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 157.50379703287035,
+            "ttft": 136.76265260903165,
+            "finish": null
+          },
+          {
+            "emitted": 4,
+            "elapsed": 158.30110670998693,
+            "ttft": 136.76265260903165,
+            "finish": null
+          },
+          {
+            "emitted": 6,
+            "elapsed": 159.06360859493725,
+            "ttft": 136.76265260903165,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 159.8257336979732,
+            "ttft": 136.76265260903165,
+            "finish": "length"
+          }
+        ],
+        "f4dac836112049da9abd39da5cc23546": [
+          {
+            "emitted": 1,
+            "elapsed": 183.0694749681279,
+            "ttft": 183.0694749681279,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 183.13602835405618,
+            "ttft": 183.0694749681279,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 183.20168470707722,
+            "ttft": 183.0694749681279,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 183.268458600156,
+            "ttft": 183.0694749681279,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 183.3377659949474,
+            "ttft": 183.0694749681279,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 183.4109655781649,
+            "ttft": 183.0694749681279,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 183.47887305705808,
+            "ttft": 183.0694749681279,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 183.55996454809792,
+            "ttft": 183.0694749681279,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 183.63014760008082,
+            "ttft": 183.0694749681279,
+            "finish": null
+          },
+          {
+            "emitted": 3,
+            "elapsed": 183.7131842430681,
+            "ttft": 183.0694749681279,
+            "finish": null
+          },
+          {
+            "emitted": 5,
+            "elapsed": 183.78583152312785,
+            "ttft": 183.0694749681279,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 183.84572007507086,
+            "ttft": 183.0694749681279,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 183.91163599304855,
+            "ttft": 183.0694749681279,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 183.9837699260097,
+            "ttft": 183.0694749681279,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 184.05796404602006,
+            "ttft": 183.0694749681279,
+            "finish": null
+          },
+          {
+            "emitted": 4,
+            "elapsed": 184.12580522615463,
+            "ttft": 183.0694749681279,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 184.19790914398618,
+            "ttft": 183.0694749681279,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 184.2603378710337,
+            "ttft": 183.0694749681279,
+            "finish": null
+          },
+          {
+            "emitted": 3,
+            "elapsed": 184.33086131699383,
+            "ttft": 183.0694749681279,
+            "finish": null
+          },
+          {
+            "emitted": 4,
+            "elapsed": 184.39875496015884,
+            "ttft": 183.0694749681279,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 184.47014956804924,
+            "ttft": 183.0694749681279,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 184.5388449979946,
+            "ttft": 183.0694749681279,
+            "finish": null
+          },
+          {
+            "emitted": 3,
+            "elapsed": 184.61249236413278,
+            "ttft": 183.0694749681279,
+            "finish": null
+          },
+          {
+            "emitted": 3,
+            "elapsed": 184.67655556206591,
+            "ttft": 183.0694749681279,
+            "finish": null
+          },
+          {
+            "emitted": 4,
+            "elapsed": 184.74306463403627,
+            "ttft": 183.0694749681279,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 184.80802801903337,
+            "ttft": 183.0694749681279,
+            "finish": null
+          },
+          {
+            "emitted": 3,
+            "elapsed": 184.8744922450278,
+            "ttft": 183.0694749681279,
+            "finish": null
+          },
+          {
+            "emitted": 2,
+            "elapsed": 184.9389168601483,
+            "ttft": 183.0694749681279,
+            "finish": null
+          },
+          {
+            "emitted": 4,
+            "elapsed": 185.00428514601663,
+            "ttft": 183.0694749681279,
+            "finish": null
+          },
+          {
+            "emitted": 1,
+            "elapsed": 185.04510859097354,
+            "ttft": 183.0694749681279,
+            "finish": "length"
+          }
+        ],
+        "cancel-64k": [
+          {
+            "emitted": 0,
+            "elapsed": 0.025345098925754428,
+            "ttft": null,
+            "finish": "cancelled"
+          },
+          {
+            "emitted": 1,
+            "elapsed": 0.6578243419062346,
+            "ttft": 0.6578243419062346,
+            "finish": "stop"
+          }
+        ]
+      },
+      "population": {
+        "max_live_states": 4,
+        "max_populated_states": 1
+      }
+    },
+    "cancellation_and_reuse": true,
+    "over_capacity_rejected": true
+  },
+  "memory": {
+    "peak_allocated_bytes": 89029306880,
+    "peak_reserved_bytes": 89644859392,
+    "minimum_host_available_bytes": 24056467456,
+    "startup_admission": {
+      "budget": {
+        "shared_bytes": 79086984704,
+        "slot_bytes": 2379863040,
+        "transient_bytes": 1073741824,
+        "allocation_limit_bytes": 94489280512,
+        "host_reserve_bytes": 8589934592
+      },
+      "slot_samples": [
+        {
+          "allocated_bytes": 81309970944,
+          "reserved_bytes": 81526784000,
+          "peak_allocated_bytes": 84766391296,
+          "peak_reserved_bytes": 85368766464,
+          "host_available_bytes": 32831475712
+        },
+        {
+          "allocated_bytes": 83409868800,
+          "reserved_bytes": 83827359744,
+          "peak_allocated_bytes": 84766391296,
+          "peak_reserved_bytes": 85368766464,
+          "host_available_bytes": 30435692544
+        },
+        {
+          "allocated_bytes": 85509733888,
+          "reserved_bytes": 86000009216,
+          "peak_allocated_bytes": 85625843200,
+          "peak_reserved_bytes": 86000009216,
+          "host_available_bytes": 28279001088
+        },
+        {
+          "allocated_bytes": 87609598976,
+          "reserved_bytes": 88193630208,
+          "peak_allocated_bytes": 87725708288,
+          "peak_reserved_bytes": 88193630208,
+          "host_available_bytes": 26075975680
+        }
+      ],
+      "admission": {
+        "slots": 4,
+        "forecast_peak_bytes": 89680178688,
+        "additional_live_bytes": 2070579712,
+        "process_deficit_bytes": 0,
+        "conservative_host_remaining_bytes": 24005395968,
+        "process_limit_fits": true,
+        "host_reserve_fits": true,
+        "admission_fits": true,
+        "execution_validated": false
+      }
+    },
+    "mirrored_feature_ring_charged": true
+  },
+  "live_http": {
+    "status": "PASS_ENGINE_V03_HTTP",
+    "client_sha256": "547db861c5ecdf6f0fc9e4cb37ff17360eb6e6955bb14e839ea99063680c9a3b",
+    "input_sha256": "fbc7ef5382d47848fbf028df568418c422fe23e0ef53a9d5cafdcba715944ef9",
+    "reference_sha256": "5aac999d38474a74caa6edc78e90f6475c88a573e84192ab4a0dacf9468b5b63",
+    "runs": [
+      {
+        "name": "four-long-uninstrumented",
+        "requests": [
+          {
+            "request_id": "af86009fe5f74d55b316fc98086eda76",
+            "text": "The architectural patterns described—caching, queuing, and request ownership—form the backbone of modern distributed systems, particularly in high-throughput environments like e-commerce platforms, social media feeds, and real-time analytics engines. To understand their efficacy, one must look beyond their definitions and examine how they interact to balance latency,",
+            "usage": {
+              "prompt_tokens": 65472,
+              "completion_tokens": 64,
+              "total_tokens": 65536
+            },
+            "finish": "length",
+            "client_seconds": 65.83105471613817,
+            "stream": true,
+            "first_content_seconds": 43.93577735405415,
+            "content_interval_seconds": 21.895254706032574
+          },
+          {
+            "request_id": "67a900e5304c4dc39cc90bfe878f6a33",
+            "text": "上文虽然以重复的文本形式呈现，但其核心逻辑清晰地勾勒出了一个高性能异步处理系统的三大支柱：**缓存机制**、**队列调度**以及**请求状态隔离**。这三者协同工作，旨在解决高并发场景下的性能瓶颈与数据一致性问题。\n\n首先，**缓存机制**是系统性能的",
+            "usage": {
+              "prompt_tokens": 65472,
+              "completion_tokens": 64,
+              "total_tokens": 65536
+            },
+            "finish": "length",
+            "client_seconds": 186.52064404520206,
+            "stream": false,
+            "first_content_seconds": null,
+            "content_interval_seconds": null
+          },
+          {
+            "request_id": "12693ab3529c4dfa9d32480fa7a13ab7",
+            "text": "In modern multi-core processor architectures, maintaining data consistency across multiple CPU cores is a critical challenge. Since each core typically has its own private cache (L1 and L2), the same data can exist in multiple locations simultaneously. If one core modifies its copy of the data, the other cores’ copies become stale, leading",
+            "usage": {
+              "prompt_tokens": 65472,
+              "completion_tokens": 64,
+              "total_tokens": 65536
+            },
+            "finish": "length",
+            "client_seconds": 111.7090299888514,
+            "stream": true,
+            "first_content_seconds": 91.62753788894042,
+            "content_interval_seconds": 20.08147030789405
+          },
+          {
+            "request_id": "b9f1b9b3a8d14fc7bde42ed27a9b86ab",
+            "text": "In high-performance computing and distributed systems, the interaction between caching mechanisms and request lifecycle management is critical for maintaining data integrity and system stability. The core principle stated—\"Request isolation keeps cached results separate. Request cancellation requires waiting for computation completion before safely reusing the cache\"—addresses a fundamental race condition known as the \"stale",
+            "usage": {
+              "prompt_tokens": 65472,
+              "completion_tokens": 64,
+              "total_tokens": 65536
+            },
+            "finish": "length",
+            "client_seconds": 158.99553522397764,
+            "stream": false,
+            "first_content_seconds": null,
+            "content_interval_seconds": null
+          }
+        ],
+        "wall_seconds": 186.52548027411103,
+        "observed_peaks": {
+          "active": 4,
+          "streams": 4,
+          "pending": 1,
+          "full_running_with_four_waiting": false
+        },
+        "health": {
+          "status": "ready",
+          "error": null,
+          "active_requests": 0,
+          "open_streams": 0,
+          "pending_submissions": 0,
+          "phase": null,
+          "capabilities": {
+            "target_only": false,
+            "greedy": true,
+            "streaming": true,
+            "gpu_batch": false,
+            "asynchronous": false,
+            "speculative": true,
+            "native_output_cache": true,
+            "draft_depth": 7,
+            "verification_budget": "current_postdraft_e17",
+            "max_requests": 4,
+            "graph_scope": "private_request_Graphs_shared_serial_scratch",
+            "graph_captures": 64,
+            "graph_replays": 119,
+            "head_calls": 119,
+            "head_fallbacks": 0,
+            "graph_fallbacks": [
+              {},
+              {},
+              {},
+              {}
+            ],
+            "shared_eager_buffers": true,
+            "shared_screened_head": true,
+            "kv_dtype": "bf16",
+            "serialized_postdraft": true,
+            "interleave_prefill": true,
+            "budget_cost_scope": "frozen_per_request_E29; multi-request throughput objective uncalibrated",
+            "prefill_executor": "owned_chunked_v1",
+            "prefill_chunk_rows": 1024,
+            "prefill_cuda_graph": false,
+            "prefill_logits": "final_row_full_vocab",
+            "prefill_arithmetic": "e36_decode_mxfp8_decode_gdn_f32_moe",
+            "service_version": "0.3.0",
+            "max_running_requests": 4,
+            "context_capacity": 65536,
+            "target_kv_dtype": "bf16",
+            "max_queued_requests": 4,
+            "protocol": "openai_chat_subset",
+            "http_async_owner": true,
+            "memory_admission": {
+              "budget": {
+                "shared_bytes": 79088033280,
+                "slot_bytes": 2379423744,
+                "transient_bytes": 1073741824,
+                "allocation_limit_bytes": 94489280512,
+                "host_reserve_bytes": 8589934592
+              },
+              "slot_samples": [
+                {
+                  "allocated_bytes": 81310580224,
+                  "reserved_bytes": 81514201088,
+                  "peak_allocated_bytes": 89029306880,
+                  "peak_reserved_bytes": 89644859392,
+                  "host_available_bytes": 32864694272
+                },
+                {
+                  "allocated_bytes": 83411262464,
+                  "reserved_bytes": 83814776832,
+                  "peak_allocated_bytes": 89029306880,
+                  "peak_reserved_bytes": 89644859392,
+                  "host_available_bytes": 30549884928
+                },
+                {
+                  "allocated_bytes": 85511127552,
+                  "reserved_bytes": 86008397824,
+                  "peak_allocated_bytes": 89029306880,
+                  "peak_reserved_bytes": 89644859392,
+                  "host_available_bytes": 28262744064
+                },
+                {
+                  "allocated_bytes": 87610992640,
+                  "reserved_bytes": 88181047296,
+                  "peak_allocated_bytes": 89029306880,
+                  "peak_reserved_bytes": 89644859392,
+                  "host_available_bytes": 25974648832
+                }
+              ],
+              "admission": {
+                "slots": 4,
+                "forecast_peak_bytes": 89679470080,
+                "additional_live_bytes": 2068477440,
+                "process_deficit_bytes": 0,
+                "conservative_host_remaining_bytes": 23906171392,
+                "process_limit_fits": true,
+                "host_reserve_fits": true,
+                "admission_fits": true,
+                "execution_validated": false
+              }
+            },
+            "prefill_expert_backend": "mia_shared_input_tile64_rt4s4_rt2s3",
+            "prefill_expert_sha256": "a5b15bc9ad18e7aea4008f3aba0210856b9b4a4bd764580cbd987b64659b0977"
+          },
+          "metrics": {
+            "requests_submitted_total": 4,
+            "requests_admitted_total": 4,
+            "requests_completed_total": 4,
+            "requests_cancelled_total": 0,
+            "requests_failed_total": 0,
+            "admission_rejected_total": 0,
+            "output_tokens_total": 256,
+            "worker_failures_total": 0,
+            "ttft_seconds_count": 4,
+            "request_seconds_count": 4,
+            "ttft_seconds_sum": 456.7358968667686,
+            "request_seconds_sum": 521.6706232866272
+          }
+        }
+      },
+      {
+        "name": "four-running-four-queued",
+        "requests": [
+          {
+            "request_id": "b364e753194c461aa86334f0f7ebd8ed",
+            "text": "The text provided presents a repetitive, rhythmic assertion of three fundamental concepts in computer science and software architecture: caching, queuing, and request history. While the repetition might initially appear to be a glitch or a stylistic choice, it serves to emphasize the critical importance of these three pillars in building robust, scalable, and",
+            "usage": {
+              "prompt_tokens": 221,
+              "completion_tokens": 64,
+              "total_tokens": 285
+            },
+            "finish": "length",
+            "client_seconds": 14.7064370138105,
+            "stream": true,
+            "first_content_seconds": 8.483634602976963,
+            "content_interval_seconds": 6.222768714884296
+          },
+          {
+            "request_id": "1aac1709dc5d495bb750739450419fff",
+            "text": "In modern software architecture, particularly within high-concurrency distributed systems, the concepts of caching, queuing, and state management are foundational pillars that ensure system performance, reliability, and scalability. The statement provided—repeatedly emphasizing that \"caches save reusable calculation results, queues save tasks waiting for execution, and each request",
+            "usage": {
+              "prompt_tokens": 599,
+              "completion_tokens": 64,
+              "total_tokens": 663
+            },
+            "finish": "length",
+            "client_seconds": 14.66676181112416,
+            "stream": false,
+            "first_content_seconds": null,
+            "content_interval_seconds": null
+          },
+          {
+            "request_id": "d13e7600762e4f72a72faf4791a71af7",
+            "text": "The code snippet provided presents a classic Python generator function designed to remove duplicate elements from an iterable while preserving the original order of appearance. Although the code is repeated multiple times in the prompt, the core logic remains identical: it defines a function named `unique` that takes an iterable `items` as input. Inside the function",
+            "usage": {
+              "prompt_tokens": 298,
+              "completion_tokens": 64,
+              "total_tokens": 362
+            },
+            "finish": "length",
+            "client_seconds": 7.274497186997905,
+            "stream": true,
+            "first_content_seconds": 0.3283993408549577,
+            "content_interval_seconds": 6.945993063040078
+          },
+          {
+            "request_id": "2ebc40f55eb74f7a907edb566bf0a075",
+            "text": "The concept of **Request Isolation** in the context of caching and asynchronous computation is a critical architectural pattern designed to maintain data integrity, prevent race conditions, and ensure system stability. The core principle, as stated, is that \"Request isolation keeps cached results separate,\" and specifically, \"after a request is cancelled, one",
+            "usage": {
+              "prompt_tokens": 315,
+              "completion_tokens": 64,
+              "total_tokens": 379
+            },
+            "finish": "length",
+            "client_seconds": 14.385362514061853,
+            "stream": false,
+            "first_content_seconds": null,
+            "content_interval_seconds": null
+          },
+          {
+            "request_id": "c4bedb3f55f34a1bbc692850818ee8c0",
+            "text": "The text provided presents a repetitive, rhythmic assertion of three fundamental concepts in computer science and software architecture: caching, queuing, and request history. While the repetition might initially appear to be a glitch or a stylistic choice, it serves to emphasize the critical importance of these three pillars in building robust, scalable, and",
+            "usage": {
+              "prompt_tokens": 221,
+              "completion_tokens": 64,
+              "total_tokens": 285
+            },
+            "finish": "length",
+            "client_seconds": 8.643338212976232,
+            "stream": true,
+            "first_content_seconds": 1.766944746952504,
+            "content_interval_seconds": 6.876113997073844
+          },
+          {
+            "request_id": "f87cff748fc5489383c39a6ce777582a",
+            "text": "In modern software architecture, particularly within high-concurrency distributed systems, the concepts of caching, queuing, and state management are foundational pillars that ensure system performance, reliability, and scalability. The statement provided—repeatedly emphasizing that \"caches save reusable calculation results, queues save tasks waiting for execution, and each request",
+            "usage": {
+              "prompt_tokens": 599,
+              "completion_tokens": 64,
+              "total_tokens": 663
+            },
+            "finish": "length",
+            "client_seconds": 7.422553028911352,
+            "stream": false,
+            "first_content_seconds": null,
+            "content_interval_seconds": null
+          },
+          {
+            "request_id": "3ac67b20c0e548b2a3ce7aabe1a9e752",
+            "text": "The code snippet provided presents a classic Python generator function designed to remove duplicate elements from an iterable while preserving the original order of appearance. Although the code is repeated multiple times in the prompt, the core logic remains identical: it defines a function named `unique` that takes an iterable `items` as input. Inside the function",
+            "usage": {
+              "prompt_tokens": 298,
+              "completion_tokens": 64,
+              "total_tokens": 362
+            },
+            "finish": "length",
+            "client_seconds": 7.422269320115447,
+            "stream": true,
+            "first_content_seconds": 1.4228220512159169,
+            "content_interval_seconds": 5.999212710885331
+          },
+          {
+            "request_id": "2239636d3bd343888582851960f7822a",
+            "text": "The concept of **Request Isolation** in the context of caching and asynchronous computation is a critical architectural pattern designed to maintain data integrity, prevent race conditions, and ensure system stability. The core principle, as stated, is that \"Request isolation keeps cached results separate,\" and specifically, \"after a request is cancelled, one",
+            "usage": {
+              "prompt_tokens": 315,
+              "completion_tokens": 64,
+              "total_tokens": 379
+            },
+            "finish": "length",
+            "client_seconds": 14.570129154948518,
+            "stream": false,
+            "first_content_seconds": null,
+            "content_interval_seconds": null
+          }
+        ],
+        "wall_seconds": 14.710154217202216,
+        "observed_peaks": {
+          "active": 4,
+          "streams": 8,
+          "pending": 7,
+          "full_running_with_four_waiting": true
+        },
+        "health": {
+          "status": "ready",
+          "error": null,
+          "active_requests": 0,
+          "open_streams": 0,
+          "pending_submissions": 0,
+          "phase": null,
+          "capabilities": {
+            "target_only": false,
+            "greedy": true,
+            "streaming": true,
+            "gpu_batch": false,
+            "asynchronous": false,
+            "speculative": true,
+            "native_output_cache": true,
+            "draft_depth": 7,
+            "verification_budget": "current_postdraft_e17",
+            "max_requests": 4,
+            "graph_scope": "private_request_Graphs_shared_serial_scratch",
+            "graph_captures": 64,
+            "graph_replays": 315,
+            "head_calls": 315,
+            "head_fallbacks": 0,
+            "graph_fallbacks": [
+              {},
+              {},
+              {},
+              {}
+            ],
+            "shared_eager_buffers": true,
+            "shared_screened_head": true,
+            "kv_dtype": "bf16",
+            "serialized_postdraft": true,
+            "interleave_prefill": true,
+            "budget_cost_scope": "frozen_per_request_E29; multi-request throughput objective uncalibrated",
+            "prefill_executor": "owned_chunked_v1",
+            "prefill_chunk_rows": 1024,
+            "prefill_cuda_graph": false,
+            "prefill_logits": "final_row_full_vocab",
+            "prefill_arithmetic": "e36_decode_mxfp8_decode_gdn_f32_moe",
+            "service_version": "0.3.0",
+            "max_running_requests": 4,
+            "context_capacity": 65536,
+            "target_kv_dtype": "bf16",
+            "max_queued_requests": 4,
+            "protocol": "openai_chat_subset",
+            "http_async_owner": true,
+            "memory_admission": {
+              "budget": {
+                "shared_bytes": 79088033280,
+                "slot_bytes": 2379423744,
+                "transient_bytes": 1073741824,
+                "allocation_limit_bytes": 94489280512,
+                "host_reserve_bytes": 8589934592
+              },
+              "slot_samples": [
+                {
+                  "allocated_bytes": 81310580224,
+                  "reserved_bytes": 81514201088,
+                  "peak_allocated_bytes": 89029306880,
+                  "peak_reserved_bytes": 89644859392,
+                  "host_available_bytes": 32864694272
+                },
+                {
+                  "allocated_bytes": 83411262464,
+                  "reserved_bytes": 83814776832,
+                  "peak_allocated_bytes": 89029306880,
+                  "peak_reserved_bytes": 89644859392,
+                  "host_available_bytes": 30549884928
+                },
+                {
+                  "allocated_bytes": 85511127552,
+                  "reserved_bytes": 86008397824,
+                  "peak_allocated_bytes": 89029306880,
+                  "peak_reserved_bytes": 89644859392,
+                  "host_available_bytes": 28262744064
+                },
+                {
+                  "allocated_bytes": 87610992640,
+                  "reserved_bytes": 88181047296,
+                  "peak_allocated_bytes": 89029306880,
+                  "peak_reserved_bytes": 89644859392,
+                  "host_available_bytes": 25974648832
+                }
+              ],
+              "admission": {
+                "slots": 4,
+                "forecast_peak_bytes": 89679470080,
+                "additional_live_bytes": 2068477440,
+                "process_deficit_bytes": 0,
+                "conservative_host_remaining_bytes": 23906171392,
+                "process_limit_fits": true,
+                "host_reserve_fits": true,
+                "admission_fits": true,
+                "execution_validated": false
+              }
+            },
+            "prefill_expert_backend": "mia_shared_input_tile64_rt4s4_rt2s3",
+            "prefill_expert_sha256": "a5b15bc9ad18e7aea4008f3aba0210856b9b4a4bd764580cbd987b64659b0977"
+          },
+          "metrics": {
+            "requests_submitted_total": 12,
+            "requests_admitted_total": 12,
+            "requests_completed_total": 12,
+            "requests_cancelled_total": 0,
+            "requests_failed_total": 0,
+            "admission_rejected_total": 1,
+            "output_tokens_total": 768,
+            "worker_failures_total": 0,
+            "ttft_seconds_count": 12,
+            "request_seconds_count": 12,
+            "ttft_seconds_sum": 465.1021494853776,
+            "request_seconds_sum": 578.9739728323184
+          }
+        },
+        "overflow_429": true
+      }
+    ],
+    "before": {
+      "status": "ready",
+      "error": null,
+      "active_requests": 0,
+      "open_streams": 0,
+      "pending_submissions": 0,
+      "phase": null,
+      "capabilities": {
+        "target_only": false,
+        "greedy": true,
+        "streaming": true,
+        "gpu_batch": false,
+        "asynchronous": false,
+        "speculative": true,
+        "native_output_cache": true,
+        "draft_depth": 7,
+        "verification_budget": "current_postdraft_e17",
+        "max_requests": 4,
+        "graph_scope": "private_request_Graphs_shared_serial_scratch",
+        "graph_captures": 64,
+        "graph_replays": 0,
+        "head_calls": 0,
+        "head_fallbacks": 0,
+        "graph_fallbacks": [
+          {},
+          {},
+          {},
+          {}
+        ],
+        "shared_eager_buffers": true,
+        "shared_screened_head": true,
+        "kv_dtype": "bf16",
+        "serialized_postdraft": true,
+        "interleave_prefill": true,
+        "budget_cost_scope": "frozen_per_request_E29; multi-request throughput objective uncalibrated",
+        "prefill_executor": "owned_chunked_v1",
+        "prefill_chunk_rows": 1024,
+        "prefill_cuda_graph": false,
+        "prefill_logits": "final_row_full_vocab",
+        "prefill_arithmetic": "e36_decode_mxfp8_decode_gdn_f32_moe",
+        "service_version": "0.3.0",
+        "max_running_requests": 4,
+        "context_capacity": 65536,
+        "target_kv_dtype": "bf16",
+        "max_queued_requests": 4,
+        "protocol": "openai_chat_subset",
+        "http_async_owner": true,
+        "memory_admission": {
+          "budget": {
+            "shared_bytes": 79088033280,
+            "slot_bytes": 2379423744,
+            "transient_bytes": 1073741824,
+            "allocation_limit_bytes": 94489280512,
+            "host_reserve_bytes": 8589934592
+          },
+          "slot_samples": [
+            {
+              "allocated_bytes": 81310580224,
+              "reserved_bytes": 81514201088,
+              "peak_allocated_bytes": 89029306880,
+              "peak_reserved_bytes": 89644859392,
+              "host_available_bytes": 32864694272
+            },
+            {
+              "allocated_bytes": 83411262464,
+              "reserved_bytes": 83814776832,
+              "peak_allocated_bytes": 89029306880,
+              "peak_reserved_bytes": 89644859392,
+              "host_available_bytes": 30549884928
+            },
+            {
+              "allocated_bytes": 85511127552,
+              "reserved_bytes": 86008397824,
+              "peak_allocated_bytes": 89029306880,
+              "peak_reserved_bytes": 89644859392,
+              "host_available_bytes": 28262744064
+            },
+            {
+              "allocated_bytes": 87610992640,
+              "reserved_bytes": 88181047296,
+              "peak_allocated_bytes": 89029306880,
+              "peak_reserved_bytes": 89644859392,
+              "host_available_bytes": 25974648832
+            }
+          ],
+          "admission": {
+            "slots": 4,
+            "forecast_peak_bytes": 89679470080,
+            "additional_live_bytes": 2068477440,
+            "process_deficit_bytes": 0,
+            "conservative_host_remaining_bytes": 23906171392,
+            "process_limit_fits": true,
+            "host_reserve_fits": true,
+            "admission_fits": true,
+            "execution_validated": false
+          }
+        },
+        "prefill_expert_backend": "mia_shared_input_tile64_rt4s4_rt2s3",
+        "prefill_expert_sha256": "a5b15bc9ad18e7aea4008f3aba0210856b9b4a4bd764580cbd987b64659b0977"
+      },
+      "metrics": {
+        "requests_submitted_total": 0,
+        "requests_admitted_total": 0,
+        "requests_completed_total": 0,
+        "requests_cancelled_total": 0,
+        "requests_failed_total": 0,
+        "admission_rejected_total": 0,
+        "output_tokens_total": 0,
+        "worker_failures_total": 0,
+        "ttft_seconds_count": 0,
+        "request_seconds_count": 0,
+        "ttft_seconds_sum": 0.0,
+        "request_seconds_sum": 0.0
+      }
+    },
+    "expected_prefill_rows": 1024,
+    "phase": "complete",
+    "cancellation": {
+      "actual_active": 4,
+      "survivors_exact": 3,
+      "cancelled_tokens": 0
+    },
+    "disconnect_recovered": true,
+    "after": {
+      "status": "ready",
+      "error": null,
+      "active_requests": 0,
+      "open_streams": 0,
+      "pending_submissions": 0,
+      "phase": null,
+      "capabilities": {
+        "target_only": false,
+        "greedy": true,
+        "streaming": true,
+        "gpu_batch": false,
+        "asynchronous": false,
+        "speculative": true,
+        "native_output_cache": true,
+        "draft_depth": 7,
+        "verification_budget": "current_postdraft_e17",
+        "max_requests": 4,
+        "graph_scope": "private_request_Graphs_shared_serial_scratch",
+        "graph_captures": 64,
+        "graph_replays": 677,
+        "head_calls": 677,
+        "head_fallbacks": 0,
+        "graph_fallbacks": [
+          {},
+          {},
+          {},
+          {}
+        ],
+        "shared_eager_buffers": true,
+        "shared_screened_head": true,
+        "kv_dtype": "bf16",
+        "serialized_postdraft": true,
+        "interleave_prefill": true,
+        "budget_cost_scope": "frozen_per_request_E29; multi-request throughput objective uncalibrated",
+        "prefill_executor": "owned_chunked_v1",
+        "prefill_chunk_rows": 1024,
+        "prefill_cuda_graph": false,
+        "prefill_logits": "final_row_full_vocab",
+        "prefill_arithmetic": "e36_decode_mxfp8_decode_gdn_f32_moe",
+        "service_version": "0.3.0",
+        "max_running_requests": 4,
+        "context_capacity": 65536,
+        "target_kv_dtype": "bf16",
+        "max_queued_requests": 4,
+        "protocol": "openai_chat_subset",
+        "http_async_owner": true,
+        "memory_admission": {
+          "budget": {
+            "shared_bytes": 79088033280,
+            "slot_bytes": 2379423744,
+            "transient_bytes": 1073741824,
+            "allocation_limit_bytes": 94489280512,
+            "host_reserve_bytes": 8589934592
+          },
+          "slot_samples": [
+            {
+              "allocated_bytes": 81310580224,
+              "reserved_bytes": 81514201088,
+              "peak_allocated_bytes": 89029306880,
+              "peak_reserved_bytes": 89644859392,
+              "host_available_bytes": 32864694272
+            },
+            {
+              "allocated_bytes": 83411262464,
+              "reserved_bytes": 83814776832,
+              "peak_allocated_bytes": 89029306880,
+              "peak_reserved_bytes": 89644859392,
+              "host_available_bytes": 30549884928
+            },
+            {
+              "allocated_bytes": 85511127552,
+              "reserved_bytes": 86008397824,
+              "peak_allocated_bytes": 89029306880,
+              "peak_reserved_bytes": 89644859392,
+              "host_available_bytes": 28262744064
+            },
+            {
+              "allocated_bytes": 87610992640,
+              "reserved_bytes": 88181047296,
+              "peak_allocated_bytes": 89029306880,
+              "peak_reserved_bytes": 89644859392,
+              "host_available_bytes": 25974648832
+            }
+          ],
+          "admission": {
+            "slots": 4,
+            "forecast_peak_bytes": 89679470080,
+            "additional_live_bytes": 2068477440,
+            "process_deficit_bytes": 0,
+            "conservative_host_remaining_bytes": 23906171392,
+            "process_limit_fits": true,
+            "host_reserve_fits": true,
+            "admission_fits": true,
+            "execution_validated": false
+          }
+        },
+        "prefill_expert_backend": "mia_shared_input_tile64_rt4s4_rt2s3",
+        "prefill_expert_sha256": "a5b15bc9ad18e7aea4008f3aba0210856b9b4a4bd764580cbd987b64659b0977"
+      },
+      "metrics": {
+        "requests_submitted_total": 21,
+        "requests_admitted_total": 21,
+        "requests_completed_total": 19,
+        "requests_cancelled_total": 2,
+        "requests_failed_total": 0,
+        "admission_rejected_total": 1,
+        "output_tokens_total": 1601,
+        "worker_failures_total": 0,
+        "ttft_seconds_count": 20,
+        "request_seconds_count": 21,
+        "ttft_seconds_sum": 494.9258689903654,
+        "request_seconds_sum": 662.0233503843192
+      }
+    }
+  },
+  "production_source_sha256": {
+    "spark_infer_q/__init__.py": "623ddaf4adfbf51e0c029203b0ff1780ebcc5824ff8300de5f1e6d6cd819d5d7",
+    "spark_infer_q/__main__.py": "0f072f8ce2bda51a814da172ccb15f3d9e10a420e42ea3786522a8141bba60ad",
+    "spark_infer_q/affine_kv.py": "2c0cfa209ddc52488ce8e6e889e447ffc306d69645a153bd40194dc13b52ea7c",
+    "spark_infer_q/bounded_index.py": "9cc785f5ca6831fe7ef45fa3984c648ab27b6f01e0b69157c76e8aeace6eaabb",
+    "spark_infer_q/bounded_index_kernels.py": "6266e6eb7e9486a9651f431775a8677a5295666b6f0c65a7da1bca3e0294d4b3",
+    "spark_infer_q/budget_audit.py": "7c2116b666e99c4c07055426733a292e5219ca7b788ce0d0e45f75001640db68",
+    "spark_infer_q/budget_regret.py": "14477f3464091a5eaff1a9cbdb0df045b1c047570fe7a7a782b0c8e63076ba11",
+    "spark_infer_q/checkpoint.py": "d7027b4803ee2564f5a881c3dcbbbb58f0508ee3e8f66d7895fbb7b174aad6b8",
+    "spark_infer_q/cli.py": "5d090d5a84d33204f67f27d6fa32c9b59ccd256747566dda217664d34820c5f5",
+    "spark_infer_q/collection_budget.py": "4319736e8acfbe4c88911961f37676b188a39a5a6c0a2216a886cb34addbbbb2",
+    "spark_infer_q/collection_trajectory.py": "b528e4e35b8deb7551782d390aee4d4fb40b407e8f966d02fe607c52e844d2f6",
+    "spark_infer_q/collector.py": "dc34bc95c2984ce099a881717c47659e928e89b2ebf55711ac57b291a1ad6677",
+    "spark_infer_q/compact_target.py": "1e3b989654d5026b4996de3838afd6e184bcbd4d16f7f20978702575da915b1c",
+    "spark_infer_q/confidence_budget.py": "b055819b45a2e4d04b773eef34aa0212b140ba3721fbb1f5ad192903463365b9",
+    "spark_infer_q/confidence_features.py": "6d40253da4dad1de1a6866767af154e3a3ce69647a80df0e2e931f5ab53f0fc1",
+    "spark_infer_q/confidence_head.py": "e27c07808689e54f8660ef8068884be874c0fd5045ed2acfa04fc929b286ad28",
+    "spark_infer_q/csf_loader.py": "1dd25c5e9129fc705c285673c68554546cd9b8b0a3b8813e2429fd9f945214cc",
+    "spark_infer_q/decision_head.py": "0d7337f1b3e2d19493dbe543680db32c428bb5c6f565539974954c2ec40d62a4",
+    "spark_infer_q/deepinfer_bridge.py": "2306e8a7891a17dd7df81619bb77a9f55137f7ab9cb44e45d27e33ea63fe6df5",
+    "spark_infer_q/dflash2_block.py": "e376a509f046ee41882147b560701029c25a93152b874702863d4875a0013376",
+    "spark_infer_q/dflash2_reference.py": "55863cffcdc7514d9ff9cab16493d77e0a39bb3e69c5565926bd902fb29c5681",
+    "spark_infer_q/dflash2_scored.py": "8175ca379543a27aa6015821f8810c3ff5ba5b197b682da6545377d2b270227b",
+    "spark_infer_q/draft_backbone.py": "e378bbc8ea733abca580955c07b303fb3645783c29f36ba24c8dff0f12520e6c",
+    "spark_infer_q/draft_batch.py": "d76f6c96704ce28a1e0853233dd9883b81c264806a56f7368bb314c6152516e2",
+    "spark_infer_q/draft_batch_graph.py": "a0be47eea1b124ff613101c41a43b30d6e82c2efaa618a0b6ceb75311221a5d5",
+    "spark_infer_q/draft_batch_w8.py": "729c45a0a35d21975b129a819cd6d18735260eb611354393c160dd86eaa576e3",
+    "spark_infer_q/draft_context.py": "756869e7db93a56329079b7aaf542d25eb6d6858fbbf6f60fb4280f63e6ad3e5",
+    "spark_infer_q/draft_fastpath.py": "ddfc09b065f28ffcecd8a9ad8f7209d3d28fb0de2f8188dbc91bc8d55884fdb8",
+    "spark_infer_q/draft_fidelity.py": "1381ea37bac11e09c45197a35964c3849976d9f3911a171e0984914cedcd3bb0",
+    "spark_infer_q/draft_head.py": "cebeeaf86487f2487783fb0df5af465ce6a5a365f49565997d13bfff14a866a5",
+    "spark_infer_q/draft_projection_cache.py": "2ebf83f028b93d1866d6df0626888e6fbaf90e7be77ef37da9447f829294417d",
+    "spark_infer_q/draft_signals.py": "5f6a0ea0708498b2aad1ffaab3e913c22891981be4ee7702d553d9851edb9c3a",
+    "spark_infer_q/engine_server.py": "b2b8f39a07805522db4a9b55e6c906115d1398fc1f6b70bca67894417977c082",
+    "spark_infer_q/executor.py": "e2d981663cfa9f71858fc2d8737246b8a10def79c62f6aa3e670ccb75e2bc16e",
+    "spark_infer_q/feature_window.py": "20d4218fa9839ce3836e27196251c43209c7d55eecf43e3d12280cab4fadf7f1",
+    "spark_infer_q/head_screen.py": "9a1859e5543f239653c96124a1b68928bb2b80f10309a30ff19ffb5336147a01",
+    "spark_infer_q/joint_budget.py": "deeb2ca94c853e3eace69b7323bfdb12e6148437b3b86a44e3b5b0494a4037e6",
+    "spark_infer_q/kaifra_batch.py": "7c445483ed6cf580674739b45ecdcc85e4a76a7abfe9df3a9880b65b7c434361",
+    "spark_infer_q/kaifra_batch_target.py": "0392c5ccefbfd2e02914529d0575e7cff2f17ef675193681af0bc847d574a148",
+    "spark_infer_q/kaifra_graph.py": "ddae0aefd8af9a68eb22fdbcc98c123e57d8f9c5ba123d1eeb7686b1a42ab4bb",
+    "spark_infer_q/kaifra_http.py": "1b136bcf1e69bf43250a404e30791b1f9f34a30b823837112985c3019a12800f",
+    "spark_infer_q/kaifra_joint_runtime.py": "22640599f5692af471687d3d0bddf76080ae9c134d66cf0a8663c2752cf7e4aa",
+    "spark_infer_q/kaifra_joint_target.py": "e80d0386f53d9c0e34dea34fafb680f1a3d87822589c67a044a38aad3ce7083c",
+    "spark_infer_q/kaifra_optimized.py": "e192046f18fa7c0d15a25ebaa2f242fdb4c0f9d0f4f0cb243acb486c84d53ee9",
+    "spark_infer_q/kaifra_runtime.py": "2a000766ff3c53f64f284ad3b2e67f6115aa95c03a388e54e9c2bbab7c2c5b64",
+    "spark_infer_q/kaifra_service.py": "526164281616d3b7a508f40b32dd4bbf3f6662a66e2800b50e3a4ddaa293f5e5",
+    "spark_infer_q/kaifra_speculative.py": "f428985f5516ff82b7571e9367697fb504776a44324e164dfadcefb9ff717ccb",
+    "spark_infer_q/kaifra_worker.py": "8140c33c1cea3e8449d7d0d44dca58f3d41949d72b3bae5d77a5f4fd7e839072",
+    "spark_infer_q/kv_conversion_kernels.py": "3b4ce89b074078163941183798dbde1f3a9f9d9ccff2d24ca0fa5ea0055ac3db",
+    "spark_infer_q/linear_runtime.py": "16c8d55fa049d7f4d8985cd24982c653c0805d75a6c94facab9cd9718ad7b01f",
+    "spark_infer_q/local_policy.py": "de7b204f92685dbf68d8769df9bf63608c74c96167aa8cb6a08057f39ff3222f",
+    "spark_infer_q/long_capacity.py": "1f24fc4e2f4c74528d75d50f36ab72f4968bcd33a152f9e5cf53c4ae8b928e0e",
+    "spark_infer_q/long_draft_graph.py": "9b84b92b9766027775bfcf2752cca4abd424edb8214ab3f9e46440fc7b5b414d",
+    "spark_infer_q/long_target.py": "2d00587da131fb5235f0a75a8463ad5f440fe1f127c47a142d9d7f626fe8ba7b",
+    "spark_infer_q/mlp_head.py": "52e378708572736c18e0d0cc10090b454209b5ac7fc1b5cd9fd689549b960020",
+    "spark_infer_q/mlp_runtime.py": "9a87d1efd104e33cea4a4454016a61df4b4e043f1768411db1764ae71a7b9855",
+    "spark_infer_q/model_loader.py": "732865d6735d546e1460d0133e191fb80ab2d18a29ae508b9fe289de34a5c376",
+    "spark_infer_q/moe_cost.py": "7e06f87b17dc789ba76f19e179962b778b78be937e9dfd59d609b707c08639ca",
+    "spark_infer_q/native_scheduler.py": "c83c1f731f907bce3125c7bce129da2998e177ae4c46f4efa83d414acf16cb2d",
+    "spark_infer_q/past_cost.py": "d303247bc62badf4fc3f7d06952d78ba6551290ee8fec7a6d426b7ee9ac6d106",
+    "spark_infer_q/prefill.py": "2063bc06ae774652870c4f7c8915dbcefd1951fc9bfb2fdfe13655a145a9b915",
+    "spark_infer_q/prefill_evidence.py": "6350bdfb1b0feee8eddbb71bb350b6a53408c2248c7f34ff8b9c5573ba10e52c",
+    "spark_infer_q/prefill_experts.py": "97033110fb33750d0008fe6fec08dee8e2dc548e62d4aaf7c951fb82a63d9a80",
+    "spark_infer_q/prefill_scratch.py": "cd13a071268b8f2ac6d110a9fd4e13c0bd16a93b20f5ccc2b2dd94efe0969e43",
+    "spark_infer_q/prefill_tensorfold.py": "d4e738875aec6dc8265076517c512771db53370800c7ae4efea087842dacdddd",
+    "spark_infer_q/prompt.py": "6b997c3c6e6834666dfa0f7d13a7c950f6dc2e9b1d80818e5ee4b08a9b886f58",
+    "spark_infer_q/qwen_attention.py": "a5a8bc3340696520fd48d5ae74599cbb49d18af627fc4984fafda9e25a031476",
+    "spark_infer_q/qwen_ple.py": "883da6f074e1d96da395c39325b1a55e8970661b88fecfdb2d8f7b00339be071",
+    "spark_infer_q/qwen_state.py": "c45e9a47a04ae6915a44619c66027211f8cbd09ebfd7b6883120c0b847c47b95",
+    "spark_infer_q/qwen_state_kernel.py": "90f5a201252d2256a71124336a755e9dd8b14ce470ed2c235c577e567bb44dbe",
+    "spark_infer_q/regret_head.py": "ad23a257754d123d93feb805480e8d717192c9d99e83de5afbcdc0886bc647e0",
+    "spark_infer_q/residual_head.py": "a5f1dfa78560bf216a5a69f1e3a61973041a30bb00d16002dbb01c8be84bef18",
+    "spark_infer_q/rolling_draft.py": "a4b43054502234114ab9ca7eb1eaa7e3baf99e983dbd6aa874b1be0644a3f6ca",
+    "spark_infer_q/screened_head.py": "aaba84b6efd33b247fc9f54dcdda52a3db7c2b1a6d9d3cba6ccff56c1b722052",
+    "spark_infer_q/screened_head_fused.py": "ac963778f7e81a957838ab3443a49c7660ad342128fb9047c73d9b7f8f151bef",
+    "spark_infer_q/shared_graph.py": "e5b733a6069a6e1780f80a663de0778ef8856696cc10be41ed0819e701604b79",
+    "spark_infer_q/speculative.py": "ee1c2855cef1f31a868783d00f27cc88eef77f49ff95ff21dc2705d986f12045",
+    "spark_infer_q/tensorfold_block.py": "5527a5f6407c3dbb136003f687151b9754249423f964f71975e4eb9a1b9dadfa",
+    "spark_infer_q/verification_budget.py": "71f28552b8e83f682066edf9e9dd7267e3b54120c5d478949499a443f6eb5c50",
+    "spark_infer_q/wide_budget.py": "5cc2032ce32fd05b019aa90ddc0eefee80df2d2d850ede0e3bda3eedacd854fc",
+    "spark_infer_q/worker_cpu.py": "c2998bbc9d2307cbdecc715ddc517c9135ff87fc6ed13ff6f97befbdee76bdb2"
+  },
+  "raw_sha256": {
+    "prefill.json": "c94e2d0fadbf0f13bfa6437044614ecb27cfae936eb0c43829cf7dfcd84dc1c0",
+    "context.json": "5aac999d38474a74caa6edc78e90f6475c88a573e84192ab4a0dacf9468b5b63",
+    "http.json": "b58f2d299163d47f98d8a759d83f2fccf85361e4650774dbd3ab70559c20af10",
+    "live-start.json": "f2b45aba0be3b34c7553f532c66724539e697be826fa54b9b40c036ddf3f9930",
+    "resident-status.json": "18017bb6199fb8e281b6cfbaf2e0942c83736e7b28f065a939ee576a6026485d",
+    "context-job.json": "a7c4616b2a96a2677c655061b3867f00ec00840befcc2e4e5a79bec1a2ec3937",
+    "prefill-job.json": "13ae176dd249f224c1fb6019000c3e5a0b78ceea470e4a489f5c7a3a453ae754"
+  }
+}

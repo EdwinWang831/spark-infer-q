@@ -7,6 +7,30 @@ from spark_infer_q.engine_server import check_memory, warm_long_slots
 
 
 class MemoryAdmissionTests(unittest.TestCase):
+    def test_budget_charges_actual_mirrored_feature_storage(self):
+        try:
+            import numpy as np
+        except ImportError:
+            self.skipTest('optional NumPy absent')
+        from test_rolling_history import Rows
+        from spark_infer_q.feature_window import FeatureWindow
+        window=FeatureWindow(2040);window.append(Rows(np.zeros((1,12800),dtype=np.float16)))
+        arrays={name:Rows(np.zeros(n,dtype=np.float16)) for name,n in
+            (('_context_rows',7),('_keys',8),('_values',9))}
+        provider=NS(history_window_rows=2040,worker=NS(**arrays))
+        target,snapshot,_=self.fixture(70,1)
+        with patch('spark_infer_q.engine_server.memory_snapshot',snapshot):
+            result=warm_long_slots(target,provider,None)
+        self.assertEqual(result['budget']['slot_bytes'],1024**3+window.nbytes+
+                         sum(value.data.nbytes for value in arrays.values()))
+
+    def test_64k_bootstrap_refuses_before_allocating_into_its_reserve(self):
+        target,snapshot,calls=self.fixture(86,1);target.capacity=65552
+        with patch('spark_infer_q.engine_server.memory_snapshot',snapshot):
+            with self.assertRaisesRegex(RuntimeError,'first request slot'):
+                warm_long_slots(target,None,None)
+        self.assertEqual(calls,[])
+
     def fixture(self,base,private):
         unit=1024**3
         usage=[base*unit];calls=[]

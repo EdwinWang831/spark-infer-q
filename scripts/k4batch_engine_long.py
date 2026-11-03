@@ -37,7 +37,7 @@ def state_sha(torch, state):
     return result
 
 
-def make_messages(session, index, long=True):
+def make_messages(session, index, long=True, *, prompt_tokens=None):
     fillers = ['A cache retains reusable results. A queue retains pending tasks. Each request owns its history. ',
         '缓存保存可复用的计算结果，队列保存等待执行的任务。每个请求独立维护状态。',
         'def unique(items):\n    seen = set()\n    for item in items:\n        if item not in seen:\n            seen.add(item)\n            yield item\n',
@@ -46,7 +46,7 @@ def make_messages(session, index, long=True):
             'Continue until all important tradeoffs are explained.' if index != 1 else
             '\n请用中文详细说明上文的缓存、请求隔离和调度机制，举例分析，至少写五百字。')
     tokens = session.tokenizer.encode(fillers[index]*(6000 if long else 400), add_special_tokens=False)
-    wanted = 32704 if long else 4096
+    wanted = prompt_tokens if prompt_tokens is not None else 32704 if long else 4096
     count = wanted-80
     for _ in range(10):
         text = session.tokenizer.decode(tokens[:count], skip_special_tokens=False)+tail
