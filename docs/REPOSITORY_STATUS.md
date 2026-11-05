@@ -27,7 +27,7 @@
 | `main` | [E55](E55_RESIDENCY_REPORT.md)–[E58](E58_NATIVE_CONVERSION_REPORT.md) residency inventory and INT4/FP8 KV / 常驻盘点与KV压缩 | INT4 eight-way forecast92.82GiB >88GiB; FP8/INT4 fail the3% logit gate; defaults unchanged / 未采用 |
 | `codex/prefill-expert-reuse` | Source branch of E38–E58 / E38–E58 的来源分支 | All its commits are on `main`; its owner decides whether to keep it for further work / 提交均已在 main，是否继续使用由负责人决定 |
 | [K4 research, PR #19](https://github.com/EdwinWang831/spark-infer-q/pull/19) | `codex/k4-batched-runtime`: joint verification, async SSE and dispatch wait fix / 双请求动态验证、异步服务及等待修正 | Independent draft; existing worktree retained / 保留现有工作区 |
-| `main` | [Use-time self-evolution plan](USE_TIME_SELF_EVOLUTION_PLAN.md) v2, merged from PR #15 (`claude/magical-fermi-tc55jr`; local worktree branch `codex/pr15-e33-rsi-plan`) / 使用期自演化设计 | Design only; EV0–EV7 not executed / 仅为设计，尚未执行 |
+| `main` | [Lightweight use-time RSI plan](USE_TIME_SELF_EVOLUTION_PLAN.md) v3, merged from PR #15 (`claude/magical-fermi-tc55jr`; local worktree branch `codex/pr15-e33-rsi-plan`) / 推理栈轻量递归自我改进设计 | Design only; EV0–EV8 not executed / 仅为设计，尚未执行 |
 | `archive/pr6-confidence-proposal` tag | Original closed PR #6 branch tip / 已关闭预测器提案的原分支端点 | History retained; later E15–E25 results live on main / 归档保留，不将旧提案混入当前实现 |
 
 K4's remote base `codex/k4-runtime-overhead` is temporarily retained because PR #19 still targets it. Its commits are also on `main`; it is a dependency reference, not a second active workstream. The K4 owner can update to main and remove this base when ready, without this cleanup changing that worktree or its unmerged code.

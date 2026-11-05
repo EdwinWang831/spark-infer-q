@@ -72,7 +72,7 @@ The gains that held came from deciding what to compute (verification budget, dra
 
 ## Feedback-driven self-improvement (proposal)
 
-[PR #15](https://github.com/EdwinWang831/spark-infer-q/pull/15) proposes learning from usage feedback, evaluating candidate policies on temporally held-out data, and promoting or rolling back them based on measured net benefit. Its v2 plan has **no executed EV0–EV7 stages**. Frozen acceptance prediction, manual engineering gains and adaptive width decisions are not evidence of recursive self-improvement. See the [overview](docs/RESEARCH_OVERVIEW.md#feedback-and-rsi) for the connection to scientific agents and the proposed evaluation loop.
+[PR #15](https://github.com/EdwinWang831/spark-infer-q/pull/15) proposes lightweight recursive self-improvement of the inference stack during daily use: an improver learns from usage feedback to change both the stack and its own search procedure, evaluates candidates on temporally held-out data, and promotes or rolls them back based on measured net benefit, while the judge stays frozen. Its v3 plan has **no executed EV0–EV8 stages**. Frozen acceptance prediction, manual engineering gains and adaptive width decisions are not evidence of recursive self-improvement. See the [overview](docs/RESEARCH_OVERVIEW.md#feedback-and-rsi) for the connection to scientific agents and the proposed evaluation loop.
 
 ## Repository layout
 
