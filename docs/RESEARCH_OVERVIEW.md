@@ -2,7 +2,7 @@
 
 [简体中文](RESEARCH_OVERVIEW.zh-CN.md) | **English** · [Home](../README.en.md) · [All experiments](README.md)
 
-Documentation reviewed on 2026-11-02. Hardware reports extend through E58 (2026-10-28); the linked RSI v2 proposal remains unexecuted.
+Documentation reviewed on 2026-11-02. Hardware reports extend through E58 (2026-10-28); the linked RSI proposal (v3, 2026-11-05) remains unexecuted.
 
 SparkInfer-Q studies how to allocate inference work on a single NVIDIA DGX Spark. Its current testbed is a quantized Qwen target and a DFlash2 drafter. The central question is whether acceptance prediction and measured execution costs can reduce wasted target verification while preserving the serial target's output and committed state.
 
@@ -86,13 +86,13 @@ Optional PyTorch/NumPy tests skip when those packages are absent. Full model rep
 
 The current predictor is frozen during an experiment. Adaptive width decisions and manual kernel changes do not establish recursive self-improvement.
 
-The [RSI proposal, PR #15](https://github.com/EdwinWang831/spark-infer-q/pull/15) is **PROPOSED v2; EV0–EV7 are unexecuted** as of this documentation review. Its proposed loop is:
+The [RSI proposal, PR #15](https://github.com/EdwinWang831/spark-infer-q/pull/15) is **PROPOSED v3; EV0–EV8 are unexecuted** as of this documentation review. Its proposed loop is:
 
 ```text
 usage feedback → candidate policy/configuration → counterfactual replay
 → time-held-out evaluation → paired online confirmation → adopt or roll back
 ```
 
-Candidates may concern acceptance prediction, draft decisions or request-dependent execution configurations. Output/state correctness, causal feature availability and replay fidelity need independent checks; elapsed time remains a cost estimate until measured. Data collection, search, training, validation and switching overhead must be included in net benefit. EV5 separately proposes improving the evolution procedure from its own history; this is not an implemented capability.
+Candidates may concern acceptance prediction, draft decisions or request-dependent execution configurations. Output/state correctness, causal feature availability and replay fidelity need independent checks; elapsed time remains a cost estimate until measured. Data collection, search, training, validation and switching overhead must be included in net benefit. v3 makes the recursive layer the main line: EV5a proposes improving the evolution procedure (L1) from its own ledger in simulation, while the judge (replay, bit-exact oracle, timing, promotion rules) stays frozen and editable only by people. This is not an implemented capability.
 
 The connection to scientific computing is a constrained decision problem: choose useful computation under latency and memory limits, build a testable cost model, and verify the resulting behavior. The connection to scientific agents is the proposed experiment/feedback/evaluation loop and efficient execution of their model calls. No scientific-agent application, scientific solver or RSI speedup has been demonstrated here.
