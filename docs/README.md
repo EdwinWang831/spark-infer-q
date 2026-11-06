@@ -114,7 +114,7 @@
 | [Kaifra 愿景](KAIFRA_VISION_RFC.md) · [实施路线](KAIFRA_IMPLEMENTATION_ROADMAP.md) | 基于 DeepInfer 的自适应推理引擎的定位与 K0–K7 阶段 | 设计；K1–K4 已部分实现 |
 | [Decode 前沿 RFC](KAIFRA_DECODE_FRONTIER_RFC.md) · [验证矩阵](KAIFRA_DECODE_VALIDATION_MATRIX.md) | 八个 decode 研究方向及止损规则 | 设计 |
 | [未执行方案表](EXPERIMENTS.md#proposals-without-results-yet) | prefill 数值参考、专家占用速率、专家感知预算在线阶段、草稿 fidelity | 未执行或部分执行 |
-| [推理栈的轻量递归自我改进](USE_TIME_SELF_EVOLUTION_PLAN.md) | 改进器在使用中改进推理栈，也改进自己的搜索方式；裁判（精确回放、逐位 oracle、晋升规则）冻结，不改变任何输出。v2 按 E17–E58 重排了可进化部件，v3 把递归层改为主线；11-06 补充裁判强度曲线和白天 CPU 同址运行 | 设计；EV0–EV8 未执行 |
+| [推理栈的轻量递归自我改进](USE_TIME_SELF_EVOLUTION_PLAN.md) | 改进器在使用中改进推理栈，也改进自己的搜索方式；裁判（精确回放、逐位 oracle、晋升规则）冻结，不改变任何输出。v2 按 E17–E58 重排了可进化部件，v3 把递归层改为主线；11-06 补充裁判强度曲线、白天 CPU 同址运行和可选的第二平台（X1） | 设计；EV0–EV8 未执行 |
 
 ## 8. 其他参考
 
