@@ -1,0 +1,200 @@
+{
+  "status": "SMOKE_PASSED",
+  "protocol": {
+    "max_new_tokens": 256,
+    "dtype": "bfloat16",
+    "enable_thinking": false,
+    "temperature": 0,
+    "upstream_commit": "07ebd93db9f472af339b644bb70221ad8428328a",
+    "target_revision": "1cfa9a7208912126459214e8b04321603b3df60c",
+    "draft_revision": "b74e3a329c4d963783143b1e970d95b002be72bd",
+    "quality": {
+      "gsm8k": "numeric final answer after ####",
+      "humaneval": "official hidden tests",
+      "squad": "standard normalized EM and token F1"
+    },
+    "name": "rtx5090-adaptive-v1",
+    "selection_seed": "rtx5090-adaptive-v1-20261107",
+    "upstream_model_sha256": "f55b7fe0a4c0b3073e0f9cdce547cce29f4b8e2168c4d2818760007c43b7651e",
+    "selection_metric": "minimum sum of per-request median wall among six candidate rules on calibration; lexicographic name breaks ties; quality reported without retuning",
+    "selectable_modes": [
+      "short0_skip1",
+      "short0_skip2",
+      "short2_skip1",
+      "short2_skip2",
+      "short4_skip1",
+      "short4_skip2"
+    ],
+    "first_action": 16,
+    "after_skip": 16,
+    "history": "prior drafted-round committed progress only; skip never updates acceptance/EWMA and resets low streak; EWMA alpha=0.5",
+    "primary_metric": "sum of per-request median generation wall reduction versus official16 on all fresh test tasks; quality, caps and output lengths jointly reported",
+    "baseline_note": "lagged/EWMA are simple local controls, not DSpark or vLLM reproductions",
+    "frozen_unix": 1794040259.664377,
+    "limitations": [
+      "24 new public tasks; exploratory pilot, not paper-scale evidence",
+      "BF16 shapes can change outputs; not a claim of bitwise losslessness",
+      "history-only skip/short actions were already explored in E18; novelty unestablished"
+    ],
+    "phase": "calibration",
+    "repetitions": 2,
+    "modes": {
+      "official16": {
+        "kind": "official",
+        "width": 16
+      },
+      "lagged": {
+        "kind": "lagged"
+      },
+      "ewma": {
+        "kind": "ewma"
+      },
+      "short0_skip1": {
+        "kind": "candidate",
+        "short_threshold": 0,
+        "skip_patience": 1
+      },
+      "short0_skip2": {
+        "kind": "candidate",
+        "short_threshold": 0,
+        "skip_patience": 2
+      },
+      "short2_skip1": {
+        "kind": "candidate",
+        "short_threshold": 2,
+        "skip_patience": 1
+      },
+      "short2_skip2": {
+        "kind": "candidate",
+        "short_threshold": 2,
+        "skip_patience": 2
+      },
+      "short4_skip1": {
+        "kind": "candidate",
+        "short_threshold": 4,
+        "skip_patience": 1
+      },
+      "short4_skip2": {
+        "kind": "candidate",
+        "short_threshold": 4,
+        "skip_patience": 2
+      }
+    }
+  },
+  "modes": {
+    "official16": {
+      "kind": "official",
+      "width": 16
+    },
+    "lagged": {
+      "kind": "lagged"
+    },
+    "ewma": {
+      "kind": "ewma"
+    },
+    "short0_skip1": {
+      "kind": "candidate",
+      "short_threshold": 0,
+      "skip_patience": 1
+    },
+    "short0_skip2": {
+      "kind": "candidate",
+      "short_threshold": 0,
+      "skip_patience": 2
+    },
+    "short2_skip1": {
+      "kind": "candidate",
+      "short_threshold": 2,
+      "skip_patience": 1
+    },
+    "short2_skip2": {
+      "kind": "candidate",
+      "short_threshold": 2,
+      "skip_patience": 2
+    },
+    "short4_skip1": {
+      "kind": "candidate",
+      "short_threshold": 4,
+      "skip_patience": 1
+    },
+    "short4_skip2": {
+      "kind": "candidate",
+      "short_threshold": 4,
+      "skip_patience": 2
+    }
+  },
+  "selection": null,
+  "manifest_sha256": "fef1ff47fef8747307fef1a14b8e357e229c6118e46650727763c1392a852617",
+  "worker_pid": 3156877,
+  "target_object_id": 126549066390160,
+  "draft_object_id": 126540209296480,
+  "script_sha256": "370b2085453d78bd61923dabc54037bc135b06b1235f2bbeddc4800738aa84ab",
+  "dependencies": {
+    "rtx5090_adaptive_policy.py": "4608d83efe16775fe44442cbabecedc5da80fd9565a607ff44ed1255ddf21be5",
+    "rtx5090_gpu_monitor.py": "13cc838deb957096be6e00989e7537267ec424550c23c4a16d3caa79efc6baf6"
+  },
+  "compiled_generator_sha256": "0f77309e684aeb40a8ade2373030a85901076431a48c396d74a977f0d142530e",
+  "versions": {
+    "torch": "2.13.0",
+    "transformers": "5.15.0",
+    "nvidia-ml-py": "13.615.71"
+  },
+  "upstream_commit": "07ebd93db9f472af339b644bb70221ad8428328a",
+  "device": "cuda:1",
+  "dtype": "torch.bfloat16",
+  "target_attention": "sdpa",
+  "started_unix": 1794040288.8895514,
+  "smoke": true,
+  "tasks": [],
+  "bridge_checks": [
+    {
+      "width": 1,
+      "token_and_progress_exact": true
+    },
+    {
+      "width": 8,
+      "token_and_progress_exact": true
+    },
+    {
+      "width": 16,
+      "token_and_progress_exact": true
+    },
+    {
+      "consecutive_skips_resume": true,
+      "action_trace": [
+        16,
+        1,
+        1,
+        8,
+        16,
+        1,
+        1,
+        8,
+        16,
+        1,
+        1,
+        8,
+        16,
+        1,
+        1,
+        8,
+        16,
+        1,
+        1,
+        8
+      ],
+      "independent_target_skip_exact": true,
+      "cache_frontiers_checked": true
+    }
+  ],
+  "discarded_timings": [],
+  "finished_unix": 1794040295.318888,
+  "gpu_monitor": {
+    "interval_s": 0.1,
+    "quiet_after_competitor_s": 1.0,
+    "samples": 64,
+    "max_poll_gap_s": 0.10165484494064003,
+    "events": [],
+    "error": null
+  }
+}

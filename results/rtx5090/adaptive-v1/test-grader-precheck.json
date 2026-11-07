@@ -1,0 +1,75 @@
+{
+  "python": "3.14.8 (main, Sep 30 2026, 17:55:09) [Clang 21.0.0 (clang-2100.3.34.2)]",
+  "platform": "macOS-27.0.1-arm64-arm-64bit-Mach-O",
+  "manifest_sha256": "5cca02a9f8c949e46ab3babf203ff7166fe140ae6a27ca3109b94cd465b922e2",
+  "evaluator_sha256": "53c234276589a917963e94878e59c17f5c3fc2514e4065cbb605c6bc74a43e0f",
+  "code_test_random_seed": 0,
+  "math_format_note": "literal placeholder angle brackets normalized; strict score retained; correction made after first-run format audit",
+  "sandbox_profile": "(version 1)\n(allow default)\n(deny network*)\n(deny file-write*)\n(deny file-read-data (subpath \"/Users\") (subpath \"/Volumes\") (subpath \"/private\") (subpath \"/tmp\"))\n(deny mach-lookup)\n(deny process-fork)\n",
+  "sandbox_checks": {
+    "private_file_read": true,
+    "file_write": true,
+    "network_connect": true,
+    "child_process": true
+  },
+  "canonical_checks": [
+    {
+      "id": "HumanEval/75",
+      "pass": true,
+      "exit_code": 0,
+      "error": null,
+      "code_sha256": "2d1088c993f2388df27f3d520b42b9cbb1ed5dec9be49b20cbcc79c445fdbaa7"
+    },
+    {
+      "id": "HumanEval/118",
+      "pass": true,
+      "exit_code": 0,
+      "error": null,
+      "code_sha256": "b240051f0c0d97476aac681f493c8d8855781689f4728a55bd49b7a4ac7b0da4"
+    },
+    {
+      "id": "HumanEval/38",
+      "pass": true,
+      "exit_code": 0,
+      "error": null,
+      "code_sha256": "ca71c1b82b515debbcbb2062bda57e3b524071f928051dce227ebd9cdd8a6ca0"
+    },
+    {
+      "id": "HumanEval/116",
+      "pass": true,
+      "exit_code": 0,
+      "error": null,
+      "code_sha256": "4a1c9620b23415a85297152a68588af293d2bd7a9b5e57b1a71da159b2a18f33"
+    },
+    {
+      "id": "HumanEval/19",
+      "pass": true,
+      "exit_code": 0,
+      "error": null,
+      "code_sha256": "87b64884bd6d975b360ebf3292114006500c249dd3c68c21977b705eb7a5004f"
+    },
+    {
+      "id": "HumanEval/37",
+      "pass": true,
+      "exit_code": 0,
+      "error": null,
+      "code_sha256": "f178ad6fb10eb0ff94574cc7b0a586bed05962b83cbfd4eb7b221d5d6d4fce28"
+    },
+    {
+      "id": "HumanEval/82",
+      "pass": true,
+      "exit_code": 0,
+      "error": null,
+      "code_sha256": "2eadb7c1a07bbd210fc40d31fd83012ce989b8d1faf9de05798e3744a952d4f5"
+    },
+    {
+      "id": "HumanEval/102",
+      "pass": true,
+      "exit_code": 0,
+      "error": null,
+      "code_sha256": "74a43d58d3d67cebcc8fcd3ce09d30b7a9bc65b96a0c2e23f14c6658ae1f5812"
+    }
+  ],
+  "tasks": [],
+  "status": "COMPLETE"
+}

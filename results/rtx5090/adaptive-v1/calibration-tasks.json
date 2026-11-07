@@ -1,0 +1,304 @@
+{
+  "protocol": {
+    "max_new_tokens": 256,
+    "dtype": "bfloat16",
+    "enable_thinking": false,
+    "temperature": 0,
+    "upstream_commit": "07ebd93db9f472af339b644bb70221ad8428328a",
+    "target_revision": "1cfa9a7208912126459214e8b04321603b3df60c",
+    "draft_revision": "b74e3a329c4d963783143b1e970d95b002be72bd",
+    "quality": {
+      "gsm8k": "numeric final answer after ####",
+      "humaneval": "official hidden tests",
+      "squad": "standard normalized EM and token F1"
+    },
+    "name": "rtx5090-adaptive-v1",
+    "selection_seed": "rtx5090-adaptive-v1-20261107",
+    "upstream_model_sha256": "f55b7fe0a4c0b3073e0f9cdce547cce29f4b8e2168c4d2818760007c43b7651e",
+    "selection_metric": "minimum sum of per-request median wall among six candidate rules on calibration; lexicographic name breaks ties; quality reported without retuning",
+    "selectable_modes": [
+      "short0_skip1",
+      "short0_skip2",
+      "short2_skip1",
+      "short2_skip2",
+      "short4_skip1",
+      "short4_skip2"
+    ],
+    "first_action": 16,
+    "after_skip": 16,
+    "history": "prior drafted-round committed progress only; skip never updates acceptance/EWMA and resets low streak; EWMA alpha=0.5",
+    "primary_metric": "sum of per-request median generation wall reduction versus official16 on all fresh test tasks; quality, caps and output lengths jointly reported",
+    "baseline_note": "lagged/EWMA are simple local controls, not DSpark or vLLM reproductions",
+    "frozen_unix": 1794040259.664377,
+    "limitations": [
+      "24 new public tasks; exploratory pilot, not paper-scale evidence",
+      "BF16 shapes can change outputs; not a claim of bitwise losslessness",
+      "history-only skip/short actions were already explored in E18; novelty unestablished"
+    ],
+    "phase": "calibration",
+    "repetitions": 2,
+    "modes": {
+      "official16": {
+        "kind": "official",
+        "width": 16
+      },
+      "lagged": {
+        "kind": "lagged"
+      },
+      "ewma": {
+        "kind": "ewma"
+      },
+      "short0_skip1": {
+        "kind": "candidate",
+        "short_threshold": 0,
+        "skip_patience": 1
+      },
+      "short0_skip2": {
+        "kind": "candidate",
+        "short_threshold": 0,
+        "skip_patience": 2
+      },
+      "short2_skip1": {
+        "kind": "candidate",
+        "short_threshold": 2,
+        "skip_patience": 1
+      },
+      "short2_skip2": {
+        "kind": "candidate",
+        "short_threshold": 2,
+        "skip_patience": 2
+      },
+      "short4_skip1": {
+        "kind": "candidate",
+        "short_threshold": 4,
+        "skip_patience": 1
+      },
+      "short4_skip2": {
+        "kind": "candidate",
+        "short_threshold": 4,
+        "skip_patience": 2
+      }
+    }
+  },
+  "previous_manifest_sha256": "87687e8a58ff3128fc4eeebf3978b5e1bff05f5ee08f0a157667350eba9469c5",
+  "excluded_previous_ids": [
+    "HumanEval/0",
+    "HumanEval/109",
+    "HumanEval/123",
+    "HumanEval/147",
+    "HumanEval/22",
+    "HumanEval/49",
+    "HumanEval/53",
+    "HumanEval/63",
+    "HumanEval/68",
+    "HumanEval/86",
+    "HumanEval/9",
+    "HumanEval/91",
+    "gsm8k/test/1010",
+    "gsm8k/test/1046",
+    "gsm8k/test/1090",
+    "gsm8k/test/115",
+    "gsm8k/test/1168",
+    "gsm8k/test/117",
+    "gsm8k/test/187",
+    "gsm8k/test/527",
+    "gsm8k/test/631",
+    "gsm8k/test/806",
+    "gsm8k/test/858",
+    "gsm8k/test/893",
+    "squad/56e0d9e0231d4119001ac43c",
+    "squad/56e1c7e2cd28a01900c67b75",
+    "squad/56e1febfe3433e1400423239",
+    "squad/56f7e9caaef2371900625c56",
+    "squad/57060a1175f01819005e78d2",
+    "squad/571155ae2419e31400955594",
+    "squad/57273e50dd62a815002e9a03",
+    "squad/57274f67708984140094dbf6",
+    "squad/57299d1c1d04691400779582",
+    "squad/572f5533a23a5019007fc55b",
+    "squad/572fffb1b2c2fd14005686fb",
+    "squad/57300761947a6a140053cf9d"
+  ],
+  "excluded_previous_groups": [
+    "15c874942d6f3fd88b477918ca92565471c619e380307872c8b189d12867b3a0",
+    "3101f57b15af1b33d94eed7fc263c1d722c7481a6f078b18b82005859b9444f5",
+    "38f1fc8afb6921f54a832d6421c87a2e55173666a1b767db315cbf17cf3ce9c0",
+    "3cb0a38d61e82a90cecfb5582e441724dd99545039d71b5eb6fd1ab436a1cb71",
+    "3e323e5c6d09bfcbdf60c1f613c0c9360d6a95200b947d3698c789308e00d3d6",
+    "3ffaf0e0f72baad2a6f149f48c180b91aefe24f618fe0eeca03d674a407d914e",
+    "493072669f8fd14ce95b09d04e07c61e04265ee4d5cd0abca9fe25259df74897",
+    "6961bb0414c1b68cd63e41e00e5b2b1361643f160953c9b6c8a91574b4f025d1",
+    "7c28011f4adb5bc9518e20aa534136a5ab7d9e920f0263cb0d482a6ce7859ede",
+    "80050447c9b41fb5fac1950338fd3ace00106108cadec17c27aa5b41f7aee5cf",
+    "809ab002069708b05d7022073e5692a5d269e21b863617ea0d1573256c8af15f",
+    "82fc37f3955094866cdea7c8b282971f245eb872212aff8fb32bf16ce6c1fc60",
+    "8a7ef077b625972cca37f75ec755679f62f59369d46bd53f6620b404b35ef80f",
+    "8e2bd529d5d8958f1c8418c2c9fd2fc59cbdaa4b785e69b5cffcd5a4252c1be9",
+    "9572ca84d4afcb2b7a00e335d1c73a40f9cbae18383d4630db1561dcd2da7e91",
+    "HumanEval/0",
+    "HumanEval/109",
+    "HumanEval/123",
+    "HumanEval/147",
+    "HumanEval/22",
+    "HumanEval/49",
+    "HumanEval/53",
+    "HumanEval/63",
+    "HumanEval/68",
+    "HumanEval/86",
+    "HumanEval/9",
+    "HumanEval/91",
+    "a0a7e7abffb8bdcc7977dc1167fa440fbff18d90688abf670591f1fff6856889",
+    "ba3f4fa76f91784474b933b15c21d21e9d89f38989ba7c6375c28cd5befd60ff",
+    "babfdcdb4f5e11f89d9b806dc9e84690fc41b249b7a42a6bb189cd52b0be7d24",
+    "c2d62502892e54f510c36e86c2adf3cadf9c533c59c96e28d86c64a63f08853c",
+    "d1b9151313b9d8cd78a70405a5bb69075bcb8e070b31fb384064213b08db8c67",
+    "dcfbcec7a0a7ed2cc490bad1c5cb386f254622ea61a37ff3dedf8c6f03c88ec0",
+    "e09bb8f17bf87bac77fe624f0509660221d0d3533a1673927d4c72e583a749d0",
+    "ee6a40759a8e9342f506db55cd0c40e075a1ce7fd0ccc2da16d91a2be11ea856",
+    "f99c92a7cf2983bc9fcea2e5babc601c4a90cd55176598d782f0388a3c2e18e8"
+  ],
+  "sources": {
+    "gsm8k": {
+      "url": "https://raw.githubusercontent.com/openai/grade-school-math/b0bb162abedc65e1fdd8e93ed090fd7598ee68bc/grade_school_math/data/test.jsonl",
+      "commit": "b0bb162abedc65e1fdd8e93ed090fd7598ee68bc",
+      "sha256": "3730d312f6e3440559ace48831e51066acaca737f6eabec99bccb9e4b3c39d14"
+    },
+    "humaneval": {
+      "url": "https://raw.githubusercontent.com/openai/human-eval/463c980b59e818ace59f6f9803cd92c749ceae61/data/HumanEval.jsonl.gz",
+      "commit": "463c980b59e818ace59f6f9803cd92c749ceae61",
+      "sha256": "b796127e635a67f93fb35c04f4cb03cf06f38c8072ee7cee8833d7bee06979ef"
+    },
+    "squad": {
+      "url": "https://raw.githubusercontent.com/rajpurkar/SQuAD-explorer/240e165ab706d95bd4323653bb92421f446208cf/dataset/dev-v1.1.json",
+      "commit": "240e165ab706d95bd4323653bb92421f446208cf",
+      "sha256": "95aa6a52d5d6a735563366753ca50492a658031da74f301ac5238b03966972c9"
+    }
+  },
+  "tasks": [
+    {
+      "id": "squad/56e1febfe3433e1400423239",
+      "group": "80050447c9b41fb5fac1950338fd3ace00106108cadec17c27aa5b41f7aee5cf",
+      "prompt": "Answer the question using only the provided passage. Return only the shortest answer phrase, without explanation.\n\nPassage:\nWhat intractability means in practice is open to debate. Saying that a problem is not in P does not imply that all large cases of the problem are hard or even that most of them are. For example, the decision problem in Presburger arithmetic has been shown not to be in P, yet algorithms have been written that solve the problem in reasonable times in most cases. Similarly, algorithms can solve the NP-complete knapsack problem over a wide range of sizes in less than quadratic time and SAT solvers routinely handle large instances of the NP-complete Boolean satisfiability problem.\n\nQuestion: How quickly can an algorithm solve an NP-complete knapsack problem?",
+      "answers": [
+        "in less than quadratic time",
+        "less than quadratic time",
+        "less than quadratic time"
+      ],
+      "dataset": "squad",
+      "split": "calibration"
+    },
+    {
+      "id": "squad/57274f67708984140094dbf6",
+      "group": "ba3f4fa76f91784474b933b15c21d21e9d89f38989ba7c6375c28cd5befd60ff",
+      "prompt": "Answer the question using only the provided passage. Return only the shortest answer phrase, without explanation.\n\nPassage:\nConstruction projects can suffer from preventable financial problems. Underbids happen when builders ask for too little money to complete the project. Cash flow problems exist when the present amount of funding cannot cover the current costs for labour and materials, and because they are a matter of having sufficient funds at a specific time, can arise even when the overall total is enough. Fraud is a problem in many fields, but is notoriously prevalent in the construction field. Financial planning for the project is intended to ensure that a solid plan with adequate safeguards and contingency plans are in place before the project is started and is required to ensure that the plan is properly executed over the life of the project.\n\nQuestion: What is an underbid?",
+      "answers": [
+        "when builders ask for too little money to complete the project",
+        "when builders ask for too little money to complete the project",
+        "builders ask for too little money to complete the project"
+      ],
+      "dataset": "squad",
+      "split": "calibration"
+    },
+    {
+      "id": "squad/56e0d9e0231d4119001ac43c",
+      "group": "e09bb8f17bf87bac77fe624f0509660221d0d3533a1673927d4c72e583a749d0",
+      "prompt": "Answer the question using only the provided passage. Return only the shortest answer phrase, without explanation.\n\nPassage:\nOne of the things Tesla developed at that laboratory in 1887 was an induction motor that ran on alternating current, a power system format that was starting to be built in Europe and the United States because of its advantages in long-distance, high-voltage transmission. The motor used polyphase current which generated a rotating magnetic field to turn the motor (a principle Tesla claimed to have conceived in 1882). This innovative electric motor, patented in May 1888, was a simple self-starting design that did not need a commutator, thus avoiding sparking and the high maintenance of constantly servicing and replacing mechanical brushes.\n\nQuestion: When did Tesla make the induction motor?",
+      "answers": [
+        "1887",
+        "1887",
+        "1887"
+      ],
+      "dataset": "squad",
+      "split": "calibration"
+    },
+    {
+      "id": "HumanEval/147",
+      "group": "HumanEval/147",
+      "prompt": "Complete the Python function below. Return the complete function and any required imports, with no explanation.\n\n\ndef get_max_triples(n):\n    \"\"\"\n    You are given a positive integer n. You have to create an integer array a of length n.\n        For each i (1 ≤ i ≤ n), the value of a[i] = i * i - i + 1.\n        Return the number of triples (a[i], a[j], a[k]) of a where i < j < k, \n    and a[i] + a[j] + a[k] is a multiple of 3.\n\n    Example :\n        Input: n = 5\n        Output: 1\n        Explanation: \n        a = [1, 3, 7, 13, 21]\n        The only valid triple is (1, 7, 13).\n    \"\"\"\n",
+      "entry_point": "get_max_triples",
+      "test": "def check(candidate):\n\n    assert candidate(5) == 1\n    assert candidate(6) == 4\n    assert candidate(10) == 36\n    assert candidate(100) == 53361\n",
+      "original_prompt": "\ndef get_max_triples(n):\n    \"\"\"\n    You are given a positive integer n. You have to create an integer array a of length n.\n        For each i (1 ≤ i ≤ n), the value of a[i] = i * i - i + 1.\n        Return the number of triples (a[i], a[j], a[k]) of a where i < j < k, \n    and a[i] + a[j] + a[k] is a multiple of 3.\n\n    Example :\n        Input: n = 5\n        Output: 1\n        Explanation: \n        a = [1, 3, 7, 13, 21]\n        The only valid triple is (1, 7, 13).\n    \"\"\"\n",
+      "canonical_solution": "    A = [i*i - i + 1 for i in range(1,n+1)]\n    ans = []\n    for i in range(n):\n        for j in range(i+1,n):\n            for k in range(j+1,n):\n                if (A[i]+A[j]+A[k])%3 == 0:\n                    ans += [(A[i],A[j],A[k])]\n    return len(ans)\n",
+      "dataset": "humaneval",
+      "split": "calibration"
+    },
+    {
+      "id": "gsm8k/test/631",
+      "group": "15c874942d6f3fd88b477918ca92565471c619e380307872c8b189d12867b3a0",
+      "prompt": "In a jewelers store, the price of a gold Jewell is 4/5 times as much as the price of a diamond Jewell. The cost of a silver Jewell is $400 less than the price of gold. If a diamond Jewell is $2000, find the total price for all three jewels.\nExplain briefly and finish with \"#### <number>\".",
+      "expected": "4800",
+      "dataset": "gsm8k",
+      "split": "calibration"
+    },
+    {
+      "id": "HumanEval/22",
+      "group": "HumanEval/22",
+      "prompt": "Complete the Python function below. Return the complete function and any required imports, with no explanation.\n\nfrom typing import List, Any\n\n\ndef filter_integers(values: List[Any]) -> List[int]:\n    \"\"\" Filter given list of any python values only for integers\n    >>> filter_integers(['a', 3.14, 5])\n    [5]\n    >>> filter_integers([1, 2, 3, 'abc', {}, []])\n    [1, 2, 3]\n    \"\"\"\n",
+      "entry_point": "filter_integers",
+      "test": "\n\nMETADATA = {\n    'author': 'jt',\n    'dataset': 'test'\n}\n\n\ndef check(candidate):\n    assert candidate([]) == []\n    assert candidate([4, {}, [], 23.2, 9, 'adasd']) == [4, 9]\n    assert candidate([3, 'c', 3, 3, 'a', 'b']) == [3, 3, 3]\n",
+      "original_prompt": "from typing import List, Any\n\n\ndef filter_integers(values: List[Any]) -> List[int]:\n    \"\"\" Filter given list of any python values only for integers\n    >>> filter_integers(['a', 3.14, 5])\n    [5]\n    >>> filter_integers([1, 2, 3, 'abc', {}, []])\n    [1, 2, 3]\n    \"\"\"\n",
+      "canonical_solution": "    return [x for x in values if isinstance(x, int)]\n",
+      "dataset": "humaneval",
+      "split": "calibration"
+    },
+    {
+      "id": "gsm8k/test/1168",
+      "group": "3cb0a38d61e82a90cecfb5582e441724dd99545039d71b5eb6fd1ab436a1cb71",
+      "prompt": "The red rope was four times the length of the blue rope. The blue rope was 7 centimeters shorter than the yellow rope. If the 3 ropes had a combined length of 37 centimeters, what was the length of the red rope in centimeters?\nExplain briefly and finish with \"#### <number>\".",
+      "expected": "20",
+      "dataset": "gsm8k",
+      "split": "calibration"
+    },
+    {
+      "id": "gsm8k/test/115",
+      "group": "f99c92a7cf2983bc9fcea2e5babc601c4a90cd55176598d782f0388a3c2e18e8",
+      "prompt": "Sasha notices that prices for lumber have gone up 50% in the last few months after she bought some lumber. Since she has leftovers, she decides to sell them. She has leftover ten 2 x 4 x 10 boards that cost her $10 each. She also has five 4 x 4 x 10 boards she bought for $16 each. If she sells them all, how much profit does she make?\nExplain briefly and finish with \"#### <number>\".",
+      "expected": "90",
+      "dataset": "gsm8k",
+      "split": "calibration"
+    },
+    {
+      "id": "HumanEval/86",
+      "group": "HumanEval/86",
+      "prompt": "Complete the Python function below. Return the complete function and any required imports, with no explanation.\n\n\ndef anti_shuffle(s):\n    \"\"\"\n    Write a function that takes a string and returns an ordered version of it.\n    Ordered version of string, is a string where all words (separated by space)\n    are replaced by a new word where all the characters arranged in\n    ascending order based on ascii value.\n    Note: You should keep the order of words and blank spaces in the sentence.\n\n    For example:\n    anti_shuffle('Hi') returns 'Hi'\n    anti_shuffle('hello') returns 'ehllo'\n    anti_shuffle('Hello World!!!') returns 'Hello !!!Wdlor'\n    \"\"\"\n",
+      "entry_point": "anti_shuffle",
+      "test": "def check(candidate):\n\n    # Check some simple cases\n    assert candidate('Hi') == 'Hi'\n    assert candidate('hello') == 'ehllo'\n    assert candidate('number') == 'bemnru'\n    assert candidate('abcd') == 'abcd'\n    assert candidate('Hello World!!!') == 'Hello !!!Wdlor'\n    assert candidate('') == ''\n    assert candidate('Hi. My name is Mister Robot. How are you?') == '.Hi My aemn is Meirst .Rboot How aer ?ouy'\n    # Check some edge cases that are easy to work out by hand.\n    assert True\n\n",
+      "original_prompt": "\ndef anti_shuffle(s):\n    \"\"\"\n    Write a function that takes a string and returns an ordered version of it.\n    Ordered version of string, is a string where all words (separated by space)\n    are replaced by a new word where all the characters arranged in\n    ascending order based on ascii value.\n    Note: You should keep the order of words and blank spaces in the sentence.\n\n    For example:\n    anti_shuffle('Hi') returns 'Hi'\n    anti_shuffle('hello') returns 'ehllo'\n    anti_shuffle('Hello World!!!') returns 'Hello !!!Wdlor'\n    \"\"\"\n",
+      "canonical_solution": "    return ' '.join([''.join(sorted(list(i))) for i in s.split(' ')])\n",
+      "dataset": "humaneval",
+      "split": "calibration"
+    },
+    {
+      "id": "gsm8k/test/527",
+      "group": "dcfbcec7a0a7ed2cc490bad1c5cb386f254622ea61a37ff3dedf8c6f03c88ec0",
+      "prompt": "If one person can paint half a house in 5 days, how many hours would it take for 5 people to paint a whole house?\nExplain briefly and finish with \"#### <number>\".",
+      "expected": "48",
+      "dataset": "gsm8k",
+      "split": "calibration"
+    },
+    {
+      "id": "HumanEval/91",
+      "group": "HumanEval/91",
+      "prompt": "Complete the Python function below. Return the complete function and any required imports, with no explanation.\n\n\ndef is_bored(S):\n    \"\"\"\n    You'll be given a string of words, and your task is to count the number\n    of boredoms. A boredom is a sentence that starts with the word \"I\".\n    Sentences are delimited by '.', '?' or '!'.\n   \n    For example:\n    >>> is_bored(\"Hello world\")\n    0\n    >>> is_bored(\"The sky is blue. The sun is shining. I love this weather\")\n    1\n    \"\"\"\n",
+      "entry_point": "is_bored",
+      "test": "def check(candidate):\n\n    # Check some simple cases\n    assert candidate(\"Hello world\") == 0, \"Test 1\"\n    assert candidate(\"Is the sky blue?\") == 0, \"Test 2\"\n    assert candidate(\"I love It !\") == 1, \"Test 3\"\n    assert candidate(\"bIt\") == 0, \"Test 4\"\n    assert candidate(\"I feel good today. I will be productive. will kill It\") == 2, \"Test 5\"\n    assert candidate(\"You and I are going for a walk\") == 0, \"Test 6\"\n\n    # Check some edge cases that are easy to work out by hand.\n    assert True, \"This prints if this assert fails 2 (also good for debugging!)\"\n\n",
+      "original_prompt": "\ndef is_bored(S):\n    \"\"\"\n    You'll be given a string of words, and your task is to count the number\n    of boredoms. A boredom is a sentence that starts with the word \"I\".\n    Sentences are delimited by '.', '?' or '!'.\n   \n    For example:\n    >>> is_bored(\"Hello world\")\n    0\n    >>> is_bored(\"The sky is blue. The sun is shining. I love this weather\")\n    1\n    \"\"\"\n",
+      "canonical_solution": "    import re\n    sentences = re.split(r'[.?!]\\s*', S)\n    return sum(sentence[0:2] == 'I ' for sentence in sentences)\n",
+      "dataset": "humaneval",
+      "split": "calibration"
+    },
+    {
+      "id": "squad/572f5533a23a5019007fc55b",
+      "group": "7c28011f4adb5bc9518e20aa534136a5ab7d9e920f0263cb0d482a6ce7859ede",
+      "prompt": "Answer the question using only the provided passage. Return only the shortest answer phrase, without explanation.\n\nPassage:\nThe Rhine (Romansh: Rein, German: Rhein, French: le Rhin, Dutch: Rijn) is a European river that begins in the Swiss canton of Graubünden in the southeastern Swiss Alps, forms part of the Swiss-Austrian, Swiss-Liechtenstein border, Swiss-German and then the Franco-German border, then flows through the Rhineland and eventually empties into the North Sea in the Netherlands. The biggest city on the river Rhine is Cologne, Germany with a population of more than 1,050,000 people. It is the second-longest river in Central and Western Europe (after the Danube), at about 1,230 km (760 mi),[note 2][note 1] with an average discharge of about 2,900 m3/s (100,000 cu ft/s).\n\nQuestion: Where does the Rhine begin? ",
+      "answers": [
+        "Swiss canton",
+        "s in the Swiss canton of Graubünden in the southeastern Swiss Alps,",
+        "Graubünden",
+        "Graubünden"
+      ],
+      "dataset": "squad",
+      "split": "calibration"
+    }
+  ]
+}

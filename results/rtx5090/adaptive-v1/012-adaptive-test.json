@@ -1,0 +1,15 @@
+{
+  "module": "rtx5090_adaptive_run",
+  "sha256": "370b2085453d78bd61923dabc54037bc135b06b1235f2bbeddc4800738aa84ab",
+  "arguments": {
+    "manifest": "/home/wangyikai/deepinfer-5090/results/adaptive-v1/test-tasks.json",
+    "manifest_sha256": "5cca02a9f8c949e46ab3babf203ff7166fe140ae6a27ca3109b94cd465b922e2",
+    "output": "/home/wangyikai/deepinfer-5090/results/adaptive-v1/test-run.json",
+    "dependencies": {
+      "rtx5090_adaptive_policy.py": "4608d83efe16775fe44442cbabecedc5da80fd9565a607ff44ed1255ddf21be5",
+      "rtx5090_gpu_monitor.py": "13cc838deb957096be6e00989e7537267ec424550c23c4a16d3caa79efc6baf6"
+    },
+    "selection": "/home/wangyikai/deepinfer-5090/results/adaptive-v1/selection.json",
+    "selection_sha256": "064dac5836bd496bfb06f8700bc52ba2dd0ed131efeadcaeb2acbfc56d4a46ff"
+  }
+}

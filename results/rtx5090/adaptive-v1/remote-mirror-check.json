@@ -1,0 +1,18 @@
+{
+  "verified_files": 28,
+  "audit_sha256": "c8f4ee3c5085568a957dddb681c7d2c99550f0ddc6d770bffcad02a3722098f7",
+  "worker": {
+    "status": "READY",
+    "pid": 3156877,
+    "load_count": 1,
+    "completed_jobs": 11,
+    "failed_jobs": 1,
+    "started_unix": 1794028042.2797663,
+    "ready_unix": 1794028050.1511154,
+    "target_cuda_storage_bytes": 8044936192,
+    "last_job": "012-adaptive-test.json",
+    "allocated_bytes": 9216937984,
+    "reserved_bytes": 13585350656
+  },
+  "queue_empty": true
+}

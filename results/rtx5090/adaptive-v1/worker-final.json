@@ -1,0 +1,13 @@
+{
+  "status": "READY",
+  "pid": 3156877,
+  "load_count": 1,
+  "completed_jobs": 11,
+  "failed_jobs": 1,
+  "started_unix": 1794028042.2797663,
+  "ready_unix": 1794028050.1511154,
+  "target_cuda_storage_bytes": 8044936192,
+  "last_job": "012-adaptive-test.json",
+  "allocated_bytes": 9216937984,
+  "reserved_bytes": 13585350656
+}

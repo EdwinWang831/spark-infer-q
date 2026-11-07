@@ -34,6 +34,7 @@
 | E16 | 600 条中英文提示重新训练 | 20 个新任务上比滞后预算 +9.61%，比 E15 +3.18% | 可选 | [报告](E16_BILINGUAL_EXPANSION_REPORT.md) · [方案](E16_BILINGUAL_EXPANSION_PLAN.md) |
 | E17 | 定向补训 | 比固定预算 +11.02%，比 E16 仅 +0.09%，区间跨零 | K2 运行时默认；未确认超过 E16 | [报告](E17_COMPLETED_TRAINING_REPORT.md) · [方案](E17_TARGETED_RETRAINING_PLAN.md) |
 | E18 | 真正缩短草稿 / 跳过草稿 | 草稿计算只少 0.74%，没有在线提速 | 未采用 | [报告](E18_PREDRAFT_COMPUTE_REPORT.md) · [方案](E18_PREDRAFT_COMPUTE_PLAN.md) |
+| A1 / P1D（RTX 5090） | Qwen3-4B 官方 DFlash：固定 16、lagged、EWMA 与校准选定的跳过规则 | 24 道新题上候选生成 wall +1.21%，节时区间跨零，尚未优于固定 16 | 未采用 | [报告与 CPU 复算](RTX5090_ADAPTIVE_WIDTH_REPORT.md) |
 | E19 | 同数据的 11,157 参数 MLP | 离线效率比线性低 0.55% | 未采用 | [报告](E19_MLP_CAPACITY_REPORT.md) · [方案](E19_MLP_CAPACITY_PLAN.md) |
 | E20/E21 | 精确的训练标签加速采集 | 自适应采集器在 6 个 root 上少用 21.13% 采集计算 | 可选（采集工具） | [E20](E20_FAST_COLLECTOR_REPORT.md) · [E21](E21_ADAPTIVE_COLLECTOR_REPORT.md) · [用法](FAST_COLLECTOR_USAGE.md) |
 | E22 | NumPy 标量 MLP 运行时 | 小头 0.3353 → 0.0118 ms（28.38 倍）；回放仍比线性低 0.06% | 诊断 | [报告](E22_PREDICTOR_DIAGNOSIS_REPORT.md) |

@@ -1,0 +1,15 @@
+{
+  "frozen_unix": 1794040282.322685,
+  "files": {
+    "calibration-tasks.json": "fef1ff47fef8747307fef1a14b8e357e229c6118e46650727763c1392a852617",
+    "test-tasks.json": "5cca02a9f8c949e46ab3babf203ff7166fe140ae6a27ca3109b94cd465b922e2",
+    "executed-sources/rtx5090_gpu_monitor.py": "13cc838deb957096be6e00989e7537267ec424550c23c4a16d3caa79efc6baf6",
+    "executed-sources/rtx5090_fixed_tasks.py": "85fc5e91392cb71744ab3eaab1a34341e3be311e346e97e4ccce2c546e129075",
+    "executed-sources/rtx5090_adaptive_policy.py": "4608d83efe16775fe44442cbabecedc5da80fd9565a607ff44ed1255ddf21be5",
+    "executed-sources/rtx5090_adaptive_tasks.py": "adde6e2c1b6fc37296df884c34949f995f178c271cbd16c6cf5d09237fbe46ac",
+    "executed-sources/rtx5090_fixed_evaluate.py": "53c234276589a917963e94878e59c17f5c3fc2514e4065cbb605c6bc74a43e0f",
+    "executed-sources/rtx5090_adaptive_run.py": "370b2085453d78bd61923dabc54037bc135b06b1235f2bbeddc4800738aa84ab"
+  },
+  "calibration_tasks": 12,
+  "fresh_test_tasks": 24
+}
