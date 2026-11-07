@@ -1,0 +1,14 @@
+{
+  "job": "011-adaptive-calibration.json",
+  "started_unix": 1794040309.3846462,
+  "worker_pid": 3156877,
+  "load_count": 1,
+  "status": "PASS",
+  "result": {
+    "output": "/home/wangyikai/deepinfer-5090/results/adaptive-v1/calibration-run.json",
+    "target_object_id": 126549066390160,
+    "draft_object_id": 126540209296480,
+    "timed_runs": 216
+  },
+  "finished_unix": 1794040503.063078
+}

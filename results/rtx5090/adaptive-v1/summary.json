@@ -1,0 +1,1967 @@
+{
+  "totals": {
+    "official16": {
+      "tasks": 24,
+      "sum_median_request_s": 9.53187528415583,
+      "sum_median_decode_s": 9.059983740677126,
+      "output_tokens": 2182,
+      "decode_tokens_per_s": 238.1902729373679,
+      "mean_committed_progress": 5.649214659685864,
+      "hf_exact_count": 21,
+      "output_cap_count": 0,
+      "strict_format_pass_count": 14,
+      "quality_pass_count": 19,
+      "action_counts": {
+        "16": 382
+      },
+      "controller_decide_observe_s": 0.0,
+      "controller_fraction_of_wall": 0.0
+    },
+    "lagged": {
+      "tasks": 24,
+      "sum_median_request_s": 10.575112488935702,
+      "sum_median_decode_s": 10.102510278928094,
+      "output_tokens": 2204,
+      "decode_tokens_per_s": 215.78795168831093,
+      "mean_committed_progress": 5.105386416861827,
+      "hf_exact_count": 21,
+      "output_cap_count": 0,
+      "strict_format_pass_count": 15,
+      "quality_pass_count": 19,
+      "action_counts": {
+        "16": 196,
+        "8": 231
+      },
+      "controller_decide_observe_s": 0.000930028,
+      "controller_fraction_of_wall": 8.794497467266182e-05
+    },
+    "ewma": {
+      "tasks": 24,
+      "sum_median_request_s": 10.316174704115838,
+      "sum_median_decode_s": 9.844919416005723,
+      "output_tokens": 2204,
+      "decode_tokens_per_s": 221.43401158325264,
+      "mean_committed_progress": 5.240384615384615,
+      "hf_exact_count": 21,
+      "output_cap_count": 0,
+      "strict_format_pass_count": 15,
+      "quality_pass_count": 19,
+      "action_counts": {
+        "16": 252,
+        "8": 164
+      },
+      "controller_decide_observe_s": 0.000982992,
+      "controller_fraction_of_wall": 9.528648246019102e-05
+    },
+    "candidate": {
+      "tasks": 24,
+      "sum_median_request_s": 9.647121245856397,
+      "sum_median_decode_s": 9.17604801489506,
+      "output_tokens": 2180,
+      "decode_tokens_per_s": 234.95953775528025,
+      "mean_committed_progress": 5.5424164524421595,
+      "hf_exact_count": 21,
+      "output_cap_count": 0,
+      "strict_format_pass_count": 15,
+      "quality_pass_count": 19,
+      "action_counts": {
+        "16": 380,
+        "1": 9
+      },
+      "controller_decide_observe_s": 0.0008891,
+      "controller_fraction_of_wall": 9.216220853261108e-05
+    }
+  },
+  "comparisons_vs_official16": {
+    "lagged": {
+      "wall_time_reduction": -0.1094472151260697,
+      "stratified_prompt_bootstrap_95": [
+        -0.1525565384922014,
+        -0.05886458539196315
+      ],
+      "bootstrap_draws": 4000,
+      "independent_tasks": 24
+    },
+    "ewma": {
+      "wall_time_reduction": -0.0822817542801566,
+      "stratified_prompt_bootstrap_95": [
+        -0.1332690435101107,
+        -0.037939493960390314
+      ],
+      "bootstrap_draws": 4000,
+      "independent_tasks": 24
+    },
+    "candidate": {
+      "wall_time_reduction": -0.012090586402460746,
+      "stratified_prompt_bootstrap_95": [
+        -0.029370916475057074,
+        0.0009084421433015466
+      ],
+      "bootstrap_draws": 4000,
+      "independent_tasks": 24
+    }
+  },
+  "by_dataset": {
+    "gsm8k": {
+      "official16": {
+        "tasks": 8,
+        "sum_median_request_s": 5.804267704952508,
+        "sum_median_decode_s": 5.650073485914618,
+        "output_tokens": 1122,
+        "decode_tokens_per_s": 197.16557718712022,
+        "mean_committed_progress": 4.680672268907563,
+        "hf_exact_count": 6,
+        "output_cap_count": 0,
+        "strict_format_pass_count": 2,
+        "quality_pass_count": 7
+      },
+      "lagged": {
+        "tasks": 8,
+        "sum_median_request_s": 6.587399440119043,
+        "sum_median_decode_s": 6.432385339867324,
+        "output_tokens": 1144,
+        "decode_tokens_per_s": 176.60633497175272,
+        "mean_committed_progress": 4.176470588235294,
+        "hf_exact_count": 6,
+        "output_cap_count": 0,
+        "strict_format_pass_count": 3,
+        "quality_pass_count": 7
+      },
+      "ewma": {
+        "tasks": 8,
+        "sum_median_request_s": 6.357436181046069,
+        "sum_median_decode_s": 6.20312952704262,
+        "output_tokens": 1144,
+        "decode_tokens_per_s": 183.13336760865528,
+        "mean_committed_progress": 4.33587786259542,
+        "hf_exact_count": 6,
+        "output_cap_count": 0,
+        "strict_format_pass_count": 3,
+        "quality_pass_count": 7
+      },
+      "candidate": {
+        "tasks": 8,
+        "sum_median_request_s": 5.886374630848877,
+        "sum_median_decode_s": 5.732071059057489,
+        "output_tokens": 1120,
+        "decode_tokens_per_s": 193.99619937420027,
+        "mean_committed_progress": 4.576131687242798,
+        "hf_exact_count": 6,
+        "output_cap_count": 0,
+        "strict_format_pass_count": 3,
+        "quality_pass_count": 7
+      }
+    },
+    "humaneval": {
+      "official16": {
+        "tasks": 8,
+        "sum_median_request_s": 3.3513616481795907,
+        "sum_median_decode_s": 3.196124301990494,
+        "output_tokens": 1015,
+        "decode_tokens_per_s": 315.06909771089215,
+        "mean_committed_progress": 7.45925925925926,
+        "hf_exact_count": 7,
+        "output_cap_count": 0,
+        "strict_format_pass_count": 5,
+        "quality_pass_count": 5
+      },
+      "lagged": {
+        "tasks": 8,
+        "sum_median_request_s": 3.6123882648535073,
+        "sum_median_decode_s": 3.457050522090867,
+        "output_tokens": 1015,
+        "decode_tokens_per_s": 291.28877161764876,
+        "mean_committed_progress": 6.897260273972603,
+        "hf_exact_count": 7,
+        "output_cap_count": 0,
+        "strict_format_pass_count": 5,
+        "quality_pass_count": 5
+      },
+      "ewma": {
+        "tasks": 8,
+        "sum_median_request_s": 3.583226243034005,
+        "sum_median_decode_s": 3.428827640018426,
+        "output_tokens": 1015,
+        "decode_tokens_per_s": 293.6863866375589,
+        "mean_committed_progress": 6.944827586206896,
+        "hf_exact_count": 7,
+        "output_cap_count": 0,
+        "strict_format_pass_count": 5,
+        "quality_pass_count": 5
+      },
+      "candidate": {
+        "tasks": 8,
+        "sum_median_request_s": 3.3861066640820354,
+        "sum_median_decode_s": 3.2311112529132515,
+        "output_tokens": 1015,
+        "decode_tokens_per_s": 311.65748288365603,
+        "mean_committed_progress": 7.350364963503649,
+        "hf_exact_count": 7,
+        "output_cap_count": 0,
+        "strict_format_pass_count": 5,
+        "quality_pass_count": 5
+      }
+    },
+    "squad": {
+      "official16": {
+        "tasks": 8,
+        "sum_median_request_s": 0.3762459310237318,
+        "sum_median_decode_s": 0.21378595277201384,
+        "output_tokens": 45,
+        "decode_tokens_per_s": 173.07030476159318,
+        "mean_committed_progress": 4.111111111111111,
+        "hf_exact_count": 8,
+        "output_cap_count": 0,
+        "strict_format_pass_count": 7,
+        "quality_pass_count": 7,
+        "mean_f1": 0.975
+      },
+      "lagged": {
+        "tasks": 8,
+        "sum_median_request_s": 0.3753247839631513,
+        "sum_median_decode_s": 0.2130744169699028,
+        "output_tokens": 45,
+        "decode_tokens_per_s": 173.6482517524679,
+        "mean_committed_progress": 4.111111111111111,
+        "hf_exact_count": 8,
+        "output_cap_count": 0,
+        "strict_format_pass_count": 7,
+        "quality_pass_count": 7,
+        "mean_f1": 0.975
+      },
+      "ewma": {
+        "tasks": 8,
+        "sum_median_request_s": 0.375512280035764,
+        "sum_median_decode_s": 0.2129622489446774,
+        "output_tokens": 45,
+        "decode_tokens_per_s": 173.73971294608054,
+        "mean_committed_progress": 4.111111111111111,
+        "hf_exact_count": 8,
+        "output_cap_count": 0,
+        "strict_format_pass_count": 7,
+        "quality_pass_count": 7,
+        "mean_f1": 0.975
+      },
+      "candidate": {
+        "tasks": 8,
+        "sum_median_request_s": 0.3746399509254843,
+        "sum_median_decode_s": 0.2128657029243186,
+        "output_tokens": 45,
+        "decode_tokens_per_s": 173.8185132301695,
+        "mean_committed_progress": 4.111111111111111,
+        "hf_exact_count": 8,
+        "output_cap_count": 0,
+        "strict_format_pass_count": 7,
+        "quality_pass_count": 7,
+        "mean_f1": 0.975
+      }
+    }
+  },
+  "same_output_subsets": {
+    "lagged": {
+      "tasks": 22,
+      "ids": [
+        "squad/5726ee28708984140094d658",
+        "gsm8k/test/503",
+        "HumanEval/75",
+        "squad/57273dccdd62a815002e99fc",
+        "squad/5727c8863acd2414000dec4a",
+        "squad/57097141200fba1400367ffb",
+        "squad/57268882f1498d1400e8e307",
+        "HumanEval/118",
+        "HumanEval/38",
+        "HumanEval/116",
+        "HumanEval/19",
+        "gsm8k/test/906",
+        "squad/572fd47fa23a5019007fca56",
+        "squad/572a10cd6aef051400155226",
+        "gsm8k/test/936",
+        "squad/56f85cf0aef2371900626019",
+        "HumanEval/37",
+        "gsm8k/test/786",
+        "gsm8k/test/778",
+        "HumanEval/82",
+        "gsm8k/test/1186",
+        "HumanEval/102"
+      ],
+      "comparison": {
+        "wall_time_reduction": -0.08249540653873999,
+        "stratified_prompt_bootstrap_95": [
+          -0.1268205428787028,
+          -0.03925983494243579
+        ],
+        "bootstrap_draws": 4000,
+        "independent_tasks": 22
+      }
+    },
+    "ewma": {
+      "tasks": 22,
+      "ids": [
+        "squad/5726ee28708984140094d658",
+        "gsm8k/test/503",
+        "HumanEval/75",
+        "squad/57273dccdd62a815002e99fc",
+        "squad/5727c8863acd2414000dec4a",
+        "squad/57097141200fba1400367ffb",
+        "squad/57268882f1498d1400e8e307",
+        "HumanEval/118",
+        "HumanEval/38",
+        "HumanEval/116",
+        "HumanEval/19",
+        "gsm8k/test/906",
+        "squad/572fd47fa23a5019007fca56",
+        "squad/572a10cd6aef051400155226",
+        "gsm8k/test/936",
+        "squad/56f85cf0aef2371900626019",
+        "HumanEval/37",
+        "gsm8k/test/786",
+        "gsm8k/test/778",
+        "HumanEval/82",
+        "gsm8k/test/1186",
+        "HumanEval/102"
+      ],
+      "comparison": {
+        "wall_time_reduction": -0.048334985511574446,
+        "stratified_prompt_bootstrap_95": [
+          -0.06818325745851084,
+          -0.03016773048599042
+        ],
+        "bootstrap_draws": 4000,
+        "independent_tasks": 22
+      }
+    },
+    "candidate": {
+      "tasks": 23,
+      "ids": [
+        "squad/5726ee28708984140094d658",
+        "gsm8k/test/503",
+        "HumanEval/75",
+        "squad/57273dccdd62a815002e99fc",
+        "squad/5727c8863acd2414000dec4a",
+        "squad/57097141200fba1400367ffb",
+        "squad/57268882f1498d1400e8e307",
+        "HumanEval/118",
+        "HumanEval/38",
+        "HumanEval/116",
+        "HumanEval/19",
+        "gsm8k/test/906",
+        "squad/572fd47fa23a5019007fca56",
+        "squad/572a10cd6aef051400155226",
+        "gsm8k/test/936",
+        "squad/56f85cf0aef2371900626019",
+        "HumanEval/37",
+        "gsm8k/test/786",
+        "gsm8k/test/778",
+        "gsm8k/test/675",
+        "HumanEval/82",
+        "gsm8k/test/1186",
+        "HumanEval/102"
+      ],
+      "comparison": {
+        "wall_time_reduction": -0.0035989574669221813,
+        "stratified_prompt_bootstrap_95": [
+          -0.009737361070620842,
+          0.0021341142177134786
+        ],
+        "bootstrap_draws": 4000,
+        "independent_tasks": 23
+      }
+    }
+  },
+  "per_task": [
+    {
+      "id": "squad/5726ee28708984140094d658",
+      "dataset": "squad",
+      "modes": {
+        "official16": {
+          "wall_s": 0.048480034922249615,
+          "decode_s": 0.023486107937060297,
+          "controller_s": 0.0,
+          "output_tokens": 6,
+          "decode_tokens": 5,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": false,
+            "f1": 0.8
+          }
+        },
+        "lagged": {
+          "wall_s": 0.048540625954046845,
+          "decode_s": 0.02356409397907555,
+          "controller_s": 1.616e-06,
+          "output_tokens": 6,
+          "decode_tokens": 5,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": false,
+            "f1": 0.8
+          }
+        },
+        "ewma": {
+          "wall_s": 0.04844091203995049,
+          "decode_s": 0.02347048604860902,
+          "controller_s": 1.718e-06,
+          "output_tokens": 6,
+          "decode_tokens": 5,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": false,
+            "f1": 0.8
+          }
+        },
+        "candidate": {
+          "wall_s": 0.048444202984683216,
+          "decode_s": 0.02347626502159983,
+          "controller_s": 1.455e-06,
+          "output_tokens": 6,
+          "decode_tokens": 5,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": false,
+            "f1": 0.8
+          }
+        }
+      }
+    },
+    {
+      "id": "gsm8k/test/503",
+      "dataset": "gsm8k",
+      "modes": {
+        "official16": {
+          "wall_s": 0.5149151720106602,
+          "decode_s": 0.4957521400647238,
+          "controller_s": 0.0,
+          "output_tokens": 94,
+          "decode_tokens": 93,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "strict_pass": false,
+            "extracted": "18",
+            "literal_placeholder_brackets": true,
+            "missing_answer_marker": false
+          }
+        },
+        "lagged": {
+          "wall_s": 0.5141214720206335,
+          "decode_s": 0.4947367960121483,
+          "controller_s": 4.5343e-05,
+          "output_tokens": 94,
+          "decode_tokens": 93,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "strict_pass": false,
+            "extracted": "18",
+            "literal_placeholder_brackets": true,
+            "missing_answer_marker": false
+          }
+        },
+        "ewma": {
+          "wall_s": 0.5145418359898031,
+          "decode_s": 0.4953065909212455,
+          "controller_s": 4.9941e-05,
+          "output_tokens": 94,
+          "decode_tokens": 93,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "strict_pass": false,
+            "extracted": "18",
+            "literal_placeholder_brackets": true,
+            "missing_answer_marker": false
+          }
+        },
+        "candidate": {
+          "wall_s": 0.510316637926735,
+          "decode_s": 0.49123040505219245,
+          "controller_s": 4.749e-05,
+          "output_tokens": 94,
+          "decode_tokens": 93,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "strict_pass": false,
+            "extracted": "18",
+            "literal_placeholder_brackets": true,
+            "missing_answer_marker": false
+          }
+        }
+      }
+    },
+    {
+      "id": "HumanEval/75",
+      "dataset": "humaneval",
+      "modes": {
+        "official16": {
+          "wall_s": 0.4461462520994246,
+          "decode_s": 0.42653461708687246,
+          "controller_s": 0.0,
+          "output_tokens": 132,
+          "decode_tokens": 131,
+          "exact_hf_match": false,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "exit_code": 0,
+            "error": null,
+            "code_sha256": "f42e42b4dabd22c1dd74b7d58c9bf5c41bd74e1bc41ffe3a611ccb8e62e290fb"
+          }
+        },
+        "lagged": {
+          "wall_s": 0.4679638729430735,
+          "decode_s": 0.44869988900609314,
+          "controller_s": 3.9754e-05,
+          "output_tokens": 132,
+          "decode_tokens": 131,
+          "exact_hf_match": false,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "exit_code": 0,
+            "error": null,
+            "code_sha256": "f42e42b4dabd22c1dd74b7d58c9bf5c41bd74e1bc41ffe3a611ccb8e62e290fb"
+          }
+        },
+        "ewma": {
+          "wall_s": 0.46854449703823775,
+          "decode_s": 0.4493504740530625,
+          "controller_s": 4.4464e-05,
+          "output_tokens": 132,
+          "decode_tokens": 131,
+          "exact_hf_match": false,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "exit_code": 0,
+            "error": null,
+            "code_sha256": "f42e42b4dabd22c1dd74b7d58c9bf5c41bd74e1bc41ffe3a611ccb8e62e290fb"
+          }
+        },
+        "candidate": {
+          "wall_s": 0.44554544100537896,
+          "decode_s": 0.4262783050071448,
+          "controller_s": 4.0788e-05,
+          "output_tokens": 132,
+          "decode_tokens": 131,
+          "exact_hf_match": false,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "exit_code": 0,
+            "error": null,
+            "code_sha256": "f42e42b4dabd22c1dd74b7d58c9bf5c41bd74e1bc41ffe3a611ccb8e62e290fb"
+          }
+        }
+      }
+    },
+    {
+      "id": "squad/57273dccdd62a815002e99fc",
+      "dataset": "squad",
+      "modes": {
+        "official16": {
+          "wall_s": 0.04311969003174454,
+          "decode_s": 0.023700144956819713,
+          "controller_s": 0.0,
+          "output_tokens": 5,
+          "decode_tokens": 4,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "f1": 1.0
+          }
+        },
+        "lagged": {
+          "wall_s": 0.04316677898168564,
+          "decode_s": 0.02378539799246937,
+          "controller_s": 1.582e-06,
+          "output_tokens": 5,
+          "decode_tokens": 4,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "f1": 1.0
+          }
+        },
+        "ewma": {
+          "wall_s": 0.0429846930783242,
+          "decode_s": 0.02374314295593649,
+          "controller_s": 1.76e-06,
+          "output_tokens": 5,
+          "decode_tokens": 4,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "f1": 1.0
+          }
+        },
+        "candidate": {
+          "wall_s": 0.04290972894523293,
+          "decode_s": 0.02365233504679054,
+          "controller_s": 1.621e-06,
+          "output_tokens": 5,
+          "decode_tokens": 4,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "f1": 1.0
+          }
+        }
+      }
+    },
+    {
+      "id": "gsm8k/test/935",
+      "dataset": "gsm8k",
+      "modes": {
+        "official16": {
+          "wall_s": 1.0634010339854285,
+          "decode_s": 1.0442703959997743,
+          "controller_s": 0.0,
+          "output_tokens": 232,
+          "decode_tokens": 231,
+          "exact_hf_match": false,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "strict_pass": false,
+            "extracted": "64800",
+            "literal_placeholder_brackets": true,
+            "missing_answer_marker": false
+          }
+        },
+        "lagged": {
+          "wall_s": 1.2016489750239998,
+          "decode_s": 1.182434800080955,
+          "controller_s": 0.000105887,
+          "output_tokens": 230,
+          "decode_tokens": 229,
+          "exact_hf_match": false,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "strict_pass": true,
+            "extracted": "64800",
+            "literal_placeholder_brackets": false,
+            "missing_answer_marker": false
+          }
+        },
+        "ewma": {
+          "wall_s": 1.1544142089551315,
+          "decode_s": 1.1352402340853587,
+          "controller_s": 0.000113601,
+          "output_tokens": 230,
+          "decode_tokens": 229,
+          "exact_hf_match": false,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "strict_pass": true,
+            "extracted": "64800",
+            "literal_placeholder_brackets": false,
+            "missing_answer_marker": false
+          }
+        },
+        "candidate": {
+          "wall_s": 1.1481693170499057,
+          "decode_s": 1.1287023019976914,
+          "controller_s": 0.000110224,
+          "output_tokens": 230,
+          "decode_tokens": 229,
+          "exact_hf_match": false,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "strict_pass": true,
+            "extracted": "64800",
+            "literal_placeholder_brackets": false,
+            "missing_answer_marker": false
+          }
+        }
+      }
+    },
+    {
+      "id": "squad/5727c8863acd2414000dec4a",
+      "dataset": "squad",
+      "modes": {
+        "official16": {
+          "wall_s": 0.043483016081154346,
+          "decode_s": 0.023770874016918242,
+          "controller_s": 0.0,
+          "output_tokens": 4,
+          "decode_tokens": 3,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "f1": 1.0
+          }
+        },
+        "lagged": {
+          "wall_s": 0.04348270397167653,
+          "decode_s": 0.023705222993157804,
+          "controller_s": 1.651e-06,
+          "output_tokens": 4,
+          "decode_tokens": 3,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "f1": 1.0
+          }
+        },
+        "ewma": {
+          "wall_s": 0.04321090993471444,
+          "decode_s": 0.023606325965374708,
+          "controller_s": 1.567e-06,
+          "output_tokens": 4,
+          "decode_tokens": 3,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "f1": 1.0
+          }
+        },
+        "candidate": {
+          "wall_s": 0.043407990015111864,
+          "decode_s": 0.023742020945064723,
+          "controller_s": 1.547e-06,
+          "output_tokens": 4,
+          "decode_tokens": 3,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "f1": 1.0
+          }
+        }
+      }
+    },
+    {
+      "id": "squad/57097141200fba1400367ffb",
+      "dataset": "squad",
+      "modes": {
+        "official16": {
+          "wall_s": 0.04382357397116721,
+          "decode_s": 0.02448216895572841,
+          "controller_s": 0.0,
+          "output_tokens": 5,
+          "decode_tokens": 4,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "f1": 1.0
+          }
+        },
+        "lagged": {
+          "wall_s": 0.04282834904734045,
+          "decode_s": 0.023596966988407075,
+          "controller_s": 1.554e-06,
+          "output_tokens": 5,
+          "decode_tokens": 4,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "f1": 1.0
+          }
+        },
+        "ewma": {
+          "wall_s": 0.04409676499199122,
+          "decode_s": 0.02392491197679192,
+          "controller_s": 1.712e-06,
+          "output_tokens": 5,
+          "decode_tokens": 4,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "f1": 1.0
+          }
+        },
+        "candidate": {
+          "wall_s": 0.043248657952062786,
+          "decode_s": 0.024020350072532892,
+          "controller_s": 1.521e-06,
+          "output_tokens": 5,
+          "decode_tokens": 4,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "f1": 1.0
+          }
+        }
+      }
+    },
+    {
+      "id": "squad/57268882f1498d1400e8e307",
+      "dataset": "squad",
+      "modes": {
+        "official16": {
+          "wall_s": 0.043109222897328436,
+          "decode_s": 0.023991259979084134,
+          "controller_s": 0.0,
+          "output_tokens": 5,
+          "decode_tokens": 4,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "f1": 1.0
+          }
+        },
+        "lagged": {
+          "wall_s": 0.04311233793850988,
+          "decode_s": 0.023993026930838823,
+          "controller_s": 1.654e-06,
+          "output_tokens": 5,
+          "decode_tokens": 4,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "f1": 1.0
+          }
+        },
+        "ewma": {
+          "wall_s": 0.04325256904121488,
+          "decode_s": 0.02420531993266195,
+          "controller_s": 1.571e-06,
+          "output_tokens": 5,
+          "decode_tokens": 4,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "f1": 1.0
+          }
+        },
+        "candidate": {
+          "wall_s": 0.04302270896732807,
+          "decode_s": 0.02393263892736286,
+          "controller_s": 1.593e-06,
+          "output_tokens": 5,
+          "decode_tokens": 4,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "f1": 1.0
+          }
+        }
+      }
+    },
+    {
+      "id": "HumanEval/118",
+      "dataset": "humaneval",
+      "modes": {
+        "official16": {
+          "wall_s": 0.3260159329511225,
+          "decode_s": 0.306608980987221,
+          "controller_s": 0.0,
+          "output_tokens": 55,
+          "decode_tokens": 54,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": false,
+            "exit_code": 1,
+            "error": "Traceback (most recent call last):\n  File \"<string>\", line 9, in <module>\n    namespace['check'](namespace[item['entry_point']])\n    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<official-test>\", line 6, in check\nAssertionError\n",
+            "code_sha256": "27718e55b95d001ad035f562f052a295962016d09548db4aeac5e67c8b2b3f0b"
+          }
+        },
+        "lagged": {
+          "wall_s": 0.3737097500124946,
+          "decode_s": 0.35424924304243177,
+          "controller_s": 3.2408e-05,
+          "output_tokens": 55,
+          "decode_tokens": 54,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": false,
+            "exit_code": 1,
+            "error": "Traceback (most recent call last):\n  File \"<string>\", line 9, in <module>\n    namespace['check'](namespace[item['entry_point']])\n    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<official-test>\", line 6, in check\nAssertionError\n",
+            "code_sha256": "27718e55b95d001ad035f562f052a295962016d09548db4aeac5e67c8b2b3f0b"
+          }
+        },
+        "ewma": {
+          "wall_s": 0.39573203097097576,
+          "decode_s": 0.3762304119300097,
+          "controller_s": 3.8072e-05,
+          "output_tokens": 55,
+          "decode_tokens": 54,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": false,
+            "exit_code": 1,
+            "error": "Traceback (most recent call last):\n  File \"<string>\", line 9, in <module>\n    namespace['check'](namespace[item['entry_point']])\n    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<official-test>\", line 6, in check\nAssertionError\n",
+            "code_sha256": "27718e55b95d001ad035f562f052a295962016d09548db4aeac5e67c8b2b3f0b"
+          }
+        },
+        "candidate": {
+          "wall_s": 0.32620985503308475,
+          "decode_s": 0.30683876399416476,
+          "controller_s": 2.9419e-05,
+          "output_tokens": 55,
+          "decode_tokens": 54,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": false,
+            "exit_code": 1,
+            "error": "Traceback (most recent call last):\n  File \"<string>\", line 9, in <module>\n    namespace['check'](namespace[item['entry_point']])\n    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<official-test>\", line 6, in check\nAssertionError\n",
+            "code_sha256": "27718e55b95d001ad035f562f052a295962016d09548db4aeac5e67c8b2b3f0b"
+          }
+        }
+      }
+    },
+    {
+      "id": "HumanEval/38",
+      "dataset": "humaneval",
+      "modes": {
+        "official16": {
+          "wall_s": 0.42127943504601717,
+          "decode_s": 0.4015461220405996,
+          "controller_s": 0.0,
+          "output_tokens": 130,
+          "decode_tokens": 129,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": false,
+            "exit_code": 1,
+            "error": "Traceback (most recent call last):\n  File \"<string>\", line 9, in <module>\n    namespace['check'](namespace[item['entry_point']])\n    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<official-test>\", line 13, in check\nNameError: name 'encode_cyclic' is not defined. Did you mean: 'decode_cyclic'?\n",
+            "code_sha256": "f959c204179f6bf10969d6b9248e90345fa93fbf5d0806acdade27aeeaa7e376"
+          }
+        },
+        "lagged": {
+          "wall_s": 0.4437640639953315,
+          "decode_s": 0.42416064999997616,
+          "controller_s": 3.8648e-05,
+          "output_tokens": 130,
+          "decode_tokens": 129,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": false,
+            "exit_code": 1,
+            "error": "Traceback (most recent call last):\n  File \"<string>\", line 9, in <module>\n    namespace['check'](namespace[item['entry_point']])\n    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<official-test>\", line 13, in check\nNameError: name 'encode_cyclic' is not defined. Did you mean: 'decode_cyclic'?\n",
+            "code_sha256": "f959c204179f6bf10969d6b9248e90345fa93fbf5d0806acdade27aeeaa7e376"
+          }
+        },
+        "ewma": {
+          "wall_s": 0.44484070502221584,
+          "decode_s": 0.4253735370002687,
+          "controller_s": 4.2118e-05,
+          "output_tokens": 130,
+          "decode_tokens": 129,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": false,
+            "exit_code": 1,
+            "error": "Traceback (most recent call last):\n  File \"<string>\", line 9, in <module>\n    namespace['check'](namespace[item['entry_point']])\n    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<official-test>\", line 13, in check\nNameError: name 'encode_cyclic' is not defined. Did you mean: 'decode_cyclic'?\n",
+            "code_sha256": "f959c204179f6bf10969d6b9248e90345fa93fbf5d0806acdade27aeeaa7e376"
+          }
+        },
+        "candidate": {
+          "wall_s": 0.4398683939361945,
+          "decode_s": 0.42039787000976503,
+          "controller_s": 4.1459e-05,
+          "output_tokens": 130,
+          "decode_tokens": 129,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": false,
+            "exit_code": 1,
+            "error": "Traceback (most recent call last):\n  File \"<string>\", line 9, in <module>\n    namespace['check'](namespace[item['entry_point']])\n    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<official-test>\", line 13, in check\nNameError: name 'encode_cyclic' is not defined. Did you mean: 'decode_cyclic'?\n",
+            "code_sha256": "f959c204179f6bf10969d6b9248e90345fa93fbf5d0806acdade27aeeaa7e376"
+          }
+        }
+      }
+    },
+    {
+      "id": "HumanEval/116",
+      "dataset": "humaneval",
+      "modes": {
+        "official16": {
+          "wall_s": 0.39752559701446444,
+          "decode_s": 0.3781087639508769,
+          "controller_s": 0.0,
+          "output_tokens": 86,
+          "decode_tokens": 85,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "exit_code": 0,
+            "error": null,
+            "code_sha256": "32e102ad9f5fe9bc194e19fb3590ba3d81ae04104055ec27afd3c3c14c284732"
+          }
+        },
+        "lagged": {
+          "wall_s": 0.3731379049131647,
+          "decode_s": 0.3535137730650604,
+          "controller_s": 3.1697e-05,
+          "output_tokens": 86,
+          "decode_tokens": 85,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "exit_code": 0,
+            "error": null,
+            "code_sha256": "32e102ad9f5fe9bc194e19fb3590ba3d81ae04104055ec27afd3c3c14c284732"
+          }
+        },
+        "ewma": {
+          "wall_s": 0.4200607880484313,
+          "decode_s": 0.4008838849840686,
+          "controller_s": 4.0113e-05,
+          "output_tokens": 86,
+          "decode_tokens": 85,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "exit_code": 0,
+            "error": null,
+            "code_sha256": "32e102ad9f5fe9bc194e19fb3590ba3d81ae04104055ec27afd3c3c14c284732"
+          }
+        },
+        "candidate": {
+          "wall_s": 0.4161892479751259,
+          "decode_s": 0.3967104540206492,
+          "controller_s": 3.8235e-05,
+          "output_tokens": 86,
+          "decode_tokens": 85,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "exit_code": 0,
+            "error": null,
+            "code_sha256": "32e102ad9f5fe9bc194e19fb3590ba3d81ae04104055ec27afd3c3c14c284732"
+          }
+        }
+      }
+    },
+    {
+      "id": "HumanEval/19",
+      "dataset": "humaneval",
+      "modes": {
+        "official16": {
+          "wall_s": 0.5169774639653042,
+          "decode_s": 0.49771242192946374,
+          "controller_s": 0.0,
+          "output_tokens": 141,
+          "decode_tokens": 140,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "exit_code": 0,
+            "error": null,
+            "code_sha256": "b908bc88229220865c5851b7e6b22e98e0c41aff1a393a5f09914bd6a3ef039c"
+          }
+        },
+        "lagged": {
+          "wall_s": 0.6185289570130408,
+          "decode_s": 0.5988419620553032,
+          "controller_s": 5.3824e-05,
+          "output_tokens": 141,
+          "decode_tokens": 140,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "exit_code": 0,
+            "error": null,
+            "code_sha256": "b908bc88229220865c5851b7e6b22e98e0c41aff1a393a5f09914bd6a3ef039c"
+          }
+        },
+        "ewma": {
+          "wall_s": 0.5401748699368909,
+          "decode_s": 0.5208829320035875,
+          "controller_s": 5.2126e-05,
+          "output_tokens": 141,
+          "decode_tokens": 140,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "exit_code": 0,
+            "error": null,
+            "code_sha256": "b908bc88229220865c5851b7e6b22e98e0c41aff1a393a5f09914bd6a3ef039c"
+          }
+        },
+        "candidate": {
+          "wall_s": 0.5162796800723299,
+          "decode_s": 0.4967626390280202,
+          "controller_s": 4.7677e-05,
+          "output_tokens": 141,
+          "decode_tokens": 140,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "exit_code": 0,
+            "error": null,
+            "code_sha256": "b908bc88229220865c5851b7e6b22e98e0c41aff1a393a5f09914bd6a3ef039c"
+          }
+        }
+      }
+    },
+    {
+      "id": "gsm8k/test/906",
+      "dataset": "gsm8k",
+      "modes": {
+        "official16": {
+          "wall_s": 0.7050236149225384,
+          "decode_s": 0.685852600960061,
+          "controller_s": 0.0,
+          "output_tokens": 138,
+          "decode_tokens": 137,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "strict_pass": false,
+            "extracted": "10",
+            "literal_placeholder_brackets": true,
+            "missing_answer_marker": false
+          }
+        },
+        "lagged": {
+          "wall_s": 0.7294935249956325,
+          "decode_s": 0.7103471889859064,
+          "controller_s": 7.0855e-05,
+          "output_tokens": 138,
+          "decode_tokens": 137,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "strict_pass": false,
+            "extracted": "10",
+            "literal_placeholder_brackets": true,
+            "missing_answer_marker": false
+          }
+        },
+        "ewma": {
+          "wall_s": 0.7526338929310441,
+          "decode_s": 0.7333620400168002,
+          "controller_s": 7.277e-05,
+          "output_tokens": 138,
+          "decode_tokens": 137,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "strict_pass": false,
+            "extracted": "10",
+            "literal_placeholder_brackets": true,
+            "missing_answer_marker": false
+          }
+        },
+        "candidate": {
+          "wall_s": 0.7005657859845087,
+          "decode_s": 0.6813187599182129,
+          "controller_s": 6.7257e-05,
+          "output_tokens": 138,
+          "decode_tokens": 137,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "strict_pass": false,
+            "extracted": "10",
+            "literal_placeholder_brackets": true,
+            "missing_answer_marker": false
+          }
+        }
+      }
+    },
+    {
+      "id": "squad/572fd47fa23a5019007fca56",
+      "dataset": "squad",
+      "modes": {
+        "official16": {
+          "wall_s": 0.04361867601983249,
+          "decode_s": 0.023822312941774726,
+          "controller_s": 0.0,
+          "output_tokens": 5,
+          "decode_tokens": 4,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "f1": 1.0
+          }
+        },
+        "lagged": {
+          "wall_s": 0.043537670047953725,
+          "decode_s": 0.023713197093456984,
+          "controller_s": 1.644e-06,
+          "output_tokens": 5,
+          "decode_tokens": 4,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "f1": 1.0
+          }
+        },
+        "ewma": {
+          "wall_s": 0.043510876945219934,
+          "decode_s": 0.023850550991483033,
+          "controller_s": 1.64e-06,
+          "output_tokens": 5,
+          "decode_tokens": 4,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "f1": 1.0
+          }
+        },
+        "candidate": {
+          "wall_s": 0.04334932705387473,
+          "decode_s": 0.02370214695110917,
+          "controller_s": 1.597e-06,
+          "output_tokens": 5,
+          "decode_tokens": 4,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "f1": 1.0
+          }
+        }
+      }
+    },
+    {
+      "id": "squad/572a10cd6aef051400155226",
+      "dataset": "squad",
+      "modes": {
+        "official16": {
+          "wall_s": 0.06678540806751698,
+          "decode_s": 0.04665932198986411,
+          "controller_s": 0.0,
+          "output_tokens": 7,
+          "decode_tokens": 6,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "f1": 1.0
+          }
+        },
+        "lagged": {
+          "wall_s": 0.06691169703844935,
+          "decode_s": 0.04694183706305921,
+          "controller_s": 3.719e-06,
+          "output_tokens": 7,
+          "decode_tokens": 6,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "f1": 1.0
+          }
+        },
+        "ewma": {
+          "wall_s": 0.06641745404340327,
+          "decode_s": 0.04644379101227969,
+          "controller_s": 3.97e-06,
+          "output_tokens": 7,
+          "decode_tokens": 6,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "f1": 1.0
+          }
+        },
+        "candidate": {
+          "wall_s": 0.06659545097500086,
+          "decode_s": 0.046610479010269046,
+          "controller_s": 4.029e-06,
+          "output_tokens": 7,
+          "decode_tokens": 6,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "f1": 1.0
+          }
+        }
+      }
+    },
+    {
+      "id": "gsm8k/test/936",
+      "dataset": "gsm8k",
+      "modes": {
+        "official16": {
+          "wall_s": 0.8485587530303746,
+          "decode_s": 0.8293760990491137,
+          "controller_s": 0.0,
+          "output_tokens": 169,
+          "decode_tokens": 168,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "strict_pass": false,
+            "extracted": "250",
+            "literal_placeholder_brackets": true,
+            "missing_answer_marker": false
+          }
+        },
+        "lagged": {
+          "wall_s": 1.013235441991128,
+          "decode_s": 0.99379753600806,
+          "controller_s": 9.5131e-05,
+          "output_tokens": 169,
+          "decode_tokens": 168,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "strict_pass": false,
+            "extracted": "250",
+            "literal_placeholder_brackets": true,
+            "missing_answer_marker": false
+          }
+        },
+        "ewma": {
+          "wall_s": 0.8937462910544127,
+          "decode_s": 0.8745889650890603,
+          "controller_s": 8.7417e-05,
+          "output_tokens": 169,
+          "decode_tokens": 168,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "strict_pass": false,
+            "extracted": "250",
+            "literal_placeholder_brackets": true,
+            "missing_answer_marker": false
+          }
+        },
+        "candidate": {
+          "wall_s": 0.8496138290502131,
+          "decode_s": 0.8304984869901091,
+          "controller_s": 8.4597e-05,
+          "output_tokens": 169,
+          "decode_tokens": 168,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "strict_pass": false,
+            "extracted": "250",
+            "literal_placeholder_brackets": true,
+            "missing_answer_marker": false
+          }
+        }
+      }
+    },
+    {
+      "id": "squad/56f85cf0aef2371900626019",
+      "dataset": "squad",
+      "modes": {
+        "official16": {
+          "wall_s": 0.04382630903273821,
+          "decode_s": 0.02387376199476421,
+          "controller_s": 0.0,
+          "output_tokens": 8,
+          "decode_tokens": 7,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "f1": 1.0
+          }
+        },
+        "lagged": {
+          "wall_s": 0.04374462098348886,
+          "decode_s": 0.023774673929437995,
+          "controller_s": 1.645e-06,
+          "output_tokens": 8,
+          "decode_tokens": 7,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "f1": 1.0
+          }
+        },
+        "ewma": {
+          "wall_s": 0.04359809996094555,
+          "decode_s": 0.023717720061540604,
+          "controller_s": 1.546e-06,
+          "output_tokens": 8,
+          "decode_tokens": 7,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "f1": 1.0
+          }
+        },
+        "candidate": {
+          "wall_s": 0.043661884032189846,
+          "decode_s": 0.02372946694958955,
+          "controller_s": 1.59e-06,
+          "output_tokens": 8,
+          "decode_tokens": 7,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "f1": 1.0
+          }
+        }
+      }
+    },
+    {
+      "id": "HumanEval/37",
+      "dataset": "humaneval",
+      "modes": {
+        "official16": {
+          "wall_s": 0.5851706580724567,
+          "decode_s": 0.5657869559945539,
+          "controller_s": 0.0,
+          "output_tokens": 194,
+          "decode_tokens": 193,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "exit_code": 0,
+            "error": null,
+            "code_sha256": "566abc5eaa014937fa70542c14a3f464e8548b13a5d8958aff241c958d7382eb"
+          }
+        },
+        "lagged": {
+          "wall_s": 0.6558157299878076,
+          "decode_s": 0.6365716810105368,
+          "controller_s": 5.8783e-05,
+          "output_tokens": 194,
+          "decode_tokens": 193,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "exit_code": 0,
+            "error": null,
+            "code_sha256": "566abc5eaa014937fa70542c14a3f464e8548b13a5d8958aff241c958d7382eb"
+          }
+        },
+        "ewma": {
+          "wall_s": 0.6338121630251408,
+          "decode_s": 0.6147182760760188,
+          "controller_s": 6.3993e-05,
+          "output_tokens": 194,
+          "decode_tokens": 193,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "exit_code": 0,
+            "error": null,
+            "code_sha256": "566abc5eaa014937fa70542c14a3f464e8548b13a5d8958aff241c958d7382eb"
+          }
+        },
+        "candidate": {
+          "wall_s": 0.5842349490849301,
+          "decode_s": 0.5650258559035137,
+          "controller_s": 5.5934e-05,
+          "output_tokens": 194,
+          "decode_tokens": 193,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "exit_code": 0,
+            "error": null,
+            "code_sha256": "566abc5eaa014937fa70542c14a3f464e8548b13a5d8958aff241c958d7382eb"
+          }
+        }
+      }
+    },
+    {
+      "id": "gsm8k/test/786",
+      "dataset": "gsm8k",
+      "modes": {
+        "official16": {
+          "wall_s": 0.5661858239909634,
+          "decode_s": 0.5469424698967487,
+          "controller_s": 0.0,
+          "output_tokens": 100,
+          "decode_tokens": 99,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "strict_pass": false,
+            "extracted": "142",
+            "literal_placeholder_brackets": true,
+            "missing_answer_marker": false
+          }
+        },
+        "lagged": {
+          "wall_s": 0.5640855910023674,
+          "decode_s": 0.5448879809118807,
+          "controller_s": 4.934e-05,
+          "output_tokens": 100,
+          "decode_tokens": 99,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "strict_pass": false,
+            "extracted": "142",
+            "literal_placeholder_brackets": true,
+            "missing_answer_marker": false
+          }
+        },
+        "ewma": {
+          "wall_s": 0.564245090004988,
+          "decode_s": 0.5450748360017315,
+          "controller_s": 5.5137e-05,
+          "output_tokens": 100,
+          "decode_tokens": 99,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "strict_pass": false,
+            "extracted": "142",
+            "literal_placeholder_brackets": true,
+            "missing_answer_marker": false
+          }
+        },
+        "candidate": {
+          "wall_s": 0.561035547987558,
+          "decode_s": 0.5417408440262079,
+          "controller_s": 5.2632e-05,
+          "output_tokens": 100,
+          "decode_tokens": 99,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "strict_pass": false,
+            "extracted": "142",
+            "literal_placeholder_brackets": true,
+            "missing_answer_marker": false
+          }
+        }
+      }
+    },
+    {
+      "id": "gsm8k/test/778",
+      "dataset": "gsm8k",
+      "modes": {
+        "official16": {
+          "wall_s": 0.3765205170493573,
+          "decode_s": 0.357259587966837,
+          "controller_s": 0.0,
+          "output_tokens": 120,
+          "decode_tokens": 119,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "strict_pass": true,
+            "extracted": "38",
+            "literal_placeholder_brackets": false,
+            "missing_answer_marker": false
+          }
+        },
+        "lagged": {
+          "wall_s": 0.44811353797558695,
+          "decode_s": 0.4281734279356897,
+          "controller_s": 3.7448e-05,
+          "output_tokens": 120,
+          "decode_tokens": 119,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "strict_pass": true,
+            "extracted": "38",
+            "literal_placeholder_brackets": false,
+            "missing_answer_marker": false
+          }
+        },
+        "ewma": {
+          "wall_s": 0.40024340408854187,
+          "decode_s": 0.3809150899760425,
+          "controller_s": 3.7435e-05,
+          "output_tokens": 120,
+          "decode_tokens": 119,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "strict_pass": true,
+            "extracted": "38",
+            "literal_placeholder_brackets": false,
+            "missing_answer_marker": false
+          }
+        },
+        "candidate": {
+          "wall_s": 0.3764370339922607,
+          "decode_s": 0.3572541270405054,
+          "controller_s": 3.4389e-05,
+          "output_tokens": 120,
+          "decode_tokens": 119,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "strict_pass": true,
+            "extracted": "38",
+            "literal_placeholder_brackets": false,
+            "missing_answer_marker": false
+          }
+        }
+      }
+    },
+    {
+      "id": "gsm8k/test/675",
+      "dataset": "gsm8k",
+      "modes": {
+        "official16": {
+          "wall_s": 1.3525245219934732,
+          "decode_s": 1.332882324932143,
+          "controller_s": 0.0,
+          "output_tokens": 192,
+          "decode_tokens": 191,
+          "exact_hf_match": false,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": false,
+            "strict_pass": false,
+            "extracted": "21",
+            "literal_placeholder_brackets": false,
+            "missing_answer_marker": false
+          }
+        },
+        "lagged": {
+          "wall_s": 1.67048061999958,
+          "decode_s": 1.6513678629416972,
+          "controller_s": 0.000157703,
+          "output_tokens": 216,
+          "decode_tokens": 215,
+          "exact_hf_match": false,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": false,
+            "strict_pass": false,
+            "extracted": "17",
+            "literal_placeholder_brackets": true,
+            "missing_answer_marker": false
+          }
+        },
+        "ewma": {
+          "wall_s": 1.7018614399712533,
+          "decode_s": 1.68221983499825,
+          "controller_s": 0.000171879,
+          "output_tokens": 216,
+          "decode_tokens": 215,
+          "exact_hf_match": false,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": false,
+            "strict_pass": false,
+            "extracted": "17",
+            "literal_placeholder_brackets": true,
+            "missing_answer_marker": false
+          }
+        },
+        "candidate": {
+          "wall_s": 1.3634191239252687,
+          "decode_s": 1.3442342979833484,
+          "controller_s": 0.000128208,
+          "output_tokens": 192,
+          "decode_tokens": 191,
+          "exact_hf_match": false,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": false,
+            "strict_pass": false,
+            "extracted": "21",
+            "literal_placeholder_brackets": false,
+            "missing_answer_marker": false
+          }
+        }
+      }
+    },
+    {
+      "id": "HumanEval/82",
+      "dataset": "humaneval",
+      "modes": {
+        "official16": {
+          "wall_s": 0.3295205499744043,
+          "decode_s": 0.310251810005866,
+          "controller_s": 0.0,
+          "output_tokens": 134,
+          "decode_tokens": 133,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "exit_code": 0,
+            "error": null,
+            "code_sha256": "a8c0fd72beff6edea43f4dee0babc99fc9a5bb23fbd2c55e101f90677bcdb015"
+          }
+        },
+        "lagged": {
+          "wall_s": 0.32864076900295913,
+          "decode_s": 0.30941458290908486,
+          "controller_s": 2.8936e-05,
+          "output_tokens": 134,
+          "decode_tokens": 133,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "exit_code": 0,
+            "error": null,
+            "code_sha256": "a8c0fd72beff6edea43f4dee0babc99fc9a5bb23fbd2c55e101f90677bcdb015"
+          }
+        },
+        "ewma": {
+          "wall_s": 0.32816275698132813,
+          "decode_s": 0.3089287329930812,
+          "controller_s": 3.1434e-05,
+          "output_tokens": 134,
+          "decode_tokens": 133,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "exit_code": 0,
+            "error": null,
+            "code_sha256": "a8c0fd72beff6edea43f4dee0babc99fc9a5bb23fbd2c55e101f90677bcdb015"
+          }
+        },
+        "candidate": {
+          "wall_s": 0.32902421697508544,
+          "decode_s": 0.30975920893251896,
+          "controller_s": 3.1137e-05,
+          "output_tokens": 134,
+          "decode_tokens": 133,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "exit_code": 0,
+            "error": null,
+            "code_sha256": "a8c0fd72beff6edea43f4dee0babc99fc9a5bb23fbd2c55e101f90677bcdb015"
+          }
+        }
+      }
+    },
+    {
+      "id": "gsm8k/test/1186",
+      "dataset": "gsm8k",
+      "modes": {
+        "official16": {
+          "wall_s": 0.3771382679697126,
+          "decode_s": 0.3577378670452163,
+          "controller_s": 0.0,
+          "output_tokens": 77,
+          "decode_tokens": 76,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "strict_pass": true,
+            "extracted": "19",
+            "literal_placeholder_brackets": false,
+            "missing_answer_marker": false
+          }
+        },
+        "lagged": {
+          "wall_s": 0.4462202771101147,
+          "decode_s": 0.42663974699098617,
+          "controller_s": 3.9603e-05,
+          "output_tokens": 77,
+          "decode_tokens": 76,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "strict_pass": true,
+            "extracted": "19",
+            "literal_placeholder_brackets": false,
+            "missing_answer_marker": false
+          }
+        },
+        "ewma": {
+          "wall_s": 0.37575001805089414,
+          "decode_s": 0.35642193595413113,
+          "controller_s": 3.4991e-05,
+          "output_tokens": 77,
+          "decode_tokens": 76,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "strict_pass": true,
+            "extracted": "19",
+            "literal_placeholder_brackets": false,
+            "missing_answer_marker": false
+          }
+        },
+        "candidate": {
+          "wall_s": 0.3768173549324274,
+          "decode_s": 0.35709183604922146,
+          "controller_s": 3.4617e-05,
+          "output_tokens": 77,
+          "decode_tokens": 76,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": true,
+            "strict_pass": true,
+            "extracted": "19",
+            "literal_placeholder_brackets": false,
+            "missing_answer_marker": false
+          }
+        }
+      }
+    },
+    {
+      "id": "HumanEval/102",
+      "dataset": "humaneval",
+      "modes": {
+        "official16": {
+          "wall_s": 0.3287257590563968,
+          "decode_s": 0.3095746299950406,
+          "controller_s": 0.0,
+          "output_tokens": 143,
+          "decode_tokens": 142,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": false,
+            "exit_code": 1,
+            "error": "Traceback (most recent call last):\n  File \"<string>\", line 9, in <module>\n    namespace['check'](namespace[item['entry_point']])\n    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<official-test>\", line 12, in check\nAssertionError\n",
+            "code_sha256": "fbcad10a1cbc13f2df84779fcc7c567a5f2eafdebbc3d38f75b18ade8a2caf85"
+          }
+        },
+        "lagged": {
+          "wall_s": 0.35082721698563546,
+          "decode_s": 0.3315987410023809,
+          "controller_s": 2.9603e-05,
+          "output_tokens": 143,
+          "decode_tokens": 142,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": false,
+            "exit_code": 1,
+            "error": "Traceback (most recent call last):\n  File \"<string>\", line 9, in <module>\n    namespace['check'](namespace[item['entry_point']])\n    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<official-test>\", line 12, in check\nAssertionError\n",
+            "code_sha256": "fbcad10a1cbc13f2df84779fcc7c567a5f2eafdebbc3d38f75b18ade8a2caf85"
+          }
+        },
+        "ewma": {
+          "wall_s": 0.35189843201078475,
+          "decode_s": 0.3324593909783289,
+          "controller_s": 3.2017e-05,
+          "output_tokens": 143,
+          "decode_tokens": 142,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": false,
+            "exit_code": 1,
+            "error": "Traceback (most recent call last):\n  File \"<string>\", line 9, in <module>\n    namespace['check'](namespace[item['entry_point']])\n    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<official-test>\", line 12, in check\nAssertionError\n",
+            "code_sha256": "fbcad10a1cbc13f2df84779fcc7c567a5f2eafdebbc3d38f75b18ade8a2caf85"
+          }
+        },
+        "candidate": {
+          "wall_s": 0.3287548799999058,
+          "decode_s": 0.30933815601747483,
+          "controller_s": 3.0084e-05,
+          "output_tokens": 143,
+          "decode_tokens": 142,
+          "exact_hf_match": true,
+          "hit_output_cap": false,
+          "quality": {
+            "pass": false,
+            "exit_code": 1,
+            "error": "Traceback (most recent call last):\n  File \"<string>\", line 9, in <module>\n    namespace['check'](namespace[item['entry_point']])\n    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<official-test>\", line 12, in check\nAssertionError\n",
+            "code_sha256": "fbcad10a1cbc13f2df84779fcc7c567a5f2eafdebbc3d38f75b18ade8a2caf85"
+          }
+        }
+      }
+    }
+  ],
+  "created_unix": 1794040838.571032,
+  "source_hashes": {
+    "test-run.json": "96dbbf73acc9e1c0dee734be7a2bea0be0cf5bf6f63d580aaaa04a0cc6c6b4d1",
+    "test-quality.json": "f2a4d6cbe468fe0ae0d8c99d402b9d693d6d89910bee3eb87c808783a8d6f888",
+    "test-tasks.json": "5cca02a9f8c949e46ab3babf203ff7166fe140ae6a27ca3109b94cd465b922e2",
+    "rtx5090_adaptive_analyze.py": "7f22454bdc80d07c5d2645ed6d13494f9029e84d2ba95596449a75a4e1085702",
+    "rtx5090_fixed_analyze.py": "bcb3e668014287b19ba6f8e95f91c3670264715495b36ae4ba51dbd31262451b",
+    "rtx5090_adaptive_policy.py": "4608d83efe16775fe44442cbabecedc5da80fd9565a607ff44ed1255ddf21be5"
+  },
+  "timed_runs": 288,
+  "discarded_timings": 0,
+  "limitations": [
+    "24 new public tasks; exploratory pilot, not paper-scale evidence",
+    "BF16 shapes can change outputs; not a claim of bitwise losslessness",
+    "history-only skip/short actions were already explored in E18; novelty unestablished",
+    "generation wall includes prefill/controller/draft/verify/commit; excludes tokenization, loading, transport and grading",
+    "CPU controller sub-timing covers choose/observe only; complete generation wall includes all adapter work",
+    "same-output subsets are retrospective secondary diagnostics; primary result retains all requests",
+    "bootstrap is conditional on a small public-task sample; no quality noninferiority or broad generalization claim",
+    "NVML process sampling cannot exclude sub-sample activity or shared CPU interference"
+  ],
+  "candidate_vs_simple_baselines": {
+    "lagged": {
+      "wall_time_reduction": 0.08775237559413418,
+      "stratified_prompt_bootstrap_95": [
+        0.04345545639973736,
+        0.12500270471457553
+      ],
+      "bootstrap_draws": 4000,
+      "independent_tasks": 24
+    },
+    "ewma": {
+      "wall_time_reduction": 0.06485480107200092,
+      "stratified_prompt_bootstrap_95": [
+        0.02450194488856161,
+        0.10980758292775605
+      ],
+      "bootstrap_draws": 4000,
+      "independent_tasks": 24
+    }
+  },
+  "frozen_selection": "short0_skip2"
+}

@@ -1,0 +1,745 @@
+{
+  "python": "3.14.8 (main, Sep 30 2026, 17:55:09) [Clang 21.0.0 (clang-2100.3.34.2)]",
+  "platform": "macOS-27.0.1-arm64-arm-64bit-Mach-O",
+  "manifest_sha256": "fef1ff47fef8747307fef1a14b8e357e229c6118e46650727763c1392a852617",
+  "evaluator_sha256": "53c234276589a917963e94878e59c17f5c3fc2514e4065cbb605c6bc74a43e0f",
+  "code_test_random_seed": 0,
+  "math_format_note": "literal placeholder angle brackets normalized; strict score retained; correction made after first-run format audit",
+  "sandbox_profile": "(version 1)\n(allow default)\n(deny network*)\n(deny file-write*)\n(deny file-read-data (subpath \"/Users\") (subpath \"/Volumes\") (subpath \"/private\") (subpath \"/tmp\"))\n(deny mach-lookup)\n(deny process-fork)\n",
+  "sandbox_checks": {
+    "private_file_read": true,
+    "file_write": true,
+    "network_connect": true,
+    "child_process": true
+  },
+  "canonical_checks": [
+    {
+      "id": "HumanEval/147",
+      "pass": true,
+      "exit_code": 0,
+      "error": null,
+      "code_sha256": "4ca09e8b1a4f2d3cf9fe96c39a437dc587815274d932a077ff4ec9ecb0224368"
+    },
+    {
+      "id": "HumanEval/22",
+      "pass": true,
+      "exit_code": 0,
+      "error": null,
+      "code_sha256": "f40d9490d41818b6e23ba51a94771abe1f0677aeb203e6923e5a400f0762ba30"
+    },
+    {
+      "id": "HumanEval/86",
+      "pass": true,
+      "exit_code": 0,
+      "error": null,
+      "code_sha256": "00b903bc70703a1761feb63a23e1b8c3a78b44796b3d39e318ae875651dca098"
+    },
+    {
+      "id": "HumanEval/91",
+      "pass": true,
+      "exit_code": 0,
+      "error": null,
+      "code_sha256": "9b4ec08c82d44e868f3eb751fdf69d0d1afbc31eb295bb79acb65f75e96d00ac"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "squad/56e1febfe3433e1400423239",
+      "dataset": "squad",
+      "split": "calibration",
+      "grades": {
+        "official16": {
+          "pass": true,
+          "f1": 1.0
+        },
+        "lagged": {
+          "pass": true,
+          "f1": 1.0
+        },
+        "ewma": {
+          "pass": true,
+          "f1": 1.0
+        },
+        "short0_skip1": {
+          "pass": true,
+          "f1": 1.0
+        },
+        "short0_skip2": {
+          "pass": true,
+          "f1": 1.0
+        },
+        "short2_skip1": {
+          "pass": true,
+          "f1": 1.0
+        },
+        "short2_skip2": {
+          "pass": true,
+          "f1": 1.0
+        },
+        "short4_skip1": {
+          "pass": true,
+          "f1": 1.0
+        },
+        "short4_skip2": {
+          "pass": true,
+          "f1": 1.0
+        }
+      }
+    },
+    {
+      "id": "squad/57274f67708984140094dbf6",
+      "dataset": "squad",
+      "split": "calibration",
+      "grades": {
+        "official16": {
+          "pass": false,
+          "f1": 0.9090909090909091
+        },
+        "lagged": {
+          "pass": false,
+          "f1": 0.9090909090909091
+        },
+        "ewma": {
+          "pass": false,
+          "f1": 0.9090909090909091
+        },
+        "short0_skip1": {
+          "pass": false,
+          "f1": 0.9090909090909091
+        },
+        "short0_skip2": {
+          "pass": false,
+          "f1": 0.9090909090909091
+        },
+        "short2_skip1": {
+          "pass": false,
+          "f1": 0.9090909090909091
+        },
+        "short2_skip2": {
+          "pass": false,
+          "f1": 0.9090909090909091
+        },
+        "short4_skip1": {
+          "pass": false,
+          "f1": 0.9090909090909091
+        },
+        "short4_skip2": {
+          "pass": false,
+          "f1": 0.9090909090909091
+        }
+      }
+    },
+    {
+      "id": "squad/56e0d9e0231d4119001ac43c",
+      "dataset": "squad",
+      "split": "calibration",
+      "grades": {
+        "official16": {
+          "pass": false,
+          "f1": 0.0
+        },
+        "lagged": {
+          "pass": false,
+          "f1": 0.0
+        },
+        "ewma": {
+          "pass": false,
+          "f1": 0.0
+        },
+        "short0_skip1": {
+          "pass": false,
+          "f1": 0.0
+        },
+        "short0_skip2": {
+          "pass": false,
+          "f1": 0.0
+        },
+        "short2_skip1": {
+          "pass": false,
+          "f1": 0.0
+        },
+        "short2_skip2": {
+          "pass": false,
+          "f1": 0.0
+        },
+        "short4_skip1": {
+          "pass": false,
+          "f1": 0.0
+        },
+        "short4_skip2": {
+          "pass": false,
+          "f1": 0.0
+        }
+      }
+    },
+    {
+      "id": "HumanEval/147",
+      "dataset": "humaneval",
+      "split": "calibration",
+      "grades": {
+        "official16": {
+          "pass": true,
+          "exit_code": 0,
+          "error": null,
+          "code_sha256": "2ccb543992d1d6debcfa0b47ac2c78db6728039e0ea4b4b3fe54f11d401a1cbc"
+        },
+        "lagged": {
+          "pass": true,
+          "exit_code": 0,
+          "error": null,
+          "code_sha256": "2ccb543992d1d6debcfa0b47ac2c78db6728039e0ea4b4b3fe54f11d401a1cbc"
+        },
+        "ewma": {
+          "pass": true,
+          "exit_code": 0,
+          "error": null,
+          "code_sha256": "2ccb543992d1d6debcfa0b47ac2c78db6728039e0ea4b4b3fe54f11d401a1cbc"
+        },
+        "short0_skip1": {
+          "pass": true,
+          "exit_code": 0,
+          "error": null,
+          "code_sha256": "2ccb543992d1d6debcfa0b47ac2c78db6728039e0ea4b4b3fe54f11d401a1cbc"
+        },
+        "short0_skip2": {
+          "pass": true,
+          "exit_code": 0,
+          "error": null,
+          "code_sha256": "2ccb543992d1d6debcfa0b47ac2c78db6728039e0ea4b4b3fe54f11d401a1cbc"
+        },
+        "short2_skip1": {
+          "pass": true,
+          "exit_code": 0,
+          "error": null,
+          "code_sha256": "2ccb543992d1d6debcfa0b47ac2c78db6728039e0ea4b4b3fe54f11d401a1cbc"
+        },
+        "short2_skip2": {
+          "pass": true,
+          "exit_code": 0,
+          "error": null,
+          "code_sha256": "2ccb543992d1d6debcfa0b47ac2c78db6728039e0ea4b4b3fe54f11d401a1cbc"
+        },
+        "short4_skip1": {
+          "pass": true,
+          "exit_code": 0,
+          "error": null,
+          "code_sha256": "2ccb543992d1d6debcfa0b47ac2c78db6728039e0ea4b4b3fe54f11d401a1cbc"
+        },
+        "short4_skip2": {
+          "pass": true,
+          "exit_code": 0,
+          "error": null,
+          "code_sha256": "2ccb543992d1d6debcfa0b47ac2c78db6728039e0ea4b4b3fe54f11d401a1cbc"
+        }
+      }
+    },
+    {
+      "id": "gsm8k/test/631",
+      "dataset": "gsm8k",
+      "split": "calibration",
+      "grades": {
+        "official16": {
+          "pass": true,
+          "strict_pass": true,
+          "extracted": "4800",
+          "literal_placeholder_brackets": false,
+          "missing_answer_marker": false
+        },
+        "lagged": {
+          "pass": true,
+          "strict_pass": true,
+          "extracted": "4800",
+          "literal_placeholder_brackets": false,
+          "missing_answer_marker": false
+        },
+        "ewma": {
+          "pass": true,
+          "strict_pass": true,
+          "extracted": "4800",
+          "literal_placeholder_brackets": false,
+          "missing_answer_marker": false
+        },
+        "short0_skip1": {
+          "pass": true,
+          "strict_pass": true,
+          "extracted": "4800",
+          "literal_placeholder_brackets": false,
+          "missing_answer_marker": false
+        },
+        "short0_skip2": {
+          "pass": true,
+          "strict_pass": false,
+          "extracted": "4800",
+          "literal_placeholder_brackets": true,
+          "missing_answer_marker": false
+        },
+        "short2_skip1": {
+          "pass": true,
+          "strict_pass": true,
+          "extracted": "4800",
+          "literal_placeholder_brackets": false,
+          "missing_answer_marker": false
+        },
+        "short2_skip2": {
+          "pass": true,
+          "strict_pass": true,
+          "extracted": "4800",
+          "literal_placeholder_brackets": false,
+          "missing_answer_marker": false
+        },
+        "short4_skip1": {
+          "pass": true,
+          "strict_pass": true,
+          "extracted": "4800",
+          "literal_placeholder_brackets": false,
+          "missing_answer_marker": false
+        },
+        "short4_skip2": {
+          "pass": true,
+          "strict_pass": true,
+          "extracted": "4800",
+          "literal_placeholder_brackets": false,
+          "missing_answer_marker": false
+        }
+      }
+    },
+    {
+      "id": "HumanEval/22",
+      "dataset": "humaneval",
+      "split": "calibration",
+      "grades": {
+        "official16": {
+          "pass": true,
+          "exit_code": 0,
+          "error": null,
+          "code_sha256": "4c779566372237d186ec674b251eb917202e874b008a0a65218024b339aa9617"
+        },
+        "lagged": {
+          "pass": true,
+          "exit_code": 0,
+          "error": null,
+          "code_sha256": "4c779566372237d186ec674b251eb917202e874b008a0a65218024b339aa9617"
+        },
+        "ewma": {
+          "pass": true,
+          "exit_code": 0,
+          "error": null,
+          "code_sha256": "4c779566372237d186ec674b251eb917202e874b008a0a65218024b339aa9617"
+        },
+        "short0_skip1": {
+          "pass": true,
+          "exit_code": 0,
+          "error": null,
+          "code_sha256": "4c779566372237d186ec674b251eb917202e874b008a0a65218024b339aa9617"
+        },
+        "short0_skip2": {
+          "pass": true,
+          "exit_code": 0,
+          "error": null,
+          "code_sha256": "4c779566372237d186ec674b251eb917202e874b008a0a65218024b339aa9617"
+        },
+        "short2_skip1": {
+          "pass": true,
+          "exit_code": 0,
+          "error": null,
+          "code_sha256": "4c779566372237d186ec674b251eb917202e874b008a0a65218024b339aa9617"
+        },
+        "short2_skip2": {
+          "pass": true,
+          "exit_code": 0,
+          "error": null,
+          "code_sha256": "4c779566372237d186ec674b251eb917202e874b008a0a65218024b339aa9617"
+        },
+        "short4_skip1": {
+          "pass": true,
+          "exit_code": 0,
+          "error": null,
+          "code_sha256": "4c779566372237d186ec674b251eb917202e874b008a0a65218024b339aa9617"
+        },
+        "short4_skip2": {
+          "pass": true,
+          "exit_code": 0,
+          "error": null,
+          "code_sha256": "4c779566372237d186ec674b251eb917202e874b008a0a65218024b339aa9617"
+        }
+      }
+    },
+    {
+      "id": "gsm8k/test/1168",
+      "dataset": "gsm8k",
+      "split": "calibration",
+      "grades": {
+        "official16": {
+          "pass": true,
+          "strict_pass": true,
+          "extracted": "20",
+          "literal_placeholder_brackets": false,
+          "missing_answer_marker": false
+        },
+        "lagged": {
+          "pass": true,
+          "strict_pass": true,
+          "extracted": "20",
+          "literal_placeholder_brackets": false,
+          "missing_answer_marker": false
+        },
+        "ewma": {
+          "pass": true,
+          "strict_pass": true,
+          "extracted": "20",
+          "literal_placeholder_brackets": false,
+          "missing_answer_marker": false
+        },
+        "short0_skip1": {
+          "pass": true,
+          "strict_pass": true,
+          "extracted": "20",
+          "literal_placeholder_brackets": false,
+          "missing_answer_marker": false
+        },
+        "short0_skip2": {
+          "pass": true,
+          "strict_pass": true,
+          "extracted": "20",
+          "literal_placeholder_brackets": false,
+          "missing_answer_marker": false
+        },
+        "short2_skip1": {
+          "pass": true,
+          "strict_pass": true,
+          "extracted": "20",
+          "literal_placeholder_brackets": false,
+          "missing_answer_marker": false
+        },
+        "short2_skip2": {
+          "pass": true,
+          "strict_pass": true,
+          "extracted": "20",
+          "literal_placeholder_brackets": false,
+          "missing_answer_marker": false
+        },
+        "short4_skip1": {
+          "pass": true,
+          "strict_pass": true,
+          "extracted": "20",
+          "literal_placeholder_brackets": false,
+          "missing_answer_marker": false
+        },
+        "short4_skip2": {
+          "pass": true,
+          "strict_pass": true,
+          "extracted": "20",
+          "literal_placeholder_brackets": false,
+          "missing_answer_marker": false
+        }
+      }
+    },
+    {
+      "id": "gsm8k/test/115",
+      "dataset": "gsm8k",
+      "split": "calibration",
+      "grades": {
+        "official16": {
+          "pass": false,
+          "strict_pass": false,
+          "extracted": null,
+          "literal_placeholder_brackets": false,
+          "missing_answer_marker": true
+        },
+        "lagged": {
+          "pass": false,
+          "strict_pass": false,
+          "extracted": null,
+          "literal_placeholder_brackets": false,
+          "missing_answer_marker": true
+        },
+        "ewma": {
+          "pass": false,
+          "strict_pass": false,
+          "extracted": null,
+          "literal_placeholder_brackets": false,
+          "missing_answer_marker": true
+        },
+        "short0_skip1": {
+          "pass": false,
+          "strict_pass": false,
+          "extracted": null,
+          "literal_placeholder_brackets": false,
+          "missing_answer_marker": true
+        },
+        "short0_skip2": {
+          "pass": false,
+          "strict_pass": false,
+          "extracted": null,
+          "literal_placeholder_brackets": false,
+          "missing_answer_marker": true
+        },
+        "short2_skip1": {
+          "pass": false,
+          "strict_pass": false,
+          "extracted": null,
+          "literal_placeholder_brackets": false,
+          "missing_answer_marker": true
+        },
+        "short2_skip2": {
+          "pass": false,
+          "strict_pass": false,
+          "extracted": null,
+          "literal_placeholder_brackets": false,
+          "missing_answer_marker": true
+        },
+        "short4_skip1": {
+          "pass": false,
+          "strict_pass": false,
+          "extracted": null,
+          "literal_placeholder_brackets": false,
+          "missing_answer_marker": true
+        },
+        "short4_skip2": {
+          "pass": false,
+          "strict_pass": false,
+          "extracted": null,
+          "literal_placeholder_brackets": false,
+          "missing_answer_marker": true
+        }
+      }
+    },
+    {
+      "id": "HumanEval/86",
+      "dataset": "humaneval",
+      "split": "calibration",
+      "grades": {
+        "official16": {
+          "pass": true,
+          "exit_code": 0,
+          "error": null,
+          "code_sha256": "636d9f7486702ad5324bbd0dfdcbbdafc82d3ce5b6923f86803ecccc8546bd76"
+        },
+        "lagged": {
+          "pass": true,
+          "exit_code": 0,
+          "error": null,
+          "code_sha256": "636d9f7486702ad5324bbd0dfdcbbdafc82d3ce5b6923f86803ecccc8546bd76"
+        },
+        "ewma": {
+          "pass": true,
+          "exit_code": 0,
+          "error": null,
+          "code_sha256": "636d9f7486702ad5324bbd0dfdcbbdafc82d3ce5b6923f86803ecccc8546bd76"
+        },
+        "short0_skip1": {
+          "pass": true,
+          "exit_code": 0,
+          "error": null,
+          "code_sha256": "636d9f7486702ad5324bbd0dfdcbbdafc82d3ce5b6923f86803ecccc8546bd76"
+        },
+        "short0_skip2": {
+          "pass": true,
+          "exit_code": 0,
+          "error": null,
+          "code_sha256": "636d9f7486702ad5324bbd0dfdcbbdafc82d3ce5b6923f86803ecccc8546bd76"
+        },
+        "short2_skip1": {
+          "pass": true,
+          "exit_code": 0,
+          "error": null,
+          "code_sha256": "636d9f7486702ad5324bbd0dfdcbbdafc82d3ce5b6923f86803ecccc8546bd76"
+        },
+        "short2_skip2": {
+          "pass": true,
+          "exit_code": 0,
+          "error": null,
+          "code_sha256": "636d9f7486702ad5324bbd0dfdcbbdafc82d3ce5b6923f86803ecccc8546bd76"
+        },
+        "short4_skip1": {
+          "pass": true,
+          "exit_code": 0,
+          "error": null,
+          "code_sha256": "636d9f7486702ad5324bbd0dfdcbbdafc82d3ce5b6923f86803ecccc8546bd76"
+        },
+        "short4_skip2": {
+          "pass": true,
+          "exit_code": 0,
+          "error": null,
+          "code_sha256": "636d9f7486702ad5324bbd0dfdcbbdafc82d3ce5b6923f86803ecccc8546bd76"
+        }
+      }
+    },
+    {
+      "id": "gsm8k/test/527",
+      "dataset": "gsm8k",
+      "split": "calibration",
+      "grades": {
+        "official16": {
+          "pass": false,
+          "strict_pass": false,
+          "extracted": "16",
+          "literal_placeholder_brackets": false,
+          "missing_answer_marker": false
+        },
+        "lagged": {
+          "pass": false,
+          "strict_pass": false,
+          "extracted": "16",
+          "literal_placeholder_brackets": false,
+          "missing_answer_marker": false
+        },
+        "ewma": {
+          "pass": false,
+          "strict_pass": false,
+          "extracted": "16",
+          "literal_placeholder_brackets": false,
+          "missing_answer_marker": false
+        },
+        "short0_skip1": {
+          "pass": false,
+          "strict_pass": false,
+          "extracted": "16",
+          "literal_placeholder_brackets": false,
+          "missing_answer_marker": false
+        },
+        "short0_skip2": {
+          "pass": false,
+          "strict_pass": false,
+          "extracted": "16",
+          "literal_placeholder_brackets": false,
+          "missing_answer_marker": false
+        },
+        "short2_skip1": {
+          "pass": false,
+          "strict_pass": false,
+          "extracted": "16",
+          "literal_placeholder_brackets": false,
+          "missing_answer_marker": false
+        },
+        "short2_skip2": {
+          "pass": false,
+          "strict_pass": false,
+          "extracted": "16",
+          "literal_placeholder_brackets": false,
+          "missing_answer_marker": false
+        },
+        "short4_skip1": {
+          "pass": false,
+          "strict_pass": false,
+          "extracted": "16",
+          "literal_placeholder_brackets": false,
+          "missing_answer_marker": false
+        },
+        "short4_skip2": {
+          "pass": false,
+          "strict_pass": false,
+          "extracted": "16",
+          "literal_placeholder_brackets": false,
+          "missing_answer_marker": false
+        }
+      }
+    },
+    {
+      "id": "HumanEval/91",
+      "dataset": "humaneval",
+      "split": "calibration",
+      "grades": {
+        "official16": {
+          "pass": false,
+          "exit_code": 1,
+          "error": "Traceback (most recent call last):\n  File \"<string>\", line 9, in <module>\n    namespace['check'](namespace[item['entry_point']])\n    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<official-test>\", line 6, in check\nAssertionError: Test 3\n",
+          "code_sha256": "dc8659220f747a631fa41741b02c54a77fc59a180dee4740240272830146d198"
+        },
+        "lagged": {
+          "pass": false,
+          "exit_code": 1,
+          "error": "Traceback (most recent call last):\n  File \"<string>\", line 9, in <module>\n    namespace['check'](namespace[item['entry_point']])\n    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<official-test>\", line 6, in check\nAssertionError: Test 3\n",
+          "code_sha256": "dc8659220f747a631fa41741b02c54a77fc59a180dee4740240272830146d198"
+        },
+        "ewma": {
+          "pass": false,
+          "exit_code": 1,
+          "error": "Traceback (most recent call last):\n  File \"<string>\", line 9, in <module>\n    namespace['check'](namespace[item['entry_point']])\n    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<official-test>\", line 6, in check\nAssertionError: Test 3\n",
+          "code_sha256": "dc8659220f747a631fa41741b02c54a77fc59a180dee4740240272830146d198"
+        },
+        "short0_skip1": {
+          "pass": false,
+          "exit_code": 1,
+          "error": "Traceback (most recent call last):\n  File \"<string>\", line 9, in <module>\n    namespace['check'](namespace[item['entry_point']])\n    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<official-test>\", line 6, in check\nAssertionError: Test 3\n",
+          "code_sha256": "dc8659220f747a631fa41741b02c54a77fc59a180dee4740240272830146d198"
+        },
+        "short0_skip2": {
+          "pass": false,
+          "exit_code": 1,
+          "error": "Traceback (most recent call last):\n  File \"<string>\", line 9, in <module>\n    namespace['check'](namespace[item['entry_point']])\n    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<official-test>\", line 6, in check\nAssertionError: Test 3\n",
+          "code_sha256": "dc8659220f747a631fa41741b02c54a77fc59a180dee4740240272830146d198"
+        },
+        "short2_skip1": {
+          "pass": false,
+          "exit_code": 1,
+          "error": "Traceback (most recent call last):\n  File \"<string>\", line 9, in <module>\n    namespace['check'](namespace[item['entry_point']])\n    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<official-test>\", line 6, in check\nAssertionError: Test 3\n",
+          "code_sha256": "dc8659220f747a631fa41741b02c54a77fc59a180dee4740240272830146d198"
+        },
+        "short2_skip2": {
+          "pass": false,
+          "exit_code": 1,
+          "error": "Traceback (most recent call last):\n  File \"<string>\", line 9, in <module>\n    namespace['check'](namespace[item['entry_point']])\n    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<official-test>\", line 6, in check\nAssertionError: Test 3\n",
+          "code_sha256": "dc8659220f747a631fa41741b02c54a77fc59a180dee4740240272830146d198"
+        },
+        "short4_skip1": {
+          "pass": false,
+          "exit_code": 1,
+          "error": "Traceback (most recent call last):\n  File \"<string>\", line 9, in <module>\n    namespace['check'](namespace[item['entry_point']])\n    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<official-test>\", line 6, in check\nAssertionError: Test 3\n",
+          "code_sha256": "dc8659220f747a631fa41741b02c54a77fc59a180dee4740240272830146d198"
+        },
+        "short4_skip2": {
+          "pass": false,
+          "exit_code": 1,
+          "error": "Traceback (most recent call last):\n  File \"<string>\", line 9, in <module>\n    namespace['check'](namespace[item['entry_point']])\n    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<official-test>\", line 6, in check\nAssertionError: Test 3\n",
+          "code_sha256": "dc8659220f747a631fa41741b02c54a77fc59a180dee4740240272830146d198"
+        }
+      }
+    },
+    {
+      "id": "squad/572f5533a23a5019007fc55b",
+      "dataset": "squad",
+      "split": "calibration",
+      "grades": {
+        "official16": {
+          "pass": false,
+          "f1": 0.8571428571428571
+        },
+        "lagged": {
+          "pass": false,
+          "f1": 0.8571428571428571
+        },
+        "ewma": {
+          "pass": false,
+          "f1": 0.8571428571428571
+        },
+        "short0_skip1": {
+          "pass": false,
+          "f1": 0.8571428571428571
+        },
+        "short0_skip2": {
+          "pass": false,
+          "f1": 0.8571428571428571
+        },
+        "short2_skip1": {
+          "pass": false,
+          "f1": 0.8571428571428571
+        },
+        "short2_skip2": {
+          "pass": false,
+          "f1": 0.8571428571428571
+        },
+        "short4_skip1": {
+          "pass": false,
+          "f1": 0.8571428571428571
+        },
+        "short4_skip2": {
+          "pass": false,
+          "f1": 0.8571428571428571
+        }
+      }
+    }
+  ],
+  "run_sha256": "d6f17fb3d50736f47a44b5b674677294e69fdfcc697618c9cccb5877f94dd892",
+  "status": "COMPLETE"
+}

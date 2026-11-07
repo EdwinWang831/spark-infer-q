@@ -1,0 +1,14 @@
+{
+  "module": "rtx5090_adaptive_run",
+  "sha256": "370b2085453d78bd61923dabc54037bc135b06b1235f2bbeddc4800738aa84ab",
+  "arguments": {
+    "manifest": "/home/wangyikai/deepinfer-5090/results/adaptive-v1/calibration-tasks.json",
+    "manifest_sha256": "fef1ff47fef8747307fef1a14b8e357e229c6118e46650727763c1392a852617",
+    "output": "/home/wangyikai/deepinfer-5090/results/adaptive-v1/smoke.json",
+    "smoke": true,
+    "dependencies": {
+      "rtx5090_adaptive_policy.py": "4608d83efe16775fe44442cbabecedc5da80fd9565a607ff44ed1255ddf21be5",
+      "rtx5090_gpu_monitor.py": "13cc838deb957096be6e00989e7537267ec424550c23c4a16d3caa79efc6baf6"
+    }
+  }
+}

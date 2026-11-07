@@ -1,0 +1,789 @@
+{
+  "python": "3.14.8 (main, Sep 30 2026, 17:55:09) [Clang 21.0.0 (clang-2100.3.34.2)]",
+  "platform": "macOS-27.0.1-arm64-arm-64bit-Mach-O",
+  "manifest_sha256": "5cca02a9f8c949e46ab3babf203ff7166fe140ae6a27ca3109b94cd465b922e2",
+  "evaluator_sha256": "53c234276589a917963e94878e59c17f5c3fc2514e4065cbb605c6bc74a43e0f",
+  "code_test_random_seed": 0,
+  "math_format_note": "literal placeholder angle brackets normalized; strict score retained; correction made after first-run format audit",
+  "sandbox_profile": "(version 1)\n(allow default)\n(deny network*)\n(deny file-write*)\n(deny file-read-data (subpath \"/Users\") (subpath \"/Volumes\") (subpath \"/private\") (subpath \"/tmp\"))\n(deny mach-lookup)\n(deny process-fork)\n",
+  "sandbox_checks": {
+    "private_file_read": true,
+    "file_write": true,
+    "network_connect": true,
+    "child_process": true
+  },
+  "canonical_checks": [
+    {
+      "id": "HumanEval/75",
+      "pass": true,
+      "exit_code": 0,
+      "error": null,
+      "code_sha256": "2d1088c993f2388df27f3d520b42b9cbb1ed5dec9be49b20cbcc79c445fdbaa7"
+    },
+    {
+      "id": "HumanEval/118",
+      "pass": true,
+      "exit_code": 0,
+      "error": null,
+      "code_sha256": "b240051f0c0d97476aac681f493c8d8855781689f4728a55bd49b7a4ac7b0da4"
+    },
+    {
+      "id": "HumanEval/38",
+      "pass": true,
+      "exit_code": 0,
+      "error": null,
+      "code_sha256": "ca71c1b82b515debbcbb2062bda57e3b524071f928051dce227ebd9cdd8a6ca0"
+    },
+    {
+      "id": "HumanEval/116",
+      "pass": true,
+      "exit_code": 0,
+      "error": null,
+      "code_sha256": "4a1c9620b23415a85297152a68588af293d2bd7a9b5e57b1a71da159b2a18f33"
+    },
+    {
+      "id": "HumanEval/19",
+      "pass": true,
+      "exit_code": 0,
+      "error": null,
+      "code_sha256": "87b64884bd6d975b360ebf3292114006500c249dd3c68c21977b705eb7a5004f"
+    },
+    {
+      "id": "HumanEval/37",
+      "pass": true,
+      "exit_code": 0,
+      "error": null,
+      "code_sha256": "f178ad6fb10eb0ff94574cc7b0a586bed05962b83cbfd4eb7b221d5d6d4fce28"
+    },
+    {
+      "id": "HumanEval/82",
+      "pass": true,
+      "exit_code": 0,
+      "error": null,
+      "code_sha256": "2eadb7c1a07bbd210fc40d31fd83012ce989b8d1faf9de05798e3744a952d4f5"
+    },
+    {
+      "id": "HumanEval/102",
+      "pass": true,
+      "exit_code": 0,
+      "error": null,
+      "code_sha256": "74a43d58d3d67cebcc8fcd3ce09d30b7a9bc65b96a0c2e23f14c6658ae1f5812"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "squad/5726ee28708984140094d658",
+      "dataset": "squad",
+      "split": "test",
+      "grades": {
+        "official16": {
+          "pass": false,
+          "f1": 0.8
+        },
+        "lagged": {
+          "pass": false,
+          "f1": 0.8
+        },
+        "ewma": {
+          "pass": false,
+          "f1": 0.8
+        },
+        "candidate": {
+          "pass": false,
+          "f1": 0.8
+        }
+      }
+    },
+    {
+      "id": "gsm8k/test/503",
+      "dataset": "gsm8k",
+      "split": "test",
+      "grades": {
+        "official16": {
+          "pass": true,
+          "strict_pass": false,
+          "extracted": "18",
+          "literal_placeholder_brackets": true,
+          "missing_answer_marker": false
+        },
+        "lagged": {
+          "pass": true,
+          "strict_pass": false,
+          "extracted": "18",
+          "literal_placeholder_brackets": true,
+          "missing_answer_marker": false
+        },
+        "ewma": {
+          "pass": true,
+          "strict_pass": false,
+          "extracted": "18",
+          "literal_placeholder_brackets": true,
+          "missing_answer_marker": false
+        },
+        "candidate": {
+          "pass": true,
+          "strict_pass": false,
+          "extracted": "18",
+          "literal_placeholder_brackets": true,
+          "missing_answer_marker": false
+        }
+      }
+    },
+    {
+      "id": "HumanEval/75",
+      "dataset": "humaneval",
+      "split": "test",
+      "grades": {
+        "official16": {
+          "pass": true,
+          "exit_code": 0,
+          "error": null,
+          "code_sha256": "f42e42b4dabd22c1dd74b7d58c9bf5c41bd74e1bc41ffe3a611ccb8e62e290fb"
+        },
+        "lagged": {
+          "pass": true,
+          "exit_code": 0,
+          "error": null,
+          "code_sha256": "f42e42b4dabd22c1dd74b7d58c9bf5c41bd74e1bc41ffe3a611ccb8e62e290fb"
+        },
+        "ewma": {
+          "pass": true,
+          "exit_code": 0,
+          "error": null,
+          "code_sha256": "f42e42b4dabd22c1dd74b7d58c9bf5c41bd74e1bc41ffe3a611ccb8e62e290fb"
+        },
+        "candidate": {
+          "pass": true,
+          "exit_code": 0,
+          "error": null,
+          "code_sha256": "f42e42b4dabd22c1dd74b7d58c9bf5c41bd74e1bc41ffe3a611ccb8e62e290fb"
+        }
+      }
+    },
+    {
+      "id": "squad/57273dccdd62a815002e99fc",
+      "dataset": "squad",
+      "split": "test",
+      "grades": {
+        "official16": {
+          "pass": true,
+          "f1": 1.0
+        },
+        "lagged": {
+          "pass": true,
+          "f1": 1.0
+        },
+        "ewma": {
+          "pass": true,
+          "f1": 1.0
+        },
+        "candidate": {
+          "pass": true,
+          "f1": 1.0
+        }
+      }
+    },
+    {
+      "id": "gsm8k/test/935",
+      "dataset": "gsm8k",
+      "split": "test",
+      "grades": {
+        "official16": {
+          "pass": true,
+          "strict_pass": false,
+          "extracted": "64800",
+          "literal_placeholder_brackets": true,
+          "missing_answer_marker": false
+        },
+        "lagged": {
+          "pass": true,
+          "strict_pass": true,
+          "extracted": "64800",
+          "literal_placeholder_brackets": false,
+          "missing_answer_marker": false
+        },
+        "ewma": {
+          "pass": true,
+          "strict_pass": true,
+          "extracted": "64800",
+          "literal_placeholder_brackets": false,
+          "missing_answer_marker": false
+        },
+        "candidate": {
+          "pass": true,
+          "strict_pass": true,
+          "extracted": "64800",
+          "literal_placeholder_brackets": false,
+          "missing_answer_marker": false
+        }
+      }
+    },
+    {
+      "id": "squad/5727c8863acd2414000dec4a",
+      "dataset": "squad",
+      "split": "test",
+      "grades": {
+        "official16": {
+          "pass": true,
+          "f1": 1.0
+        },
+        "lagged": {
+          "pass": true,
+          "f1": 1.0
+        },
+        "ewma": {
+          "pass": true,
+          "f1": 1.0
+        },
+        "candidate": {
+          "pass": true,
+          "f1": 1.0
+        }
+      }
+    },
+    {
+      "id": "squad/57097141200fba1400367ffb",
+      "dataset": "squad",
+      "split": "test",
+      "grades": {
+        "official16": {
+          "pass": true,
+          "f1": 1.0
+        },
+        "lagged": {
+          "pass": true,
+          "f1": 1.0
+        },
+        "ewma": {
+          "pass": true,
+          "f1": 1.0
+        },
+        "candidate": {
+          "pass": true,
+          "f1": 1.0
+        }
+      }
+    },
+    {
+      "id": "squad/57268882f1498d1400e8e307",
+      "dataset": "squad",
+      "split": "test",
+      "grades": {
+        "official16": {
+          "pass": true,
+          "f1": 1.0
+        },
+        "lagged": {
+          "pass": true,
+          "f1": 1.0
+        },
+        "ewma": {
+          "pass": true,
+          "f1": 1.0
+        },
+        "candidate": {
+          "pass": true,
+          "f1": 1.0
+        }
+      }
+    },
+    {
+      "id": "HumanEval/118",
+      "dataset": "humaneval",
+      "split": "test",
+      "grades": {
+        "official16": {
+          "pass": false,
+          "exit_code": 1,
+          "error": "Traceback (most recent call last):\n  File \"<string>\", line 9, in <module>\n    namespace['check'](namespace[item['entry_point']])\n    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<official-test>\", line 6, in check\nAssertionError\n",
+          "code_sha256": "27718e55b95d001ad035f562f052a295962016d09548db4aeac5e67c8b2b3f0b"
+        },
+        "lagged": {
+          "pass": false,
+          "exit_code": 1,
+          "error": "Traceback (most recent call last):\n  File \"<string>\", line 9, in <module>\n    namespace['check'](namespace[item['entry_point']])\n    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<official-test>\", line 6, in check\nAssertionError\n",
+          "code_sha256": "27718e55b95d001ad035f562f052a295962016d09548db4aeac5e67c8b2b3f0b"
+        },
+        "ewma": {
+          "pass": false,
+          "exit_code": 1,
+          "error": "Traceback (most recent call last):\n  File \"<string>\", line 9, in <module>\n    namespace['check'](namespace[item['entry_point']])\n    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<official-test>\", line 6, in check\nAssertionError\n",
+          "code_sha256": "27718e55b95d001ad035f562f052a295962016d09548db4aeac5e67c8b2b3f0b"
+        },
+        "candidate": {
+          "pass": false,
+          "exit_code": 1,
+          "error": "Traceback (most recent call last):\n  File \"<string>\", line 9, in <module>\n    namespace['check'](namespace[item['entry_point']])\n    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<official-test>\", line 6, in check\nAssertionError\n",
+          "code_sha256": "27718e55b95d001ad035f562f052a295962016d09548db4aeac5e67c8b2b3f0b"
+        }
+      }
+    },
+    {
+      "id": "HumanEval/38",
+      "dataset": "humaneval",
+      "split": "test",
+      "grades": {
+        "official16": {
+          "pass": false,
+          "exit_code": 1,
+          "error": "Traceback (most recent call last):\n  File \"<string>\", line 9, in <module>\n    namespace['check'](namespace[item['entry_point']])\n    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<official-test>\", line 13, in check\nNameError: name 'encode_cyclic' is not defined. Did you mean: 'decode_cyclic'?\n",
+          "code_sha256": "f959c204179f6bf10969d6b9248e90345fa93fbf5d0806acdade27aeeaa7e376"
+        },
+        "lagged": {
+          "pass": false,
+          "exit_code": 1,
+          "error": "Traceback (most recent call last):\n  File \"<string>\", line 9, in <module>\n    namespace['check'](namespace[item['entry_point']])\n    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<official-test>\", line 13, in check\nNameError: name 'encode_cyclic' is not defined. Did you mean: 'decode_cyclic'?\n",
+          "code_sha256": "f959c204179f6bf10969d6b9248e90345fa93fbf5d0806acdade27aeeaa7e376"
+        },
+        "ewma": {
+          "pass": false,
+          "exit_code": 1,
+          "error": "Traceback (most recent call last):\n  File \"<string>\", line 9, in <module>\n    namespace['check'](namespace[item['entry_point']])\n    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<official-test>\", line 13, in check\nNameError: name 'encode_cyclic' is not defined. Did you mean: 'decode_cyclic'?\n",
+          "code_sha256": "f959c204179f6bf10969d6b9248e90345fa93fbf5d0806acdade27aeeaa7e376"
+        },
+        "candidate": {
+          "pass": false,
+          "exit_code": 1,
+          "error": "Traceback (most recent call last):\n  File \"<string>\", line 9, in <module>\n    namespace['check'](namespace[item['entry_point']])\n    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<official-test>\", line 13, in check\nNameError: name 'encode_cyclic' is not defined. Did you mean: 'decode_cyclic'?\n",
+          "code_sha256": "f959c204179f6bf10969d6b9248e90345fa93fbf5d0806acdade27aeeaa7e376"
+        }
+      }
+    },
+    {
+      "id": "HumanEval/116",
+      "dataset": "humaneval",
+      "split": "test",
+      "grades": {
+        "official16": {
+          "pass": true,
+          "exit_code": 0,
+          "error": null,
+          "code_sha256": "32e102ad9f5fe9bc194e19fb3590ba3d81ae04104055ec27afd3c3c14c284732"
+        },
+        "lagged": {
+          "pass": true,
+          "exit_code": 0,
+          "error": null,
+          "code_sha256": "32e102ad9f5fe9bc194e19fb3590ba3d81ae04104055ec27afd3c3c14c284732"
+        },
+        "ewma": {
+          "pass": true,
+          "exit_code": 0,
+          "error": null,
+          "code_sha256": "32e102ad9f5fe9bc194e19fb3590ba3d81ae04104055ec27afd3c3c14c284732"
+        },
+        "candidate": {
+          "pass": true,
+          "exit_code": 0,
+          "error": null,
+          "code_sha256": "32e102ad9f5fe9bc194e19fb3590ba3d81ae04104055ec27afd3c3c14c284732"
+        }
+      }
+    },
+    {
+      "id": "HumanEval/19",
+      "dataset": "humaneval",
+      "split": "test",
+      "grades": {
+        "official16": {
+          "pass": true,
+          "exit_code": 0,
+          "error": null,
+          "code_sha256": "b908bc88229220865c5851b7e6b22e98e0c41aff1a393a5f09914bd6a3ef039c"
+        },
+        "lagged": {
+          "pass": true,
+          "exit_code": 0,
+          "error": null,
+          "code_sha256": "b908bc88229220865c5851b7e6b22e98e0c41aff1a393a5f09914bd6a3ef039c"
+        },
+        "ewma": {
+          "pass": true,
+          "exit_code": 0,
+          "error": null,
+          "code_sha256": "b908bc88229220865c5851b7e6b22e98e0c41aff1a393a5f09914bd6a3ef039c"
+        },
+        "candidate": {
+          "pass": true,
+          "exit_code": 0,
+          "error": null,
+          "code_sha256": "b908bc88229220865c5851b7e6b22e98e0c41aff1a393a5f09914bd6a3ef039c"
+        }
+      }
+    },
+    {
+      "id": "gsm8k/test/906",
+      "dataset": "gsm8k",
+      "split": "test",
+      "grades": {
+        "official16": {
+          "pass": true,
+          "strict_pass": false,
+          "extracted": "10",
+          "literal_placeholder_brackets": true,
+          "missing_answer_marker": false
+        },
+        "lagged": {
+          "pass": true,
+          "strict_pass": false,
+          "extracted": "10",
+          "literal_placeholder_brackets": true,
+          "missing_answer_marker": false
+        },
+        "ewma": {
+          "pass": true,
+          "strict_pass": false,
+          "extracted": "10",
+          "literal_placeholder_brackets": true,
+          "missing_answer_marker": false
+        },
+        "candidate": {
+          "pass": true,
+          "strict_pass": false,
+          "extracted": "10",
+          "literal_placeholder_brackets": true,
+          "missing_answer_marker": false
+        }
+      }
+    },
+    {
+      "id": "squad/572fd47fa23a5019007fca56",
+      "dataset": "squad",
+      "split": "test",
+      "grades": {
+        "official16": {
+          "pass": true,
+          "f1": 1.0
+        },
+        "lagged": {
+          "pass": true,
+          "f1": 1.0
+        },
+        "ewma": {
+          "pass": true,
+          "f1": 1.0
+        },
+        "candidate": {
+          "pass": true,
+          "f1": 1.0
+        }
+      }
+    },
+    {
+      "id": "squad/572a10cd6aef051400155226",
+      "dataset": "squad",
+      "split": "test",
+      "grades": {
+        "official16": {
+          "pass": true,
+          "f1": 1.0
+        },
+        "lagged": {
+          "pass": true,
+          "f1": 1.0
+        },
+        "ewma": {
+          "pass": true,
+          "f1": 1.0
+        },
+        "candidate": {
+          "pass": true,
+          "f1": 1.0
+        }
+      }
+    },
+    {
+      "id": "gsm8k/test/936",
+      "dataset": "gsm8k",
+      "split": "test",
+      "grades": {
+        "official16": {
+          "pass": true,
+          "strict_pass": false,
+          "extracted": "250",
+          "literal_placeholder_brackets": true,
+          "missing_answer_marker": false
+        },
+        "lagged": {
+          "pass": true,
+          "strict_pass": false,
+          "extracted": "250",
+          "literal_placeholder_brackets": true,
+          "missing_answer_marker": false
+        },
+        "ewma": {
+          "pass": true,
+          "strict_pass": false,
+          "extracted": "250",
+          "literal_placeholder_brackets": true,
+          "missing_answer_marker": false
+        },
+        "candidate": {
+          "pass": true,
+          "strict_pass": false,
+          "extracted": "250",
+          "literal_placeholder_brackets": true,
+          "missing_answer_marker": false
+        }
+      }
+    },
+    {
+      "id": "squad/56f85cf0aef2371900626019",
+      "dataset": "squad",
+      "split": "test",
+      "grades": {
+        "official16": {
+          "pass": true,
+          "f1": 1.0
+        },
+        "lagged": {
+          "pass": true,
+          "f1": 1.0
+        },
+        "ewma": {
+          "pass": true,
+          "f1": 1.0
+        },
+        "candidate": {
+          "pass": true,
+          "f1": 1.0
+        }
+      }
+    },
+    {
+      "id": "HumanEval/37",
+      "dataset": "humaneval",
+      "split": "test",
+      "grades": {
+        "official16": {
+          "pass": true,
+          "exit_code": 0,
+          "error": null,
+          "code_sha256": "566abc5eaa014937fa70542c14a3f464e8548b13a5d8958aff241c958d7382eb"
+        },
+        "lagged": {
+          "pass": true,
+          "exit_code": 0,
+          "error": null,
+          "code_sha256": "566abc5eaa014937fa70542c14a3f464e8548b13a5d8958aff241c958d7382eb"
+        },
+        "ewma": {
+          "pass": true,
+          "exit_code": 0,
+          "error": null,
+          "code_sha256": "566abc5eaa014937fa70542c14a3f464e8548b13a5d8958aff241c958d7382eb"
+        },
+        "candidate": {
+          "pass": true,
+          "exit_code": 0,
+          "error": null,
+          "code_sha256": "566abc5eaa014937fa70542c14a3f464e8548b13a5d8958aff241c958d7382eb"
+        }
+      }
+    },
+    {
+      "id": "gsm8k/test/786",
+      "dataset": "gsm8k",
+      "split": "test",
+      "grades": {
+        "official16": {
+          "pass": true,
+          "strict_pass": false,
+          "extracted": "142",
+          "literal_placeholder_brackets": true,
+          "missing_answer_marker": false
+        },
+        "lagged": {
+          "pass": true,
+          "strict_pass": false,
+          "extracted": "142",
+          "literal_placeholder_brackets": true,
+          "missing_answer_marker": false
+        },
+        "ewma": {
+          "pass": true,
+          "strict_pass": false,
+          "extracted": "142",
+          "literal_placeholder_brackets": true,
+          "missing_answer_marker": false
+        },
+        "candidate": {
+          "pass": true,
+          "strict_pass": false,
+          "extracted": "142",
+          "literal_placeholder_brackets": true,
+          "missing_answer_marker": false
+        }
+      }
+    },
+    {
+      "id": "gsm8k/test/778",
+      "dataset": "gsm8k",
+      "split": "test",
+      "grades": {
+        "official16": {
+          "pass": true,
+          "strict_pass": true,
+          "extracted": "38",
+          "literal_placeholder_brackets": false,
+          "missing_answer_marker": false
+        },
+        "lagged": {
+          "pass": true,
+          "strict_pass": true,
+          "extracted": "38",
+          "literal_placeholder_brackets": false,
+          "missing_answer_marker": false
+        },
+        "ewma": {
+          "pass": true,
+          "strict_pass": true,
+          "extracted": "38",
+          "literal_placeholder_brackets": false,
+          "missing_answer_marker": false
+        },
+        "candidate": {
+          "pass": true,
+          "strict_pass": true,
+          "extracted": "38",
+          "literal_placeholder_brackets": false,
+          "missing_answer_marker": false
+        }
+      }
+    },
+    {
+      "id": "gsm8k/test/675",
+      "dataset": "gsm8k",
+      "split": "test",
+      "grades": {
+        "official16": {
+          "pass": false,
+          "strict_pass": false,
+          "extracted": "21",
+          "literal_placeholder_brackets": false,
+          "missing_answer_marker": false
+        },
+        "lagged": {
+          "pass": false,
+          "strict_pass": false,
+          "extracted": "17",
+          "literal_placeholder_brackets": true,
+          "missing_answer_marker": false
+        },
+        "ewma": {
+          "pass": false,
+          "strict_pass": false,
+          "extracted": "17",
+          "literal_placeholder_brackets": true,
+          "missing_answer_marker": false
+        },
+        "candidate": {
+          "pass": false,
+          "strict_pass": false,
+          "extracted": "21",
+          "literal_placeholder_brackets": false,
+          "missing_answer_marker": false
+        }
+      }
+    },
+    {
+      "id": "HumanEval/82",
+      "dataset": "humaneval",
+      "split": "test",
+      "grades": {
+        "official16": {
+          "pass": true,
+          "exit_code": 0,
+          "error": null,
+          "code_sha256": "a8c0fd72beff6edea43f4dee0babc99fc9a5bb23fbd2c55e101f90677bcdb015"
+        },
+        "lagged": {
+          "pass": true,
+          "exit_code": 0,
+          "error": null,
+          "code_sha256": "a8c0fd72beff6edea43f4dee0babc99fc9a5bb23fbd2c55e101f90677bcdb015"
+        },
+        "ewma": {
+          "pass": true,
+          "exit_code": 0,
+          "error": null,
+          "code_sha256": "a8c0fd72beff6edea43f4dee0babc99fc9a5bb23fbd2c55e101f90677bcdb015"
+        },
+        "candidate": {
+          "pass": true,
+          "exit_code": 0,
+          "error": null,
+          "code_sha256": "a8c0fd72beff6edea43f4dee0babc99fc9a5bb23fbd2c55e101f90677bcdb015"
+        }
+      }
+    },
+    {
+      "id": "gsm8k/test/1186",
+      "dataset": "gsm8k",
+      "split": "test",
+      "grades": {
+        "official16": {
+          "pass": true,
+          "strict_pass": true,
+          "extracted": "19",
+          "literal_placeholder_brackets": false,
+          "missing_answer_marker": false
+        },
+        "lagged": {
+          "pass": true,
+          "strict_pass": true,
+          "extracted": "19",
+          "literal_placeholder_brackets": false,
+          "missing_answer_marker": false
+        },
+        "ewma": {
+          "pass": true,
+          "strict_pass": true,
+          "extracted": "19",
+          "literal_placeholder_brackets": false,
+          "missing_answer_marker": false
+        },
+        "candidate": {
+          "pass": true,
+          "strict_pass": true,
+          "extracted": "19",
+          "literal_placeholder_brackets": false,
+          "missing_answer_marker": false
+        }
+      }
+    },
+    {
+      "id": "HumanEval/102",
+      "dataset": "humaneval",
+      "split": "test",
+      "grades": {
+        "official16": {
+          "pass": false,
+          "exit_code": 1,
+          "error": "Traceback (most recent call last):\n  File \"<string>\", line 9, in <module>\n    namespace['check'](namespace[item['entry_point']])\n    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<official-test>\", line 12, in check\nAssertionError\n",
+          "code_sha256": "fbcad10a1cbc13f2df84779fcc7c567a5f2eafdebbc3d38f75b18ade8a2caf85"
+        },
+        "lagged": {
+          "pass": false,
+          "exit_code": 1,
+          "error": "Traceback (most recent call last):\n  File \"<string>\", line 9, in <module>\n    namespace['check'](namespace[item['entry_point']])\n    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<official-test>\", line 12, in check\nAssertionError\n",
+          "code_sha256": "fbcad10a1cbc13f2df84779fcc7c567a5f2eafdebbc3d38f75b18ade8a2caf85"
+        },
+        "ewma": {
+          "pass": false,
+          "exit_code": 1,
+          "error": "Traceback (most recent call last):\n  File \"<string>\", line 9, in <module>\n    namespace['check'](namespace[item['entry_point']])\n    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<official-test>\", line 12, in check\nAssertionError\n",
+          "code_sha256": "fbcad10a1cbc13f2df84779fcc7c567a5f2eafdebbc3d38f75b18ade8a2caf85"
+        },
+        "candidate": {
+          "pass": false,
+          "exit_code": 1,
+          "error": "Traceback (most recent call last):\n  File \"<string>\", line 9, in <module>\n    namespace['check'](namespace[item['entry_point']])\n    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<official-test>\", line 12, in check\nAssertionError\n",
+          "code_sha256": "fbcad10a1cbc13f2df84779fcc7c567a5f2eafdebbc3d38f75b18ade8a2caf85"
+        }
+      }
+    }
+  ],
+  "run_sha256": "96dbbf73acc9e1c0dee734be7a2bea0be0cf5bf6f63d580aaaa04a0cc6c6b4d1",
+  "status": "COMPLETE"
+}

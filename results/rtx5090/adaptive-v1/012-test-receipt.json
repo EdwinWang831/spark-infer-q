@@ -1,0 +1,14 @@
+{
+  "job": "012-adaptive-test.json",
+  "started_unix": 1794040590.1450715,
+  "worker_pid": 3156877,
+  "load_count": 1,
+  "status": "PASS",
+  "result": {
+    "output": "/home/wangyikai/deepinfer-5090/results/adaptive-v1/test-run.json",
+    "target_object_id": 126549066390160,
+    "draft_object_id": 126540209296480,
+    "timed_runs": 288
+  },
+  "finished_unix": 1794040806.1001709
+}

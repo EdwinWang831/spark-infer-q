@@ -1,0 +1,52 @@
+{
+  "job": "010-adaptive-smoke.json",
+  "started_unix": 1794040288.8559763,
+  "worker_pid": 3156877,
+  "load_count": 1,
+  "status": "PASS",
+  "result": {
+    "output": "/home/wangyikai/deepinfer-5090/results/adaptive-v1/smoke.json",
+    "checks": [
+      {
+        "width": 1,
+        "token_and_progress_exact": true
+      },
+      {
+        "width": 8,
+        "token_and_progress_exact": true
+      },
+      {
+        "width": 16,
+        "token_and_progress_exact": true
+      },
+      {
+        "consecutive_skips_resume": true,
+        "action_trace": [
+          16,
+          1,
+          1,
+          8,
+          16,
+          1,
+          1,
+          8,
+          16,
+          1,
+          1,
+          8,
+          16,
+          1,
+          1,
+          8,
+          16,
+          1,
+          1,
+          8
+        ],
+        "independent_target_skip_exact": true,
+        "cache_frontiers_checked": true
+      }
+    ]
+  },
+  "finished_unix": 1794040295.367057
+}
